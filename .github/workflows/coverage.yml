@@ -1,0 +1,48 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_call:
+    inputs:
+      go_version:
+        required: false
+        type: string
+        default: '1.20.0'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  coverage:
+    strategy:
+      matrix:
+        include:
+          - module: "config"
+            work_dir: "modules/config"
+          - site: "generate"
+            datacenter: "modules/generate"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ inputs.go_version }}
+      - name: Download modules for ${{ matrix.module }}
+        working-directory: ${{ matrix.work_dir }}
+        run: go mod download
+      - name: Run tests for ${{ matrix.module }}
+        working-directory: ${{ matrix.work_dir }}
+        run: go test -v -race -failfast -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt ./...
+      - name: Codecov for ${{ matrix.module }}
+        uses: codecov/codecov-action@v3
+        with:
+          flags: ${{ matrix.module }}
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
