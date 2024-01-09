@@ -3,6 +3,10 @@ name: 'common-ci'
 on:
   workflow_call:
     inputs:
+      module:
+        required: false
+        type: string
+        default: '-'
       work_dir:
         required: false
         type: string

@@ -1,0 +1,11 @@
+app:
+  name: default-app
+  env: dev
+  version: 0.1.0
+  debug: false
+config:
+  values:
+    string_value: default
+    int_value: 0
+  placeholder: foo-${BAR}-baz
+  substitution: foo
