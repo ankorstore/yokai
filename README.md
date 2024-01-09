@@ -3,7 +3,7 @@
 > Simple, modular, and observable Go framework.
 
 <p align="center">
-  <img src="docs/images/yokai-no-bg.png" />
+  <img src="docs/images/yokai-no-bg.png" width="350" height="350" />
 </p>
 
 <!-- TOC -->
