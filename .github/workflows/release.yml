@@ -1,0 +1,22 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        with:
+          command: manifest
+          monorepo-tags: true
+          separate-pull-requests: true
+          release-type: "go"
+          tag-separator: "/"
