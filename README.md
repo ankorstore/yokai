@@ -12,11 +12,12 @@ Yokai's documentation will be available soon.
 
 ## Modules
 
-| Module                       | Description                                                              |
-|------------------------------|--------------------------------------------------------------------------|
-| [config](modules/config)     | Config module based on [Viper](https://github.com/spf13/viper)           |
-| [generate](modules/generate) | Generation module based on [Google UUID](https://github.com/google/uuid) |
-| [log](modules/log)           | Logging module based on [Zerolog](https://github.com/rs/zerolog)         |
+| Module                       | Description                                                                                 |
+|------------------------------|---------------------------------------------------------------------------------------------|
+| [config](modules/config)     | Config module based on [Viper](https://github.com/spf13/viper)                              |
+| [generate](modules/generate) | Generation module based on [Google UUID](https://github.com/google/uuid)                    |
+| [log](modules/log)           | Logging module based on [Zerolog](https://github.com/rs/zerolog)                            |
+| [trace](modules/log)         | Tracing module based on [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-go) |
 
 ## Contributing
 

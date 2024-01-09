@@ -1,0 +1,32 @@
+name: "trace-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "modules/trace/**.go"
+            - "modules/trace/go.mod"
+            - "modules/trace/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "modules/trace/**.go"
+            - "modules/trace/go.mod"
+            - "modules/trace/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "trace"
+            work_dir: "modules/trace"

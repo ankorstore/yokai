@@ -15,6 +15,11 @@
       "release-type": "go",
       "component": "log",
       "tag-separator": "/"
+    },
+    "modules/trace": {
+      "release-type": "go",
+      "component": "trace",
+      "tag-separator": "/"
     }
   }
 }

@@ -26,6 +26,8 @@ jobs:
             work_dir: "modules/generate"
           - module: "log"
             work_dir: "modules/log"
+          - module: "trace"
+            work_dir: "modules/trace"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
