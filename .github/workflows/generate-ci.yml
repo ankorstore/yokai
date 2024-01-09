@@ -1,0 +1,32 @@
+name: "generate-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "modules/generate/**.go"
+            - "modules/generate/go.mod"
+            - "modules/generate/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "modules/generate/**.go"
+            - "modules/generate/go.mod"
+            - "modules/generate/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "generate"
+            work_dir: "modules/generate"
