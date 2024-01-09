@@ -2,7 +2,9 @@
 
 > Simple, modular, and observable Go framework.
 
-![](docs/images/yokai-no-bg.png)
+<p align="center">
+  <img src="docs/images/yokai-no-bg.png" />
+</p>
 
 <!-- TOC -->
 * [Documentation](#documentation)
