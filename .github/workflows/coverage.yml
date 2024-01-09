@@ -16,26 +16,14 @@ permissions:
   pull-requests: write
 
 jobs:
-  coverage_setup:
+  coverage-setup:
     strategy:
       matrix:
         include:
           - module: "config"
             work_dir: "modules/config"
-          - site: "generate"
-            datacenter: "modules/generate"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: ${{ inputs.go_version }}
-  coverage_run:
-    needs: coverage_setup
+          - module: "generate"
+            work_dir: "modules/generate"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
