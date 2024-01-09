@@ -10,6 +10,11 @@
       "release-type": "go",
       "component": "generate",
       "tag-separator": "/"
+    },
+    "modules/log": {
+      "release-type": "go",
+      "component": "log",
+      "tag-separator": "/"
     }
   }
 }
