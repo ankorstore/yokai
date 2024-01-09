@@ -16,7 +16,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  coverage-setup:
+  coverage:
     strategy:
       matrix:
         include:
