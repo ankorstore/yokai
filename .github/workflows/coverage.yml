@@ -45,6 +45,7 @@ jobs:
       - name: Codecov for ${{ matrix.module }}
         uses: codecov/codecov-action@v3
         with:
+          fail_ci_if_error: false
           flags: ${{ matrix.module }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
