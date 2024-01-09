@@ -5,6 +5,11 @@
       "release-type": "go",
       "component": "config",
       "tag-separator": "/"
+    },
+    "modules/generate": {
+      "release-type": "go",
+      "component": "generate",
+      "tag-separator": "/"
     }
   }
 }
