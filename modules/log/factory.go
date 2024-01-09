@@ -24,7 +24,7 @@ func NewDefaultLoggerFactory() LoggerFactory {
 // Create returns a new [Logger], and accepts a list of [LoggerOption].
 // For example:
 //
-//	var cfg, _ = log.NewDefaultLoggerFactory().Create()
+//	var logger, _ = log.NewDefaultLoggerFactory().Create()
 //
 // is equivalent to:
 //
