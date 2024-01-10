@@ -31,7 +31,7 @@ jobs:
         working-directory: ${{ inputs.module }}
         run: go mod download
       - name: Run tests
-        working-directory: ${{ inputs.modulemodule }}
+        working-directory: ${{ inputs.module }}
         run: go test -v -race -failfast -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt ./...
       - name: Codecov
         uses: codecov/codecov-action@v3

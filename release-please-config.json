@@ -1,4 +1,10 @@
 {
   "separate-pull-requests": true,
-  "packages": {}
+  "packages": {
+    "config": {
+      "release-type": "go",
+      "component": "config",
+      "tag-separator": "/"
+    }
+  }
 }
