@@ -1,0 +1,31 @@
+name: "httpclient-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "httpclient/**.go"
+            - "httpclient/go.mod"
+            - "httpclient/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "httpclient/**.go"
+            - "httpclient/go.mod"
+            - "httpclient/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "httpclient"

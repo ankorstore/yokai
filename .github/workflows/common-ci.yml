@@ -1,0 +1,60 @@
+name: 'common-ci'
+
+on:
+  workflow_call:
+    inputs:
+      module:
+        required: false
+        type: string
+        default: '.'
+      go_version:
+        required: false
+        type: string
+        default: '1.20.0'
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ inputs.go_version }}
+      - name: Download modules
+        working-directory: ${{ inputs.module }}
+        run: go mod download
+      - name: Run tests
+        working-directory: ${{ inputs.modulemodule }}
+        run: go test -v -race -failfast -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt ./...
+      - name: Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: false
+          flags: ${{ inputs.module }}
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ inputs.go_version }}
+      - name: Install lint
+        working-directory: ${{ inputs.module }}
+        run:  go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
+      - name: Run lint
+        working-directory: ${{ inputs.module }}
+        run: golangci-lint run
