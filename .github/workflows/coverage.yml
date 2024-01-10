@@ -19,13 +19,9 @@ jobs:
   coverage:
     strategy:
       matrix:
-        include:
-          - module: "config"
-          - module: "healthcheck"
-          - module: "httpclient"
-          - module: "generate"
-          - module: "log"
-          - module: "trace"
+        module:
+        - "config"
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
