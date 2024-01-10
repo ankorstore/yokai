@@ -1,6 +1,6 @@
 # Yokai
 
-[![Go version](https://img.shields.io/badge/go-%3E%3D1.20-blue)](https://go.dev/)
+[![Go version](https://img.shields.io/badge/Go-1.20-blue)](https://go.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > Simple, modular, and observable Go framework.
