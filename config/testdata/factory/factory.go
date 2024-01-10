@@ -1,7 +1,7 @@
 package factory
 
 import (
-	"github.com/ankorstore/yokai/modules/config"
+	"github.com/ankorstore/yokai/config"
 )
 
 type TestConfigFactory struct{}
