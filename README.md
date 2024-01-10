@@ -1,5 +1,8 @@
 # Yokai
 
+[![Go version](https://img.shields.io/badge/go-%3E%3D1.20-blue)](https://go.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 > Simple, modular, and observable Go framework.
 
 <p align="center">
@@ -12,14 +15,14 @@ Yokai's documentation will be available soon.
 
 ## Modules
 
-| Module                             | Description                                                                                                                                             |
-|------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [config](modules/config)           | Config module based on [Viper](https://github.com/spf13/viper)                                                                                          |
-| [generate](modules/generate)       | Generation module based on [Google UUID](https://github.com/google/uuid)                                                                                |
-| [healthcheck](modules/healthcheck) | Health check module compatible with [K8s probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
-| [httpclient](modules/httpclient)   | Http client module based on [net/http](https://pkg.go.dev/net/http)                                                                                     |
-| [log](modules/log)                 | Logging module based on [Zerolog](https://github.com/rs/zerolog)                                                                                        |
-| [trace](modules/trace)             | Tracing module based on [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-go)                                                             |
+| Module                     | Description                                                                                                                                             |
+|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [config](config)           | Config module based on [Viper](https://github.com/spf13/viper)                                                                                          |
+| [generate](generate)       | Generation module based on [Google UUID](https://github.com/google/uuid)                                                                                |
+| [healthcheck](healthcheck) | Health check module compatible with [K8s probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
+| [httpclient](httpclient)   | Http client module based on [net/http](https://pkg.go.dev/net/http)                                                                                     |
+| [log](log)                 | Logging module based on [Zerolog](https://github.com/rs/zerolog)                                                                                        |
+| [trace](trace)             | Tracing module based on [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-go)                                                             |
 
 ## Contributing
 
