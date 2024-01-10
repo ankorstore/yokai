@@ -16,6 +16,11 @@
       "component": "healthcheck",
       "tag-separator": "/"
     },
+    "httpclient": {
+      "release-type": "go",
+      "component": "httpclient",
+      "tag-separator": "/"
+    },
     "log": {
       "release-type": "go",
       "component": "log",
