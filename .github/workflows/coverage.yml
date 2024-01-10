@@ -17,6 +17,7 @@ permissions:
 
 jobs:
   coverage:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         module:
@@ -24,26 +25,25 @@ jobs:
         - "generate"
         - "healthcheck"
         - "httpclient"
+        - "httpserver"
         - "log"
         - "trace"
-
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-      - name: Set up Go
+      - name: Install Go
         uses: actions/setup-go@v4
         with:
           go-version: ${{ inputs.go_version }}
-      - name: Download modules for ${{ matrix.module }}
+      - name: Install dependencies for module ${{ matrix.module }}
         working-directory: ${{ matrix.module }}
         run: go mod download
-      - name: Run tests for ${{ matrix.module }}
+      - name: Run tests for module ${{ matrix.module }}
         working-directory: ${{ matrix.module }}
         run: go test -v -race -failfast -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt ./...
-      - name: Codecov for ${{ matrix.module }}
+      - name: Codecov for module ${{ matrix.module }}
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: false

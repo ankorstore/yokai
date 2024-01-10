@@ -1,0 +1,7 @@
+app:
+  name: test-app
+  env: test
+  version: 0.1.0
+  debug: true
+config:
+  some: value

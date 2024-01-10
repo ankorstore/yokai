@@ -1,0 +1,85 @@
+package httpserver
+
+import (
+	"net/http"
+
+	"github.com/ankorstore/yokai/log"
+	"github.com/go-errors/errors"
+	"github.com/labstack/echo/v4"
+)
+
+// JsonErrorHandler is an [echo.HTTPErrorHandler] that outputs errors in JSON format.
+// It can also be configured to obfuscate error message (to avoid to leak sensitive details), and to add the error stack to the response.
+func JsonErrorHandler(obfuscate bool, stack bool) echo.HTTPErrorHandler {
+	return func(err error, c echo.Context) {
+		logger := log.CtxLogger(c.Request().Context())
+
+		if c.Response().Committed {
+			return
+		}
+
+		var httpError *echo.HTTPError
+		if errors.As(err, &httpError) {
+			if httpError.Internal != nil {
+				var internalHttpError *echo.HTTPError
+				if errors.As(httpError.Internal, &internalHttpError) {
+					httpError = internalHttpError
+				}
+			}
+		} else {
+			httpError = &echo.HTTPError{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			}
+		}
+
+		var logRespFields map[string]interface{}
+
+		if stack {
+			errStack := errors.New(err).ErrorStack()
+
+			switch m := httpError.Message.(type) {
+			case error:
+				logRespFields = map[string]interface{}{
+					"message": m.Error(),
+					"stack":   errStack,
+				}
+			default:
+				logRespFields = map[string]interface{}{
+					"message": m,
+					"stack":   errStack,
+				}
+			}
+		} else {
+			switch m := httpError.Message.(type) {
+			case error:
+				logRespFields = map[string]interface{}{
+					"message": m.Error(),
+				}
+			default:
+				logRespFields = map[string]interface{}{
+					"message": m,
+				}
+			}
+		}
+
+		logger.Error().Err(err).Fields(logRespFields).Msg("error handler")
+
+		httpRespFields := logRespFields
+
+		if obfuscate {
+			httpRespFields["message"] = http.StatusText(httpError.Code)
+		}
+
+		var httpRespErr error
+		if c.Request().Method == http.MethodHead {
+			httpRespErr = c.NoContent(httpError.Code)
+		} else {
+			httpRespErr = c.JSON(httpError.Code, httpRespFields)
+		}
+
+		if httpRespErr != nil {
+			logger.Error().Err(httpRespErr).Msg("error handler failure")
+		}
+	}
+}
