@@ -27,6 +27,9 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ inputs.go_version }}
+      - name: Clean cache
+        working-directory: ${{ inputs.module }}
+        run: go clean -modcache && go clean -testcache
       - name: Install dependencies
         working-directory: ${{ inputs.module }}
         run: go mod download
