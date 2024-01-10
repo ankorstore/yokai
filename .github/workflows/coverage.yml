@@ -23,6 +23,7 @@ jobs:
         - "config"
         - "generate"
         - "log"
+        - "trace"
 
     runs-on: ubuntu-latest
     steps:
