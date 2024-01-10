@@ -21,6 +21,7 @@ jobs:
       matrix:
         module:
         - "config"
+        - "generate"
         - "log"
 
     runs-on: ubuntu-latest

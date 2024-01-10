@@ -6,6 +6,11 @@
       "component": "config",
       "tag-separator": "/"
     },
+    "generate": {
+      "release-type": "go",
+      "component": "generate",
+      "tag-separator": "/"
+    },
     "log": {
       "release-type": "go",
       "component": "log",
