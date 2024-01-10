@@ -21,6 +21,7 @@ Yokai's documentation will be available soon.
 | [generate](generate)       | Generation module based on [Google UUID](https://github.com/google/uuid)                                                                                |
 | [healthcheck](healthcheck) | Health check module compatible with [K8s probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | [httpclient](httpclient)   | Http client module based on [net/http](https://pkg.go.dev/net/http)                                                                                     |
+| [httpserver](httpserver)   | Http server module based on [Echo](https://echo.labstack.com/)                                                                                          |
 | [log](log)                 | Logging module based on [Zerolog](https://github.com/rs/zerolog)                                                                                        |
 | [trace](trace)             | Tracing module based on [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-go)                                                             |
 
