@@ -5,6 +5,11 @@
       "release-type": "go",
       "component": "config",
       "tag-separator": "/"
+    },
+    "log": {
+      "release-type": "go",
+      "component": "log",
+      "tag-separator": "/"
     }
   }
 }
