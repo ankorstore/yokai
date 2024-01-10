@@ -23,6 +23,7 @@ jobs:
         - "config"
         - "generate"
         - "healthcheck"
+        - "httpclient"
         - "log"
         - "trace"
 
