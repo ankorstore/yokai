@@ -16,18 +16,20 @@ Yokai's documentation will be available soon.
 
 ## Fx Modules
 
+Yokai's `Fx modules` are the plugins for your Yokai application.
+
 Yokai is using [Fx](https://github.com/uber-go/fx) for its plugin system.
 
-`Yokai's Fx modules` are the plugins for your Yokai application, but they can be used in any [Fx](https://github.com/uber-go/fx) based Go application.
+| Fx Module                | Description                        |
+|--------------------------|------------------------------------|
+| [fxconfig](fxconfig)     | Fx module for [config](config)     |
+| [fxgenerate](fxgenerate) | Fx module for [generate](generate) |
 
-| Fx Module            | Description                    |
-|----------------------|--------------------------------|
-| [fxconfig](fxconfig) | Fx module for [config](config) |
-
+They can also be used in any [Fx](https://github.com/uber-go/fx) based Go application.
 
 ## Modules
 
-`Yokai's modules` are the foundation of the framework, but they can be used in any Go application (no Yokai dependencies).
+Yokai's `modules` are the foundation of the framework.
 
 | Module                     | Description                                                                                                                                             |
 |----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -39,6 +41,8 @@ Yokai is using [Fx](https://github.com/uber-go/fx) for its plugin system.
 | [log](log)                 | Logging module based on [Zerolog](https://github.com/rs/zerolog)                                                                                        |
 | [orm](orm)                 | ORM module based on [Gorm](https://gorm.io/)                                                                                                            |
 | [trace](trace)             | Tracing module based on [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-go)                                                             |
+
+They can also be used in any Go application (no Yokai or [Fx](https://github.com/uber-go/fx) dependencies).
 
 ## Contributing
 

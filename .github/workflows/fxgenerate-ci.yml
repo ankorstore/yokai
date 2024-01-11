@@ -1,0 +1,31 @@
+name: "fxgenerate-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "fxgenerate/**.go"
+            - "fxgenerate/go.mod"
+            - "fxgenerate/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "fxgenerate/**.go"
+            - "fxgenerate/go.mod"
+            - "fxgenerate/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "fxgenerate"
