@@ -7,6 +7,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestGetEnvVar(t *testing.T) {
+	cfg, err := createTestConfig()
+	assert.NoError(t, err)
+
+	t.Setenv("foo", "bar")
+
+	assert.Equal(t, "bar", cfg.GetEnvVar("foo"))
+}
+
 func TestAppNameFromDefaultConfig(t *testing.T) {
 	cfg, err := createTestConfig()
 
@@ -19,7 +28,7 @@ func TestAppNameOverrideFromTestEnvConfig(t *testing.T) {
 
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "test-app", cfg.AppName())
 }
 
@@ -28,7 +37,7 @@ func TestAppNameOverrideFromCustomEnvConfig(t *testing.T) {
 
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "custom-app", cfg.AppName())
 }
 
@@ -53,7 +62,7 @@ func TestAppNameOverrideFromEnvVar(t *testing.T) {
 func TestAppEnvFromConfig(t *testing.T) {
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, config.AppEnvDev, cfg.AppEnv())
 	assert.False(t, cfg.IsProdEnv())
 	assert.True(t, cfg.IsDevEnv())
@@ -65,7 +74,7 @@ func TestAppEnvOverrideFromTestEnvConfig(t *testing.T) {
 
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, config.AppEnvTest, cfg.AppEnv())
 	assert.False(t, cfg.IsProdEnv())
 	assert.False(t, cfg.IsDevEnv())
@@ -77,7 +86,7 @@ func TestAppEnvOverrideFromCustomEnvConfig(t *testing.T) {
 
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "custom", cfg.AppEnv())
 	assert.False(t, cfg.IsProdEnv())
 	assert.False(t, cfg.IsDevEnv())
@@ -87,7 +96,7 @@ func TestAppEnvOverrideFromCustomEnvConfig(t *testing.T) {
 func TestAppDebugFromConfig(t *testing.T) {
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.False(t, cfg.AppDebug())
 }
 
@@ -96,7 +105,7 @@ func TestAppDebugOverrideFromTestEnvConfig(t *testing.T) {
 
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.True(t, cfg.AppDebug())
 }
 
@@ -105,14 +114,14 @@ func TestAppDebugOverrideFromEnvVar(t *testing.T) {
 
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.True(t, cfg.AppDebug())
 }
 
 func TestAppVersionFromConfig(t *testing.T) {
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "0.1.0", cfg.AppVersion())
 }
 
@@ -121,7 +130,7 @@ func TestAppVersionOverrideFromTestEnvConfig(t *testing.T) {
 
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "0.1.0", cfg.AppVersion())
 }
 
@@ -130,14 +139,14 @@ func TestAppVersionOverrideFromEnvVar(t *testing.T) {
 
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "0.1.2", cfg.AppVersion())
 }
 
 func TestValuesFromConfig(t *testing.T) {
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "default", cfg.GetString("config.values.string_value"))
 	assert.Equal(t, 0, cfg.GetInt("config.values.int_value"))
 }
@@ -147,7 +156,7 @@ func TestValuesOverrideFromTestEnvConfig(t *testing.T) {
 
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "test", cfg.GetString("config.values.string_value"))
 	assert.Equal(t, 0, cfg.GetInt("config.values.int_value"))
 }
@@ -157,7 +166,7 @@ func TestValuesOverrideFromCustomEnvConfig(t *testing.T) {
 
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "custom", cfg.GetString("config.values.string_value"))
 	assert.Equal(t, 0, cfg.GetInt("config.values.int_value"))
 }
@@ -165,28 +174,28 @@ func TestValuesOverrideFromCustomEnvConfig(t *testing.T) {
 func TestValuesWithEnvVarsPlaceholder(t *testing.T) {
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "foo--baz", cfg.GetString("config.placeholder"))
 
 	t.Setenv("BAR", "bar")
 
 	cfg, err = createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "foo-bar-baz", cfg.GetString("config.placeholder"))
 }
 
 func TestValuesWithEnvVarsSubstitution(t *testing.T) {
 	cfg, err := createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "foo", cfg.GetString("config.substitution"))
 
 	t.Setenv("CONFIG_SUBSTITUTION", "bar")
 
 	cfg, err = createTestConfig()
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "bar", cfg.GetString("config.substitution"))
 }
 
