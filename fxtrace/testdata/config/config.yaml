@@ -1,0 +1,13 @@
+app:
+  name: dev
+modules:
+  trace:
+    processor:
+      type: ${PROCESSOR_TYPE}
+      options:
+        pretty: true
+        host: grafana-agent:4317
+    sampler:
+      type: ${SAMPLER_TYPE}
+      options:
+        ratio: 1

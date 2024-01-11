@@ -55,6 +55,11 @@
       "release-type": "go",
       "component": "fxgenerate",
       "tag-separator": "/"
+    },
+    "fxtrace": {
+      "release-type": "go",
+      "component": "fxtrace",
+      "tag-separator": "/"
     }
   }
 }
