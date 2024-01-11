@@ -2,7 +2,7 @@
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/log-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/log-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/log)](https://goreportcard.com/report/github.com/ankorstore/yokai/log)
-[![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=5s0g5WyseS&flag=log)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/log)
+[![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR&flag=log)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/log)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/ankorstore/yokai/log)](https://pkg.go.dev/github.com/ankorstore/yokai/log)
 
 > Logging module based on [Zerolog](https://github.com/rs/zerolog).

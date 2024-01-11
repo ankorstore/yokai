@@ -2,7 +2,7 @@
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/config-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/config-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/config)](https://goreportcard.com/report/github.com/ankorstore/yokai/config)
-[![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=5s0g5WyseS&flag=config)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/config)
+[![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR&flag=config)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/config)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/ankorstore/yokai/config)](https://pkg.go.dev/github.com/ankorstore/yokai/config)
 
 > Configuration module based on [Viper](https://github.com/spf13/viper).

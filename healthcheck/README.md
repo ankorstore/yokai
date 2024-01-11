@@ -2,7 +2,7 @@
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/healthcheck-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/healthcheck-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/healthcheck)](https://goreportcard.com/report/github.com/ankorstore/yokai/healthcheck)
-[![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=5s0g5WyseS&flag=healthcheck)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/healthcheck)
+[![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR&flag=healthcheck)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/healthcheck)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/ankorstore/yokai/healthcheck)](https://pkg.go.dev/github.com/ankorstore/yokai/healthcheck)
 
 > Health check module compatible with [K8s probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/).
