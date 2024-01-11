@@ -14,7 +14,20 @@
 
 Yokai's documentation will be available soon.
 
+## Fx Modules
+
+Yokai is using [Fx](https://github.com/uber-go/fx) for its plugin system.
+
+`Yokai's Fx modules` are the plugins for your Yokai application, but they can be used in any [Fx](https://github.com/uber-go/fx) based Go application.
+
+| Fx Module            | Description                    |
+|----------------------|--------------------------------|
+| [fxconfig](fxconfig) | Fx module for [config](config) |
+
+
 ## Modules
+
+`Yokai's modules` are the foundation of the framework, but they can be used in any Go application (no Yokai dependencies).
 
 | Module                     | Description                                                                                                                                             |
 |----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|

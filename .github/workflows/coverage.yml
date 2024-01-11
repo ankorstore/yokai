@@ -29,6 +29,7 @@ jobs:
         - "log"
         - "orm"
         - "trace"
+        - "fxconfig"
     steps:
       - name: Checkout
         uses: actions/checkout@v3

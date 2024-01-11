@@ -40,6 +40,11 @@
       "release-type": "go",
       "component": "trace",
       "tag-separator": "/"
+    },
+    "fxconfig": {
+      "release-type": "go",
+      "component": "fxconfig",
+      "tag-separator": "/"
     }
   }
 }
