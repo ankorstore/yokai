@@ -1,0 +1,31 @@
+name: "fxlog-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "fxlog/**.go"
+            - "fxlog/go.mod"
+            - "fxlog/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "fxlog/**.go"
+            - "fxlog/go.mod"
+            - "fxlog/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "fxlog"
