@@ -2,7 +2,7 @@
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/trace-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/trace-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/trace)](https://goreportcard.com/report/github.com/ankorstore/yokai/trace)
-[![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=5s0g5WyseS&flag=trace)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/trace)
+[![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR&flag=trace)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/trace)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/ankorstore/yokai/trace)](https://pkg.go.dev/github.com/ankorstore/yokai/trace)
 
 > Tracing module based on [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-go).
