@@ -145,10 +145,11 @@ func main() {
 	cfg, _ := config.NewDefaultConfigFactory().Create()
 
 	// helpers
-	fmt.Printf("name: %s", cfg.AppName())       // name: app
-	fmt.Printf("env: %s", cfg.AppEnv())         // env: test
-	fmt.Printf("version: %s", cfg.AppVersion()) // version: 0.1.0
-	fmt.Printf("debug: %v", cfg.AppDebug())     // debug: true
+	fmt.Printf("var: %s", cfg.GetEnvVar("APP_ENV")) // var: test
+	fmt.Printf("name: %s", cfg.AppName())           // name: app
+	fmt.Printf("env: %s", cfg.AppEnv())             // env: test
+	fmt.Printf("version: %s", cfg.AppVersion())     // version: 0.1.0
+	fmt.Printf("debug: %v", cfg.AppDebug())         // debug: true
 
 	// others
 	fmt.Printf("string_value: %s", cfg.GetString("config.values.string_value")) // string_value: test

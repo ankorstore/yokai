@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/spf13/viper"
+	"os"
 )
 
 const (
@@ -18,6 +19,11 @@ const (
 // [Viper]: https://github.com/spf13/viper
 type Config struct {
 	*viper.Viper
+}
+
+// GetEnvVar returns the value of an env var.
+func (c *Config) GetEnvVar(envVar string) string {
+	return os.Getenv(envVar)
 }
 
 // AppName returns the configured application name (from config field app.name or env var APP_NAME).
