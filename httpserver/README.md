@@ -1,5 +1,11 @@
 # Http Server Module
 
+[![ci](https://github.com/ankorstore/yokai/actions/workflows/httpserver-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/httpserver-ci.yml)
+[![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/httpserver)](https://goreportcard.com/report/github.com/ankorstore/yokai/httpserver)
+[![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=5s0g5WyseS&flag=httpserver)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/httpserver)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/ankorstore/yokai/httpserver)](https://pkg.go.dev/github.com/ankorstore/yokai/httpserver)
+
+
 > Http server module based on [Echo](https://echo.labstack.com/).
 
 <!-- TOC -->
