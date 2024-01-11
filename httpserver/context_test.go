@@ -16,7 +16,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCtxRequestId(t *testing.T) {
+func TestEmptyCtxRequest(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/test", nil)
+	rec := httptest.NewRecorder()
+
+	e := echo.New()
+	c := e.NewContext(req, rec)
+
+	assert.Equal(t, "", httpserver.CtxRequestId(c))
+}
+
+func TestCtxRequestIdWithValue(t *testing.T) {
 	logBuffer := logtest.NewDefaultTestLogBuffer()
 	logger, err := log.NewDefaultLoggerFactory().Create(
 		log.WithServiceName("test service"),
@@ -27,8 +37,9 @@ func TestCtxRequestId(t *testing.T) {
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
 
-	// empty
+	// with value
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
+	req.Header.Add(middleware.HeaderXRequestId, testRequestId)
 	rec := httptest.NewRecorder()
 
 	ctx := httpServer.NewContext(req, rec)
@@ -40,30 +51,6 @@ func TestCtxRequestId(t *testing.T) {
 
 	m := middleware.RequestLoggerMiddleware()
 	h := m(handler)
-
-	err = h(ctx)
-	assert.NoError(t, err)
-
-	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
-		"level":   "info",
-		"service": "test service",
-		"message": "request id: ",
-	})
-
-	// with value
-	req = httptest.NewRequest(http.MethodGet, "/test", nil)
-	req.Header.Add(middleware.HeaderXRequestId, testRequestId)
-	rec = httptest.NewRecorder()
-
-	ctx = httpServer.NewContext(req, rec)
-	handler = func(c echo.Context) error {
-		httpserver.CtxLogger(c).Info().Msgf("request id: %s", httpserver.CtxRequestId(c))
-
-		return c.String(http.StatusOK, "ok")
-	}
-
-	m = middleware.RequestLoggerMiddleware()
-	h = m(handler)
 
 	err = h(ctx)
 	assert.NoError(t, err)
