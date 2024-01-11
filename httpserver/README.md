@@ -3,6 +3,7 @@
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/httpserver-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/httpserver-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/httpserver)](https://goreportcard.com/report/github.com/ankorstore/yokai/httpserver)
 [![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR&flag=httpserver)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/httpserver)
+[![Deps](https://img.shields.io/badge/osi-deps-blue)](https://deps.dev/go/github.com%2Fankorstore%2Fyokai%2Fhttpserver)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/ankorstore/yokai/httpserver)](https://pkg.go.dev/github.com/ankorstore/yokai/httpserver)
 
 
