@@ -3,7 +3,7 @@ module github.com/ankorstore/yokai/httpserver
 go 1.20
 
 require (
-	github.com/ankorstore/yokai/config v1.0.0
+	github.com/ankorstore/yokai/config v1.1.0
 	github.com/ankorstore/yokai/generate v1.0.0
 	github.com/ankorstore/yokai/healthcheck v1.0.0
 	github.com/ankorstore/yokai/log v1.0.0
