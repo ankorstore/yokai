@@ -3,6 +3,7 @@
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/httpclient-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/httpclient-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/httpclient)](https://goreportcard.com/report/github.com/ankorstore/yokai/httpclient)
 [![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR&flag=httpclient)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/httpclient)
+[![Deps](https://img.shields.io/badge/osi-deps-blue)](https://deps.dev/go/github.com%2Fankorstore%2Fyokai%2Fhttpclient)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/ankorstore/yokai/httpclient)](https://pkg.go.dev/github.com/ankorstore/yokai/httpclient)
 
 > Http client module based on [net/http](https://pkg.go.dev/net/http).

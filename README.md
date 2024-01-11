@@ -1,7 +1,7 @@
 # Yokai
 
 [![Go version](https://img.shields.io/badge/Go-1.20-blue)](https://go.dev/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR)](https://codecov.io/gh/ankorstore/yokai)
 
 > Simple, modular, and observable Go framework.
