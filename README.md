@@ -24,6 +24,7 @@ Yokai's documentation will be available soon.
 | [httpclient](httpclient)   | Http client module based on [net/http](https://pkg.go.dev/net/http)                                                                                     |
 | [httpserver](httpserver)   | Http server module based on [Echo](https://echo.labstack.com/)                                                                                          |
 | [log](log)                 | Logging module based on [Zerolog](https://github.com/rs/zerolog)                                                                                        |
+| [orm](orm)                 | ORM module based on [Gorm](https://gorm.io/)                                                                                                            |
 | [trace](trace)             | Tracing module based on [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-go)                                                             |
 
 ## Contributing

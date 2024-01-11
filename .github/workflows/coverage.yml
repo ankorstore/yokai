@@ -27,6 +27,7 @@ jobs:
         - "httpclient"
         - "httpserver"
         - "log"
+        - "orm"
         - "trace"
     steps:
       - name: Checkout
