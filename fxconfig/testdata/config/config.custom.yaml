@@ -1,0 +1,7 @@
+app:
+  name: custom-app
+  env: custom
+  debug: true
+config:
+  values:
+    string_value: custom
