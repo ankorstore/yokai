@@ -27,8 +27,8 @@ func TestCtxRequestId(t *testing.T) {
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
 
+	// empty
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
-	req.Header.Add(middleware.HeaderXRequestId, testRequestId)
 	rec := httptest.NewRecorder()
 
 	ctx := httpServer.NewContext(req, rec)
@@ -40,6 +40,30 @@ func TestCtxRequestId(t *testing.T) {
 
 	m := middleware.RequestLoggerMiddleware()
 	h := m(handler)
+
+	err = h(ctx)
+	assert.NoError(t, err)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "info",
+		"service": "test service",
+		"message": "request id: ",
+	})
+
+	// with value
+	req = httptest.NewRequest(http.MethodGet, "/test", nil)
+	req.Header.Add(middleware.HeaderXRequestId, testRequestId)
+	rec = httptest.NewRecorder()
+
+	ctx = httpServer.NewContext(req, rec)
+	handler = func(c echo.Context) error {
+		httpserver.CtxLogger(c).Info().Msgf("request id: %s", httpserver.CtxRequestId(c))
+
+		return c.String(http.StatusOK, "ok")
+	}
+
+	m = middleware.RequestLoggerMiddleware()
+	h = m(handler)
 
 	err = h(ctx)
 	assert.NoError(t, err)
