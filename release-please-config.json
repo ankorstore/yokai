@@ -21,6 +21,11 @@
       "component": "httpclient",
       "tag-separator": "/"
     },
+    "httpserver": {
+      "release-type": "go",
+      "component": "httpserver",
+      "tag-separator": "/"
+    },
     "log": {
       "release-type": "go",
       "component": "log",

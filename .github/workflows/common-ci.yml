@@ -19,15 +19,18 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-      - name: Set up Go
+      - name: Install Go
         uses: actions/setup-go@v4
         with:
           go-version: ${{ inputs.go_version }}
-      - name: Download modules
+      - name: Clean cache
+        working-directory: ${{ inputs.module }}
+        run: go clean -modcache && go clean -testcache && go mod tidy
+      - name: Install dependencies
         working-directory: ${{ inputs.module }}
         run: go mod download
       - name: Run tests
@@ -44,7 +47,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
