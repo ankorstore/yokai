@@ -25,6 +25,7 @@ Yokai's `Fx modules` are the plugins for your Yokai application.
 | [fxconfig](fxconfig)     | Fx module for [config](config)     |
 | [fxgenerate](fxgenerate) | Fx module for [generate](generate) |
 | [fxlog](fxlog)           | Fx module for [log](log)           |
+| [fxtrace](fxtrace)       | Fx module for [trace](trace)       |
 
 They can also be used in any [Fx](https://github.com/uber-go/fx) based Go application.
 
