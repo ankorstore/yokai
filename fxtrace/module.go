@@ -15,8 +15,12 @@ import (
 	"go.uber.org/fx"
 )
 
-const ModuleName = "fx-trace"
+// ModuleName is the module name.
+const ModuleName = "trace"
 
+// FxTraceModule is the [Fx] trace module.
+//
+// [Fx]: https://github.com/uber-go/fx
 var FxTraceModule = fx.Module(
 	ModuleName,
 	fx.Provide(
@@ -29,6 +33,7 @@ var FxTraceModule = fx.Module(
 	),
 )
 
+// FxTraceParam allows injection of the required dependencies in [NewFxTracerProvider].
 type FxTraceParam struct {
 	fx.In
 	LifeCycle fx.Lifecycle
@@ -37,6 +42,7 @@ type FxTraceParam struct {
 	Config    *config.Config
 }
 
+// NewFxTracerProvider returns a [otelsdktrace.TracerProvider].
 func NewFxTracerProvider(p FxTraceParam) (*otelsdktrace.TracerProvider, error) {
 	ctx := context.Background()
 
