@@ -1,0 +1,6 @@
+app:
+  name: dev
+modules:
+  log:
+    level: ${TEST_LOG_LEVEL}
+    output: ${TEST_LOG_OUTPUT}

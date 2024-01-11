@@ -1,7 +1,7 @@
 # Yokai
 
-[![Go version](https://img.shields.io/badge/Go-1.20-blue)](https://go.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Go version](https://img.shields.io/badge/Go-1.20-blue)](https://go.dev/)
 [![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR)](https://codecov.io/gh/ankorstore/yokai)
 
 > Simple, modular, and observable Go framework.
@@ -16,14 +16,15 @@ Yokai's documentation will be available soon.
 
 ## Fx Modules
 
-Yokai's `Fx modules` are the plugins for your Yokai application.
-
 Yokai is using [Fx](https://github.com/uber-go/fx) for its plugin system.
+
+Yokai's `Fx modules` are the plugins for your Yokai application.
 
 | Fx Module                | Description                        |
 |--------------------------|------------------------------------|
 | [fxconfig](fxconfig)     | Fx module for [config](config)     |
 | [fxgenerate](fxgenerate) | Fx module for [generate](generate) |
+| [fxlog](fxlog)           | Fx module for [log](log)           |
 
 They can also be used in any [Fx](https://github.com/uber-go/fx) based Go application.
 
