@@ -1,0 +1,31 @@
+name: "fxhealthcheck-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "fxhealthcheck/**.go"
+            - "fxhealthcheck/go.mod"
+            - "fxhealthcheck/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "fxhealthcheck/**.go"
+            - "fxhealthcheck/go.mod"
+            - "fxhealthcheck/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "fxhealthcheck"
