@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/ankorstore/yokai/fxhttpserver"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
