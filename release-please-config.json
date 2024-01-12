@@ -46,14 +46,19 @@
       "component": "fxconfig",
       "tag-separator": "/"
     },
+    "fxgenerate": {
+      "release-type": "go",
+      "component": "fxgenerate",
+      "tag-separator": "/"
+    },
     "fxlog": {
       "release-type": "go",
       "component": "fxlog",
       "tag-separator": "/"
     },
-    "fxgenerate": {
+    "fxmetrics": {
       "release-type": "go",
-      "component": "fxgenerate",
+      "component": "fxmetrics",
       "tag-separator": "/"
     },
     "fxtrace": {
