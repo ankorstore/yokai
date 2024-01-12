@@ -1,8 +1,18 @@
+# Information
 site_name: Yokai
+site_url: https://ankorstore.github.io/yokai
+site_description: >-
+  Yokai: a simple, modular, and observable Go framework.
 
+# Repository
+repo_name: ankorstore/yokai
+repo_url: https://github.com/ankorstore/yokai
+
+# Plugins
 plugins:
   - search
 
+# Theme
 theme:
   name: material
   palette:
@@ -28,6 +38,7 @@ theme:
     - navigation.footer
     - search.highlight
 
+# Extensions
 markdown_extensions:
   - admonition
   - attr_list
@@ -43,5 +54,6 @@ markdown_extensions:
       emoji_generator: !!python/name:materialx.emoji.to_svg
   - tables
 
+# Pages tree
 nav:
   - 'Home': 'index.md'
