@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	ModuleName  = "fx-httpserver"
+	ModuleName  = "httpserver"
 	DefaultPort = 8080
 )
 
@@ -58,7 +58,7 @@ func NewFxHttpServer(p FxHttpServerParam) (*echo.Echo, error) {
 
 	// logger
 	echoLogger := httpserver.NewEchoLogger(
-		log.FromZerolog(p.Logger.ToZerolog().With().Str("system", ModuleName).Logger()),
+		log.FromZerolog(p.Logger.ToZerolog().With().Str("module", ModuleName).Logger()),
 	)
 
 	// renderer
