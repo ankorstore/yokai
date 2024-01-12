@@ -20,13 +20,14 @@ Yokai is using [Fx](https://github.com/uber-go/fx) for its plugin system.
 
 Yokai's `Fx modules` are the plugins for your Yokai application.
 
-| Fx Module                | Description                                                             |
-|--------------------------|-------------------------------------------------------------------------|
-| [fxconfig](fxconfig)     | Fx module for [config](config)                                          |
-| [fxgenerate](fxgenerate) | Fx module for [generate](generate)                                      |
-| [fxlog](fxlog)           | Fx module for [log](log)                                                |
-| [fxmetrics](fxmetrics)   | Fx module for [prometheus](https://github.com/prometheus/client_golang) |
-| [fxtrace](fxtrace)       | Fx module for [trace](trace)                                            |
+| Fx Module                      | Description                                                             |
+|--------------------------------|-------------------------------------------------------------------------|
+| [fxconfig](fxconfig)           | Fx module for [config](config)                                          |
+| [fxgenerate](fxgenerate)       | Fx module for [generate](generate)                                      |
+| [fxhealthcheck](fxhealthcheck) | Fx module for [healthcheck](healthcheck)                                |
+| [fxlog](fxlog)                 | Fx module for [log](log)                                                |
+| [fxmetrics](fxmetrics)         | Fx module for [prometheus](https://github.com/prometheus/client_golang) |
+| [fxtrace](fxtrace)             | Fx module for [trace](trace)                                            |
 
 They can also be used in any [Fx](https://github.com/uber-go/fx) based Go application.
 

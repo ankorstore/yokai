@@ -51,6 +51,11 @@
       "component": "fxgenerate",
       "tag-separator": "/"
     },
+    "fxhealthcheck": {
+      "release-type": "go",
+      "component": "fxhealthcheck",
+      "tag-separator": "/"
+    },
     "fxlog": {
       "release-type": "go",
       "component": "fxlog",
