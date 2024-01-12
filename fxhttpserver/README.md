@@ -100,7 +100,7 @@ modules:
   trace:
     processor:
       type: stdout
-  core:
+  http:
     server:
       port: 8080                      # http server port (default 8080)
       errors:
@@ -123,7 +123,7 @@ modules:
         collect:
           enabled: true               # to collect http server metrics
           namespace: app              # http server metrics namespace (default app.name value)
-          subsystem: fx-httpserver    # http server metrics subsystem (default fx-httpserver)
+          subsystem: httpserver       # http server metrics subsystem (default httpserver)
         buckets: 0.1, 1, 10           # to override default request duration buckets
         normalize: true               # to normalize http status code (2xx, 3xx, ...)
       templates:
