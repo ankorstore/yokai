@@ -61,6 +61,11 @@
       "component": "fxhttpclient",
       "tag-separator": "/"
     },
+    "fxhttpserver": {
+      "release-type": "go",
+      "component": "fxhttpserver",
+      "tag-separator": "/"
+    },
     "fxlog": {
       "release-type": "go",
       "component": "fxlog",

@@ -1,0 +1,38 @@
+app:
+  name: test
+  version: 0.1.0
+modules:
+  log:
+    level: info
+    output: test
+  trace:
+    processor:
+      type: test
+  http:
+    server:
+      errors:
+        obfuscate: false
+        stack: false
+      log:
+        headers:
+          x-foo: foo
+          x-bar: bar
+        exclude:
+          - /foo/bar
+          - /foo/baz
+        level_from_response: true
+      trace:
+        enabled: true
+        exclude:
+          - /foo/bar
+          - /foo/baz
+      metrics:
+        collect:
+          enabled: true
+          namespace: foo
+          subsystem: bar
+        buckets: 0.1, 1, 10
+        normalize: true
+      templates:
+        enabled: ${TEMPLATES_ENABLED}
+        path: ${TEMPLATES_PATH}

@@ -1,0 +1,31 @@
+name: "fxhttpserver-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "fxhttpserver/**.go"
+            - "fxhttpserver/go.mod"
+            - "fxhttpserver/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "fxhttpserver/**.go"
+            - "fxhttpserver/go.mod"
+            - "fxhttpserver/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "fxhttpserver"
