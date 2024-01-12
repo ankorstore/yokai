@@ -1,0 +1,23 @@
+app:
+  name: dev
+modules:
+  log:
+    level: info
+    output: test
+  trace:
+    processor:
+      type: test
+  http:
+    client:
+      log:
+        request:
+          enabled: true
+          level: info
+          body: true
+        response:
+          enabled: true
+          level: info
+          level_from_response: true
+          body: true
+      trace:
+        enabled: true
