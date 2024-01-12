@@ -1,0 +1,31 @@
+name: "fxorm-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "fxorm/**.go"
+            - "fxorm/go.mod"
+            - "fxorm/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "fxorm/**.go"
+            - "fxorm/go.mod"
+            - "fxorm/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "fxorm"
