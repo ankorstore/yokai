@@ -41,6 +41,11 @@
       "component": "trace",
       "tag-separator": "/"
     },
+    "fxcore": {
+      "release-type": "go",
+      "component": "fxcore",
+      "tag-separator": "/"
+    },
     "fxconfig": {
       "release-type": "go",
       "component": "fxconfig",

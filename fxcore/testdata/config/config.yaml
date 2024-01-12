@@ -1,0 +1,60 @@
+app:
+  name: core-app
+  env: dev
+  version: 0.1.0
+  debug: false
+modules:
+  log:
+    level: debug
+    output: test
+  trace:
+    processor:
+      type: test
+  core:
+    server:
+      errors:
+        obfuscate: false
+        stack: false
+      log:
+        headers:
+          x-foo: foo
+          x-bar: bar
+        exclude:
+          - /healthz
+          - /livez
+          - /readyz
+        level_from_response: true
+      trace:
+        enabled: true
+        exclude:
+          - /healthz
+          - /livez
+          - /readyz
+      metrics:
+        expose: ${METRICS_ENABLED}
+        collect:
+          enabled: ${METRICS_COLLECT}
+          namespace: foo
+          subsystem: bar
+        buckets: 0.1, 1, 10
+        normalize: true
+      healthcheck:
+        startup:
+          expose: ${STARTUP_ENABLED}
+        readiness:
+          expose: ${READINESS_ENABLED}
+        liveness:
+          expose: ${LIVENESS_ENABLED}
+      debug:
+        config:
+          expose: ${CONFIG_ENABLED}
+        pprof:
+          expose: ${PPROF_ENABLED}
+        routes:
+          expose: ${ROUTES_ENABLED}
+        stats:
+          expose: ${STATS_ENABLED}
+        build:
+          expose: ${BUILD_ENABLED}
+        modules:
+          expose: ${MODULES_ENABLED}

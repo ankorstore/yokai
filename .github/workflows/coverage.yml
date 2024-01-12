@@ -29,6 +29,7 @@ jobs:
         - "log"
         - "orm"
         - "trace"
+        - "fxcore"
         - "fxconfig"
         - "fxgenerate"
         - "fxhealthcheck"
