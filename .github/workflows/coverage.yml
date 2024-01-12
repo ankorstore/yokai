@@ -32,6 +32,7 @@ jobs:
         - "fxconfig"
         - "fxgenerate"
         - "fxlog"
+        - "fxmetrics"
         - "fxtrace"
     steps:
       - name: Checkout
