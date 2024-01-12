@@ -2,8 +2,8 @@
 
 > Simple, modular, and observable Go framework.
 
-![Image title](assets/images/yokai.png)
+![Image title](assets/images/yokai.png){align=center width="350" height="350"}
 
-# Overview
+!!! info
+	The complete Yokai documentation is coming soon !
 
-This documentation compiles all the essential information for building applications using [Yokai](https://github.com/ankorstore/yokai).
