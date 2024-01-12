@@ -80,6 +80,8 @@ func TestModuleErrorWithDuplicatedCollector(t *testing.T) {
 		fx.Populate(&logBuffer, &registry),
 	).RequireStart().RequireStop()
 
+	assert.Empty(t, spyTB.Logs())
+
 	assert.NotZero(t, spyTB.Failures())
 	assert.Contains(t, spyTB.Errors().String(), "duplicate metrics collector registration attempted")
 }
@@ -94,13 +96,14 @@ func TestModuleDecoration(t *testing.T) {
 
 	fxtest.New(
 		spyTB,
-		fx.NopLogger,
 		fxconfig.FxConfigModule,
 		fxlog.FxLogModule,
 		fxmetrics.FxMetricsModule,
 		fx.Decorate(factory.NewTestMetricsRegistryFactory),
 		fx.Populate(&logBuffer, &registry),
 	).RequireStart().RequireStop()
+
+	assert.Contains(t, spyTB.Logs().String(), "NewTestMetricsRegistryFactory")
 
 	assert.NotZero(t, spyTB.Failures())
 	assert.Contains(t, spyTB.Errors().String(), "custom error")
