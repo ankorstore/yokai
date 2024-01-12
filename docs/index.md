@@ -1,3 +1,7 @@
+# Yokai
+
+> Simple, modular, and observable Go framework.
+
 ![Image title](assets/images/yokai.png)
 
 # Overview
