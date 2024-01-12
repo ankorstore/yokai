@@ -1,0 +1,47 @@
+site_name: Yokai
+
+plugins:
+  - search
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  logo: 'assets/images/yokai.png'
+  favicon: 'assets/images/favicon.ico'
+  features:
+    - content.code.copy
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - navigation.expand
+    - navigation.footer
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - tables
+
+nav:
+  - 'Home': 'index.md'

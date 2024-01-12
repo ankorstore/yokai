@@ -7,7 +7,7 @@
 > Simple, modular, and observable Go framework.
 
 <p align="center">
-  <img src="docs/images/yokai.png" width="350" height="350" />
+  <img src=".docs/assets/images/yokai.png" width="350" height="350" />
 </p>
 
 ## Documentation
