@@ -56,6 +56,11 @@
       "component": "fxhealthcheck",
       "tag-separator": "/"
     },
+    "fxhttpclient": {
+      "release-type": "go",
+      "component": "fxhttpclient",
+      "tag-separator": "/"
+    },
     "fxlog": {
       "release-type": "go",
       "component": "fxlog",
