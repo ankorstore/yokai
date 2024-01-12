@@ -100,7 +100,7 @@ modules:
   trace:
     processor:
       type: stdout
-  core:
+  http:
     server:
       port: 8080                      # http server port (default 8080)
       errors:
