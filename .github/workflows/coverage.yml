@@ -33,6 +33,7 @@ jobs:
         - "fxgenerate"
         - "fxhealthcheck"
         - "fxhttpclient"
+        - "fxhttpserver"
         - "fxlog"
         - "fxmetrics"
         - "fxorm"
