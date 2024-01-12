@@ -27,6 +27,7 @@ Yokai's `Fx modules` are the plugins for your Yokai application.
 | [fxhealthcheck](fxhealthcheck) | Fx module for [healthcheck](healthcheck)                                |
 | [fxlog](fxlog)                 | Fx module for [log](log)                                                |
 | [fxmetrics](fxmetrics)         | Fx module for [prometheus](https://github.com/prometheus/client_golang) |
+| [fxorm](fxorm)                 | Fx module for [orm](orm)                                                |
 | [fxtrace](fxtrace)             | Fx module for [trace](trace)                                            |
 
 They can also be used in any [Fx](https://github.com/uber-go/fx) based Go application.

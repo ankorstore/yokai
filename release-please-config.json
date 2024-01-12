@@ -66,6 +66,11 @@
       "component": "fxmetrics",
       "tag-separator": "/"
     },
+    "fxorm": {
+      "release-type": "go",
+      "component": "fxorm",
+      "tag-separator": "/"
+    },
     "fxtrace": {
       "release-type": "go",
       "component": "fxtrace",

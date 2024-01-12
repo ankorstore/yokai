@@ -1,0 +1,31 @@
+app:
+  name: test
+modules:
+  log:
+    level: debug
+    output: test
+  trace:
+    processor:
+      type: test
+  orm:
+    driver: ${ORM_DRIVER}
+    dsn: ${ORM_DSN}
+    config:
+      dry_run: false
+      skip_default_transaction: false
+      full_save_associations: false
+      prepare_stmt: false
+      disable_automatic_ping: false
+      disable_foreign_key_constraint_when_migrating: false
+      ignore_relationships_when_migrating: false
+      disable_nested_transaction: false
+      allow_global_update: false
+      query_fields: false
+      translate_error: false
+    log:
+      enabled: ${ORM_LOG_ENABLED}
+      level: ${ORM_LOG_LEVEL}
+      values: ${ORM_LOG_VALUES}
+    trace:
+      enabled: ${ORM_TRACE_ENABLED}
+      values: ${ORM_TRACE_VALUES}
