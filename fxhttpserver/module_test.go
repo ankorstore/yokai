@@ -123,7 +123,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -133,7 +133,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -143,7 +143,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -153,7 +153,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"method":    "GET",
 		"uri":       "/bar",
 		"status":    200,
@@ -198,7 +198,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -208,7 +208,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -218,7 +218,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -228,7 +228,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"method":    "GET",
 		"uri":       "/baz",
 		"status":    200,
@@ -273,7 +273,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -283,7 +283,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -293,7 +293,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -303,7 +303,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -313,7 +313,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"method":    "GET",
 		"uri":       "/foo/bar",
 		"status":    200,
@@ -359,7 +359,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -369,7 +369,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -379,7 +379,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -389,7 +389,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"foo":       "foo",
@@ -399,7 +399,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"method":    "GET",
 		"uri":       "/foo/baz",
 		"status":    200,
@@ -439,7 +439,7 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "warn",
 		"service":   "test",
-		"system":    "fx-httpserver",
+		"module":    "httpserver",
 		"method":    "GET",
 		"uri":       "/invalid",
 		"status":    404,
@@ -503,6 +503,7 @@ func TestModuleWithConcreteResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"message":   "CONCRETE GLOBAL middleware",
@@ -510,6 +511,7 @@ func TestModuleWithConcreteResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"message":   "CONCRETE HANDLER middleware",
@@ -517,6 +519,7 @@ func TestModuleWithConcreteResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"message":   "in concrete handler",
@@ -524,6 +527,7 @@ func TestModuleWithConcreteResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
+		"module":    "httpserver",
 		"method":    "GET",
 		"uri":       "/concrete",
 		"status":    200,
@@ -555,6 +559,7 @@ func TestModuleWithConcreteResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"message":   "CONCRETE GLOBAL middleware",
@@ -562,6 +567,7 @@ func TestModuleWithConcreteResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"message":   "CONCRETE GROUP middleware",
@@ -569,6 +575,7 @@ func TestModuleWithConcreteResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"message":   "CONCRETE HANDLER middleware",
@@ -576,6 +583,7 @@ func TestModuleWithConcreteResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
+		"module":    "httpserver",
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 		"message":   "in concrete handler",
@@ -583,6 +591,7 @@ func TestModuleWithConcreteResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "info",
 		"service":   "test",
+		"module":    "httpserver",
 		"method":    "GET",
 		"uri":       "/group/concrete",
 		"status":    200,
@@ -613,6 +622,7 @@ func TestModuleWithConcreteResources(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "warn",
 		"service":   "test",
+		"module":    "httpserver",
 		"method":    "GET",
 		"uri":       "/invalid",
 		"error":     "code=404, message=Not Found",
@@ -726,12 +736,14 @@ func TestModuleWithMetrics(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
 		"service": "test",
+		"module":  "httpserver",
 		"message": "in bar handler",
 	})
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
 		"service": "test",
+		"module":  "httpserver",
 		"method":  "GET",
 		"uri":     "/bar",
 		"status":  200,
@@ -800,12 +812,14 @@ func TestModuleWithTemplates(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
 		"service": "test",
+		"module":  "httpserver",
 		"message": "in template handler",
 	})
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
 		"service": "test",
+		"module":  "httpserver",
 		"method":  "GET",
 		"uri":     "/template",
 		"status":  200,

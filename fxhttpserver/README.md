@@ -648,7 +648,7 @@ func TestSomeHandler(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
 		"service": "test",
-		"system":  "fx-httpserver",
+		"module":  "httpserver",
 		"method":  "GET",
 		"uri":     "/test",
 		"status":  200,
@@ -667,15 +667,15 @@ func TestSomeHandler(t *testing.T) {
 
 	// assertion on the metrics registry
 	expectedMetric := `
-		# HELP app_fx_httpserver_requests_total Number of processed HTTP requests
-		# TYPE app_fx_httpserver_requests_total counter
-		app_fx_httpserver_requests_total{handler="/test",method="GET",status="2xx"} 1
+		# HELP app_httpserver_requests_total Number of processed HTTP requests
+		# TYPE app_httpserver_requests_total counter
+		app_httpserver_requests_total{handler="/test",method="GET",status="2xx"} 1
 	`
 
 	err := testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expectedMetric),
-		"app_fx_httpserver_requests_total",
+		"app_httpserver_requests_total",
 	)
 	assert.NoError(t, err)
 }
