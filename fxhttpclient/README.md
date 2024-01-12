@@ -160,7 +160,7 @@ func main() {
 		fxconfig.FxConfigModule, // load the module dependencies
 		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
-		fxhttpclient.FxHttpCLientModule,          // load the module
+		fxhttpclient.FxHttpClientModule,          // load the module
 		fx.Decorate(NewCustomHttpClientFactory),  // override the module with a custom factory
 		fx.Invoke(func(httpClient *http.Client) { // invoke the custom client
 			// ...
