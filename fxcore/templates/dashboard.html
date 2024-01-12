@@ -1,0 +1,305 @@
+<html lang="en" data-bs-theme="{{ .theme }}">
+    <head>
+        <title>{{ .info.AppName }}</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-terminal' viewBox='0 0 16 16'%3E%3Cpath d='M6 9a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 6 9zM3.854 4.146a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2z'/%3E%3Cpath d='M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h12z'/%3E%3C/svg%3E" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-{{ .theme }}.min.css">
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+     </head>
+    <body>
+        <div id="app" class="container">
+            <nav class="navbar navbar-expand-lg bg-body-tertiary rounded-bottom border border-top-0 border-{{ .theme }}-subtle">
+                <div class="container-fluid">
+                    <a class="navbar-brand icon-link icon-link-hover fw-bold" href="/" style="--bs-icon-link-transform: scale(1.2);">
+                        <i class="bi bi-terminal"></i>&nbsp;{{ .info.AppName }}
+                    </a>
+                    <span>
+                        <a class="btn btn-sm btn-outline-secondary" role="button" href="https://go-fx-doc.ankorstore.io/" target="_blank">
+                            <i class="bi bi-box-arrow-up-right"></i> Docs
+                        </a>
+                        &nbsp;&nbsp;
+                        {{ if eq .theme "light" }}
+                            <a @click="switchTheme" class="btn btn-sm btn-outline-secondary" role="button" href="#" data-theme="dark">
+                                <i class="bi bi-circle-half"></i> Dark
+                            </a>
+                        {{ else }}
+                            <a @click="switchTheme" class="btn btn-sm btn-outline-secondary" role="button" href="#" data-theme="light">
+                                <i class="bi bi-circle-half"></i> Light
+                            </a>
+                        {{ end }}
+                    </span>
+
+                </div>
+            </nav>
+            <br/>
+            <div class="row">
+                <div class="col col-sm-3">
+                    {{ if or .buildExpose .configExpose .metricsExpose .routesExpose .pprofExpose .statsExpose }}
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-gear"></i>&nbsp;&nbsp;Core
+                            </div>
+                            <div class="list-group list-group-flush">
+                                {{ if .buildExpose }}
+                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Build information" data-title='<i class="bi bi-tools"></i> Build' data-url="{{ .buildPath }}" data-type="debug">
+                                    <span><i class="bi bi-tools"></i> Build</span>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .buildPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
+                                </a>
+                                {{ end }}
+                                {{ if .configExpose }}
+                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between" title="Resolved configuration" data-title='<i class="bi bi-sliders"></i> Config' data-url="{{ .configPath }}" data-type="debug">
+                                    <span><i class="bi bi-sliders"></i> Config</span>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .configPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
+                                </a>
+                                {{ end }}
+                                {{ if .metricsExpose }}
+                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Prometheus metrics" data-title='<i class="bi bi-speedometer2"></i> Metrics' data-url="{{ .metricsPath }}" data-type="debug">
+                                    <span><i class="bi bi-speedometer2"></i> Metrics</span>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .metricsPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
+                                </a>
+                                {{ end }}
+                                {{ if .routesExpose }}
+                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Core routing" data-title='<i class="bi bi-signpost-split"></i> Routes' data-url="{{ .routesPath }}" data-type="debug">
+                                    <span><i class="bi bi-signpost-split"></i> Routes</span>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .routesPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
+                                </a>
+                                {{ end }}
+                                {{ if .pprofExpose }}
+                                <a href="{{ .pprofPath }}/" role="button" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Pprof dashboard">
+                                    <span><i class="bi bi-clipboard-data"></i> Pprof</span>
+                                    <span><i class="bi bi-box-arrow-up-right"></i>&nbsp;&nbsp;</span>
+
+                                </a>
+                                {{ end }}
+                                {{ if .statsExpose }}
+                                <a href="{{ .statsPath }}/" role="button" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Statistics dashboard">
+                                    <span><i class="bi bi-graph-up"></i> Stats</span>
+                                    <span><i class="bi bi-box-arrow-up-right"></i>&nbsp;&nbsp;</span>
+                                </a>
+                                {{ end }}
+                            </div>
+                        </div>
+                    {{ end }}
+                    {{ if or .startupExpose .livenessExpose .readinessExpose }}
+                        <br/>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-heart"></i>&nbsp;&nbsp;Healthcheck
+                            </div>
+                            <div class="list-group list-group-flush">
+                                {{ if .startupExpose }}
+                                    <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Startup probe" data-title='<i class="bi bi-activity"></i> Startup' data-url="{{ .startupPath }}" data-type="healthcheck">
+                                        <span><i class="bi bi-activity"></i> Startup</span>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .startupPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
+                                    </a>
+                                {{ end }}
+                                {{ if .livenessExpose }}
+                                    <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Liveness probe" data-title='<i class="bi bi-heart-pulse"></i> Liveness' data-url="{{ .livenessPath }}" data-type="healthcheck">
+                                        <span><i class="bi bi-heart-pulse"></i> Liveness</span>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .livenessPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
+                                    </a>
+                                {{ end }}
+                                {{ if .readinessExpose }}
+                                    <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Readiness probe" data-title='<i class="bi bi-heart-pulse-fill"></i> Readiness' data-url="{{ .readinessPath }}" data-type="healthcheck">
+                                        <span><i class="bi bi-heart-pulse-fill"></i> Readiness</span>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .readinessPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
+                                    </a>
+                                {{ end }}
+                            </div>
+                        </div>
+                    {{ end }}
+                    {{ if .modulesExpose }}
+                        <br/>
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-boxes"></i>&nbsp;&nbsp;Modules
+                            </div>
+                            <div class="list-group list-group-flush">
+                                {{ range $moduleName := .modulesNames }}
+                                    <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="{{ $moduleName }} module details" data-title='<i class="bi bi-box"></i> {{ $moduleName }}' data-url="{{ $.modulesPath }}/{{ $moduleName }}" data-type="module">
+                                        <span><i class="bi bi-box"></i> {{ $moduleName }}</span>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ $.modulesPath }}/{{ $moduleName }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
+                                    </a>
+                                {{ else }}
+                                    <a class="list-group-item list-group-item-action disabled" aria-disabled="true">
+                                        <i class="bi bi-slash-circle"></i>&nbsp;&nbsp;n/a
+                                    </a>
+                                {{ end }}
+                            </div>
+                        </div>
+                    {{ end }}
+                </div>
+                <div class="col col-sm-9">
+                    <div class="card">
+                        <div id="dash-header" class="card-header" v-html="title" v-if="!loading"></div>
+                        <div id="dash-loader" class="card-header" v-if="loading">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            &nbsp;Loading ...
+                        </div>
+                        <div id="dash-body" class="card-body bg-{{ .theme }}" v-if="content != ''" v-html="computedContent"></div>
+                        <div id="overview-body" class="card-body bg-{{ .theme }}" v-if="content == ''">
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="card-title fw-bold">
+                                        <i class="bi bi-terminal"></i>&nbsp;&nbsp;{{ .info.AppName }}
+                                    </p>
+                                    <table class="table table-borderless table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <td class="w-25">Env</td>
+                                                <td><code>{{ .info.AppEnv }}</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="w-25">Debug</td>
+                                                <td><code>{{ .info.AppDebug }}</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="w-25">Version</td>
+                                                <td><code>{{ .info.AppVersion }}</code></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="card-title fw-bold">
+                                        <i class="bi bi-list-columns-reverse"></i>&nbsp;&nbsp;Logs
+                                    </p>
+                                    <table class="table table-borderless table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <td class="w-25">Level</td>
+                                                <td><code>{{ .info.LogLevel }}</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="w-25">Output</td>
+                                                <td><code>{{ .info.LogOutput }}</code></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="card-title fw-bold">
+                                        <i class="bi bi-bar-chart-steps"></i>&nbsp;&nbsp;Traces
+                                    </p>
+                                    <table class="table table-borderless table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <td class="w-25">Sampler</td>
+                                                <td><code>{{ .info.TraceSampler }}</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="w-25">Processor</td>
+                                                <td><code>{{ .info.TraceProcessor }}</code></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        const { createApp, ref } = Vue
+
+        createApp({
+            delimiters: ['{%', '%}'],
+            props: {
+                error: {
+                    type: String,
+                },
+                loading: {
+                    type: Boolean,
+                },
+                title: {
+                    type: String,
+                },
+                content: {
+                    type: String,
+                },
+            },
+            setup() {
+                const error = ref('')
+                const loading = ref(false)
+                const title = ref('<i class="bi bi-info-circle"></i>&nbsp;&nbsp;Overview')
+                const content = ref('')
+
+                return { error, loading, title, content }
+            },
+            methods: {
+                loadContent(event) {
+                    this.error = ''
+                    this.loading = true
+
+                    let dataTitle = event.currentTarget.getAttribute('data-title')
+                    let dataUrl = location.origin + event.currentTarget.getAttribute('data-url')
+                    let dataType = event.currentTarget.getAttribute('data-type')
+
+                    axios
+                        .get(dataUrl)
+                        .then(response => {
+                            this.title = dataTitle
+                            this.content = response.data;
+                        })
+                        .catch(error => {
+                            if (dataType === 'healthcheck') {
+                                this.title = dataTitle
+                                this.content = error.response.data;
+                            } else {
+                                this.title = '<i class="bi bi-exclamation-triangle"></i>&nbsp;&nbsp;Error'
+                                this.error  = error.message
+                            }
+                        })
+                        .finally(() => {
+                            this.loading = false;
+                            hljs.highlightAll();
+                        });
+                },
+                switchTheme(event) {
+                    let dataTheme = event.currentTarget.getAttribute('data-theme')
+
+                    localStorage.setItem("theme-mode", dataTheme)
+
+                    axios
+                        .post("/theme", {"theme": dataTheme},)
+                        .then(() => location.reload())
+                        .catch(error => {
+                            this.title = '<i class="bi bi-exclamation-triangle"></i>&nbsp;&nbsp;Error'
+                            this.error  = error.message
+                        })
+                }
+            },
+            computed: {
+                computedContent() {
+                    if (this.error !== '') {
+                        return '<div class="alert alert-danger" role="alert">' + this.error + '</div>'
+                    } else {
+                        if  (typeof this.content === 'string' || this.content instanceof String) {
+                            return '<pre><code class="rounded language-ini">' + this.content + '</code></pre>';
+                        } else {
+                            return '<pre><code class="rounded language-json">' + JSON.stringify(this.content, null, 2) + '</code></pre>';
+                        }
+                    }
+                }
+            },
+        }).mount('#app')
+
+        document.dispatchEvent(new KeyboardEvent('keydown', {}))
+    </script>
+</html>

@@ -22,6 +22,7 @@ Yokai's `Fx modules` are the plugins for your Yokai application.
 
 | Fx Module                      | Description                                                             |
 |--------------------------------|-------------------------------------------------------------------------|
+| [fxcore](fxcore)               | Fx core module                                                          |
 | [fxconfig](fxconfig)           | Fx module for [config](config)                                          |
 | [fxgenerate](fxgenerate)       | Fx module for [generate](generate)                                      |
 | [fxhealthcheck](fxhealthcheck) | Fx module for [healthcheck](healthcheck)                                |
