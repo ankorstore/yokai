@@ -59,6 +59,7 @@ func TestWorkerExecutionEventsLifecycle(t *testing.T) {
 
 	assert.True(t, execution.HasEvent("event-1"))
 	assert.True(t, execution.HasEvent("event-2"))
+	assert.False(t, execution.HasEvent("event-3"))
 
 	i := 1
 	for _, event := range execution.Events() {
