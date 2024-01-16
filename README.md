@@ -49,6 +49,7 @@ Yokai `modules` are the foundation of the framework.
 | [log](log)                 | Logging module based on [Zerolog](https://github.com/rs/zerolog)                                                                                        |
 | [orm](orm)                 | ORM module based on [Gorm](https://gorm.io/)                                                                                                            |
 | [trace](trace)             | Tracing module based on [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-go)                                                             |
+| [worker](worker)           | Worker module based on [sync](https://pkg.go.dev/sync)                                                                                                  |
 
 They can also be used in any Go application (no Yokai or [Fx](https://github.com/uber-go/fx) dependencies).
 
