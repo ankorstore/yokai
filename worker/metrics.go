@@ -27,7 +27,7 @@ func NewWorkerMetrics(namespace string, subsystem string) *WorkerMetrics {
 			Help:      "Total number of workers executions",
 		},
 		[]string{
-			"workers",
+			"worker",
 			"status",
 		},
 	)

@@ -122,8 +122,8 @@ func TestWithOneShotWorker(t *testing.T) {
 	expectedMetrics := `
 		# HELP worker_execution_total Total number of workers executions
         # TYPE worker_execution_total counter
-		worker_execution_total{status="started",workers="oneshotworker"} 1
-        worker_execution_total{status="success",workers="oneshotworker"} 1
+		worker_execution_total{status="started",worker="oneshotworker"} 1
+        worker_execution_total{status="success",worker="oneshotworker"} 1
 	`
 
 	err = testutil.GatherAndCompare(
@@ -237,8 +237,8 @@ func TestWithDeferredLoopWorker(t *testing.T) {
 	expectedMetrics := `
 		# HELP worker_execution_total Total number of workers executions
         # TYPE worker_execution_total counter
-		worker_execution_total{status="started",workers="loopworker"} 1
-        worker_execution_total{status="success",workers="loopworker"} 1
+		worker_execution_total{status="started",worker="loopworker"} 1
+        worker_execution_total{status="success",worker="loopworker"} 1
 	`
 
 	err = testutil.GatherAndCompare(
@@ -364,9 +364,9 @@ func TestWithRestartingErrorWorker(t *testing.T) {
 	expectedMetrics := `
 		# HELP worker_execution_total Total number of workers executions
         # TYPE worker_execution_total counter
-        worker_execution_total{status="error",workers="errorworker"} 2
-        worker_execution_total{status="restarted",workers="errorworker"} 1
-        worker_execution_total{status="started",workers="errorworker"} 2
+        worker_execution_total{status="error",worker="errorworker"} 2
+        worker_execution_total{status="restarted",worker="errorworker"} 1
+        worker_execution_total{status="started",worker="errorworker"} 2
 	`
 
 	err = testutil.GatherAndCompare(
@@ -490,9 +490,9 @@ func TestWithRestartingPanicWorker(t *testing.T) {
 	expectedMetrics := `
 		# HELP worker_execution_total Total number of workers executions
         # TYPE worker_execution_total counter
-        worker_execution_total{status="error",workers="panicworker"} 2
-        worker_execution_total{status="restarted",workers="panicworker"} 1
-        worker_execution_total{status="started",workers="panicworker"} 2
+        worker_execution_total{status="error",worker="panicworker"} 2
+        worker_execution_total{status="restarted",worker="panicworker"} 1
+        worker_execution_total{status="started",worker="panicworker"} 2
 	`
 
 	err = testutil.GatherAndCompare(

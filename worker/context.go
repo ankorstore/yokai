@@ -8,7 +8,7 @@ import (
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
-const TracerName = "workers"
+const TracerName = "worker"
 
 type CtxWorkerNameKey struct{}
 type CtxWorkerExecutionIdKey struct{}

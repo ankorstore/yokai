@@ -3,8 +3,8 @@ package worker
 import "strings"
 
 func Sanitize(str string) string {
-	str = strings.ReplaceAll(str, " ", "_")
-	str = strings.ReplaceAll(str, "-", "_")
+	san := strings.ReplaceAll(str, " ", "_")
+	san = strings.ReplaceAll(san, "-", "_")
 
-	return strings.ToLower(str)
+	return strings.ToLower(san)
 }
