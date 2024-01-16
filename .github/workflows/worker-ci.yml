@@ -1,4 +1,4 @@
-name: "workers-ci"
+name: "worker-ci"
 
 on:
     push:
@@ -8,9 +8,9 @@ on:
             - "hotfix**"
             - "chore**"
         paths:
-            - "workers/**.go"
-            - "workers/go.mod"
-            - "workers/go.sum"
+            - "worker/**.go"
+            - "worker/go.mod"
+            - "worker/go.sum"
     pull_request:
         types:
             - opened
@@ -19,13 +19,13 @@ on:
         branches:
             - main
         paths:
-            - "workers/**.go"
-            - "workers/go.mod"
-            - "workers/go.sum"
+            - "worker/**.go"
+            - "worker/go.mod"
+            - "worker/go.sum"
 
 jobs:
     ci:
         uses: ./.github/workflows/common-ci.yml
         secrets: inherit
         with:
-            module: "workers"
+            module: "worker"
