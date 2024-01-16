@@ -21,17 +21,17 @@ func NewWorkerExecutionEvent(executionId string, message string, timestamp time.
 	}
 }
 
-// ExecutionId returns the workers execution id.
+// ExecutionId returns the worker execution id.
 func (e *WorkerExecutionEvent) ExecutionId() string {
 	return e.executionId
 }
 
-// Message returns the workers execution message.
+// Message returns the worker execution message.
 func (e *WorkerExecutionEvent) Message() string {
 	return e.message
 }
 
-// Timestamp returns the workers execution timestamp.
+// Timestamp returns the worker execution timestamp.
 func (e *WorkerExecutionEvent) Timestamp() time.Time {
 	return e.timestamp
 }

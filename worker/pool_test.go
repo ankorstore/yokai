@@ -3,6 +3,10 @@ package worker_test
 import (
 	"context"
 	"fmt"
+	"strings"
+	"testing"
+	"time"
+
 	"github.com/ankorstore/yokai/generate/generatetest/uuid"
 	"github.com/ankorstore/yokai/log"
 	"github.com/ankorstore/yokai/log/logtest"
@@ -14,14 +18,36 @@ import (
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/otel/attribute"
-	"strings"
-	"testing"
-	"time"
 )
 
 const testExecutionId = "test-execution-id"
 
-func TestWithOneShotWorker(t *testing.T) {
+func TestRegistration(t *testing.T) {
+	t.Parallel()
+
+	pool := worker.NewWorkerPool()
+
+	pool.Register(
+		worker.NewWorkerRegistration(workers.NewOneShotWorker()),
+		worker.NewWorkerRegistration(workers.NewLoopWorker()),
+	)
+
+	assert.Len(t, pool.Registrations(), 2)
+
+	oneShotWorkerRegistration, err := pool.Registration("OneShotWorker")
+	assert.NoError(t, err)
+	assert.Equal(t, "OneShotWorker", oneShotWorkerRegistration.Worker().Name())
+
+	loopWorkerRegistration, err := pool.Registration("LoopWorker")
+	assert.NoError(t, err)
+	assert.Equal(t, "LoopWorker", loopWorkerRegistration.Worker().Name())
+
+	_, err = pool.Registration("invalid")
+	assert.Error(t, err)
+	assert.Equal(t, "registration for worker invalid was not found", err.Error())
+}
+
+func TestExecutionWithOneShotWorker(t *testing.T) {
 	t.Parallel()
 
 	// test log buffer
@@ -73,6 +99,10 @@ func TestWithOneShotWorker(t *testing.T) {
 
 	execution, err := pool.Execution("OneShotWorker")
 	assert.NoError(t, err)
+
+	_, err = pool.Execution("invalid")
+	assert.Error(t, err)
+	assert.Equal(t, "execution for worker invalid was not found", err.Error())
 
 	assert.Equal(t, worker.Success, execution.Status())
 	assert.Equal(t, testExecutionId, execution.Id())
@@ -134,7 +164,7 @@ func TestWithOneShotWorker(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestWithDeferredLoopWorker(t *testing.T) {
+func TestExecutionWithDeferredLoopWorker(t *testing.T) {
 	t.Parallel()
 
 	// test log buffer
@@ -173,6 +203,10 @@ func TestWithDeferredLoopWorker(t *testing.T) {
 
 	execution, err := pool.Execution("LoopWorker")
 	assert.NoError(t, err)
+
+	_, err = pool.Execution("invalid")
+	assert.Error(t, err)
+	assert.Equal(t, "execution for worker invalid was not found", err.Error())
 
 	assert.Equal(t, worker.Running, execution.Status())
 	assert.Equal(t, testExecutionId, execution.Id())
@@ -249,7 +283,7 @@ func TestWithDeferredLoopWorker(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestWithRestartingErrorWorker(t *testing.T) {
+func TestExecutionWithRestartingErrorWorker(t *testing.T) {
 	t.Parallel()
 
 	// test log buffer
@@ -292,6 +326,10 @@ func TestWithRestartingErrorWorker(t *testing.T) {
 	execution, err := pool.Execution("ErrorWorker")
 	assert.NoError(t, err)
 	assert.Equal(t, worker.Error, execution.Status())
+
+	_, err = pool.Execution("invalid")
+	assert.Error(t, err)
+	assert.Equal(t, "execution for worker invalid was not found", err.Error())
 
 	assert.Len(t, execution.Events(), 6)
 	assert.True(t, execution.HasEvent("starting execution attempt 1/2"))
@@ -377,7 +415,7 @@ func TestWithRestartingErrorWorker(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestWithRestartingPanicWorker(t *testing.T) {
+func TestExecutionWithRestartingPanicWorker(t *testing.T) {
 	t.Parallel()
 
 	// test log buffer

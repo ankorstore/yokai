@@ -17,6 +17,8 @@ const (
 	TraceSpanAttributeWorkerExecutionId = "WorkerExecutionID"
 )
 
+// WorkerPool is the [Worker] pool.
+//
 //nolint:containedctx
 type WorkerPool struct {
 	mutex             sync.Mutex
@@ -30,6 +32,7 @@ type WorkerPool struct {
 	executions        map[string]*WorkerExecution
 }
 
+// NewWorkerPool returns a new [WorkerPool], with optional [WorkerPoolOption].
 func NewWorkerPool(options ...WorkerPoolOption) *WorkerPool {
 	poolOptions := DefaultWorkerPoolOptions()
 	for _, opt := range options {
@@ -45,6 +48,7 @@ func NewWorkerPool(options ...WorkerPoolOption) *WorkerPool {
 	}
 }
 
+// Register registers a new [WorkerRegistration] onto the [WorkerPool].
 func (p *WorkerPool) Register(registrations ...*WorkerRegistration) *WorkerPool {
 	for _, registration := range registrations {
 		p.registrations[registration.Worker().Name()] = registration
@@ -53,6 +57,7 @@ func (p *WorkerPool) Register(registrations ...*WorkerRegistration) *WorkerPool 
 	return p
 }
 
+// Start starts all [Worker] registered in the [WorkerPool].
 func (p *WorkerPool) Start(ctx context.Context) error {
 	p.context, p.contextCancelFunc = context.WithCancel(ctx)
 
@@ -64,6 +69,7 @@ func (p *WorkerPool) Start(ctx context.Context) error {
 	return nil
 }
 
+// Stop gracefully stops all [Worker] registered in the [WorkerPool].
 func (p *WorkerPool) Stop() error {
 	p.contextCancelFunc()
 
@@ -72,6 +78,7 @@ func (p *WorkerPool) Stop() error {
 	return nil
 }
 
+// Options returns the list of [PoolOptions] of the [WorkerPool].
 func (p *WorkerPool) Options() PoolOptions {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
@@ -79,6 +86,32 @@ func (p *WorkerPool) Options() PoolOptions {
 	return p.options
 }
 
+// Metrics returns the [WorkerPool] internal [WorkerMetrics].
+func (p *WorkerPool) Metrics() *WorkerMetrics {
+	return p.metrics
+}
+
+// Registrations returns the [WorkerPool] list of [WorkerRegistration].
+func (p *WorkerPool) Registrations() map[string]*WorkerRegistration {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
+	return p.registrations
+}
+
+// Registration returns the [WorkerRegistration] from the [WorkerPool] for a given worker name.
+func (p *WorkerPool) Registration(name string) (*WorkerRegistration, error) {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
+	if registration, ok := p.registrations[name]; ok {
+		return registration, nil
+	}
+
+	return nil, fmt.Errorf("registration for worker %s was not found", name)
+}
+
+// Executions returns the [WorkerPool] list of [WorkerExecution].
 func (p *WorkerPool) Executions() map[string]*WorkerExecution {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
@@ -86,6 +119,7 @@ func (p *WorkerPool) Executions() map[string]*WorkerExecution {
 	return p.executions
 }
 
+// Execution returns the [WorkerExecution] from the [WorkerPool] for a given worker name.
 func (p *WorkerPool) Execution(name string) (*WorkerExecution, error) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
@@ -95,10 +129,6 @@ func (p *WorkerPool) Execution(name string) (*WorkerExecution, error) {
 	}
 
 	return nil, fmt.Errorf("execution for worker %s was not found", name)
-}
-
-func (p *WorkerPool) Metrics() *WorkerMetrics {
-	return p.metrics
 }
 
 func (p *WorkerPool) startWorkerRegistration(ctx context.Context, registration *WorkerRegistration) {

@@ -2,8 +2,9 @@ package workers
 
 import (
 	"context"
-	"github.com/ankorstore/yokai/worker"
 	"time"
+
+	"github.com/ankorstore/yokai/worker"
 )
 
 type PanicWorker struct{}
@@ -22,11 +23,6 @@ func (w *PanicWorker) Run(ctx context.Context) error {
 	for {
 		select {
 		case <-ctx.Done():
-			logger.Info().Msg("stopping")
-
-			time.Sleep(10 * time.Millisecond) // simulate work
-
-			logger.Info().Msg("stopped")
 			return nil
 		default:
 			logger.Info().Msg("running")
