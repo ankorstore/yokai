@@ -1,9 +1,10 @@
 package worker_test
 
 import (
+	"testing"
+
 	"github.com/ankorstore/yokai/generate/uuid"
 	"github.com/ankorstore/yokai/worker/testdata/workers"
-	"testing"
 
 	"github.com/ankorstore/yokai/worker"
 	"github.com/stretchr/testify/assert"
@@ -21,7 +22,7 @@ func TestDefaultWorkerPoolFactory(t *testing.T) {
 func TestCreate(t *testing.T) {
 	t.Parallel()
 
-	oneShotWorker := workers.NewOneShotWorker()
+	classicWorker := workers.NewClassicWorker()
 
 	generator := uuid.NewDefaultUuidGenerator()
 
@@ -30,7 +31,7 @@ func TestCreate(t *testing.T) {
 	factory := worker.NewDefaultWorkerPoolFactory()
 
 	pool, err := factory.Create(
-		worker.WithWorker(oneShotWorker),
+		worker.WithWorker(classicWorker),
 		worker.WithGenerator(generator),
 		worker.WithMetrics(metrics),
 		worker.WithGlobalMaxExecutionsAttempts(1),
@@ -46,5 +47,5 @@ func TestCreate(t *testing.T) {
 	assert.Equal(t, 1, options.GlobalMaxExecutionsAttempts)
 	assert.Equal(t, float64(2), options.GlobalDeferredStartThreshold)
 	assert.Len(t, options.Registrations, 1)
-	assert.Equal(t, oneShotWorker, options.Registrations[oneShotWorker.Name()].Worker())
+	assert.Equal(t, classicWorker, options.Registrations[classicWorker.Name()].Worker())
 }

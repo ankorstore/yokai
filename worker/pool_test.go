@@ -28,26 +28,26 @@ func TestRegistration(t *testing.T) {
 	pool := worker.NewWorkerPool()
 
 	pool.Register(
-		worker.NewWorkerRegistration(workers.NewOneShotWorker()),
-		worker.NewWorkerRegistration(workers.NewLoopWorker()),
+		worker.NewWorkerRegistration(workers.NewClassicWorker()),
+		worker.NewWorkerRegistration(workers.NewCancellableWorker()),
 	)
 
 	assert.Len(t, pool.Registrations(), 2)
 
-	oneShotWorkerRegistration, err := pool.Registration("OneShotWorker")
+	oneShotWorkerRegistration, err := pool.Registration("ClassicWorker")
 	assert.NoError(t, err)
-	assert.Equal(t, "OneShotWorker", oneShotWorkerRegistration.Worker().Name())
+	assert.Equal(t, "ClassicWorker", oneShotWorkerRegistration.Worker().Name())
 
-	loopWorkerRegistration, err := pool.Registration("LoopWorker")
+	loopWorkerRegistration, err := pool.Registration("CancellableWorker")
 	assert.NoError(t, err)
-	assert.Equal(t, "LoopWorker", loopWorkerRegistration.Worker().Name())
+	assert.Equal(t, "CancellableWorker", loopWorkerRegistration.Worker().Name())
 
 	_, err = pool.Registration("invalid")
 	assert.Error(t, err)
 	assert.Equal(t, "registration for worker invalid was not found", err.Error())
 }
 
-func TestExecutionWithOneShotWorker(t *testing.T) {
+func TestExecutionWithClassicWorker(t *testing.T) {
 	t.Parallel()
 
 	// test log buffer
@@ -75,7 +75,7 @@ func TestExecutionWithOneShotWorker(t *testing.T) {
 
 	// pool
 	pool, err := worker.NewDefaultWorkerPoolFactory().Create(
-		worker.WithWorker(workers.NewOneShotWorker()),
+		worker.WithWorker(workers.NewClassicWorker()),
 		worker.WithGenerator(generator),
 	)
 	assert.NoError(t, err)
@@ -97,12 +97,12 @@ func TestExecutionWithOneShotWorker(t *testing.T) {
 	// post stop execution assertions
 	assert.Len(t, pool.Executions(), 1)
 
-	execution, err := pool.Execution("OneShotWorker")
-	assert.NoError(t, err)
-
 	_, err = pool.Execution("invalid")
 	assert.Error(t, err)
 	assert.Equal(t, "execution for worker invalid was not found", err.Error())
+
+	execution, err := pool.Execution("ClassicWorker")
+	assert.NoError(t, err)
 
 	assert.Equal(t, worker.Success, execution.Status())
 	assert.Equal(t, testExecutionId, execution.Id())
@@ -113,28 +113,28 @@ func TestExecutionWithOneShotWorker(t *testing.T) {
 	// logs assertions
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":             "info",
-		"worker":            "OneShotWorker",
+		"worker":            "ClassicWorker",
 		"workerExecutionID": testExecutionId,
 		"message":           "starting execution attempt 1/1",
 	})
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":             "info",
-		"worker":            "OneShotWorker",
+		"worker":            "ClassicWorker",
 		"workerExecutionID": testExecutionId,
-		"message":           fmt.Sprintf("running worker OneShotWorker [id %s]", testExecutionId),
+		"message":           fmt.Sprintf("running worker ClassicWorker [id %s]", testExecutionId),
 	})
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":             "info",
-		"worker":            "OneShotWorker",
+		"worker":            "ClassicWorker",
 		"workerExecutionID": testExecutionId,
 		"message":           "stopped",
 	})
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":             "info",
-		"worker":            "OneShotWorker",
+		"worker":            "ClassicWorker",
 		"workerExecutionID": testExecutionId,
 		"message":           "stopping execution attempt 1/1 with success",
 	})
@@ -144,7 +144,7 @@ func TestExecutionWithOneShotWorker(t *testing.T) {
 		t,
 		traceExporter,
 		"one shot span",
-		attribute.String(worker.TraceSpanAttributeWorkerName, "OneShotWorker"),
+		attribute.String(worker.TraceSpanAttributeWorkerName, "ClassicWorker"),
 		attribute.String(worker.TraceSpanAttributeWorkerExecutionId, testExecutionId),
 	)
 
@@ -152,8 +152,8 @@ func TestExecutionWithOneShotWorker(t *testing.T) {
 	expectedMetrics := `
 		# HELP worker_execution_total Total number of workers executions
         # TYPE worker_execution_total counter
-		worker_execution_total{status="started",worker="oneshotworker"} 1
-        worker_execution_total{status="success",worker="oneshotworker"} 1
+		worker_execution_total{status="started",worker="classicworker"} 1
+        worker_execution_total{status="success",worker="classicworker"} 1
 	`
 
 	err = testutil.GatherAndCompare(
@@ -164,7 +164,7 @@ func TestExecutionWithOneShotWorker(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestExecutionWithDeferredLoopWorker(t *testing.T) {
+func TestExecutionWithDeferredAndCancellableWorker(t *testing.T) {
 	t.Parallel()
 
 	// test log buffer
@@ -183,7 +183,7 @@ func TestExecutionWithDeferredLoopWorker(t *testing.T) {
 	// pool
 	pool, err := worker.NewDefaultWorkerPoolFactory().Create(
 		worker.WithWorker(
-			workers.NewLoopWorker(),
+			workers.NewCancellableWorker(),
 			worker.WithDeferredStartThreshold(0.1),
 		),
 		worker.WithGenerator(generator),
@@ -201,12 +201,12 @@ func TestExecutionWithDeferredLoopWorker(t *testing.T) {
 	// run execution assertions
 	assert.Len(t, pool.Executions(), 1)
 
-	execution, err := pool.Execution("LoopWorker")
-	assert.NoError(t, err)
-
 	_, err = pool.Execution("invalid")
 	assert.Error(t, err)
 	assert.Equal(t, "execution for worker invalid was not found", err.Error())
+
+	execution, err := pool.Execution("CancellableWorker")
+	assert.NoError(t, err)
 
 	assert.Equal(t, worker.Running, execution.Status())
 	assert.Equal(t, testExecutionId, execution.Id())
@@ -227,42 +227,42 @@ func TestExecutionWithDeferredLoopWorker(t *testing.T) {
 	// logs assertions
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":             "info",
-		"worker":            "LoopWorker",
+		"worker":            "CancellableWorker",
 		"workerExecutionID": testExecutionId,
 		"message":           "deferring execution attempt for 0.1 seconds",
 	})
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":             "info",
-		"worker":            "LoopWorker",
+		"worker":            "CancellableWorker",
 		"workerExecutionID": testExecutionId,
 		"message":           "starting execution attempt 1/1",
 	})
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":             "info",
-		"worker":            "LoopWorker",
+		"worker":            "CancellableWorker",
 		"workerExecutionID": testExecutionId,
 		"message":           "running",
 	})
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":             "info",
-		"worker":            "LoopWorker",
+		"worker":            "CancellableWorker",
 		"workerExecutionID": testExecutionId,
 		"message":           "stopping",
 	})
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":             "info",
-		"worker":            "LoopWorker",
+		"worker":            "CancellableWorker",
 		"workerExecutionID": testExecutionId,
 		"message":           "stopped",
 	})
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":             "info",
-		"worker":            "LoopWorker",
+		"worker":            "CancellableWorker",
 		"workerExecutionID": testExecutionId,
 		"message":           "stopping execution attempt 1/1 with success",
 	})
@@ -271,8 +271,8 @@ func TestExecutionWithDeferredLoopWorker(t *testing.T) {
 	expectedMetrics := `
 		# HELP worker_execution_total Total number of workers executions
         # TYPE worker_execution_total counter
-		worker_execution_total{status="started",worker="loopworker"} 1
-        worker_execution_total{status="success",worker="loopworker"} 1
+		worker_execution_total{status="started",worker="cancellableworker"} 1
+        worker_execution_total{status="success",worker="cancellableworker"} 1
 	`
 
 	err = testutil.GatherAndCompare(
@@ -323,13 +323,13 @@ func TestExecutionWithRestartingErrorWorker(t *testing.T) {
 	// post stop execution assertions
 	assert.Len(t, pool.Executions(), 1)
 
-	execution, err := pool.Execution("ErrorWorker")
-	assert.NoError(t, err)
-	assert.Equal(t, worker.Error, execution.Status())
-
 	_, err = pool.Execution("invalid")
 	assert.Error(t, err)
 	assert.Equal(t, "execution for worker invalid was not found", err.Error())
+
+	execution, err := pool.Execution("ErrorWorker")
+	assert.NoError(t, err)
+	assert.Equal(t, worker.Error, execution.Status())
 
 	assert.Len(t, execution.Events(), 6)
 	assert.True(t, execution.HasEvent("starting execution attempt 1/2"))
@@ -454,6 +454,10 @@ func TestExecutionWithRestartingPanicWorker(t *testing.T) {
 
 	// post stop execution assertions
 	assert.Len(t, pool.Executions(), 1)
+
+	_, err = pool.Execution("invalid")
+	assert.Error(t, err)
+	assert.Equal(t, "execution for worker invalid was not found", err.Error())
 
 	execution, err := pool.Execution("PanicWorker")
 	assert.NoError(t, err)

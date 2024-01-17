@@ -7,17 +7,17 @@ import (
 	"github.com/ankorstore/yokai/worker"
 )
 
-type LoopWorker struct{}
+type CancellableWorker struct{}
 
-func NewLoopWorker() *LoopWorker {
-	return &LoopWorker{}
+func NewCancellableWorker() *CancellableWorker {
+	return &CancellableWorker{}
 }
 
-func (w *LoopWorker) Name() string {
-	return "LoopWorker"
+func (w *CancellableWorker) Name() string {
+	return "CancellableWorker"
 }
 
-func (w *LoopWorker) Run(ctx context.Context) error {
+func (w *CancellableWorker) Run(ctx context.Context) error {
 	logger := worker.CtxLogger(ctx)
 
 	for {

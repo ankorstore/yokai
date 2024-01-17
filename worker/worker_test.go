@@ -11,12 +11,12 @@ import (
 func TestNewWorkerRegistration(t *testing.T) {
 	t.Parallel()
 
-	oneShotWorker := workers.NewOneShotWorker()
+	classicWorker := workers.NewClassicWorker()
 	options := []worker.WorkerExecutionOption(nil)
 
-	resolvedWorker := worker.NewWorkerRegistration(oneShotWorker, options...)
+	resolvedWorker := worker.NewWorkerRegistration(classicWorker, options...)
 
 	assert.IsType(t, &worker.WorkerRegistration{}, resolvedWorker)
-	assert.Equal(t, oneShotWorker, resolvedWorker.Worker())
+	assert.Equal(t, classicWorker, resolvedWorker.Worker())
 	assert.Equal(t, options, resolvedWorker.Options())
 }

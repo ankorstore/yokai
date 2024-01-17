@@ -7,17 +7,17 @@ import (
 	"github.com/ankorstore/yokai/worker"
 )
 
-type OneShotWorker struct{}
+type ClassicWorker struct{}
 
-func NewOneShotWorker() *OneShotWorker {
-	return &OneShotWorker{}
+func NewClassicWorker() *ClassicWorker {
+	return &ClassicWorker{}
 }
 
-func (w *OneShotWorker) Name() string {
-	return "OneShotWorker"
+func (w *ClassicWorker) Name() string {
+	return "ClassicWorker"
 }
 
-func (w *OneShotWorker) Run(ctx context.Context) error {
+func (w *ClassicWorker) Run(ctx context.Context) error {
 	ctx, span := worker.CtxTracer(ctx).Start(ctx, "one shot span")
 	defer span.End()
 

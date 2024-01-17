@@ -34,14 +34,14 @@ func TestWorkerPoolOptionsWithMetrics(t *testing.T) {
 func TestWorkerPoolOptionsWithWorker(t *testing.T) {
 	t.Parallel()
 
-	oneShotWorker := workers.NewOneShotWorker()
+	classicWorker := workers.NewClassicWorker()
 
-	registration := worker.NewWorkerRegistration(oneShotWorker)
+	registration := worker.NewWorkerRegistration(classicWorker)
 
 	opt := worker.DefaultWorkerPoolOptions()
-	worker.WithWorker(oneShotWorker)(&opt)
+	worker.WithWorker(classicWorker)(&opt)
 
-	assert.Equal(t, registration, opt.Registrations[oneShotWorker.Name()])
+	assert.Equal(t, registration, opt.Registrations[classicWorker.Name()])
 }
 
 func TestWorkerPoolOptionsWithGlobalDeferredStartThresholds(t *testing.T) {
