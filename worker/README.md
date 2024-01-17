@@ -157,6 +157,9 @@ func main() {
 
 ### Logging
 
+You can use the [CtxLogger()](context.go) function to retrieve the
+contextual [log.Logger](https://github.com/ankorstore/yokai/tree/main/log) from your workers, and emit correlated logs.
+
 The workers executions are logged, with the following fields added automatically to each log records:
 
 - `worker`: worker name
@@ -203,10 +206,11 @@ func main() {
 }
 ```
 
-You can use the [CtxLogger()](context.go) function to retrieve the
-contextual [log.Logger](https://github.com/ankorstore/yokai/tree/main/log) from your workers, and emit correlated logs.
-
 ### Tracing
+
+You can use the [CtxTracer()](context.go) function to retrieve the contextual tracer from your workers, and emit
+correlated spans: they will have the `Worker` and `WorkerExecutionID` attributes added with respectively the worker name
+and execution id.
 
 This module provides the [AnnotateTracerProvider](trace.go) function, to extend
 a [TracerProvider](https://github.com/open-telemetry/opentelemetry-go/blob/main/sdk/trace/provider.go) to add
@@ -257,10 +261,6 @@ func main() {
 	pool.Start(context.Background())
 }
 ```
-
-You can use the [CtxTracer()](context.go) function to retrieve the contextual tracer from your workers, and emit
-correlated spans: they will have the `Worker` and `WorkerExecutionID` attributes added with respectively the worker name
-and execution id.
 
 ### Metrics
 
