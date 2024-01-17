@@ -41,6 +41,11 @@
       "component": "trace",
       "tag-separator": "/"
     },
+    "worker": {
+      "release-type": "go",
+      "component": "worker",
+      "tag-separator": "/"
+    },
     "fxcore": {
       "release-type": "go",
       "component": "fxcore",
