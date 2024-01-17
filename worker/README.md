@@ -137,14 +137,14 @@ func main() {
 	pool, _ := worker.NewDefaultWorkerPoolFactory().Create(
 		worker.WithGlobalDeferredStartThreshold(1),                                              // will defer all workers start of 1 second
 		worker.WithGlobalMaxExecutionsAttempts(2),                                               // will run 2 times max failing workers
-		worker.WithWorker(workers.NewClassicWorker(), worker.WithDeferredStartThreshold(1)),     // registers the ClassicWorker, with a deferred start of 2 second
-		worker.WithWorker(workers.NewCancellableWorker(), worker.WithMaxExecutionsAttempts(3)),  // registers the CancellableWorker, with 3 runs max
+		worker.WithWorker(workers.NewClassicWorker(), worker.WithDeferredStartThreshold(3)),     // registers the ClassicWorker, with a deferred start of 3 second
+		worker.WithWorker(workers.NewCancellableWorker(), worker.WithMaxExecutionsAttempts(4)),  // registers the CancellableWorker, with 4 runs max
 	)
 
 	// start the pool
 	pool.Start(context.Background())
 
-	// get all workers execution reports, real time
+	// get all workers execution reports, in real time
 	executions := pool.Executions()
 
 	// stop the pool (will forward context cancellation to each worker)
