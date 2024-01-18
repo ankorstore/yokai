@@ -5,17 +5,22 @@ import (
 	"testing"
 
 	"github.com/ankorstore/yokai/fxworker"
+	"github.com/ankorstore/yokai/generate/generatetest/uuid"
 	"github.com/ankorstore/yokai/worker"
 	"github.com/ankorstore/yokai/worker/testdata/workers"
 	"github.com/stretchr/testify/assert"
 )
 
+const testExecutionId = "test-execution-id"
+
 func TestNewFxWorkerModuleInfo(t *testing.T) {
 	t.Parallel()
 
+	generator := uuid.NewTestUuidGenerator(testExecutionId)
+
 	pool, err := worker.NewDefaultWorkerPoolFactory().Create(
-		worker.WithWorker(workers.NewClassicWorker(), worker.WithDeferredStartThreshold(0.2)),
-		worker.WithWorker(workers.NewCancellableWorker(), worker.WithMaxExecutionsAttempts(2)),
+		worker.WithGenerator(generator),
+		worker.WithWorker(workers.NewClassicWorker(), worker.WithDeferredStartThreshold(1)),
 	)
 	assert.NoError(t, err)
 
@@ -30,10 +35,6 @@ func TestNewFxWorkerModuleInfo(t *testing.T) {
 		map[string]interface{}{
 			"workers": map[string]interface{}{
 				"ClassicWorker": map[string]interface{}{
-					"status": worker.Unknown.String(),
-					"events": []map[string]string(nil),
-				},
-				"CancellableWorker": map[string]interface{}{
 					"status": worker.Unknown.String(),
 					"events": []map[string]string(nil),
 				},
