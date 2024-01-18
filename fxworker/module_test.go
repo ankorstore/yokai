@@ -12,6 +12,7 @@ import (
 	"github.com/ankorstore/yokai/fxmetrics"
 	"github.com/ankorstore/yokai/fxtrace"
 	"github.com/ankorstore/yokai/fxworker"
+	"github.com/ankorstore/yokai/fxworker/testdata/factory"
 	"github.com/ankorstore/yokai/log/logtest"
 	"github.com/ankorstore/yokai/trace/tracetest"
 	"github.com/ankorstore/yokai/worker"
@@ -120,4 +121,26 @@ func TestModule(t *testing.T) {
 		"foo_bar_worker_execution_total",
 	)
 	assert.NoError(t, err)
+}
+
+func TestModuleDecoration(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("APP_ENV", "test")
+
+	var pool *worker.WorkerPool
+
+	fxtest.New(
+		t,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxworker.FxWorkerModule,
+		fx.Decorate(factory.NewTestWorkerPoolFactory),
+		fx.Populate(&pool),
+	).RequireStart().RequireStop()
+
+	assert.Equal(t, 99, pool.Options().GlobalMaxExecutionsAttempts)
 }
