@@ -1,0 +1,14 @@
+app:
+  name: test
+  version: 0.1.0
+modules:
+  log:
+    level: debug
+    output: test
+  trace:
+    processor:
+      type: test
+  worker:
+    defer: 0.1
+    attempts: 3
+

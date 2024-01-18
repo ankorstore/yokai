@@ -95,6 +95,11 @@
       "release-type": "go",
       "component": "fxtrace",
       "tag-separator": "/"
+    },
+    "fxworker": {
+      "release-type": "go",
+      "component": "fxworker",
+      "tag-separator": "/"
     }
   }
 }
