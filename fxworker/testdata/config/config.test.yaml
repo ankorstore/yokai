@@ -3,5 +3,3 @@ modules:
     metrics:
       collect:
         enabled: true
-        namespace: foo
-        subsystem: bar

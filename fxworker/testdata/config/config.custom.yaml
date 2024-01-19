@@ -1,0 +1,9 @@
+modules:
+  worker:
+    defer: 0.1
+    attempts: 3
+    metrics:
+      collect:
+        enabled: true
+        namespace: foo
+        subsystem: bar

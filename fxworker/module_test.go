@@ -1,6 +1,7 @@
 package fxworker_test
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -27,9 +28,95 @@ import (
 // workerExecutionId is a deterministic test worker execution id.
 const workerExecutionId = "testWorkerExecutionID"
 
-func TestModule(t *testing.T) {
+func TestModuleWithDefaultConfig(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("APP_ENV", "test")
+
+	var logBuffer logtest.TestLogBuffer
+	var traceExporter tracetest.TestTraceExporter
+	var metricsRegistry *prometheus.Registry
+
+	app := fxtest.New(
+		t,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxworker.FxWorkerModule,
+		// deterministic test worker execution id
+		fx.Provide(
+			fx.Annotate(
+				func() string {
+					return workerExecutionId
+				},
+				fx.ResultTags(`name:"generate-test-uuid-value"`),
+			),
+		),
+		fx.Options(
+			// workers registration
+			fxworker.AsWorker(workers.NewClassicWorker),
+		),
+		// deterministic generator for worker execution id
+		fx.Decorate(uuid.NewFxTestUuidGeneratorFactory),
+		// extraction
+		fx.Populate(&logBuffer, &traceExporter, &metricsRegistry),
+		// invoke worker pool
+		fx.Invoke(func(*worker.WorkerPool) {}),
+	).RequireStart()
+
+	// 1 seconds for workers to run
+	time.Sleep(1 * time.Second)
+
+	app.RequireStop()
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":             "info",
+		"service":           "test",
+		"module":            "worker",
+		"worker":            "ClassicWorker",
+		"workerExecutionID": workerExecutionId,
+		"message":           "starting execution attempt 1/1",
+	})
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":             "info",
+		"service":           "test",
+		"module":            "worker",
+		"worker":            "ClassicWorker",
+		"workerExecutionID": workerExecutionId,
+		"message":           fmt.Sprintf("running worker ClassicWorker [id %s]", workerExecutionId),
+	})
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":             "info",
+		"service":           "test",
+		"module":            "worker",
+		"worker":            "ClassicWorker",
+		"workerExecutionID": workerExecutionId,
+		"message":           "stopping execution attempt 1/1 with success",
+	})
+
+	// workers metrics assertions
+	expected := `
+		# HELP test_worker_worker_execution_total Total number of workers executions
+		# TYPE test_worker_worker_execution_total counter
+        test_worker_worker_execution_total{status="started",worker="classicworker"} 1
+        test_worker_worker_execution_total{status="success",worker="classicworker"} 1
+	`
+
+	err := testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expected),
+		"test_worker_worker_execution_total",
+	)
+	assert.NoError(t, err)
+}
+
+func TestModuleWithCustomConfig(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("APP_ENV", "custom")
 
 	var logBuffer logtest.TestLogBuffer
 	var traceExporter tracetest.TestTraceExporter

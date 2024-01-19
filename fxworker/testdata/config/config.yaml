@@ -8,7 +8,3 @@ modules:
   trace:
     processor:
       type: test
-  worker:
-    defer: 0.1
-    attempts: 3
-
