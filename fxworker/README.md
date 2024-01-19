@@ -32,7 +32,8 @@ This module provides a workers pool to your Fx application with:
 - automatic panic recovery
 - automatic logging
 - automatic metrics
-- possibility to defer workers and limit their max execution attempts
+- possibility to defer workers
+- possibility to limit workers max execution attempts
 
 ## Documentation
 
