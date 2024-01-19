@@ -55,31 +55,31 @@ To load the module in your Fx application:
 package main
 
 import (
-	"context"
+  "context"
 
-	"github.com/ankorstore/yokai/fxconfig"
-	"github.com/ankorstore/yokai/fxgenerate"
-	"github.com/ankorstore/yokai/fxlog"
-	"github.com/ankorstore/yokai/fxmetrics"
-	"github.com/ankorstore/yokai/fxtrace"
-	"github.com/ankorstore/yokai/fxworker"
-	"github.com/ankorstore/yokai/worker"
-	"go.uber.org/fx"
+  "github.com/ankorstore/yokai/fxconfig"
+  "github.com/ankorstore/yokai/fxgenerate"
+  "github.com/ankorstore/yokai/fxlog"
+  "github.com/ankorstore/yokai/fxmetrics"
+  "github.com/ankorstore/yokai/fxtrace"
+  "github.com/ankorstore/yokai/fxworker"
+  "github.com/ankorstore/yokai/worker"
+  "go.uber.org/fx"
 )
 
 func main() {
-	fx.New(
-		fxconfig.FxConfigModule,                   // load the module dependencies
-		fxlog.FxLogModule,
-		fxtrace.FxTraceModule,
-		fxtrace.FxTraceModule,
-		fxmetrics.FxMetricsModule,
-		fxgenerate.FxGenerateModule,
-		fxworker.FxWorkerModule,                   // load the module
-		fx.Invoke(func(pool *worker.WorkerPool) {  
-			pool.Start(context.Background())       // start the workers pool
-		}),
-	).Run()
+  fx.New(
+    fxconfig.FxConfigModule,                    // load the module dependencies
+    fxlog.FxLogModule,
+    fxtrace.FxTraceModule,
+    fxtrace.FxTraceModule,
+    fxmetrics.FxMetricsModule,
+    fxgenerate.FxGenerateModule,
+    fxworker.FxWorkerModule,                    // load the module
+    fx.Invoke(func(pool *worker.WorkerPool) {
+      pool.Start(context.Background())          // start the workers pool
+    }),
+  ).Run()
 }
 ```
 
@@ -114,7 +114,9 @@ Notes:
 
 ### Registration
 
-This module provides the possibility to register several [Worker](https://github.com/ankorstore/yokai/blob/main/worker/worker.go) implementations, with optional [WorkerExecutionOption](https://github.com/ankorstore/yokai/blob/main/worker/option.go).
+This module provides the possibility to register
+several [Worker](https://github.com/ankorstore/yokai/blob/main/worker/worker.go) implementations, with
+optional [WorkerExecutionOption](https://github.com/ankorstore/yokai/blob/main/worker/option.go).
 
 They will be then collected and given by Fx to
 the [WorkerPool](https://github.com/ankorstore/yokai/blob/main/worker/pool.go), made available in the Fx container.
@@ -125,58 +127,59 @@ This is done via the `AsWorker()` function:
 package main
 
 import (
-	"context"
+  "context"
 
-	"github.com/ankorstore/yokai/fxconfig"
-	"github.com/ankorstore/yokai/fxgenerate"
-	"github.com/ankorstore/yokai/fxlog"
-	"github.com/ankorstore/yokai/fxmetrics"
-	"github.com/ankorstore/yokai/fxtrace"
-	"github.com/ankorstore/yokai/fxworker"
-	"github.com/ankorstore/yokai/worker"
-	"go.uber.org/fx"
+  "github.com/ankorstore/yokai/fxconfig"
+  "github.com/ankorstore/yokai/fxgenerate"
+  "github.com/ankorstore/yokai/fxlog"
+  "github.com/ankorstore/yokai/fxmetrics"
+  "github.com/ankorstore/yokai/fxtrace"
+  "github.com/ankorstore/yokai/fxworker"
+  "github.com/ankorstore/yokai/worker"
+  "go.uber.org/fx"
 )
 
 type ExampleWorker struct{}
 
 func NewExampleWorker() *ExampleWorker {
-	return &ExampleWorker{}
+  return &ExampleWorker{}
 }
 
 func (w *ExampleWorker) Name() string {
-	return "example-worker"
+  return "example-worker"
 }
 
 func (w *ExampleWorker) Run(ctx context.Context) error {
-	worker.CtxLogger(ctx).Info().Msg("run")
-	
-	return nil
+  worker.CtxLogger(ctx).Info().Msg("run")
+
+  return nil
 }
 
 func main() {
-	fx.New(
-		fxconfig.FxConfigModule,                      // load the module dependencies
-		fxlog.FxLogModule,
-		fxtrace.FxTraceModule,
-		fxtrace.FxTraceModule,
-		fxmetrics.FxMetricsModule,
-		fxgenerate.FxGenerateModule,
-		fxworker.FxWorkerModule,                      // load the module
-		fx.Provide(
-			fxworker.AsWorker(
-				NewExampleWorker,                     // register the ExampleWorker
-				worker.WithDeferredStartThreshold(1), // with a deferred start threshold of 1 second
-				worker.WithMaxExecutionsAttempts(2),  // and 2 max execution attempts
-			),
-		),
-		fx.Invoke(func(pool *worker.WorkerPool) {
-			pool.Start(context.Background())          // start the workers pool
-		}),
-	).Run()
+  fx.New(
+    fxconfig.FxConfigModule,                      // load the module dependencies
+    fxlog.FxLogModule,
+    fxtrace.FxTraceModule,
+    fxtrace.FxTraceModule,
+    fxmetrics.FxMetricsModule,
+    fxgenerate.FxGenerateModule,
+    fxworker.FxWorkerModule,                      // load the module
+    fx.Provide(
+      fxworker.AsWorker(
+        NewExampleWorker,                         // register the ExampleWorker
+        worker.WithDeferredStartThreshold(1),     // with a deferred start threshold of 1 second
+        worker.WithMaxExecutionsAttempts(2),      // and 2 max execution attempts
+      ),
+    ),
+    fx.Invoke(func(pool *worker.WorkerPool) {
+      pool.Start(context.Background())            // start the workers pool
+    }),
+  ).Run()
 }
 ```
 
-To get more details about the features made available for your workers (contextual logging, tracing, etc.), check the [worker module documentation](https://github.com/ankorstore/yokai/tree/main/worker).
+To get more details about the features made available for your workers (contextual logging, tracing, etc.), check
+the [worker module documentation](https://github.com/ankorstore/yokai/tree/main/worker).
 
 ### Override
 
@@ -189,43 +192,43 @@ If needed, you can provide your own factory and override the module:
 package main
 
 import (
-	"context"
+  "context"
 
-	"github.com/ankorstore/yokai/fxconfig"
-	"github.com/ankorstore/yokai/fxgenerate"
-	"github.com/ankorstore/yokai/fxhealthcheck"
-	"github.com/ankorstore/yokai/fxlog"
-	"github.com/ankorstore/yokai/fxmetrics"
-	"github.com/ankorstore/yokai/fxtrace"
-	"github.com/ankorstore/yokai/fxworker"
-	"github.com/ankorstore/yokai/healthcheck"
-	"github.com/ankorstore/yokai/worker"
-	"go.uber.org/fx"
+  "github.com/ankorstore/yokai/fxconfig"
+  "github.com/ankorstore/yokai/fxgenerate"
+  "github.com/ankorstore/yokai/fxhealthcheck"
+  "github.com/ankorstore/yokai/fxlog"
+  "github.com/ankorstore/yokai/fxmetrics"
+  "github.com/ankorstore/yokai/fxtrace"
+  "github.com/ankorstore/yokai/fxworker"
+  "github.com/ankorstore/yokai/healthcheck"
+  "github.com/ankorstore/yokai/worker"
+  "go.uber.org/fx"
 )
 
 type CustomWorkerPoolFactory struct{}
 
 func NewCustomWorkerPoolFactory() worker.WorkerPoolFactory {
-	return &CustomWorkerPoolFactory{}
+  return &CustomWorkerPoolFactory{}
 }
 
 func (f *CustomWorkerPoolFactory) Create(options ...worker.WorkerPoolOption) (*worker.WorkerPool, error) {
-	return &worker.WorkerPool{...}, nil
+  return &worker.WorkerPool{...}, nil
 }
 
 func main() {
-	fx.New(
-		fxconfig.FxConfigModule,                     // load the module dependencies
-		fxlog.FxLogModule,
-		fxtrace.FxTraceModule,
-		fxtrace.FxTraceModule,
-		fxmetrics.FxMetricsModule,
-		fxgenerate.FxGenerateModule,
-		fxworker.FxWorkerModule,                     // load the module
-		fx.Decorate(NewCustomWorkerPoolFactory),     // override the module with a custom factory
-		fx.Invoke(func(pool *worker.WorkerPool) {
-			pool.Start(context.Background())         // start the custom worker pool
-		}),
-	).Run()
+  fx.New(
+    fxconfig.FxConfigModule,                     // load the module dependencies
+    fxlog.FxLogModule,
+    fxtrace.FxTraceModule,
+    fxtrace.FxTraceModule,
+    fxmetrics.FxMetricsModule,
+    fxgenerate.FxGenerateModule,
+    fxworker.FxWorkerModule,                     // load the module
+    fx.Decorate(NewCustomWorkerPoolFactory),     // override the module with a custom factory
+    fx.Invoke(func(pool *worker.WorkerPool) {
+      pool.Start(context.Background())           // start the custom worker pool
+    }),
+  ).Run()
 }
 ```
