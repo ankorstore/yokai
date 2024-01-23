@@ -16,7 +16,15 @@ func TestNewFxCoreModuleInfo(t *testing.T) {
 	)
 	assert.NoError(t, err)
 
-	info := fxcore.NewFxCoreModuleInfo(cfg)
+	info := fxcore.NewFxCoreModuleInfo(
+		fxcore.FxCoreModuleInfoParam{
+			Config: cfg,
+			ExtraInfos: []*fxcore.FxExtraInfo{
+				fxcore.NewFxExtraInfo("foo", "bar"),
+				fxcore.NewFxExtraInfo("foo", "baz"),
+			},
+		},
+	)
 	assert.IsType(t, &fxcore.FxCoreModuleInfo{}, info)
 	assert.Implements(t, (*fxcore.FxModuleInfo)(nil), info)
 
@@ -29,6 +37,9 @@ func TestNewFxCoreModuleInfo(t *testing.T) {
 				"env":     "test",
 				"debug":   true,
 				"version": "0.1.0",
+				"extra": map[string]string{
+					"foo": "baz",
+				},
 			},
 			"log": map[string]interface{}{
 				"level":  "debug",
