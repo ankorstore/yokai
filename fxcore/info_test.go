@@ -19,7 +19,7 @@ func TestNewFxCoreModuleInfo(t *testing.T) {
 	info := fxcore.NewFxCoreModuleInfo(
 		fxcore.FxCoreModuleInfoParam{
 			Config: cfg,
-			ExtraInfos: []*fxcore.FxExtraInfo{
+			ExtraInfos: []fxcore.FxExtraInfo{
 				fxcore.NewFxExtraInfo("foo", "bar"),
 				fxcore.NewFxExtraInfo("foo", "baz"),
 			},
@@ -37,9 +37,6 @@ func TestNewFxCoreModuleInfo(t *testing.T) {
 				"env":     "test",
 				"debug":   true,
 				"version": "0.1.0",
-				"extra": map[string]string{
-					"foo": "baz",
-				},
 			},
 			"log": map[string]interface{}{
 				"level":  "debug",
@@ -48,6 +45,9 @@ func TestNewFxCoreModuleInfo(t *testing.T) {
 			"trace": map[string]interface{}{
 				"processor": "test",
 				"sampler":   "parent-based-always-on",
+			},
+			"extra": map[string]string{
+				"foo": "baz",
 			},
 		},
 		info.Data(),

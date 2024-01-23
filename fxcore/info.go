@@ -114,7 +114,6 @@ func (i *FxCoreModuleInfo) Data() map[string]interface{} {
 			"env":     i.AppEnv,
 			"debug":   i.AppDebug,
 			"version": i.AppVersion,
-			"extra":   i.ExtraInfos,
 		},
 		"log": map[string]interface{}{
 			"level":  i.LogLevel,
@@ -124,5 +123,6 @@ func (i *FxCoreModuleInfo) Data() map[string]interface{} {
 			"processor": i.TraceProcessor,
 			"sampler":   i.TraceSampler,
 		},
+		"extra": i.ExtraInfos,
 	}
 }

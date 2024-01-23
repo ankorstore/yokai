@@ -77,10 +77,8 @@ func prepareTestFxModuleInfoRegistry() (*fxcore.FxModuleInfoRegistry, error) {
 		Infos: []interface{}{
 			&testModuleInfo{},
 			fxcore.NewFxCoreModuleInfo(fxcore.FxCoreModuleInfoParam{
-				Config: cfg,
-				ExtraInfos: []*fxcore.FxExtraInfo{
-					fxcore.NewFxExtraInfo("foo", "bar"),
-				},
+				Config:     cfg,
+				ExtraInfos: []fxcore.FxExtraInfo{},
 			}),
 			"invalid",
 		},
