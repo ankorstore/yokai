@@ -9,26 +9,32 @@ import (
 )
 
 // FxExtraInfo is the struct used by modules or apps to provide their extra info to fxcore.
-type FxExtraInfo struct {
+type FxExtraInfo interface {
+	Name() string
+	Value() string
+}
+
+// fxExtraInfo is the default [FxExtraInfo] implementation.
+type fxExtraInfo struct {
 	name  string
 	value string
 }
 
 // NewFxExtraInfo returns a new FxExtraInfo.
-func NewFxExtraInfo(name string, value string) *FxExtraInfo {
-	return &FxExtraInfo{
+func NewFxExtraInfo(name string, value string) FxExtraInfo {
+	return &fxExtraInfo{
 		name:  name,
 		value: value,
 	}
 }
 
-// Name returns the name of the [FxExtraInfo].
-func (i *FxExtraInfo) Name() string {
+// Name returns the name of the [fxExtraInfo].
+func (i *fxExtraInfo) Name() string {
 	return i.name
 }
 
-// Value returns the value of the [FxExtraInfo].
-func (i *FxExtraInfo) Value() string {
+// Value returns the value of the [fxExtraInfo].
+func (i *fxExtraInfo) Value() string {
 	return i.value
 }
 
@@ -55,7 +61,7 @@ type FxCoreModuleInfo struct {
 type FxCoreModuleInfoParam struct {
 	fx.In
 	Config     *config.Config
-	ExtraInfos []*FxExtraInfo `group:"core-extra-infos"`
+	ExtraInfos []FxExtraInfo `group:"core-extra-infos"`
 }
 
 // NewFxCoreModuleInfo returns a new [FxCoreModuleInfo].
