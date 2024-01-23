@@ -16,7 +16,15 @@ func TestNewFxCoreModuleInfo(t *testing.T) {
 	)
 	assert.NoError(t, err)
 
-	info := fxcore.NewFxCoreModuleInfo(cfg)
+	info := fxcore.NewFxCoreModuleInfo(
+		fxcore.FxCoreModuleInfoParam{
+			Config: cfg,
+			ExtraInfos: []fxcore.FxExtraInfo{
+				fxcore.NewFxExtraInfo("foo", "bar"),
+				fxcore.NewFxExtraInfo("foo", "baz"),
+			},
+		},
+	)
 	assert.IsType(t, &fxcore.FxCoreModuleInfo{}, info)
 	assert.Implements(t, (*fxcore.FxModuleInfo)(nil), info)
 
@@ -37,6 +45,9 @@ func TestNewFxCoreModuleInfo(t *testing.T) {
 			"trace": map[string]interface{}{
 				"processor": "test",
 				"sampler":   "parent-based-always-on",
+			},
+			"extra": map[string]string{
+				"foo": "baz",
 			},
 		},
 		info.Data(),

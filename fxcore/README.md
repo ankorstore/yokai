@@ -206,6 +206,7 @@ import (
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 	fxorm.FxOrmModule,                     // load the ORM module (provides *gorm.DB)
 	fx.Provide(service.NewExampleService), // autowire your service (*gorm.DB auto injection)
+	fxcore.AsCoreExtraInfo("foo", "bar"),  // register extra information to display on core dashboard
 )
 ```
 
