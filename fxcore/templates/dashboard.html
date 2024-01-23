@@ -209,12 +209,12 @@
                                     </table>
                                 </div>
                             </div>
-                            {{ if neq (len ..info.ExtraInfos ) 0 }}
+                            {{ if ne (len .info.ExtraInfos ) 0 }}
                                 <br/>
                                 <div class="card">
                                     <div class="card-body">
                                         <p class="card-title fw-bold">
-                                            <i class="bi bi-bar-chart-steps"></i>&nbsp;&nbsp;Extra
+                                            <i class="bi bi-info-square"></i>&nbsp;&nbsp;Extra information
                                         </p>
                                         <table class="table table-borderless table-sm">
                                             <tbody>
