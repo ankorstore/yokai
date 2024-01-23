@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.1.0...fxcore/v1.2.0) (2024-01-23)
+
+
+### Features
+
+* **fxcore:** Added possibility to provide extra information ([#56](https://github.com/ankorstore/yokai/issues/56)) ([e355505](https://github.com/ankorstore/yokai/commit/e355505f182677995795e648001312f0467f51dd))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.0.0...fxcore/v1.1.0) (2024-01-12)
 
 
