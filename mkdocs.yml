@@ -63,3 +63,4 @@ nav:
       - "Showroom": applications/showroom.md
   - "Modules":
       - "Config": modules/fxconfig.md
+      - "Log": modules/fxlog.md
