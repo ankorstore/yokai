@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.2.0...fxcore/v1.3.0) (2024-01-24)
+
+
+### Features
+
+* **fxcore:** Added core dashboard options ([#60](https://github.com/ankorstore/yokai/issues/60)) ([f11c871](https://github.com/ankorstore/yokai/commit/f11c871e8e9ec2eb0c1187ee328c9abbb9369a49))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.1.0...fxcore/v1.2.0) (2024-01-23)
 
 
