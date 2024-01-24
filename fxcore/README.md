@@ -34,7 +34,7 @@ The fxcore module provides the foundation of your application:
 - a dependency injection system
 - a dedicated core http server
 - ready to use config, health check, logger and tracer and metrics components
-- a plugin system for the [Fx modules](https://github.com/ankorstore/yokai#fx-modules) 
+- a plugin system for the [Fx modules](https://github.com/ankorstore/yokai#fx-modules)
 
 The core http server runs automatically on a dedicated port (default `8081`), to serve:
 
@@ -43,7 +43,7 @@ The core http server runs automatically on a dedicated port (default `8081`), to
 - the health check endpoints: to expose all configured health check probes of your application
 - the debug endpoints: to expose various information about your config, modules, build, etc.
 
-Whatever your type of application (httpserver,  gRPC server, worker, etc.), all platform concerns are handled by this
+Whatever your type of application (httpserver, gRPC server, worker, etc.), all platform concerns are handled by this
 dedicated server:
 
 - to avoid to expose sensitive information (health checks, metrics, debug, etc) to your users
@@ -82,46 +82,56 @@ modules:
       type: stdout
   core:
     server:
-      port: 8081         # core http server port (default 8081)
-      errors:
-        obfuscate: false # to obfuscate error messages on the core http server responses
-        stack: false     # to add error stack trace to error response of the core http server
+      port: 8081                       # core http server port (default 8081)
+      errors:              
+        obfuscate: false               # to obfuscate error messages on the core http server responses
+        stack: false                   # to add error stack trace to error response of the core http server
+      dashboard:
+        enabled: true                  # to enable the core dashboard
+        overview:      
+          app_env: true                # to display the app env on the dashboard overview
+          app_debug: true              # to display the app debug on the dashboard overview
+          app_version: true            # to display the app version on the dashboard overview
+          log_level: true              # to display the log level on the dashboard overview
+          log_output: true             # to display the log output on the dashboard overview
+          trace_sampler: true          # to display the trace sampler on the dashboard overview
+          trace_processor: true        # to display the trace processor on the dashboard overview
       log:
-        headers:         # to log incoming request headers on the core http server
-          x-foo: foo     # to log for example the header x-foo in the log field foo
-          x-bar: bar
-        exclude:         # to exclude specific routes from logging
+        headers:                       # to log incoming request headers on the core http server
+          x-foo: foo                   # to log for example the header x-foo in the log field foo
+          x-bar: bar              
+        exclude:                       # to exclude specific routes from logging
           - /healthz
           - /livez
           - /readyz
           - /metrics
-        level_from_response: true # to use response status code for log level (ex: 500=error)
-      trace:
-        enabled: true # to trace incoming request headers on the core http server
-        exclude:      # to exclude specific routes from tracing
-          - /healthz
-          - /livez
-          - /readyz
-          - /metrics
-      metrics:
-        expose: true            # to expose metrics route, disabled by default
-        path: /metrics          # metrics route path (default /metrics)
-        collect:
-          enabled: true         # to collect core http server metrics, disabled by default
-          namespace: app        # core http server metrics namespace (default app.name value)
-          subsystem: fx-core    # core http server metrics subsystem (default fx-core)
-        buckets: 0.1, 1, 10     # to override default request duration buckets
-        normalize: true         # to normalize http status code (2xx, 3xx, ...)
+        level_from_response: true      # to use response status code for log level (ex: 500=error)
+      trace:     
+        enabled: true                  # to trace incoming request headers on the core http server
+        exclude:                       # to exclude specific routes from tracing
+          - /healthz     
+          - /livez     
+          - /readyz     
+          - /metrics     
+      metrics:     
+        expose: true                   # to expose metrics route, disabled by default
+        path: /metrics                 # metrics route path (default /metrics)
+        collect:       
+          enabled: true                # to collect core http server metrics, disabled by default
+          namespace: app               # core http server metrics namespace (default app.name value)
+          subsystem: fx-core           # core http server metrics subsystem (default fx-core)
+        buckets: 0.1, 1, 10            # to override default request duration buckets
+        normalize: true                # to normalize http status code (2xx, 3xx, ...)
       healthcheck:
         startup:
-          expose: true     # to expose health check startup route, disabled by default
-          path: /healthz   # health check startup route path (default /healthz)
-        readiness:
-          expose: true     # to expose health check readiness route, disabled by default
-          path: /readyz    # health check readiness route path (default /readyz)
-        liveness:
-          expose: true     # to expose health check liveness route, disabled by default
-          path: /livez     # health check liveness route path (default /livez)
+          expose: true                 # to expose health check startup route, disabled by default
+          path: /healthz               # health check startup route path (default /healthz)
+        readiness:            
+          expose: true                 # to expose health check readiness route, disabled by default
+          path: /readyz                # health check readiness route path (default /readyz)
+        liveness:            
+          expose: true                 # to expose health check liveness route, disabled by default
+          path: /livez                 # health check liveness route path (default /livez)
       debug:
         config:
           expose: true                 # to expose debug config route
@@ -140,21 +150,19 @@ modules:
           path: /debug/build           # debug build route path (default /debug/build)
         modules:
           expose: true                 # to expose debug modules route
-          path: /debug/modules/:name   # debug modules route path (default /debug/modules/:name)
+          path: /debug/modules/:name   # debug modules route path (default /debug/modules/:name)      
 ```
 
 Notes:
 
-- the core http server requests logging will be based on
-  the [fxlog](https://github.com/ankorstore/yokai/tree/main/fxlog) module configuration
-- the core http server requests tracing will be based on
-  the [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module configuration
+- the core http server requests logging will be based on the [fxlog](https://github.com/ankorstore/yokai/tree/main/fxlog) module configuration
+- the core http server requests tracing will be based on the [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module configuration
 - if `app.debug=true` (or env var `APP_DEBUG=true`):
-	- all the debug endpoints will be automatically exposed
+	- the dashboard will be automatically enabled
+    - all the debug endpoints will be automatically exposed
 	- error responses will not be obfuscated and stack trace will be added
 
-Check the [configuration files documentation](https://github.com/ankorstore/yokai/tree/main/config#configuration-files)
-for more details.
+Check the [configuration files documentation](https://github.com/ankorstore/yokai/tree/main/config#configuration-files) for more details.
 
 ### Bootstrap
 

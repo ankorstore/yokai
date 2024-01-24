@@ -1,6 +1,6 @@
 <html lang="en" data-bs-theme="{{ .theme }}">
     <head>
-        <title>{{ .info.AppName }}</title>
+        <title>{{ .overviewInfo.AppName }}</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-terminal' viewBox='0 0 16 16'%3E%3Cpath d='M6 9a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 6 9zM3.854 4.146a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2z'/%3E%3Cpath d='M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h12z'/%3E%3C/svg%3E" />
@@ -17,7 +17,7 @@
             <nav class="navbar navbar-expand-lg bg-body-tertiary rounded-bottom border border-top-0 border-{{ .theme }}-subtle">
                 <div class="container-fluid">
                     <a class="navbar-brand icon-link icon-link-hover fw-bold" href="/" style="--bs-icon-link-transform: scale(1.2);">
-                        <i class="bi bi-terminal"></i>&nbsp;{{ .info.AppName }}
+                        <i class="bi bi-terminal"></i>&nbsp;{{ .overviewInfo.AppName }}
                     </a>
                     <span>
                         <a class="btn btn-sm btn-outline-secondary" role="button" href="https://ankorstore.github.io/yokai/" target="_blank">
@@ -146,70 +146,90 @@
                         </div>
                         <div id="dash-body" class="card-body bg-{{ .theme }}" v-if="content != ''" v-html="computedContent"></div>
                         <div id="overview-body" class="card-body bg-{{ .theme }}" v-if="content == ''">
-                            <div class="card">
-                                <div class="card-body">
-                                    <p class="card-title fw-bold">
-                                        <i class="bi bi-terminal"></i>&nbsp;&nbsp;{{ .info.AppName }}
-                                    </p>
-                                    <table class="table table-borderless table-sm">
-                                        <tbody>
-                                            <tr>
-                                                <td class="w-25">Env</td>
-                                                <td><code>{{ .info.AppEnv }}</code></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="w-25">Debug</td>
-                                                <td><code>{{ .info.AppDebug }}</code></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="w-25">Version</td>
-                                                <td><code>{{ .info.AppVersion }}</code></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            {{ if or .overviewAppEnvExpose .overviewAppDebugExpose .overviewAppVersionExpose }}
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p class="card-title fw-bold">
+                                            <i class="bi bi-terminal"></i>&nbsp;&nbsp;{{ .overviewInfo.AppName }}
+                                        </p>
+                                        <table class="table table-borderless table-sm">
+                                            <tbody>
+                                                {{ if or .overviewAppEnvExpose }}
+                                                    <tr>
+                                                        <td class="w-25">Env</td>
+                                                        <td><code>{{ .overviewInfo.AppEnv }}</code></td>
+                                                    </tr>
+                                                {{ end }}
+                                                {{ if or .overviewAppDebugExpose }}
+                                                    <tr>
+                                                        <td class="w-25">Debug</td>
+                                                        <td><code>{{ .overviewInfo.AppDebug }}</code></td>
+                                                    </tr>
+                                                {{ end }}
+                                                {{ if or .overviewAppVersionExpose }}
+                                                    <tr>
+                                                        <td class="w-25">Version</td>
+                                                        <td><code>{{ .overviewInfo.AppVersion }}</code></td>
+                                                    </tr>
+                                                {{ end }}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-                            <br/>
-                            <div class="card">
-                                <div class="card-body">
-                                    <p class="card-title fw-bold">
-                                        <i class="bi bi-list-columns-reverse"></i>&nbsp;&nbsp;Logs
-                                    </p>
-                                    <table class="table table-borderless table-sm">
-                                        <tbody>
-                                            <tr>
-                                                <td class="w-25">Level</td>
-                                                <td><code>{{ .info.LogLevel }}</code></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="w-25">Output</td>
-                                                <td><code>{{ .info.LogOutput }}</code></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            {{ end }}
+                            {{ if or .overviewLogLevelExpose .overviewLogOutputExpose }}
+                                <br/>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p class="card-title fw-bold">
+                                            <i class="bi bi-list-columns-reverse"></i>&nbsp;&nbsp;Logs
+                                        </p>
+                                        <table class="table table-borderless table-sm">
+                                            <tbody>
+                                                {{ if or .overviewLogLevelExpose }}
+                                                    <tr>
+                                                        <td class="w-25">Level</td>
+                                                        <td><code>{{ .overviewInfo.LogLevel }}</code></td>
+                                                    </tr>
+                                                {{ end }}
+                                                {{ if or .overviewLogOutputExpose }}
+                                                    <tr>
+                                                        <td class="w-25">Output</td>
+                                                        <td><code>{{ .overviewInfo.LogOutput }}</code></td>
+                                                    </tr>
+                                                {{ end }}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-                            <br/>
-                            <div class="card">
-                                <div class="card-body">
-                                    <p class="card-title fw-bold">
-                                        <i class="bi bi-bar-chart-steps"></i>&nbsp;&nbsp;Traces
-                                    </p>
-                                    <table class="table table-borderless table-sm">
-                                        <tbody>
-                                            <tr>
-                                                <td class="w-25">Sampler</td>
-                                                <td><code>{{ .info.TraceSampler }}</code></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="w-25">Processor</td>
-                                                <td><code>{{ .info.TraceProcessor }}</code></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            {{ end }}
+                            {{ if or .overviewTraceSamplerExpose .overviewTraceProcessorExpose }}
+                                <br/>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p class="card-title fw-bold">
+                                            <i class="bi bi-bar-chart-steps"></i>&nbsp;&nbsp;Traces
+                                        </p>
+                                        <table class="table table-borderless table-sm">
+                                            <tbody>
+                                                {{ if or .overviewTraceSamplerExpose }}
+                                                    <tr>
+                                                        <td class="w-25">Sampler</td>
+                                                        <td><code>{{ .overviewInfo.TraceSampler }}</code></td>
+                                                    </tr>
+                                                {{ end }}
+                                                {{ if or .overviewTraceProcessorExpose }}
+                                                    <tr>
+                                                        <td class="w-25">Processor</td>
+                                                        <td><code>{{ .overviewInfo.TraceProcessor }}</code></td>
+                                                    </tr>
+                                                {{ end }}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-                            {{ if ne (len .info.ExtraInfos ) 0 }}
+                            {{ end }}
+                            {{ if ne (len .overviewInfo.ExtraInfos ) 0 }}
                                 <br/>
                                 <div class="card">
                                     <div class="card-body">
@@ -218,7 +238,7 @@
                                         </p>
                                         <table class="table table-borderless table-sm">
                                             <tbody>
-                                            {{ range $infoName, $infoValue := .info.ExtraInfos }}
+                                            {{ range $infoName, $infoValue := .overviewInfo.ExtraInfos }}
                                                 <tr>
                                                     <td class="w-25">{{ $infoName }}</td>
                                                     <td><code>{{ $infoValue }}</code></td>
