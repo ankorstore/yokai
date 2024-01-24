@@ -4,10 +4,11 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/labstack/echo/v4"
 
 	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/fxconfig"
@@ -240,6 +241,9 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 		return nil, err
 	}
 
+	// dashboard
+	dashboardEnabled := p.Config.GetBool("modules.core.server.dashboard.enabled")
+
 	// template expositions
 	metricsExpose := p.Config.GetBool("modules.core.server.metrics.expose")
 	startupExpose := p.Config.GetBool("modules.core.server.healthcheck.startup.expose")
@@ -404,75 +408,78 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 		coreServer.Logger.Debug("registered debug modules handler")
 	}
 
-	// theme
-	coreServer.POST("/theme", func(c echo.Context) error {
-		themeCookie := new(http.Cookie)
-		themeCookie.Name = "theme"
-
-		var theme FxCoreDashboardTheme
-		if err = c.Bind(&theme); err != nil {
-			themeCookie.Value = ThemeLight
-		} else {
-			switch theme.Theme {
-			case ThemeDark:
-				themeCookie.Value = ThemeDark
-			case ThemeLight:
-				themeCookie.Value = ThemeLight
-			default:
-				themeCookie.Value = ThemeLight
-			}
-		}
-
-		c.SetCookie(themeCookie)
-
-		return c.Redirect(http.StatusMovedPermanently, "/")
-	})
-
 	// dashboard
-	coreServer.GET("/", func(c echo.Context) error {
-		var theme string
-		themeCookie, err := c.Cookie("theme")
-		if err == nil {
-			switch themeCookie.Value {
-			case ThemeDark:
-				theme = ThemeDark
-			case ThemeLight:
-				theme = ThemeLight
-			default:
+	if dashboardEnabled || appDebug {
+		// theme
+		coreServer.POST("/theme", func(c echo.Context) error {
+			themeCookie := new(http.Cookie)
+			themeCookie.Name = "theme"
+
+			var theme FxCoreDashboardTheme
+			if err = c.Bind(&theme); err != nil {
+				themeCookie.Value = ThemeLight
+			} else {
+				switch theme.Theme {
+				case ThemeDark:
+					themeCookie.Value = ThemeDark
+				case ThemeLight:
+					themeCookie.Value = ThemeLight
+				default:
+					themeCookie.Value = ThemeLight
+				}
+			}
+
+			c.SetCookie(themeCookie)
+
+			return c.Redirect(http.StatusMovedPermanently, "/")
+		})
+
+		// render
+		coreServer.GET("/", func(c echo.Context) error {
+			var theme string
+			themeCookie, err := c.Cookie("theme")
+			if err == nil {
+				switch themeCookie.Value {
+				case ThemeDark:
+					theme = ThemeDark
+				case ThemeLight:
+					theme = ThemeLight
+				default:
+					theme = ThemeLight
+				}
+			} else {
 				theme = ThemeLight
 			}
-		} else {
-			theme = ThemeLight
-		}
 
-		return c.Render(http.StatusOK, "dashboard.html", map[string]interface{}{
-			"info":            info,
-			"metricsExpose":   metricsExpose,
-			"metricsPath":     metricsPath,
-			"startupExpose":   startupExpose,
-			"startupPath":     startupPath,
-			"livenessExpose":  livenessExpose,
-			"livenessPath":    livenessPath,
-			"readinessExpose": readinessExpose,
-			"readinessPath":   readinessPath,
-			"configExpose":    configExpose || appDebug,
-			"configPath":      configPath,
-			"pprofExpose":     pprofExpose || appDebug,
-			"pprofPath":       pprofPath,
-			"routesExpose":    routesExpose || appDebug,
-			"routesPath":      routesPath,
-			"statsExpose":     statsExpose || appDebug,
-			"statsPath":       statsPath,
-			"buildExpose":     buildExpose || appDebug,
-			"buildPath":       buildPath,
-			"modulesExpose":   modulesExpose || appDebug,
-			"modulesPath":     modulesPath,
-			"modulesNames":    p.Registry.Names(),
-			"theme":           theme,
+			return c.Render(http.StatusOK, "dashboard.html", map[string]interface{}{
+				"info":            info,
+				"metricsExpose":   metricsExpose,
+				"metricsPath":     metricsPath,
+				"startupExpose":   startupExpose,
+				"startupPath":     startupPath,
+				"livenessExpose":  livenessExpose,
+				"livenessPath":    livenessPath,
+				"readinessExpose": readinessExpose,
+				"readinessPath":   readinessPath,
+				"configExpose":    configExpose || appDebug,
+				"configPath":      configPath,
+				"pprofExpose":     pprofExpose || appDebug,
+				"pprofPath":       pprofPath,
+				"routesExpose":    routesExpose || appDebug,
+				"routesPath":      routesPath,
+				"statsExpose":     statsExpose || appDebug,
+				"statsPath":       statsPath,
+				"buildExpose":     buildExpose || appDebug,
+				"buildPath":       buildPath,
+				"modulesExpose":   modulesExpose || appDebug,
+				"modulesPath":     modulesPath,
+				"modulesNames":    p.Registry.Names(),
+				"theme":           theme,
+			})
 		})
-	})
 
-	coreServer.Logger.Debug("registered debug dashboard handler")
+		coreServer.Logger.Debug("registered debug dashboard handler")
+	}
 
 	return coreServer, nil
 }
