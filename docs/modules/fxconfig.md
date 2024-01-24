@@ -11,7 +11,7 @@
 The [fxconfig](https://github.com/ankorstore/yokai/tree/main/fxconfig) module is automatically loaded by
 the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore).
 
-You have nothing to install, it's ready to use.
+When you use a Yokai [application template](https://ankorstore.github.io/yokai/applications/templates/), you have nothing to install, it's ready to use.
 
 ## Documentation
 
