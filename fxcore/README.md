@@ -91,8 +91,8 @@ modules:
       dashboard:
         enabled: true                  # to enable the core dashboard UI
         overview:      
-          app_name: true               # to display the app name on the dashboard overview
           app_env: true                # to display the app env on the dashboard overview
+          app_debug: true              # to display the app debug on the dashboard overview
           app_version: true            # to display the app version on the dashboard overview
           log_level: true              # to display the log level on the dashboard overview
           log_output: true             # to display the log output on the dashboard overview

@@ -235,14 +235,23 @@ func withMiddlewares(coreServer *echo.Echo, p FxCoreParam) *echo.Echo {
 func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 	appDebug := p.Config.AppDebug()
 
-	// overview
-	info, err := p.Registry.Find(ModuleName)
+	// dashboard
+	dashboardEnabled := p.Config.GetBool("modules.core.server.dashboard.enabled")
+
+	// dashboard overview
+	overviewInfo, err := p.Registry.Find(ModuleName)
 	if err != nil {
 		return nil, err
 	}
 
-	// dashboard
-	dashboardEnabled := p.Config.GetBool("modules.core.server.dashboard.enabled")
+	// dashboard overview expositions
+	overviewAppEnvExpose := p.Config.GetBool("modules.core.server.dashboard.overview.app_env")
+	overviewAppDebugExpose := p.Config.GetBool("modules.core.server.dashboard.overview.app_debug")
+	overviewAppVersionExpose := p.Config.GetBool("modules.core.server.dashboard.overview.app_version")
+	overviewLogLevelExpose := p.Config.GetBool("modules.core.server.dashboard.overview.log_level")
+	overviewLogOutputExpose := p.Config.GetBool("modules.core.server.dashboard.overview.log_output")
+	overviewTraceSamplerExpose := p.Config.GetBool("modules.core.server.dashboard.overview.trace_sampler")
+	overviewTraceProcessorExpose := p.Config.GetBool("modules.core.server.dashboard.overview.trace_processor")
 
 	// template expositions
 	metricsExpose := p.Config.GetBool("modules.core.server.metrics.expose")
@@ -434,6 +443,8 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 			return c.Redirect(http.StatusMovedPermanently, "/")
 		})
 
+		coreServer.Logger.Debug("registered dashboard theme handler")
+
 		// render
 		coreServer.GET("/", func(c echo.Context) error {
 			var theme string
@@ -452,33 +463,40 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 			}
 
 			return c.Render(http.StatusOK, "dashboard.html", map[string]interface{}{
-				"info":            info,
-				"metricsExpose":   metricsExpose,
-				"metricsPath":     metricsPath,
-				"startupExpose":   startupExpose,
-				"startupPath":     startupPath,
-				"livenessExpose":  livenessExpose,
-				"livenessPath":    livenessPath,
-				"readinessExpose": readinessExpose,
-				"readinessPath":   readinessPath,
-				"configExpose":    configExpose || appDebug,
-				"configPath":      configPath,
-				"pprofExpose":     pprofExpose || appDebug,
-				"pprofPath":       pprofPath,
-				"routesExpose":    routesExpose || appDebug,
-				"routesPath":      routesPath,
-				"statsExpose":     statsExpose || appDebug,
-				"statsPath":       statsPath,
-				"buildExpose":     buildExpose || appDebug,
-				"buildPath":       buildPath,
-				"modulesExpose":   modulesExpose || appDebug,
-				"modulesPath":     modulesPath,
-				"modulesNames":    p.Registry.Names(),
-				"theme":           theme,
+				"overviewInfo":                 overviewInfo,
+				"overviewAppEnvExpose":         overviewAppEnvExpose,
+				"overviewAppDebugExpose":       overviewAppDebugExpose,
+				"overviewAppVersionExpose":     overviewAppVersionExpose,
+				"overviewLogLevelExpose":       overviewLogLevelExpose,
+				"overviewLogOutputExpose":      overviewLogOutputExpose,
+				"overviewTraceSamplerExpose":   overviewTraceSamplerExpose,
+				"overviewTraceProcessorExpose": overviewTraceProcessorExpose,
+				"metricsExpose":                metricsExpose,
+				"metricsPath":                  metricsPath,
+				"startupExpose":                startupExpose,
+				"startupPath":                  startupPath,
+				"livenessExpose":               livenessExpose,
+				"livenessPath":                 livenessPath,
+				"readinessExpose":              readinessExpose,
+				"readinessPath":                readinessPath,
+				"configExpose":                 configExpose || appDebug,
+				"configPath":                   configPath,
+				"pprofExpose":                  pprofExpose || appDebug,
+				"pprofPath":                    pprofPath,
+				"routesExpose":                 routesExpose || appDebug,
+				"routesPath":                   routesPath,
+				"statsExpose":                  statsExpose || appDebug,
+				"statsPath":                    statsPath,
+				"buildExpose":                  buildExpose || appDebug,
+				"buildPath":                    buildPath,
+				"modulesExpose":                modulesExpose || appDebug,
+				"modulesPath":                  modulesPath,
+				"modulesNames":                 p.Registry.Names(),
+				"theme":                        theme,
 			})
 		})
 
-		coreServer.Logger.Debug("registered debug dashboard handler")
+		coreServer.Logger.Debug("registered dashboard handler")
 	}
 
 	return coreServer, nil
