@@ -9,7 +9,6 @@
 > [Fx](https://uber-go.github.io/fx/) core module.
 
 <!-- TOC -->
-
 * [Installation](#installation)
 * [Features](#features)
 * [Documentation](#documentation)
@@ -19,7 +18,6 @@
 		* [Application](#application)
 		* [Test application](#test-application)
 		* [Root dir](#root-dir)
-
 <!-- TOC -->
 
 ## Installation
@@ -89,7 +87,7 @@ modules:
         obfuscate: false               # to obfuscate error messages on the core http server responses
         stack: false                   # to add error stack trace to error response of the core http server
       dashboard:
-        enabled: true                  # to enable the core dashboard UI
+        enabled: true                  # to enable the core dashboard
         overview:      
           app_env: true                # to display the app env on the dashboard overview
           app_debug: true              # to display the app debug on the dashboard overview
@@ -153,19 +151,18 @@ modules:
         modules:
           expose: true                 # to expose debug modules route
           path: /debug/modules/:name   # debug modules route path (default /debug/modules/:name)      
+```
 
 Notes:
 
-- the core http server requests logging will be based on
-  the [fxlog](https://github.com/ankorstore/yokai/tree/main/fxlog) module configuration
-- the core http server requests tracing will be based on
-  the [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module configuration
+- the core http server requests logging will be based on the [fxlog](https://github.com/ankorstore/yokai/tree/main/fxlog) module configuration
+- the core http server requests tracing will be based on the [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module configuration
 - if `app.debug=true` (or env var `APP_DEBUG=true`):
-	- all the debug endpoints will be automatically exposed
+	- the dashboard will be automatically enabled
+    - all the debug endpoints will be automatically exposed
 	- error responses will not be obfuscated and stack trace will be added
 
-Check the [configuration files documentation](https://github.com/ankorstore/yokai/tree/main/config#configuration-files)
-for more details.
+Check the [configuration files documentation](https://github.com/ankorstore/yokai/tree/main/config#configuration-files) for more details.
 
 ### Bootstrap
 
