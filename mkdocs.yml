@@ -56,6 +56,10 @@ markdown_extensions:
 
 # Pages tree
 nav:
-  - "Home": 'index.md'
+  - "Overview": 'index.md'
+  - "Getting started":
+      - "Templates": applications/templates.md
+  - "Demos":
+      - "Showroom": applications/showroom.md
   - "Modules":
       - "Config": modules/fxconfig.md
