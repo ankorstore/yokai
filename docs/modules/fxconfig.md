@@ -6,6 +6,12 @@
 [![Deps](https://img.shields.io/badge/osi-deps-blue)](https://deps.dev/go/github.com%2Fankorstore%2Fyokai%2Ffxconfig)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/ankorstore/yokai/fxconfig)](https://pkg.go.dev/github.com/ankorstore/yokai/fxconfig)
 
+## Overview
+
+Yokai provides a [fxconfig](https://github.com/ankorstore/yokai/tree/main/fxconfig) module, allowing to define and retrieve configurations for your application.
+
+It wraps the [config](https://github.com/ankorstore/yokai/tree/main/config) module, based on [Viper](https://github.com/spf13/viper).
+
 ## Installation
 
 The [fxconfig](https://github.com/ankorstore/yokai/tree/main/fxconfig) module is automatically loaded by
@@ -13,9 +19,7 @@ the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore).
 
 When you use a Yokai [application template](https://ankorstore.github.io/yokai/applications/templates/), you have nothing to install, it's ready to use.
 
-## Documentation
-
-### Configuration files
+## Configuration files
 
 By default, the module expects the configuration files:
 
@@ -24,9 +28,9 @@ By default, the module expects the configuration files:
 - to offer env overrides files named `config.{env}.{format}` based on the env var `APP_ENV` (ex: `config.test.yaml` if
   env var `APP_ENV=test`)
 
-The following configuration files format are supported: JSON, TOML, YAML, HCL, INI, and env file.
+Supported configuration files formats: `.json`, `.toml`, `.yaml`, `.hcl`, `.ini`, and `.env`.
 
-### Configuration usage
+## Usage
 
 For the following examples, we will be considering those configuration files:
 
@@ -55,10 +59,12 @@ config:
     string_value: test
 ```
 
-#### Configuration access
+### Configuration access
 
-This module makes available the [*config.Config](https://github.com/ankorstore/yokai/blob/main/config/config.go) in
+This module makes available the [Config](https://github.com/ankorstore/yokai/blob/main/config/config.go) in
 Yokai dependency injection system.
+
+It is built on top of `Viper`, see its [documentation](https://github.com/spf13/viper) for more details about available methods.
 
 To access it, you just need to inject it where needed, for example:
 
@@ -94,7 +100,7 @@ func (s *ExampleService) PrintConfig() {
 }
 ```
 
-#### Configuration dynamic env overrides
+### Dynamic env overrides
 
 This module offers the possibility to override dynamically (by merging) configuration files depending on the env
 var `APP_ENV` value.
@@ -122,7 +128,7 @@ You can use any value for `APP_ENV` (to allow you to reflect your own envs): for
 will use `config.yaml` values and override them with `config.custom.yaml` values (you just need to ensure
 that `config.custom.yaml` exists).
 
-#### Configuration env var placeholders
+### Env var placeholders
 
 This module offers the possibility to use placeholders in the config files to reference an env var value, that will be
 resolved at runtime.
@@ -136,7 +142,7 @@ For example, with the env var `BAR=bar`:
 fmt.Printf("placeholder: %s", s.config.GetString("config.placeholder"))
 ```
 
-#### Configuration env var substitution
+### Env var substitution
 
 This module offers the possibility to perform configuration files values substitution from env var values.
 
