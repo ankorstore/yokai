@@ -63,4 +63,7 @@ nav:
       - "Showroom": applications/showroom.md
   - "Modules":
       - "Config": modules/fxconfig.md
+      - "Health Check": modules/fxhealthcheck.md
       - "Log": modules/fxlog.md
+      - "Metrics": modules/fxmetrics.md
+      - "Trace": modules/fxtrace.md
