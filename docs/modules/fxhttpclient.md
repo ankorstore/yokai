@@ -75,7 +75,7 @@ func (s *ExampleService) Call(ctx context.Context) (*http.Response, error) {
 
 ## Configuration
 
-You can configure the [Client](https://pkg.go.dev/net/http#Client) timeout, transport, logging and tracing:
+You can configure the [Client](https://pkg.go.dev/net/http#Client) `timeout`, `transport`, `logging` and `tracing`:
 
 ```yaml title="configs/config.yaml"
 modules:
