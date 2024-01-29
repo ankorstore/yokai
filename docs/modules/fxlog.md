@@ -43,11 +43,6 @@ Regarding the output:
 - `test`: to send the log records to the [TestLogBuffer](https://github.com/ankorstore/yokai/blob/main/log/logtest/buffer.go) made available in the Fx container, for further assertions
 
 ```yaml title="configs/config.yaml"
-app:
-  name: app
-  env: dev
-  version: 0.1.0
-  debug: false
 modules:
   log:
     level: info    # by default
@@ -59,8 +54,6 @@ modules:
 This module provides the possibility to easily test your application logs, using the [TestLogBuffer](https://github.com/ankorstore/yokai/blob/main/log/logtest/buffer.go) with `modules.log.output=test`.
 
 ```yaml title="configs/config.test.yaml"
-app:
-  name: test
 modules:
   log:
     output: test # to send logs to test buffer

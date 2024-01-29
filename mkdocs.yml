@@ -65,6 +65,7 @@ nav:
       - "Config": modules/fxconfig.md
       - "Generate": modules/fxgenerate.md
       - "Health Check": modules/fxhealthcheck.md
+      - "HTTP Client": modules/fxhttpclient.md
       - "Log": modules/fxlog.md
       - "Metrics": modules/fxmetrics.md
       - "ORM": modules/fxorm.md

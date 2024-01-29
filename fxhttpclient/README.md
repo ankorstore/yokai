@@ -111,9 +111,9 @@ modules:
         enabled: true                        # to trace http calls, disabled by default
 ```
 
-If `http.client.log.response.level_from_response=true`, the response code will be used to determinate the log level:
+If `modules.http.client.log.response.level_from_response=true`, the response code will be used to determinate the log level:
 
-- `code < 400`: log level configured in `http.client.log.response.level`
+- `code < 400`: log level configured in `modules.http.client.log.response.level`
 - `400 <= code < 500`: log level `warn`
 - `code >= 500`: log level `error`
 
