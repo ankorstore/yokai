@@ -21,7 +21,7 @@ When you use a Yokai [application template](https://ankorstore.github.io/yokai/a
 
 ## Usage
 
-This module will enable Yokai to collect registered [CheckerProbe](https://github.com/ankorstore/yokai/blob/main/healthcheck/probe.go) implementations, and make available to the [Checker](https://github.com/ankorstore/yokai/blob/main/healthcheck/checker.go) in
+This module will enable Yokai to collect registered [CheckerProbe](https://github.com/ankorstore/yokai/blob/main/healthcheck/probe.go) implementations, and make them available to the [Checker](https://github.com/ankorstore/yokai/blob/main/healthcheck/checker.go) in
 its dependency injection system.
 
 You can register probes for `startup`, `liveness` and / or `readiness` [checks](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/).
@@ -110,6 +110,7 @@ func ProvideServices() fx.Option {
 		fxhealthcheck.AsCheckerProbe(probe.NewSuccessProbe),
 		// register the FailureProbe probe for liveness checks only
 		fxhealthcheck.AsCheckerProbe(probe.NewFailureProbe, healthcheck.Liveness), 
+		// ...
 	)
 }
 ```
