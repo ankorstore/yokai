@@ -63,7 +63,9 @@ nav:
       - "Showroom": applications/showroom.md
   - "Modules":
       - "Config": modules/fxconfig.md
+      - "Generate": modules/fxgenerate.md
       - "Health Check": modules/fxhealthcheck.md
       - "Log": modules/fxlog.md
       - "Metrics": modules/fxmetrics.md
+      - "ORM": modules/fxorm.md
       - "Trace": modules/fxtrace.md

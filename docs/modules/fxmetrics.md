@@ -21,7 +21,7 @@ When you use a Yokai [application template](https://ankorstore.github.io/yokai/a
 
 ## Usage
 
-This module will enable Yokai to collect registered metrics [collectors](https://github.com/prometheus/client_golang/blob/main/prometheus/collector.go), and make available to a metrics [registry](https://github.com/prometheus/client_golang/blob/main/prometheus/registry.go) in
+This module will enable Yokai to collect registered metrics [collectors](https://github.com/prometheus/client_golang/blob/main/prometheus/collector.go), and make them available to a metrics [registry](https://github.com/prometheus/client_golang/blob/main/prometheus/registry.go) in
 its dependency injection system.
 
 ### Metrics creation
@@ -70,7 +70,7 @@ package internal
 
 import (
 	"github.com/ankorstore/yokai/fxmetrics"
-	"github.com/foo/bar/service"
+	"github.com/foo/bar/internal/service"
 	"go.uber.org/fx"
 )
 
@@ -78,6 +78,7 @@ func ProvideServices() fx.Option {
 	return fx.Options(
 		// register the ExampleCounter metrics collector
 		fxmetrics.AsMetricsCollector(service.ExampleCounter),
+		// ...
 	)
 }
 ```
@@ -94,6 +95,7 @@ The [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server w
 Following previous example, after invoking the `ExampleService`, the metrics endpoint will return:
 
 ```yaml title="[GET] /metrics"
+# ...
 # HELP example_total Example counter
 # TYPE example_total counter
 example_total 1

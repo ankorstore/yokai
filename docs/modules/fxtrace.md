@@ -24,7 +24,7 @@ When you use a Yokai [application template](https://ankorstore.github.io/yokai/a
 This module makes available the [TracerProvider](https://github.com/open-telemetry/opentelemetry-go) in
 Yokai dependency injection system.
 
-It is built on top of `OpenTelemetry`, see its [documentation](https://github.com/open-telemetry/opentelemetry-go) for more details about available methods
+It is built on top of `OpenTelemetry`, see its [documentation](https://github.com/open-telemetry/opentelemetry-go) for more details about available methods.
 
 You can inject the tracer provider where needed, but it's recommended to use the one carried by the `context.Context` when possible (for automatic traces correlation).
 
