@@ -145,7 +145,7 @@ app:
 modules:
   orm:
     driver: mysql                                               # driver to use
-    dsn: user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=True"   # database DSN to connect to
+    dsn: "user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=True"  # database DSN to connect to
     config:
       dry_run: false                                            # disabled by default
       skip_default_transaction: false                           # disabled by default
