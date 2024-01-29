@@ -43,7 +43,7 @@ var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 You can declare your [models](https://gorm.io/docs/models.html), for example:
 
 ```go title="internal/model/example.go"
-package service
+package model
 
 import (
 	"gorm.io/gorm"
@@ -86,21 +86,21 @@ func (r *ExampleRepository) Find(ctx context.Context, id int) (*model.ExampleMod
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 	
-	var e model.ExampleModel
+	var exampleModel model.ExampleModel
 
-	res := r.db.WithContext(ctx).Take(&e, id)
+	res := r.db.WithContext(ctx).Take(&exampleModel, id)
 	if res.Error != nil {
 		return nil, res.Error
 	}
 
-	return &e, nil
+	return &exampleModel, nil
 }
 
-func (r *ExampleRepository) Create(ctx context.Context, example *model.ExampleModel) error {
+func (r *ExampleRepository) Create(ctx context.Context, exampleModel *model.ExampleModel) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	res := r.db.WithContext(ctx).Create(example)
+	res := r.db.WithContext(ctx).Create(exampleModel)
 
 	return res.Error
 }
@@ -247,6 +247,69 @@ modules:
     dsn: user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=True"   # database DSN to connect to
     config:
       prepare_stmt: true                                        # enable prepared statements
+```
+
+## Logging
+
+You can enable the SQL queries automatic logging with `modules.orm.log.enable=true`:
+
+```yaml title="configs/config.yaml"
+modules:
+  orm:
+    log:
+      enabled: true  # to log SQL queries, disabled by default
+      level: debug   # with a minimal level
+      values: true   # by adding or not clear SQL queries parameters values in logs, disabled by default
+```
+
+To get logs correlation, your need to propagate the context with `WithContext()`:
+
+```go
+res := r.db.WithContext(ctx).Take(&exampleModel, id)
+```
+
+As a result, in your application logs:
+
+```
+DBG latency="54.32µs" sqlQuery="SELECT * FROM `examples` WHERE `examples`.`id` = 1 AND `examples`.`deleted_at` IS NULL LIMIT 1" sqlRows=1
+```
+
+If needed, you can obfuscate the SQL values from your SQL queries with `modules.orm.log.values=false`, this will replace the values in your logs with `?`:
+
+```
+DBG latency="54.32µs" sqlQuery="SELECT * FROM `examples` WHERE `examples`.`id` = ? AND `examples`.`deleted_at` IS NULL LIMIT 1" sqlRows=1
+```
+
+## Tracing
+
+You can enable the SQL queries automatic tracing with `modules.orm.trace.enable=true`:
+
+```yaml title="configs/config.yaml"
+modules:
+  orm:
+    trace:
+      enabled: true  # to trace SQL queries, disabled by default
+      values: true   # by adding or not clear SQL queries parameters values in trace spans, disabled by default
+```
+
+To get traces correlation, your need to propagate the context with `WithContext()`:
+
+```go
+res := r.db.WithContext(ctx).Take(&exampleModel, id)
+```
+
+As a result, in your application trace spans attributes:
+
+```
+db.system: "mysql"
+db.statement: "SELECT * FROM `examples` WHERE `examples`.`id` = 1 AND `examples`.`deleted_at` IS NULL LIMIT 1"
+```
+
+If needed, you can obfuscate the SQL values from your SQL queries with `modules.orm.trace.values=false`, this will replace the values in your trace spans with `?`:
+
+```
+db.system: "mysql"
+db.statement: "SELECT * FROM `examples` WHERE `examples`.`id` = ? AND `examples`.`deleted_at` IS NULL LIMIT 1"
 ```
 
 ## Testing
