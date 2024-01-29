@@ -6,7 +6,7 @@
 [![Deps](https://img.shields.io/badge/osi-deps-blue)](https://deps.dev/go/github.com%2Fankorstore%2Fyokai%2Form)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/ankorstore/yokai/orm)](https://pkg.go.dev/github.com/ankorstore/yokai/orm)
 
-> ORM module based on [Gorm](https://gorm.io/).
+> ORM module based on [GORM](https://gorm.io/).
 
 <!-- TOC -->
 * [Installation](#installation)
@@ -57,7 +57,7 @@ var db, _ = orm.NewDefaultOrmFactory().Create(
 )
 ```
 
-See [Gorm documentation](https://gorm.io/docs/) for more details.
+See [GORM documentation](https://gorm.io/docs/) for more details.
 
 ### Add-ons
 

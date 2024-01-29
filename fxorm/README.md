@@ -91,7 +91,7 @@ app:
 modules:
   orm:
     driver: mysql                                               # driver to use
-    dsn: user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=True"   # database DSN to connect to
+    dsn: "user:pass@tcp(dbhost:3306)/dbname?parseTime=True"     # database DSN to connect to
     config:
       dry_run: false                                            # disabled by default
       skip_default_transaction: false                           # disabled by default
@@ -113,7 +113,7 @@ modules:
       values: true   # by adding or not clear SQL queries parameters values in trace spans, disabled by default
 ```
 
-See [Gorm Config](https://github.com/go-gorm/gorm/blob/master/gorm.go) for more details about the configuration.
+See [GORM Config](https://github.com/go-gorm/gorm/blob/master/gorm.go) for more details about the configuration.
 
 ### Auto migrations
 
@@ -152,7 +152,7 @@ func main() {
 
 ### Performance
 
-See [Gorm performance recommendations](https://gorm.io/docs/performance.html).
+See [GORM performance recommendations](https://gorm.io/docs/performance.html).
 
 #### Disable Default Transaction
 

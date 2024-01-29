@@ -10,7 +10,7 @@
 
 Yokai provides a [fxorm](https://github.com/ankorstore/yokai/tree/main/fxorm) module, allowing your application to interact with databases.
 
-It wraps the [orm](https://github.com/ankorstore/yokai/tree/main/orm) module, based on [Gorm](https://gorm.io/).
+It wraps the [orm](https://github.com/ankorstore/yokai/tree/main/orm) module, based on [GORM](https://gorm.io/).
 
 ## Installation
 
@@ -145,7 +145,7 @@ app:
 modules:
   orm:
     driver: mysql                                               # driver to use
-    dsn: "user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=True"  # database DSN to connect to
+    dsn: "user:pass@tcp(dbhost:3306)/dbname?parseTime=True"     # database DSN to connect to
     config:
       dry_run: false                                            # disabled by default
       skip_default_transaction: false                           # disabled by default
@@ -167,7 +167,7 @@ modules:
       values: true   # by adding or not clear SQL queries parameters values in trace spans, disabled by default
 ```
 
-See [Gorm Config](https://github.com/go-gorm/gorm/blob/master/gorm.go) for more details about the ORM configuration.
+See [GORM Config](https://github.com/go-gorm/gorm/blob/master/gorm.go) for more details about the ORM configuration.
 
 ## Migrations
 
@@ -208,7 +208,7 @@ func RunTest(tb testing.TB, options ...fx.Option) {
 
 ## Performance
 
-See general [Gorm performance recommendations](https://gorm.io/docs/performance.html).
+See general [GORM performance recommendations](https://gorm.io/docs/performance.html).
 
 ### Disable Default Transaction
 
@@ -218,11 +218,6 @@ is not optimized for performance.
 You can disable it in the configuration:
 
 ```yaml title="configs/config.yaml"
-app:
-  name: app
-  env: dev
-  version: 0.1.0
-  debug: false
 modules:
   orm:
     driver: mysql                                               # driver to use
@@ -236,11 +231,6 @@ modules:
 To create a prepared statement when executing any SQL (and cache them to speed up future calls):
 
 ```yaml title="configs/config.yaml"
-app:
-  name: app
-  env: dev
-  version: 0.1.0
-  debug: false
 modules:
   orm:
     driver: mysql                                               # driver to use
@@ -248,6 +238,33 @@ modules:
     config:
       prepare_stmt: true                                        # enable prepared statements
 ```
+
+## Health Check
+
+This module provides a ready to use [OrmProbe](https://github.com/ankorstore/yokai/blob/main/orm/healthcheck/probe.go), to be used by the [fxhealthcheck](fxhealthcheck.md) module.
+
+It will perform a `ping` to the configured database connection to ensure it is healthy.
+
+You just need to register it:
+
+```go title="internal/services.go"
+package internal
+
+import (
+	"github.com/ankorstore/yokai/fxhealthcheck"
+	"github.com/ankorstore/yokai/orm/healthcheck"
+	"go.uber.org/fx"
+)
+
+func ProvideServices() fx.Option {
+	return fx.Options(
+		// register the OrmProbe probe for startup, liveness and readiness checks
+		fxhealthcheck.AsCheckerProbe(healthcheck.NewOrmProbe),
+		// ...
+	)
+}
+```
+
 
 ## Logging
 
@@ -317,11 +334,6 @@ db.statement: "SELECT * FROM `examples` WHERE `examples`.`id` = ? AND `examples`
 This module provide support for the `sqlite` databases, making your tests portable (in memory, no database required):
 
 ```yaml title="configs/config.test.yaml"
-app:
-  name: app
-  env: dev
-  version: 0.1.0
-  debug: false
 modules:
   orm:
     driver: sqlite   # use sqlite driver

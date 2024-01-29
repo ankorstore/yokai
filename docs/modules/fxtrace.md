@@ -52,11 +52,6 @@ This module also provides possibility to configure a `sampler`:
 Example with `stdout` processor (with pretty print) and `parent-based-trace-id-ratio` sampler (ratio=0.5):
 
 ```yaml title="configs/config.yaml"
-app:
-  name: app
-  env: dev
-  version: 0.1.0
-  debug: false
 modules:
   trace:
     processor:
@@ -72,11 +67,6 @@ modules:
 Another example with `otlp-grpc` processor (sending on jaeger:4317) and `always-on` sampler:
 
 ```yaml title="configs/config.yaml"
-app:
-  name: app
-  env: dev
-  version: 0.1.0
-  debug: false
 modules:
   trace:
     processor:
