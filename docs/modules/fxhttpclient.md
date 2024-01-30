@@ -102,7 +102,7 @@ modules:
 
 ## Logging
 
-This module enables to log automatically the requests made by the [Client](https://pkg.go.dev/net/http#Client) and their responses:
+This module enables to log automatically the HTTP requests made by the [Client](https://pkg.go.dev/net/http#Client) and their responses:
 
 ```yaml title="configs/config.yaml"
 modules:
@@ -126,11 +126,11 @@ If `modules.http.client.log.response.level_from_response=true`, the response cod
 - `400 <= code < 500`: log level `warn`
 - `code >= 500`: log level `error`
 
-The http client logging will be based on the [fxlog](fxlog.md) module configuration.
+The HTTP client logging will be based on the [fxlog](fxlog.md) module configuration.
 
 ## Tracing
 
-This module enables to trace automatically the requests made by the [Client](https://pkg.go.dev/net/http#Client):
+This module enables to trace automatically HTTP the requests made by the [Client](https://pkg.go.dev/net/http#Client):
 
 ```yaml title="configs/config.yaml"
 modules:
@@ -140,7 +140,7 @@ modules:
       	enabled: true # to trace http calls, disabled by default
 ```
 
-The http client tracing will be based on the [fxtrace](fxtrace.md) module configuration.
+The HTTP client tracing will be based on the [fxtrace](fxtrace.md) module configuration.
 
 ## Testing
 

@@ -320,6 +320,7 @@ As a result, in your application trace spans attributes:
 ```
 db.system: "mysql"
 db.statement: "SELECT * FROM `examples` WHERE `examples`.`id` = 1 AND `examples`.`deleted_at` IS NULL LIMIT 1"
+...
 ```
 
 If needed, you can obfuscate the SQL values from your SQL queries with `modules.orm.trace.values=false`, this will replace the values in your trace spans with `?`:
@@ -327,6 +328,7 @@ If needed, you can obfuscate the SQL values from your SQL queries with `modules.
 ```
 db.system: "mysql"
 db.statement: "SELECT * FROM `examples` WHERE `examples`.`id` = ? AND `examples`.`deleted_at` IS NULL LIMIT 1"
+...
 ```
 
 ## Testing
