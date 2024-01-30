@@ -61,7 +61,7 @@ func (s *ExampleService) DoSomething() {
 
 ### Metrics registration
 
-Even if convenient, it's recommended to NOT use the [promauto](https://github.com/prometheus/client_golang/tree/main/prometheus/promauto) way of registering metrics, as promauto uses a global registry that leads to data race conditions (especially while testing).
+Even if convenient, it's recommended to NOT use the [promauto](https://github.com/prometheus/client_golang/tree/main/prometheus/promauto) way of registering metrics, as it uses a global registry that leads to data race conditions (especially while testing).
 
 You can instead register your metrics collector with the `AsMetricsCollector()` function:
 
@@ -94,7 +94,7 @@ The [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server w
 
 Following previous example, after invoking the `ExampleService`, the metrics endpoint will return:
 
-```yaml title="[GET] /metrics"
+```makefile title="[GET] /metrics"
 # ...
 # HELP example_total Example counter
 # TYPE example_total counter

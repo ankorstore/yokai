@@ -91,7 +91,7 @@ func TestExample(t *testing.T) {
 		}),
 	)
 
-	// log assertion
+	// log assertion example
 	logtest.AssertHasLogRecord(
 		t,
 		logBuffer,

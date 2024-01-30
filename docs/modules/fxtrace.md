@@ -127,7 +127,7 @@ func TestExample(t *testing.T) {
 		}),
 	)
 
-	// trace assertion success
+	// trace assertion example
 	tracetest.AssertHasTraceSpan(
 		t,
 		traceExporter,
