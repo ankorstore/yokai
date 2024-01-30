@@ -462,6 +462,8 @@ http.status_code: 200
 ...
 ```
 
+The HTTP server tracing will be based on the [fxtrace](fxtrace.md) module configuration.
+
 ## Metrics
 
 You can enable HTTP requests automatic metrics with `modules.http.server.trace.enable=true`:
@@ -509,12 +511,12 @@ This module provides the possibility to perform functional testing, by calling y
 
 You can easily assert on:
 
-- HTTP response
+- HTTP responses
 - logs
 - traces
 - metrics
 
-For example, if we want to test the [ExampleHandler](#handler-registration):
+For example, if you want to test the [ExampleHandler](#handler-registration):
 
 ```go title="internal/handler/example_test.go"
 package handler_test
