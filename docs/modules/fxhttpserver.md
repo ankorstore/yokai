@@ -296,12 +296,6 @@ Configuration reference:
 
 ```yaml title="configs/config.yaml"
 modules:
-  log:
-    level: info
-    output: stdout
-  trace:
-    processor:
-      type: stdout
   http:
     server:
       port: 8080                  # http server port (default 8080)
