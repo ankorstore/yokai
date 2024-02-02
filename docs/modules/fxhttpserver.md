@@ -69,7 +69,7 @@ It is recommended to keep routing definition separated from services definitions
 
 This module offers the possibility to easily register HTTP handlers, groups and middlewares.
 
-### Middleware registration
+### Middlewares registration
 
 You can use the `AsMiddleware()` function to register global middlewares on your HTTP server:
 
@@ -137,7 +137,7 @@ func ProvideRouting() fx.Option {
 }
 ```
 
-### Handler registration
+### Handlers registration
 
 You can use the `AsHandler()` function to register handlers and their middlewares on your HTTP server:
 
@@ -173,7 +173,7 @@ func NewExampleHandler(config *config.Config) *ExampleHandler {
 func (h *ExampleHandler) Handle() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// example of correlated trace span
-		ctx, span := trace.CtxTracer(c.Request().Context()).Start(c.Request().Context(), "example span")
+		ctx, span := trace.CtxTracerProvider(c.Request().Context()).Tracer("example tracer").Start(c.Request().Context(), "example span")
 		defer span.End()
 
 		// example of correlated log
@@ -207,7 +207,7 @@ func ProvideRouting() fx.Option {
 }
 ```
 
-### Handlers group registration
+### Handlers groups registration
 
 You can use the `AsHandlersGroup()` function to register handlers groups and their middlewares on your HTTP
 server:
@@ -246,7 +246,7 @@ func NewOtherHandler(config *config.Config) *OtherHandler {
 func (h *OtherHandler) Handle() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// example of correlated trace span
-		ctx, span := trace.CtxTracer(c.Request().Context()).Start(c.Request().Context(), "other span")
+		ctx, span := trace.CtxTracerProvider(c.Request().Context()).Tracer("example tracer").Start(c.Request().Context(), "other span")
 		defer span.End()
 
 		// example of correlated log
@@ -292,8 +292,6 @@ func ProvideRouting() fx.Option {
 
 ## Configuration
 
-Configuration reference:
-
 ```yaml title="configs/config.yaml"
 modules:
   http:
@@ -326,7 +324,6 @@ modules:
         enabled: true             # disabled by default
         path: templates/*.html    # templates path lookup pattern
 ```
-
 
 If `app.debug=true` (or env var `APP_DEBUG=true`), error responses will not be obfuscated and stack trace will be added.
 
@@ -419,6 +416,12 @@ To get logs correlation in your handlers, you need to retrieve the logger from t
 log.CtxLogger(c.Request().Context()).Info().Msg("example message")
 ```
 
+You can also use the shortcut function `httpserver.CtxLogger()` to work with Echo context:
+
+```go
+httpserver.CtxLogger(c).Info().Msg("example message")
+```
+
 As a result, in your application logs:
 
 ```
@@ -445,10 +448,18 @@ modules:
           - /bar
 ```
 
-To get traces correlation in your handlers, you need to retrieve the tracer from the context with `trace.CtxTracer()`:
+To get traces correlation in your handlers, you need to retrieve the tracer provider from the context with `trace.CtxTracerProvider()`:
 
 ```go
-ctx, span := trace.CtxTracer(c.Request().Context()).Start(c.Request().Context(), "example span")
+ctx := c.Request().Context()
+ctx, span := trace.CtxTracerProvider(ctx).Tracer("example tracer").Start(ctx, "example span")
+defer span.End()
+```
+
+You can also use the shortcut function `httpserver.CtxTracer()` to work with Echo context:
+
+```go
+ctx, span := httpserver.CtxTracer(c).Start(c.Request().Context(), "example span")
 defer span.End()
 ```
 
@@ -466,7 +477,7 @@ The HTTP server tracing will be based on the [fxtrace](fxtrace.md) module config
 
 ## Metrics
 
-You can enable HTTP requests automatic metrics with `modules.http.server.trace.enable=true`:
+You can enable HTTP requests automatic metrics with `modules.http.server.metrics.collect.enable=true`:
 
 ```yaml title="configs/config.yaml"
 modules:
