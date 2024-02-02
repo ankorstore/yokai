@@ -28,10 +28,10 @@ theme:
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
-  logo: 'assets/images/yokai.png'
   favicon: 'assets/images/favicon.ico'
   features:
     - content.code.copy
+    - content.tabs.link
     - navigation.tracking
     - navigation.sections
     - navigation.top
@@ -53,7 +53,13 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.tabbed:
+      alternate_style: true
   - tables
+
+# Extra
+extra_css:
+  - 'assets/stylesheets/extra.css'
 
 # Pages tree
 nav:
@@ -63,6 +69,7 @@ nav:
   - "Demos":
       - "Showroom": applications/showroom.md
   - "Modules":
+      - "Core": modules/fxcore.md
       - "Config": modules/fxconfig.md
       - "Generate": modules/fxgenerate.md
       - "Health Check": modules/fxhealthcheck.md

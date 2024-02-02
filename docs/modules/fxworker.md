@@ -232,7 +232,7 @@ This will collect metrics about:
 - workers successes
 - workers failures
 
-For example, after calling `[GET] /example`, the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will expose in the configured metrics endpoint:
+For example, after starting Yokai's workers pool, the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will expose in the configured metrics endpoint:
 
 ```makefile title="[GET] /metrics"
 # ...
