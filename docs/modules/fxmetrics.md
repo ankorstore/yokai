@@ -100,3 +100,8 @@ Following previous example, after invoking the `ExampleService`, the metrics end
 # TYPE example_total counter
 example_total 1
 ```
+
+You can also get, real time, the status of your metrics on the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) dashboard:
+
+![](../../assets/images/dash-metrics-light.png#only-light)
+![](../../assets/images/dash-metrics-dark.png#only-dark)

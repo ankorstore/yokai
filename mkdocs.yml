@@ -11,6 +11,7 @@ repo_url: https://github.com/ankorstore/yokai
 # Plugins
 plugins:
   - search
+  - glightbox
 
 # Theme
 theme:
@@ -71,3 +72,4 @@ nav:
       - "Metrics": modules/fxmetrics.md
       - "ORM": modules/fxorm.md
       - "Trace": modules/fxtrace.md
+      - "Worker": modules/fxworker.md
