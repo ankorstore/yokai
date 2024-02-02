@@ -12,47 +12,7 @@
 
 ## Documentation
 
-See [Yokai documentation](https://ankorstore.github.io/yokai).
-
-## Fx Modules
-
-Yokai is using [Fx](https://github.com/uber-go/fx) for its plugin system.
-
-Yokai `Fx modules` are the plugins for your Yokai application.
-
-| Fx Module                      | Description                                                             |
-|--------------------------------|-------------------------------------------------------------------------|
-| [fxcore](fxcore)               | Fx core module                                                          |
-| [fxconfig](fxconfig)           | Fx module for [config](config)                                          |
-| [fxgenerate](fxgenerate)       | Fx module for [generate](generate)                                      |
-| [fxhealthcheck](fxhealthcheck) | Fx module for [healthcheck](healthcheck)                                |
-| [fxhttpclient](fxhttpclient)   | Fx module for [httpclient](httpclient)                                  |
-| [fxhttpserver](fxhttpserver)   | Fx module for [httpserver](httpserver)                                  |
-| [fxlog](fxlog)                 | Fx module for [log](log)                                                |
-| [fxmetrics](fxmetrics)         | Fx module for [prometheus](https://github.com/prometheus/client_golang) |
-| [fxorm](fxorm)                 | Fx module for [orm](orm)                                                |
-| [fxtrace](fxtrace)             | Fx module for [trace](trace)                                            |
-| [fxworker](fxworker)           | Fx module for [worker](worker)                                          |
-
-They can also be used in any [Fx](https://github.com/uber-go/fx) based Go application.
-
-## Modules
-
-Yokai `modules` are the foundation of the framework.
-
-| Module                     | Description                                                                                                                                             |
-|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [config](config)           | Config module based on [Viper](https://github.com/spf13/viper)                                                                                          |
-| [generate](generate)       | Generation module based on [Google UUID](https://github.com/google/uuid)                                                                                |
-| [healthcheck](healthcheck) | Health check module compatible with [K8s probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
-| [httpclient](httpclient)   | Http client module based on [net/http](https://pkg.go.dev/net/http)                                                                                     |
-| [httpserver](httpserver)   | Http server module based on [Echo](https://echo.labstack.com/)                                                                                          |
-| [log](log)                 | Logging module based on [Zerolog](https://github.com/rs/zerolog)                                                                                        |
-| [orm](orm)                 | ORM module based on [Gorm](https://gorm.io/)                                                                                                            |
-| [trace](trace)             | Tracing module based on [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-go)                                                             |
-| [worker](worker)           | Worker module based on [sync](https://pkg.go.dev/sync)                                                                                                  |
-
-They can also be used in any Go application (no Yokai or [Fx](https://github.com/uber-go/fx) dependencies).
+The Yokai documenration is available at [https://ankorstore.github.io/yokai](https://ankorstore.github.io/yokai).
 
 ## Contributing
 
