@@ -12,7 +12,7 @@
 
 ## Documentation
 
-The Yokai documenration is available at [https://ankorstore.github.io/yokai](https://ankorstore.github.io/yokai).
+Yokai's documentation is available at [https://ankorstore.github.io/yokai](https://ankorstore.github.io/yokai).
 
 ## Contributing
 
