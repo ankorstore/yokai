@@ -4,7 +4,7 @@
 [![Go version](https://img.shields.io/badge/Go-1.20-blue)](https://go.dev/)
 [![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR)](https://codecov.io/gh/ankorstore/yokai)
 
-> Simple, modular, and observable Go framework.
+> Simple, modular, and observable Go framework for backend applications.
 
 <p align="center">
   <img src="docs/assets/images/yokai.png" width="350" height="350" />
@@ -13,6 +13,17 @@
 ## Documentation
 
 Yokai's documentation is available at [https://ankorstore.github.io/yokai](https://ankorstore.github.io/yokai).
+
+## Getting started
+
+Yokai provides templates to start creating your appliations:
+
+- [HTTP application template](https://github.com/ankorstore/yokai-http-template)
+- [Worker application template](https://github.com/ankorstore/yokai-worker-template)
+
+## Showroom
+
+Yokai provides a [showroom for demo application](https://github.com/ankorstore/yokai-showroom), where you can find several applications implementations examples.
 
 ## Contributing
 
