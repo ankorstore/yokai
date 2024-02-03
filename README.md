@@ -16,7 +16,7 @@ Yokai's documentation is available at [https://ankorstore.github.io/yokai](https
 
 ## Getting started
 
-Yokai provides templates to start creating your appliations:
+Yokai provides templates to start creating your applications:
 
 - [HTTP application template](https://github.com/ankorstore/yokai-http-template)
 - [Worker application template](https://github.com/ankorstore/yokai-worker-template)
