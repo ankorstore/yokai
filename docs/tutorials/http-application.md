@@ -159,7 +159,7 @@ networks:
 
 And the configuration in your `.env` file:
 
-```
+```env title=".env"
 APP_ENV=dev
 APP_DEBUG=true
 MYSQL_HOST=gohper-api-database
@@ -207,7 +207,7 @@ var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 
 You can then provide the module configuration:
 
-```yaml
+```yaml title="configs/config.yaml"
 modules:
   orm:
     driver: mysql
@@ -271,6 +271,38 @@ INF starting ORM auto migration service=gopher-api
 INF ORM auto migration success service=gopher-api
 ```
 
+#### Health check
+
+Yokai's [fxhealthcheck](../modules/fxhealthcheck.md) module allows the core HTTP server to expose health check endpoints, useful if your application runs on [Kunernetes](https://kubernetes.io/). It will execute the [registered probes](../modules/fxhealthcheck.md#usage).
+
+The [fxorm](../modules/fxorm.md#health-check) provides a ready to use [OrmProbe](https://github.com/ankorstore/yokai/blob/main/orm/healthcheck/probe.go), that will `ping` the database connection to check if it's healthy.
+
+To activate it, you can use the `fxhealthcheck.AsCheckerProbe()` function in `internal/services.go`:
+
+```go title="internal/services.go"
+package internal
+
+import (
+	"github.com/ankorstore/yokai/fxhealthcheck"
+	"github.com/ankorstore/yokai/orm/healthcheck"
+	"go.uber.org/fx"
+)
+
+func ProvideServices() fx.Option {
+	return fx.Options(
+		// orm probe
+		fxhealthcheck.AsCheckerProbe(healthcheck.NewOrmProbe),
+	)
+}
+```
+
+This will register the ORM probe for `startup`, `liveness` and `readiness` checks.
+
+You can check that it's properly activated on the [core dashboard](http://localhost:8081):
+
+![](../../assets/images/http-tutorial-core-hc-light.png#only-light)
+![](../../assets/images/http-tutorial-core-hc-dark.png#only-dark)
+
 ### Repository implementation
 
 We can create a `GopherRepository` to manage our gophers, with:
@@ -327,12 +359,17 @@ We then need to register the repository in `internal/services.go`:
 package internal
 
 import (
+	"github.com/ankorstore/yokai/fxhealthcheck"
+	"github.com/ankorstore/yokai/orm/healthcheck"
 	"github.com/foo/bar/internal/repository"
 	"go.uber.org/fx"
 )
 
 func ProvideServices() fx.Option {
 	return fx.Options(
+		// orm probe
+		fxhealthcheck.AsCheckerProbe(healthcheck.NewOrmProbe),
+		// services
 		fx.Provide(
 			// gophers repository
 			repository.NewGopherRepository,
@@ -385,6 +422,8 @@ We then need to register the service in `internal/services.go`:
 package internal
 
 import (
+	"github.com/ankorstore/yokai/fxhealthcheck"
+	"github.com/ankorstore/yokai/orm/healthcheck"
 	"github.com/foo/bar/internal/repository"
 	"github.com/foo/bar/internal/service"
 	"go.uber.org/fx"
@@ -392,6 +431,9 @@ import (
 
 func ProvideServices() fx.Option {
 	return fx.Options(
+		// orm probe
+		fxhealthcheck.AsCheckerProbe(healthcheck.NewOrmProbe),
+		// services
 		fx.Provide(
 			// gophers repository
 			repository.NewGopherRepository,
@@ -544,7 +586,7 @@ import (
 func ProvideRouting() fx.Option {
 	return fx.Options(
 		fxhttpserver.AsHandler("GET", "", handler.NewExampleHandler),
-		// gopher handlers
+		// gopher handlers group
 		fxhttpserver.AsHandlersGroup(
 			"/gophers",
 			[]*fxhttpserver.HandlerRegistration{
@@ -692,7 +734,7 @@ The [fxhttpserver](../modules/fxhttpserver.md#logging) module automatically inje
 
 First let's activate the [fxtrace](../modules/fxtrace.md#configuration) exporter to `stdout`:
 
-```yaml
+```yaml title="configs/config.yaml"
 modules:
   trace:
     processor: stdout
@@ -829,7 +871,9 @@ To collect this metric, we need to register it with `fxmetrics.AsMetricsCollecto
 package internal
 
 import (
+	"github.com/ankorstore/yokai/fxhealthcheck"
 	"github.com/ankorstore/yokai/fxmetrics"
+	"github.com/ankorstore/yokai/orm/healthcheck"
 	"github.com/foo/bar/internal/repository"
 	"github.com/foo/bar/internal/service"
 	"go.uber.org/fx"
@@ -837,6 +881,9 @@ import (
 
 func ProvideServices() fx.Option {
 	return fx.Options(
+		// orm probe
+		fxhealthcheck.AsCheckerProbe(healthcheck.NewOrmProbe),
+		// services
 		fx.Provide(
 			// gophers repository
 			repository.NewGopherRepository,
