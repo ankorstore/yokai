@@ -42,7 +42,6 @@ import (
 	"github.com/ankorstore/yokai/fxhttpserver"
 )
 
-
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 	// load fxhttpserver module
 	fxhttpserver.FxHttpServerModule,

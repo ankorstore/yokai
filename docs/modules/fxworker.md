@@ -42,7 +42,6 @@ import (
 	"github.com/ankorstore/yokai/fxworker"
 )
 
-
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 	// load fxworker module
 	fxworker.FxWorkerModule,

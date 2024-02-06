@@ -71,6 +71,7 @@ nav:
   - "Overview": 'index.md'
   - "Getting started":
       - "HTTP application": tutorials/http-application.md
+      - "Worker application": tutorials/worker-application.md
   - "Applications":
       - "Templates": applications/templates.md
       - "Demos": applications/demos.md

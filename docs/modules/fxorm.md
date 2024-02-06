@@ -34,7 +34,6 @@ import (
 	"github.com/ankorstore/yokai/fxorm"
 )
 
-
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 	// load fxorm module
 	fxorm.FxOrmModule,
@@ -190,7 +189,7 @@ import (
 	"github.com/foo/bar/internal/model"
 )
 
-//...
+// ...
 
 func Run(ctx context.Context) {
 	Bootstrapper.WithContext(ctx).RunApp(
@@ -201,10 +200,12 @@ func Run(ctx context.Context) {
 }
 
 func RunTest(tb testing.TB, options ...fx.Option) {
-	//...
+	// ...
 
 	Bootstrapper.RunTestApp(
 		tb,
+		// test options
+		fx.Options(options...),
 		// run ORM migrations for the ExampleModel model for tests
 		fxorm.RunFxOrmAutoMigrate(&model.ExampleModel{}),
 		// ...
