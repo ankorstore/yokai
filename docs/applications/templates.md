@@ -1,8 +1,12 @@
-# Templates
+---
+icon: material/puzzle-outline
+---
 
-> Yokai provides ready to use application templates to help you start your projects.
+# :material-puzzle-outline: Applications templates
 
-## HTTP application template
+> Yokai provides ready to use application templates to start your projects.
+
+## :material-puzzle-outline: HTTP application template
 
 You can [use this template](https://github.com/ankorstore/yokai-http-template) to create your `HTTP application`.
 
@@ -14,7 +18,7 @@ It provides:
 
 Available on [:fontawesome-brands-github: GitHub](https://github.com/ankorstore/yokai-http-template).
 
-## Worker application template
+## :material-puzzle-outline: Worker application template
 
 You can [use this template](https://github.com/ankorstore/yokai-worker-template) to create your `worker application`.
 

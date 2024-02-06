@@ -1,4 +1,8 @@
-# ORM Module
+---
+icon: material/cube-outline
+---
+
+# :material-cube-outline: ORM Module
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxorm-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxorm-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxorm)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxorm)
@@ -171,9 +175,11 @@ See [GORM Config](https://github.com/go-gorm/gorm/blob/master/gorm.go) for more 
 
 ## Migrations
 
-This module provides the possibility to run automatically your [schemas migrations](https://gorm.io/docs/migration.html).
+This module provides the possibility to run your [schemas migrations](https://gorm.io/docs/migration.html).
 
-You just need to pass the list of models you want to auto migrate to `RunFxOrmAutoMigrate()`:
+### At bootstrap
+
+To run the migrations automatically at bootstrap, you just need to pass the list of models you want to auto migrate to `RunFxOrmAutoMigrate()`:
 
 ```go title="internal/bootstrap.go"
 package internal
@@ -205,6 +211,59 @@ func RunTest(tb testing.TB, options ...fx.Option) {
 	)
 }
 ```
+
+### Dedicated command
+
+A preferable way to run migrations is via a dedicated command.
+
+You can create it in the `cmd/` directory of your application:
+
+```go title="cmd/migrate.go"
+package cmd
+
+import (
+	"github.com/ankorstore/yokai/fxcore"
+	"github.com/ankorstore/yokai/fxorm"
+	"github.com/ankorstore/yokai/log"
+	"github.com/foo/bar/internal/model"
+	"github.com/spf13/cobra"
+	"go.uber.org/fx"
+	"gorm.io/gorm"
+)
+
+func init() {
+	rootCmd.AddCommand(migrateCmd)
+}
+
+var migrateCmd = &cobra.Command{
+	Use:   "migrate",
+	Short: "Run application ORM migrations",
+	Run: func(cmd *cobra.Command, args []string) {
+		// bootstrap, apply migrations then shutdown
+		fxcore.NewBootstrapper().
+            WithOptions(fxorm.FxOrmModule).
+            WithContext(cmd.Context()).
+            RunApp(
+                fx.Invoke(func(logger *log.Logger, db *gorm.DB, sd fx.Shutdowner) error {
+                    logger.Info().Msg("starting ORM auto migration")
+
+					// run ORM migrations for the ExampleModel model
+                    err := db.AutoMigrate(&model.ExampleModel)
+                    if err != nil {
+                        logger.Error().Err(err).Msg("error during ORM auto migration")
+                    } else {
+                        logger.Info().Msg("ORM auto migration success")
+                    }
+    
+					// shutdown
+                    return sd.Shutdown()
+                }),
+            )
+	},
+}
+```
+
+You can then execute this command when needed by running `app migrate` from a dedicated step in your deployment pipeline.
 
 ## Performance
 

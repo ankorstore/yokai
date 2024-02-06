@@ -1,8 +1,12 @@
-# Showroom
+---
+icon: material/application-cog-outline
+---
 
-> Yokai provides a showroom for demo application.
+# :material-application-cog-outline: Applications demos
 
-## HTTP application demo
+> Yokai provides a [showroom](https://github.com/ankorstore/yokai-showroom) for its demo applications.
+
+## :material-application-cog-outline: HTTP application demo
 
 This [demo application](https://github.com/ankorstore/yokai-showroom/tree/main/http-demo) is a simple HTTP REST API (CRUD) to manage [gophers](https://go.dev/blog/gopher).
 
@@ -15,7 +19,7 @@ It provides:
 
 Available on [:fontawesome-brands-github: GitHub](https://github.com/ankorstore/yokai-showroom/tree/main/http-demo).
 
-## Worker application demo
+## :material-application-cog-outline: Worker application demo
 
 This [demo application](https://github.com/ankorstore/yokai-showroom/tree/main/worker-demo) provides is a simple worker example subscribing to [Pub/Sub](https://cloud.google.com/pubsub).
 

@@ -1,8 +1,9 @@
-#main-image {
+#overview-logo {
     background-color: #16181dde;
     background-position: center center;
-    border-radius: 50px;
+    border-radius: 50%;
     background-repeat: no-repeat;
     display: block;
     margin: 0 auto;
+    border: 5px solid hsla( 225deg ,15%,8%,1);
 }

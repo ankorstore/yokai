@@ -1,4 +1,8 @@
-# Config Module
+---
+icon: material/cube-outline
+---
+
+# :material-cube-outline: Config Module
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxconfig-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxconfig-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxconfig)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxconfig)

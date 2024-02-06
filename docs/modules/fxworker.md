@@ -1,4 +1,8 @@
-# Worker Module
+---
+icon: material/cube-outline
+---
+
+# :material-cube-outline: Worker Module
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxworker-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxworker-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxworker)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxworker)
