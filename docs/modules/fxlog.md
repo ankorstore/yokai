@@ -1,4 +1,8 @@
-# Log Module
+---
+icon: material/cube-outline
+---
+
+# :material-cube-outline: Log Module
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxlog-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxlog-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxlog)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxlog)

@@ -1,4 +1,8 @@
-# Metrics Module
+---
+icon: material/cube-outline
+---
+
+# :material-cube-outline: Metrics Module
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxmetrics-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxmetrics-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxmetrics)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxmetrics)

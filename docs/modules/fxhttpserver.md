@@ -1,4 +1,8 @@
-# HTTP Server Module
+---
+icon: material/cube-outline
+---
+
+# :material-cube-outline: HTTP Server Module
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxhttpserver-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxhttpserver-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxhttpserver)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxhttpserver)
@@ -37,7 +41,6 @@ import (
 	"github.com/ankorstore/yokai/fxcore"
 	"github.com/ankorstore/yokai/fxhttpserver"
 )
-
 
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 	// load fxhttpserver module

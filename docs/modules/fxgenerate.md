@@ -1,4 +1,8 @@
-# Generate Module
+---
+icon: material/cube-outline
+---
+
+# :material-cube-outline: Generate Module
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxgenerate-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxgenerate-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxgenerate)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxgenerate)

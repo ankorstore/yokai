@@ -1,4 +1,8 @@
-# HTTP Client Module
+---
+icon: material/cube-outline
+---
+
+# :material-cube-outline: HTTP Client Module
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxhttpclient-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxhttpclient-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxhttpclient)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxhttpclient)
@@ -29,7 +33,6 @@ import (
 	"github.com/ankorstore/yokai/fxcore"
 	"github.com/ankorstore/yokai/fxhttpclient"
 )
-
 
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 	// load fxhttpclient module

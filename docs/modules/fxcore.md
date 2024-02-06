@@ -1,4 +1,8 @@
-# Core Module
+---
+icon: material/cube-outline
+---
+
+# :material-cube-outline: Core Module
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxcore-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxcore-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxcore)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxcore)

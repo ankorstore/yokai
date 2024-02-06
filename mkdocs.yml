@@ -2,7 +2,7 @@
 site_name: Yokai
 site_url: https://ankorstore.github.io/yokai
 site_description: >-
-  Yokai: a simple, modular, and observable Go framework.
+  Yokai: a simple, modular, and observable Go framework for backend applications.
 
 # Repository
 repo_name: ankorstore/yokai
@@ -11,7 +11,9 @@ repo_url: https://github.com/ankorstore/yokai
 # Plugins
 plugins:
   - search
-  - glightbox
+  - glightbox:
+      skip_classes:
+        - skip-glightbox
 
 # Theme
 theme:
@@ -28,6 +30,9 @@ theme:
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
+  icon:
+    logo: material/book-open-page-variant-outline
+    repo: material/github
   favicon: 'assets/images/favicon.ico'
   features:
     - content.code.copy
@@ -65,9 +70,11 @@ extra_css:
 nav:
   - "Overview": 'index.md'
   - "Getting started":
+      - "HTTP application": tutorials/http-application.md
+      - "Worker application": tutorials/worker-application.md
+  - "Applications":
       - "Templates": applications/templates.md
-  - "Demos":
-      - "Showroom": applications/showroom.md
+      - "Demos": applications/demos.md
   - "Modules":
       - "Core": modules/fxcore.md
       - "Config": modules/fxconfig.md

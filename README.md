@@ -7,7 +7,7 @@
 > Simple, modular, and observable Go framework for backend applications.
 
 <p align="center">
-  <img src="docs/assets/images/yokai.png" width="350" height="350" />
+  <img src="docs/assets/images/yokai-bck.png" width="350" height="350" />
 </p>
 
 ## Documentation
@@ -21,7 +21,7 @@ Yokai provides templates to start creating your applications:
 - [HTTP application template](https://github.com/ankorstore/yokai-http-template)
 - [Worker application template](https://github.com/ankorstore/yokai-worker-template)
 
-## Showroom
+## Demos
 
 Yokai provides a [showroom for demo application](https://github.com/ankorstore/yokai-showroom), where you can find several applications implementations examples.
 

@@ -1,4 +1,8 @@
-# Health Check Module
+---
+icon: material/cube-outline
+---
+
+# :material-cube-outline: Health Check Module
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxhealthcheck-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxhealthcheck-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxhealthcheck)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxhealthcheck)

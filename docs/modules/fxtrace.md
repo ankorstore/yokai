@@ -1,4 +1,8 @@
-# Trace Module
+---
+icon: material/cube-outline
+---
+
+# :material-cube-outline: Trace Module
 
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxtrace-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxtrace-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxtrace)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxtrace)
