@@ -940,6 +940,35 @@ modules:
     dsn: ":memory:"
 ```
 
+We also need to update the in bootstrapper the `RunTest()` function to apply your model migrations via `RunFxOrmAutoMigrate()`:
+
+```go title="internal/bootstrap.go"
+package internal
+
+import (
+	"testing"
+	
+	"github.com/ankorstore/yokai/fxcore"
+	"github.com/ankorstore/yokai/fxorm"
+	"github.com/foo/bar/internal/model"
+	"go.uber.org/fx"
+)
+
+// ...
+
+func RunTest(tb testing.TB, options ...fx.Option) {
+	// ...
+
+	Bootstrapper.RunTestApp(
+		tb,
+		fx.Options(options...),
+		fxorm.RunFxOrmAutoMigrate(&model.Gopher{}),
+	)
+}
+```
+
+This will enable your tests to use the SQLite database automatically with the schema matching your model.
+
 ### Tests implementation
 
 We can now provide `functional` tests for your application endpoints.
