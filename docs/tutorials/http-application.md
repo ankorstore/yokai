@@ -100,6 +100,13 @@ From there, you can get:
 - access to the configured health check endpoints
 - access to the loaded modules information (when exposed)
 
+Here we can see for example the [fxhttpserver](../modules/fxhttpserver.md) information in the `Modules` section:
+
+- server port
+- active routes
+- error handler
+- etc
+
 See [fxcore](../modules/fxcore.md) documentation for more information.
 
 ## Application implementation
@@ -917,11 +924,11 @@ Yokai's [bootstrapper](../modules/fxcore.md#bootstrap) provides a `RunTest()` fu
 
 This will automatically set the env var `APP_ENV=test`, and will [load your test configuration](../modules/fxconfig.md#dynamic-env-overrides).
 
-For our tests:
+For our tests, we can configure:
 
-- we can configure the [fxlog](../modules/fxlog.md#testing) module to send logs to a `test buffer`
-- we can configure the [fxtrace](../modules/fxtrace.md#testing) module to send trace spans to a `test exporter`
-- we can configure the [fxorm](../modules/fxorm.md#testing) module to use an [SQLite database](https://www.sqlite.org/index.html), in memory, to make our tests easily portable on any CI pipeline (no need to spin up a MySQL instance)
+- the [fxlog](../modules/fxlog.md#testing) module to send logs to a `test buffer`
+- the [fxtrace](../modules/fxtrace.md#testing) module to send trace spans to a `test exporter`
+- the [fxorm](../modules/fxorm.md#testing) module to use an [SQLite database](https://www.sqlite.org/index.html), in memory, to make our tests easily portable on any CI pipeline (no need to spin up a MySQL instance)
 
 Let's set the testing configuration in `config/config.test.yaml` and activate the `debug`:
 
@@ -973,7 +980,7 @@ This will enable your tests to use the SQLite database automatically with the sc
 
 We can now provide `functional` tests for your application endpoints.
 
-Let's create our `ListGopherHandler` test in the `gopher_test` package:
+Let's create our `TestListGophersHandlerSuccess` test in the `gopher_test` package:
 
 ```go title="internal/handler/gopher/list_test.go"
 package gopher_test
