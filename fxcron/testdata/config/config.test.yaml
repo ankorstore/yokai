@@ -1,0 +1,18 @@
+modules:
+  cron:
+    scheduler:
+      location: Local
+      concurrency:
+        limit:
+          enabled: true
+          max: 3
+    jobs:
+      execution:
+        limit:
+          enabled: true
+          max: 5
+    metrics:
+      collect:
+        enabled: true
+        namespace: foo
+        subsystem: bar

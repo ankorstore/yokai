@@ -56,6 +56,11 @@
       "component": "fxconfig",
       "tag-separator": "/"
     },
+    "fxcron": {
+      "release-type": "go",
+      "component": "fxcron",
+      "tag-separator": "/"
+    },
     "fxgenerate": {
       "release-type": "go",
       "component": "fxgenerate",

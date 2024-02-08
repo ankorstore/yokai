@@ -1,0 +1,43 @@
+app:
+  name: test
+  version: 0.1.0
+modules:
+  log:
+    level: debug
+    output: test
+  trace:
+    processor:
+      type: test
+  cron:
+    scheduler:
+      seconds: true
+      concurrency:
+        limit:
+          enabled: false
+          max: 3
+          mode: wait
+      stop:
+        timeout: 5s
+    jobs:
+      execution:
+        start:
+          immediately: true
+        limit:
+          enabled: false
+          max: 3
+      singleton:
+        enabled: true
+        mode: wait
+    log:
+      enabled: true
+      exclude:
+        - foo
+        - bar
+    metrics:
+      buckets: 1, 10, 100
+    trace:
+      enabled: true
+      exclude:
+        - foo
+        - bar
+
