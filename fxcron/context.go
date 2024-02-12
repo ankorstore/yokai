@@ -8,9 +8,13 @@ import (
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
+// CtxCronJobNameKey is a contextual struct key.
 type CtxCronJobNameKey struct{}
+
+// CtxCronJobExecutionIdKey is a contextual struct key.
 type CtxCronJobExecutionIdKey struct{}
 
+// CtxCronJobName returns the contextual cron job name.
 func CtxCronJobName(ctx context.Context) string {
 	if name, ok := ctx.Value(CtxCronJobNameKey{}).(string); ok {
 		return name
@@ -19,6 +23,7 @@ func CtxCronJobName(ctx context.Context) string {
 	}
 }
 
+// CtxCronJobExecutionId returns the contextual cron job execution id.
 func CtxCronJobExecutionId(ctx context.Context) string {
 	if id, ok := ctx.Value(CtxCronJobExecutionIdKey{}).(string); ok {
 		return id
@@ -27,10 +32,12 @@ func CtxCronJobExecutionId(ctx context.Context) string {
 	}
 }
 
+// CtxLogger returns the contextual logger.
 func CtxLogger(ctx context.Context) *log.Logger {
 	return log.CtxLogger(ctx)
 }
 
+// CtxTracer returns the contextual tracer.
 func CtxTracer(ctx context.Context) oteltrace.Tracer {
 	return trace.CtxTracerProvider(ctx).Tracer(ModuleName)
 }

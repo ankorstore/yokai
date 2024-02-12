@@ -40,6 +40,7 @@ var defaultBuckets = []float64{
 	5000.0,
 }
 
+// CronJobMetrics is the metrics handler for the cron jobs.
 type CronJobMetrics struct {
 	registered bool
 	namespace  string
@@ -48,14 +49,17 @@ type CronJobMetrics struct {
 	counter    *prometheus.CounterVec
 }
 
+// NewCronJobMetrics returns a new [CronJobMetrics] instance for provided metrics namespace and subsystem.
 func NewCronJobMetrics(namespace string, subsystem string) *CronJobMetrics {
 	return create(namespace, subsystem, defaultBuckets)
 }
 
+// NewCronJobMetricsWithBuckets returns a new [CronJobMetrics] instance for provided metrics namespace, subsystem and buckets.
 func NewCronJobMetricsWithBuckets(namespace string, subsystem string, buckets []float64) *CronJobMetrics {
 	return create(namespace, subsystem, buckets)
 }
 
+// Register allows the [CronJobMetrics] to register against a provided [prometheus.Registry].
 func (m *CronJobMetrics) Register(registry *prometheus.Registry) error {
 	err := registry.Register(m.histogram)
 	if err != nil {
@@ -72,6 +76,7 @@ func (m *CronJobMetrics) Register(registry *prometheus.Registry) error {
 	return err
 }
 
+// ObserveCronJobExecutionDuration observes the duration of a cron job execution.
 func (m *CronJobMetrics) ObserveCronJobExecutionDuration(jobName string, jobDuration float64) *CronJobMetrics {
 	if m.registered {
 		m.histogram.WithLabelValues(Sanitize(jobName)).Observe(jobDuration)
@@ -80,6 +85,7 @@ func (m *CronJobMetrics) ObserveCronJobExecutionDuration(jobName string, jobDura
 	return m
 }
 
+// IncrementCronJobExecutionSuccess increments the number of execution successes for a given cron job.
 func (m *CronJobMetrics) IncrementCronJobExecutionSuccess(jobName string) *CronJobMetrics {
 	if m.registered {
 		m.counter.WithLabelValues(Sanitize(jobName), EXECUTION_SUCCESS).Inc()
@@ -88,6 +94,7 @@ func (m *CronJobMetrics) IncrementCronJobExecutionSuccess(jobName string) *CronJ
 	return m
 }
 
+// IncrementCronJobExecutionError increments the number of execution errors for a given cron job.
 func (m *CronJobMetrics) IncrementCronJobExecutionError(jobName string) *CronJobMetrics {
 	if m.registered {
 		m.counter.WithLabelValues(Sanitize(jobName), EXECUTION_ERROR).Inc()

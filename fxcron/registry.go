@@ -7,22 +7,26 @@ import (
 	"go.uber.org/fx"
 )
 
+// CronJob is the interface for cron jobs.
 type CronJob interface {
 	Name() string
 	Run(ctx context.Context) error
 }
 
+// CronJobRegistry is the registry collecting cron jobs and their definitions.
 type CronJobRegistry struct {
 	cronJobs           []CronJob
 	cronJobDefinitions []CronJobDefinition
 }
 
+// FxCronJobRegistryParam allows injection of the required dependencies in [NewFxCronJobRegistry].
 type FxCronJobRegistryParam struct {
 	fx.In
 	CronJobs            []CronJob           `group:"cron-jobs"`
 	CronJobsDefinitions []CronJobDefinition `group:"cron-jobs-definitions"`
 }
 
+// NewFxCronJobRegistry returns as new [CronJobRegistry].
 func NewFxCronJobRegistry(p FxCronJobRegistryParam) *CronJobRegistry {
 	return &CronJobRegistry{
 		cronJobs:           p.CronJobs,
@@ -30,6 +34,7 @@ func NewFxCronJobRegistry(p FxCronJobRegistryParam) *CronJobRegistry {
 	}
 }
 
+// ResolveCronJobs resolves a list of [ResolvedCronJob] from their definitions.
 func (r *CronJobRegistry) ResolveCronJobs() ([]*ResolvedCronJob, error) {
 	resolvedCronJobs := []*ResolvedCronJob{}
 

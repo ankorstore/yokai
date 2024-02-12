@@ -25,6 +25,9 @@ const (
 	TraceSpanAttributeCronJobExecutionId = "CronJobExecutionID"
 )
 
+// FxCronModule is the [Fx] cron module.
+//
+// [Fx]: https://github.com/uber-go/fx
 var FxCronModule = fx.Module(
 	ModuleName,
 	fx.Provide(
@@ -39,6 +42,7 @@ var FxCronModule = fx.Module(
 	),
 )
 
+// FxCronParam allows injection of the required dependencies in [NewFxCron].
 type FxCronParam struct {
 	fx.In
 	LifeCycle       fx.Lifecycle
@@ -51,6 +55,8 @@ type FxCronParam struct {
 	MetricsRegistry *prometheus.Registry
 }
 
+// NewFxCron returns a new [gocron.Scheduler].
+//
 //nolint:cyclop,gocognit
 func NewFxCron(p FxCronParam) (gocron.Scheduler, error) {
 	appDebug := p.Config.AppDebug()

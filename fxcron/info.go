@@ -8,11 +8,13 @@ import (
 
 const NON_AVAILABLE = "n/a"
 
+// FxCronModuleInfo is a module info collector for fxcore.
 type FxCronModuleInfo struct {
 	scheduler gocron.Scheduler
 	registry  *CronJobRegistry
 }
 
+// NewFxCronModuleInfo returns a new [FxCronModuleInfo].
 func NewFxCronModuleInfo(scheduler gocron.Scheduler, registry *CronJobRegistry) *FxCronModuleInfo {
 	return &FxCronModuleInfo{
 		scheduler: scheduler,
@@ -20,10 +22,12 @@ func NewFxCronModuleInfo(scheduler gocron.Scheduler, registry *CronJobRegistry) 
 	}
 }
 
+// Name return the name of the module info.
 func (i *FxCronModuleInfo) Name() string {
 	return ModuleName
 }
 
+// Data return the data of the module info.
 func (i *FxCronModuleInfo) Data() map[string]interface{} {
 	scheduledJobs := i.scheduler.Jobs()
 

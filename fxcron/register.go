@@ -5,6 +5,7 @@ import (
 	"go.uber.org/fx"
 )
 
+// AsCronJob registers a cron job into Fx, with an optional list of [gocron.JobOption].
 func AsCronJob(j any, expression string, options ...gocron.JobOption) fx.Option {
 	return fx.Options(
 		fx.Provide(
