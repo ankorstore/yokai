@@ -1,6 +1,7 @@
 package fxcron_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/ankorstore/yokai/fxcron"
@@ -46,6 +47,8 @@ func TestResolveCronJobsSuccess(t *testing.T) {
 	assert.Equal(t, cronJob, resolvedCronJobs[0].Implementation())
 	assert.Equal(t, cronJobExpression, resolvedCronJobs[0].Expression())
 	assert.Equal(t, cronJobOptions, resolvedCronJobs[0].Options())
+	assert.Equal(t, cronJob.Name(), resolvedCronJobs[0].Implementation().Name())
+	assert.Nil(t, resolvedCronJobs[0].Implementation().Run(context.Background()))
 }
 
 func TestResolveCronJobsFailure(t *testing.T) {

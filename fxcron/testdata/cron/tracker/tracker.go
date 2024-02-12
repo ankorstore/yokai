@@ -31,9 +31,10 @@ func (t *CronExecutionTracker) JobExecutions(jobName string) int {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 
+	jobExecutions := 0
 	if executions, ok := t.executions[jobName]; ok {
-		return executions
+		jobExecutions = executions
 	}
 
-	return 0
+	return jobExecutions
 }
