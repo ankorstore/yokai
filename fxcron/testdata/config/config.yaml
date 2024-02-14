@@ -33,8 +33,6 @@ modules:
       exclude:
         - foo
         - bar
-    metrics:
-      buckets: 1, 10, 100
     trace:
       enabled: true
       exclude:

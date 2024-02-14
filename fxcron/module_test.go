@@ -30,6 +30,10 @@ import (
 func TestModule(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("APP_ENV", "test")
+	t.Setenv("CRON_START_IMMEDIATELY", "true")
+	t.Setenv("CRON_METRICS_BUCKETS", "1,10,100")
+	t.Setenv("CRON_METRICS_NAMESPACE", "foo")
+	t.Setenv("CRON_METRICS_SUBSYSTEM", "bar")
 
 	var cronTracker *tracker.CronExecutionTracker
 	var logBuffer logtest.TestLogBuffer
@@ -302,6 +306,65 @@ func TestModule(t *testing.T) {
 		"foo_bar_job_execution_total",
 	)
 	assert.NoError(t, err)
+}
+
+func TestModuleInfo(t *testing.T) {
+	startAt := time.Now().Add(5 * time.Second)
+
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("APP_ENV", "test")
+	t.Setenv("CRON_START_IMMEDIATELY", "false")
+	t.Setenv("CRON_START_AT", startAt.Format(time.RFC3339))
+	t.Setenv("CRON_CONCURRENCY_LIMIT_MODE", "reschedule")
+	t.Setenv("CRON_SINGLETON_ENABLED", "true")
+	t.Setenv("CRON_SINGLETON_MODE", "reschedule")
+
+	var modulesInfo []any
+
+	app := fxtest.New(
+		t,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxcron.FxCronModule,
+		fx.Options(
+			// cron jobs registration
+			fxcron.AsCronJob(job.NewDummyCron, `*/1 * * * * *`),
+		),
+		// extraction
+		fx.Populate(
+			fx.Annotate(
+				&modulesInfo,
+				fx.ParamTags(`group:"core-module-infos"`),
+			),
+		),
+		// invoke scheduler
+		fx.Invoke(func(scheduler gocron.Scheduler) {}),
+	).RequireStart()
+
+	// scheduling assertions
+	assert.Equal(
+		t,
+		map[string]interface{}{
+			"jobs": map[string]interface{}{
+				"scheduled": map[string]interface{}{
+					"dummy": map[string]interface{}{
+						"expression": `*/1 * * * * *`,
+						"last_run":   time.Time{}.Format(time.RFC3339),
+						"next_run":   startAt.Format(time.RFC3339),
+						"type":       "*job.DummyCron",
+					},
+				},
+				"unscheduled": map[string]interface{}{},
+			},
+		},
+		modulesInfo[0].(*fxcron.FxCronModuleInfo).Data(),
+	)
+
+	app.RequireStop()
 }
 
 func TestModuleDecoration(t *testing.T) {

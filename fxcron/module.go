@@ -209,19 +209,11 @@ func NewFxCron(p FxCronParam) (gocron.Scheduler, error) {
 		)
 
 		if err != nil {
-			cronLogger.Error().Err(err).Msgf(
-				"job registration error for job %s with %s",
-				currentCronJobName,
-				currentCronJob.Expression(),
-			)
+			cronLogger.Error().Err(err).Msgf("job registration error for job %s with %s", currentCronJobName, currentCronJob.Expression())
 
 			return nil, err
 		} else {
-			cronLogger.Debug().Msgf(
-				"job registration success for job %s with %s",
-				currentCronJobName,
-				currentCronJob.Expression(),
-			)
+			cronLogger.Debug().Msgf("job registration success for job %s with %s", currentCronJobName, currentCronJob.Expression())
 		}
 	}
 

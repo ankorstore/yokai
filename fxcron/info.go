@@ -2,6 +2,7 @@ package fxcron
 
 import (
 	"reflect"
+	"time"
 
 	"github.com/go-co-op/gocron/v2"
 )
@@ -78,7 +79,7 @@ func (i *FxCronModuleInfo) Data() map[string]interface{} {
 
 func (i *FxCronModuleInfo) jobLastRun(job gocron.Job) string {
 	if run, err := job.LastRun(); err == nil {
-		return run.String()
+		return run.Format(time.RFC3339)
 	}
 
 	return NON_AVAILABLE
@@ -86,7 +87,7 @@ func (i *FxCronModuleInfo) jobLastRun(job gocron.Job) string {
 
 func (i *FxCronModuleInfo) jobNextRun(job gocron.Job) string {
 	if run, err := job.NextRun(); err == nil {
-		return run.String()
+		return run.Format(time.RFC3339)
 	}
 
 	return NON_AVAILABLE
