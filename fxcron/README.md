@@ -12,12 +12,13 @@
 * [Installation](#installation)
 * [Features](#features)
 * [Documentation](#documentation)
-	* [Dependencies](#dependencies)
-	* [Configuration](#configuration)
-	* [Cron jobs](#cron-jobs)
-		* [Definition](#definition)
-		* [Registration](#registration)
-	* [Decoration](#decoration)
+  * [Dependencies](#dependencies)
+  * [Loading](#loading)
+  * [Configuration](#configuration)
+  * [Cron jobs](#cron-jobs)
+    * [Definition](#definition)
+    * [Registration](#registration)
+  * [Override](#override)
 <!-- TOC -->
 
 ## Installation
