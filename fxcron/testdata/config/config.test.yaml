@@ -1,0 +1,26 @@
+modules:
+  cron:
+    scheduler:
+      location: Local
+      concurrency:
+        limit:
+          enabled: true
+          mode: ${CRON_CONCURRENCY_LIMIT_MODE}
+          max: 3
+    jobs:
+      singleton:
+        enabled: ${CRON_SINGLETON_ENABLED}
+        mode: ${CRON_SINGLETON_MODE}
+      execution:
+        start:
+          immediately: ${CRON_START_IMMEDIATELY}
+          at: ${CRON_START_AT}
+        limit:
+          enabled: true
+          max: 5
+    metrics:
+      collect:
+        enabled: true
+        namespace: ${CRON_METRICS_NAMESPACE}
+        subsystem: ${CRON_METRICS_SUBSYSTEM}
+      buckets: ${CRON_METRICS_BUCKETS}

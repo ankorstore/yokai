@@ -1,0 +1,31 @@
+name: "fxcron-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "fxcron/**.go"
+            - "fxcron/go.mod"
+            - "fxcron/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "fxcron/**.go"
+            - "fxcron/go.mod"
+            - "fxcron/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "fxcron"

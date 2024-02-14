@@ -32,6 +32,7 @@ jobs:
         - "worker"
         - "fxcore"
         - "fxconfig"
+        - "fxcron"
         - "fxgenerate"
         - "fxhealthcheck"
         - "fxhttpclient"
