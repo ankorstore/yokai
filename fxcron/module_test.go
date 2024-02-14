@@ -346,6 +346,11 @@ func TestModuleInfo(t *testing.T) {
 	).RequireStart()
 
 	// scheduling assertions
+	info, ok := modulesInfo[0].(*fxcron.FxCronModuleInfo)
+	if !ok {
+		t.Error("expected type *fxcron.FxCronModuleInfo")
+	}
+
 	assert.Equal(
 		t,
 		map[string]interface{}{
@@ -361,7 +366,7 @@ func TestModuleInfo(t *testing.T) {
 				"unscheduled": map[string]interface{}{},
 			},
 		},
-		modulesInfo[0].(*fxcron.FxCronModuleInfo).Data(),
+		info.Data(),
 	)
 
 	app.RequireStop()
