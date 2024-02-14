@@ -50,6 +50,7 @@ var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 ## Usage
 
 This module provides the possibility to register [CronJob](https://github.com/ankorstore/yokai/blob/main/fxcron/registry.go) implementations, with:
+
 - a [cron expression](https://crontab.guru/)
 - and an optional list of [JobOption](https://github.com/go-co-op/gocron/blob/v2/job.go).
 
@@ -137,19 +138,21 @@ func ProvideServices() fx.Option {
 }
 ```
 
-This module also supports the definition of cron expression on `seconds` level with `modules.cron.scheduler.seconds=true`: it will add `seconds` field to the beginning of the scheduling expression, for example to run every 5 seconds:
+This module also supports the definition of cron expression on `seconds` level with `modules.cron.scheduler.seconds=true`.
+
+It will add `seconds` field to the beginning of the scheduling expression, for example, to run every 3 seconds:
 
 ```go
-fxcron.AsCronJob(cron.NewExampleCronJob, `*/5 * * * * *`),
+fxcron.AsCronJob(cron.NewExampleCronJob, `*/3 * * * * *`),
 ```
 
-You can use the [https://crontab.guru]((https://crontab.guru/)) website for building you cron expressions.
+You can use [https://crontab.guru]((https://crontab.guru/)) for building you cron expressions.
 
 ### Cron jobs execution
 
 Yokai will automatically start the [Scheduler](https://github.com/go-co-op/gocron/blob/v2/scheduler.go) with the registered cron jobs.
 
-You can get, real time, the status of your cron jobs on the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) dashboard:
+You can get, in real time, the status of your cron jobs on the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) dashboard:
 
 ![](../../assets/images/cron-tutorial-core-jobs-light.png#only-light)
 ![](../../assets/images/cron-tutorial-core-jobs-dark.png#only-dark)
