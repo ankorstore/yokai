@@ -144,7 +144,7 @@ func ProvideServices() fx.Option {
 
 Yokai will automatically start the [WorkerPool](https://github.com/ankorstore/yokai/blob/main/worker/pool.go) containing the registered workers.
 
-You can get, real time, the status of your workers executions on the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) dashboard:
+You can get, in real time, the status of your workers executions on the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) dashboard:
 
 ![](../../assets/images/dash-workers-light.png#only-light)
 ![](../../assets/images/dash-workers-dark.png#only-dark)
