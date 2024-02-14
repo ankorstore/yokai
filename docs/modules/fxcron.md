@@ -146,7 +146,7 @@ It will add `seconds` field to the beginning of the scheduling expression, for e
 fxcron.AsCronJob(cron.NewExampleCronJob, `*/3 * * * * *`),
 ```
 
-You can use [https://crontab.guru]((https://crontab.guru/)) for building you cron expressions.
+You can use [https://crontab.guru](https://crontab.guru/) for building you cron expressions.
 
 ### Cron jobs execution
 
