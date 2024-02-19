@@ -38,4 +38,4 @@ Yokai provides a [showroom for demo application](https://github.com/ankorstore/y
 This repository uses [release-please](https://github.com/googleapis/release-please) to automate Yokai's modules release process.
 
 > [!IMPORTANT]
-> You must provide [atomic](https://en.wikipedia.org/wiki/Atomic_commit#Revision_control) and [conventional](https://www.conventionalcommits.org/en/v1.0.0/) commits, since the release process uses them to determinate the releases version and notes to perform.
+> You must provide [atomic](https://en.wikipedia.org/wiki/Atomic_commit#Revision_control) and [conventional](https://www.conventionalcommits.org/en/v1.0.0/) commits, as the release process relies on them to determine the version to release and to generate the release notes.
