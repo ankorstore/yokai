@@ -159,14 +159,14 @@ func TestCreate(t *testing.T) {
 	resp, err := stream.Recv()
 	assert.NoError(t, err)
 
-	expectedServices := []string{
-		"test.Service",
-		"grpc.reflection.v1.ServerReflection",
-		"grpc.reflection.v1alpha.ServerReflection",
-	}
-
 	switch resp.MessageResponse.(type) {
 	case *reflection.ServerReflectionResponse_ListServicesResponse:
+		expectedServices := []string{
+			"test.Service",
+			"grpc.reflection.v1.ServerReflection",
+			"grpc.reflection.v1alpha.ServerReflection",
+		}
+
 		reflectionServices := resp.GetListServicesResponse().Service
 
 		assert.Len(t, reflectionServices, len(expectedServices))
