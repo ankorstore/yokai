@@ -59,10 +59,10 @@ jobs:
         working-directory: ${{ matrix.module }}
         run: go test -v -race -failfast -coverpkg=./... -covermode=atomic -coverprofile=coverage.tmp.out ./...
       - name: Exclude testdata
-        working-directory: ${{ inputs.module }}
+        working-directory: ${{ matrix.module}}
         run: cat coverage.tmp.out | grep -v "testdata" > coverage.out
       - name: Clean temp coverage
-        working-directory: ${{ inputs.module }}
+        working-directory: ${{ matrix.module }}
         run: rm coverage.tmp.out
       - name: Codecov for module ${{ matrix.module }}
         uses: codecov/codecov-action@v3
