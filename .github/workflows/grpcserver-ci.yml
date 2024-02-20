@@ -1,0 +1,31 @@
+name: "grpcserver-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "grpcserver/**.go"
+            - "grpcserver/go.mod"
+            - "grpcserver/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "grpcserver/**.go"
+            - "grpcserver/go.mod"
+            - "grpcserver/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "grpcserver"
