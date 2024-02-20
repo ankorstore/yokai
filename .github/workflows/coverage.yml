@@ -23,6 +23,7 @@ jobs:
         module:
         - "config"
         - "generate"
+        - "grpcserver"
         - "healthcheck"
         - "httpclient"
         - "httpserver"

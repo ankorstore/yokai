@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "github.com/ankorstore/yokai/grpcserver/testdata/proto";
+
+package test;
+
+message Request {
+  bool shouldFail = 1;
+  bool shouldPanic = 2;
+  string message = 3;
+}
+
+message Response {
+  bool success = 1;
+  string message = 2;
+}
+
+service Service {
+  rpc Unary (Request) returns (Response);
+  rpc Bidi (stream Request) returns (stream Response);
+}

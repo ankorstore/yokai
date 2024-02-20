@@ -11,6 +11,11 @@
       "component": "generate",
       "tag-separator": "/"
     },
+    "grpcserver": {
+      "release-type": "go",
+      "component": "grpcserver",
+      "tag-separator": "/"
+    },
     "healthcheck": {
       "release-type": "go",
       "component": "healthcheck",
