@@ -71,6 +71,11 @@
       "component": "fxgenerate",
       "tag-separator": "/"
     },
+    "fxgrpcserver": {
+      "release-type": "go",
+      "component": "fxgrpcserver",
+      "tag-separator": "/"
+    },
     "fxhealthcheck": {
       "release-type": "go",
       "component": "fxhealthcheck",

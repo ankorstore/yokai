@@ -1,0 +1,31 @@
+name: "fxgrpcserver-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "fxgrpcserver/**.go"
+            - "fxgrpcserver/go.mod"
+            - "fxgrpcserver/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "fxgrpcserver/**.go"
+            - "fxgrpcserver/go.mod"
+            - "fxgrpcserver/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "fxgrpcserver"
