@@ -1,0 +1,20 @@
+modules:
+  grpc:
+    server:
+      reflection:
+        enabled: ${REFLECTION_ENABLED}
+      log:
+        metadata:
+          x-foo: foo
+          x-bar: bar
+        exclude:
+          - /test.Service/Unary
+      metrics:
+        collect:
+          enabled: true
+          namespace: foo
+          subsystem: bar
+        buckets: .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10
+      trace:
+        exclude:
+          - /test.Service/Unary

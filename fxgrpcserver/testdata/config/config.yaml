@@ -1,0 +1,16 @@
+app:
+  name: test
+  version: 0.1.0
+modules:
+  log:
+    level: debug
+    output: test
+  trace:
+    processor:
+      type: test
+  grpc:
+    server:
+      trace:
+        enabled: true
+      healthcheck:
+        enabled: true

@@ -2,6 +2,8 @@ package logtest_test
 
 import (
 	"bytes"
+	"io"
+	"os"
 	"testing"
 
 	"github.com/ankorstore/yokai/log/logtest"
@@ -52,6 +54,12 @@ func (m *TestLogBufferMock) ContainRecord(_ map[string]interface{}) (bool, error
 
 	//nolint:forcetypeassert
 	return args.Get(0).(bool), args.Error(1)
+}
+
+func (m *TestLogBufferMock) Dump() error {
+	args := m.Called()
+
+	return args.Error(0)
 }
 
 func TestTestLogBuffer(t *testing.T) {
@@ -189,6 +197,46 @@ func TestTestLogBuffer(t *testing.T) {
 		assert.Error(t, err)
 
 		_, err = buffer.ContainRecord(map[string]interface{}{"some": "value"})
+		assert.Error(t, err)
+	})
+
+	t.Run("test Dump success", func(t *testing.T) {
+		t.Parallel()
+
+		buffer := logtest.NewDefaultTestLogBuffer()
+		buffer.Reset()
+
+		_, err := buffer.Write([]byte("{\"level\":\"info\",\"message\":\"test dump\",\"service\":\"test\",\"time\":1698312453}\n"))
+		assert.NoError(t, err)
+
+		defaultStdout := os.Stdout
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+
+		err = buffer.Dump()
+		assert.NoError(t, err)
+
+		err = w.Close()
+		assert.NoError(t, err)
+
+		out, err := io.ReadAll(r)
+		assert.NoError(t, err)
+
+		os.Stdout = defaultStdout
+
+		assert.Contains(t, string(out), "test dump")
+	})
+
+	t.Run("test Dump error", func(t *testing.T) {
+		t.Parallel()
+
+		buffer := logtest.NewDefaultTestLogBuffer()
+		buffer.Reset()
+
+		_, err := buffer.Write([]byte("{{\n"))
+		assert.NoError(t, err)
+
+		err = buffer.Dump()
 		assert.Error(t, err)
 	})
 }

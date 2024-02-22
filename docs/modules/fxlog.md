@@ -70,6 +70,8 @@ You can use the provided [test assertion helpers](https://github.com/ankorstore/
 - `AssertContainLogRecord`: to assert on partial attributes match
 - `AssertContainNotLogRecord`: to assert on partial attributes non match
 
+and use `Dump()` to print the current content of the [TestLogBuffer](https://github.com/ankorstore/yokai/blob/main/log/logtest/buffer.go).
+
 For example:
 
 ```go title="internal/example_test.go"
@@ -94,7 +96,10 @@ func TestExample(t *testing.T) {
 			logger.Debug().Msg("test message")
 		}),
 	)
-
+	
+	// print logs records
+	logBuffer.Dump()
+	
 	// log assertion example
 	logtest.AssertHasLogRecord(
 		t,

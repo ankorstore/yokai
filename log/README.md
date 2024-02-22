@@ -119,6 +119,10 @@ You can also use the provided [test assertion helpers](logtest/assert.go) in you
 - `AssertContainLogRecord`: to assert on partial attributes match
 - `AssertContainNotLogRecord`: to assert on partial attributes non match
 
+and use `Dump()` to print the current content of the [TestLogBuffer](logtest/buffer.go).
+
+For example:
+
 ```go
 package main_test
 
@@ -137,6 +141,9 @@ func TestLogger(t *testing.T) {
 
 	logger.Info().Msg("some message example")
 
+	// print records
+	buffer.Dump()
+	
 	// assertion success
 	logtest.AssertHasLogRecord(t, buffer, map[string]interface{}{
 		"level":   "info",

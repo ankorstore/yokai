@@ -35,6 +35,7 @@ jobs:
         - "fxconfig"
         - "fxcron"
         - "fxgenerate"
+        - "fxgrpcserver"
         - "fxhealthcheck"
         - "fxhttpclient"
         - "fxhttpserver"
