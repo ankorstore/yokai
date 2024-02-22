@@ -65,7 +65,7 @@ func TestModule(t *testing.T) {
 		fxgrpcserver.FxGrpcServerModule,
 		fx.Provide(service.NewTestServiceDependency),
 		fx.Options(
-			fxgrpcserver.AsGrpcService(service.NewTestServiceServer, &proto.Service_ServiceDesc),
+			fxgrpcserver.AsGrpcServerService(service.NewTestServiceServer, &proto.Service_ServiceDesc),
 		),
 		fx.Populate(&grpcServer, &lis, &logBuffer, &traceExporter, &metricsRegistry),
 	).RequireStart().RequireStop()

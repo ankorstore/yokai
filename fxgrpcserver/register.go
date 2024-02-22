@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func AsGrpcService(constructor any, description *grpc.ServiceDesc) fx.Option {
+func AsGrpcServerService(constructor any, description *grpc.ServiceDesc) fx.Option {
 	return fx.Options(
 		fx.Provide(
 			fx.Annotate(
@@ -22,4 +22,23 @@ func AsGrpcService(constructor any, description *grpc.ServiceDesc) fx.Option {
 			),
 		),
 	)
+}
+
+func AsGrpcServerOptions(options ...grpc.ServerOption) fx.Option {
+	var serverOptions []fx.Option
+
+	for _, option := range options {
+		serverOptions = append(
+			serverOptions,
+			fx.Supply(
+				fx.Annotate(
+					option,
+					fx.As(new(grpc.ServerOption)),
+					fx.ResultTags(`group:"grpc-server-options"`),
+				),
+			),
+		)
+	}
+
+	return fx.Options(serverOptions...)
 }

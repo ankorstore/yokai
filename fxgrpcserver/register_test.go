@@ -13,7 +13,7 @@ import (
 func TestAsGrpcService(t *testing.T) {
 	t.Parallel()
 
-	result := fxgrpcserver.AsGrpcService(service.NewTestServiceServer, &proto.Service_ServiceDesc)
+	result := fxgrpcserver.AsGrpcServerService(service.NewTestServiceServer, &proto.Service_ServiceDesc)
 
 	assert.Equal(t, "fx.optionGroup", fmt.Sprintf("%T", result))
 }

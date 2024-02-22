@@ -75,15 +75,20 @@ type FxGrpcServerParam struct {
 }
 
 func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
-	// interceptors
+	// server interceptors
 	unaryInterceptors, streamInterceptors := createInterceptors(p)
+
+	// server options
+	grpcServerOptions := []grpc.ServerOption{
+		grpc.ChainUnaryInterceptor(unaryInterceptors...),
+		grpc.ChainStreamInterceptor(streamInterceptors...),
+	}
+
+	grpcServerOptions = append(grpcServerOptions, p.Registry.ResolveGrpcServerOptions()...)
 
 	// server
 	grpcServer, err := p.Factory.Create(
-		grpcserver.WithServerOptions(
-			grpc.ChainUnaryInterceptor(unaryInterceptors...),
-			grpc.ChainStreamInterceptor(streamInterceptors...),
-		),
+		grpcserver.WithServerOptions(grpcServerOptions...),
 		grpcserver.WithReflection(p.Config.GetBool("modules.grpc.server.reflection.enabled")),
 	)
 	if err != nil {
@@ -96,7 +101,7 @@ func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 	}
 
 	// registrations
-	resolvedServices, err := p.Registry.ResolveGrpcServices()
+	resolvedServices, err := p.Registry.ResolveGrpcServerServices()
 	if err != nil {
 		return nil, err
 	}

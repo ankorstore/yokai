@@ -37,7 +37,7 @@ func TestResolveGrpcServicesSuccess(t *testing.T) {
 
 	registry := fxgrpcserver.NewFxGrpcServerRegistry(param)
 
-	resolvedServices, err := registry.ResolveGrpcServices()
+	resolvedServices, err := registry.ResolveGrpcServerServices()
 	assert.NoError(t, err)
 
 	assert.Len(t, resolvedServices, 1)
@@ -60,7 +60,7 @@ func TestResolveCheckerProbesRegistrationsFailure(t *testing.T) {
 
 	registry := fxgrpcserver.NewFxGrpcServerRegistry(param)
 
-	_, err := registry.ResolveGrpcServices()
+	_, err := registry.ResolveGrpcServerServices()
 	assert.Error(t, err)
 	assert.Equal(t, "cannot find grpc service implementation for type invalid", err.Error())
 }

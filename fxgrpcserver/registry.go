@@ -2,29 +2,37 @@ package fxgrpcserver
 
 import (
 	"fmt"
+	"google.golang.org/grpc"
 
 	"go.uber.org/fx"
 )
 
 type GrpcServerRegistry struct {
+	options     []grpc.ServerOption
 	services    []any
 	definitions []GrpcServiceDefinition
 }
 
 type FxGrpcServiceRegistryParam struct {
 	fx.In
+	Options     []grpc.ServerOption     `group:"grpc-server-options"`
 	Services    []any                   `group:"grpc-server-services"`
 	Definitions []GrpcServiceDefinition `group:"grpc-server-service-definitions"`
 }
 
 func NewFxGrpcServerRegistry(p FxGrpcServiceRegistryParam) *GrpcServerRegistry {
 	return &GrpcServerRegistry{
+		options:     p.Options,
 		services:    p.Services,
 		definitions: p.Definitions,
 	}
 }
 
-func (r *GrpcServerRegistry) ResolveGrpcServices() ([]*ResolvedGrpcService, error) {
+func (r *GrpcServerRegistry) ResolveGrpcServerOptions() []grpc.ServerOption {
+	return r.options
+}
+
+func (r *GrpcServerRegistry) ResolveGrpcServerServices() ([]*ResolvedGrpcService, error) {
 	var grpcServices []*ResolvedGrpcService
 
 	for _, definition := range r.definitions {
