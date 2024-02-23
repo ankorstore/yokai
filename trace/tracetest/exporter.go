@@ -142,6 +142,7 @@ func (e *DefaultTestTraceExporter) ContainSpan(expectedName string, expectedAttr
 // Dump prints the [tracetest.SpanStubs] snapshots from the in memory internal exporter, for debugging purposes.
 func (e *DefaultTestTraceExporter) Dump() {
 	for _, span := range e.Spans().Snapshots() {
+		//nolint:forbidigo
 		fmt.Printf("%v\n", span)
 	}
 }
