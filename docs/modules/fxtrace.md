@@ -99,6 +99,8 @@ You can use the provided [test assertion helpers](https://github.com/ankorstore/
 - `AssertContainTraceSpan`: to assert on exact name and partial attributes match
 - `AssertContainNotTraceSpan`: to assert on exact name and partial attributes non match
 
+and use `Dump()` to print the current content of the [TestTraceExporter](https://github.com/ankorstore/yokai/blob/main/trace/tracetest/exporter.go).
+
 For example:
 
 ```go title="internal/example_test.go"
@@ -130,6 +132,9 @@ func TestExample(t *testing.T) {
 			defer span.End()
 		}),
 	)
+	
+	//dump spans
+	traceExporter.Dump()
 
 	// trace assertion example
 	tracetest.AssertHasTraceSpan(
