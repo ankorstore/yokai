@@ -2,6 +2,8 @@ package tracetest_test
 
 import (
 	"context"
+	"io"
+	"os"
 	"testing"
 
 	"github.com/ankorstore/yokai/trace"
@@ -311,4 +313,47 @@ func TestContainSpan(t *testing.T) {
 			attribute.String("invalid attribute name", "invalid attribute value"), // invalid
 		),
 	)
+}
+
+func TestDump(t *testing.T) {
+	t.Parallel()
+
+	exporter := tracetest.NewDefaultTestTraceExporter()
+
+	tracerProvider, err := trace.NewDefaultTracerProviderFactory().Create(
+		trace.WithSpanProcessor(trace.NewTestSpanProcessor(exporter)),
+	)
+	assert.NoError(t, err)
+
+	tracer := tracerProvider.Tracer("test")
+
+	_, span := tracer.Start(
+		context.Background(),
+		"test span",
+		oteltrace.WithAttributes(
+			attribute.String("string attribute name", "string attribute value"),
+			attribute.Int("int attribute name", 42),
+		),
+	)
+	span.End()
+
+	defaultStdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	exporter.Dump()
+
+	err = w.Close()
+	assert.NoError(t, err)
+
+	out, err := io.ReadAll(r)
+	assert.NoError(t, err)
+
+	os.Stdout = defaultStdout
+
+	outStr := string(out)
+
+	assert.Contains(t, outStr, "test span")
+	assert.Contains(t, outStr, "string attribute value")
+	assert.Contains(t, outStr, "42")
 }

@@ -200,6 +200,8 @@ You can use the provided [test assertion helpers](tracetest/assert.go) in your t
 - `AssertContainTraceSpan`: to assert on exact name and partial attributes match
 - `AssertContainNotTraceSpan`: to assert on exact name and partial attributes non match
 
+and use `Dump()` to print the current content of the test span processor.
+
 ```go
 package main_test
 
@@ -227,6 +229,9 @@ func TestTracer(t *testing.T) {
 		attribute.Int("int attr name", 42),
 	)
 	span.End()
+	
+	// dump spans
+	ex.Dump()
 
 	// assertion success
 	tracetest.AssertHasTraceSpan(
