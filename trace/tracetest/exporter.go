@@ -18,6 +18,7 @@ type TestTraceExporter interface {
 	Span(name string) (tracetest.SpanStub, error)
 	HasSpan(expectedName string, expectedAttributes ...attribute.KeyValue) bool
 	ContainSpan(expectedName string, expectedAttributes ...attribute.KeyValue) bool
+	Dump()
 }
 
 // DefaultTestTraceExporter is the default [TestTraceExporter] implementation.
@@ -136,4 +137,12 @@ func (e *DefaultTestTraceExporter) ContainSpan(expectedName string, expectedAttr
 	}
 
 	return false
+}
+
+// Dump prints the [tracetest.SpanStubs] snapshots from the in memory internal exporter, for debugging purposes.
+func (e *DefaultTestTraceExporter) Dump() {
+	for _, span := range e.Spans().Snapshots() {
+		//nolint:forbidigo
+		fmt.Printf("%v\n", span)
+	}
 }

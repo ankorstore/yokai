@@ -2,7 +2,10 @@ package log
 
 import (
 	"github.com/rs/zerolog"
+	"sync"
 )
+
+var once sync.Once
 
 func init() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
@@ -46,6 +49,10 @@ func (f *DefaultLoggerFactory) Create(options ...LoggerOption) (*Logger, error) 
 		Str(Service, appliedOpts.ServiceName).
 		Logger().
 		Level(appliedOpts.Level)
+
+	once.Do(func() {
+		zerolog.DefaultContextLogger = &logger
+	})
 
 	return &Logger{&logger}, nil
 }

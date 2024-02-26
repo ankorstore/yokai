@@ -58,4 +58,12 @@ func TestCreateSuccess(t *testing.T) {
 		"service": "test logger",
 		"message": "ome invalid mess",
 	})
+
+	zerolog.DefaultContextLogger.Info().Msg("some other message from default global logger")
+
+	logtest.AssertHasLogRecord(t, testLogBuffer, map[string]interface{}{
+		"level":   "info",
+		"service": "test logger",
+		"message": "some other message from default global logger",
+	})
 }

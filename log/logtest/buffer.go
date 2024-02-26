@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"strings"
 	"sync"
@@ -17,6 +18,7 @@ type TestLogBuffer interface {
 	Records() ([]*TestLogRecord, error)
 	HasRecord(expectedAttributes map[string]interface{}) (bool, error)
 	ContainRecord(expectedAttributes map[string]interface{}) (bool, error)
+	Dump() error
 }
 
 // DefaultTestLogBuffer is the default [TestLogBuffer] implementation.
@@ -116,4 +118,19 @@ func (b *DefaultTestLogBuffer) ContainRecord(expectedAttributes map[string]inter
 	}
 
 	return false, nil
+}
+
+// Dump prints the internal buffer log records, for debugging purposes.
+func (b *DefaultTestLogBuffer) Dump() error {
+	records, err := b.Records()
+	if err != nil {
+		return err
+	}
+
+	for _, record := range records {
+		//nolint:forbidigo
+		fmt.Printf("%v\n", record)
+	}
+
+	return nil
 }
