@@ -78,6 +78,14 @@ func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 	// server interceptors
 	unaryInterceptors, streamInterceptors := createInterceptors(p)
 
+	for _, unaryInterceptor := range p.Registry.ResolveGrpcServerUnaryInterceptors() {
+		unaryInterceptors = append(unaryInterceptors, unaryInterceptor.HandleUnary())
+	}
+
+	for _, streamInterceptor := range p.Registry.ResolveGrpcServerStreamInterceptors() {
+		streamInterceptors = append(streamInterceptors, streamInterceptor.HandleStream())
+	}
+
 	// server options
 	grpcServerOptions := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(unaryInterceptors...),
@@ -95,12 +103,12 @@ func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 		return nil, err
 	}
 
-	// healthcheck
+	// server healthcheck
 	if p.Config.GetBool("modules.grpc.server.healthcheck.enabled") {
 		grpcServer.RegisterService(&grpc_health_v1.Health_ServiceDesc, grpcserver.NewGrpcHealthCheckService(p.Checker))
 	}
 
-	// registrations
+	// server services
 	resolvedServices, err := p.Registry.ResolveGrpcServerServices()
 	if err != nil {
 		return nil, err

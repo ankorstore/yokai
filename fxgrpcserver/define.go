@@ -2,27 +2,27 @@ package fxgrpcserver
 
 import "google.golang.org/grpc"
 
-type GrpcServiceDefinition interface {
+type GrpcServerServiceDefinition interface {
 	ReturnType() string
 	Description() *grpc.ServiceDesc
 }
 
-type grpcServiceDefinition struct {
+type grpcServerServiceDefinition struct {
 	returnType  string
 	description *grpc.ServiceDesc
 }
 
-func NewGrpcServiceDefinition(returnType string, description *grpc.ServiceDesc) GrpcServiceDefinition {
-	return &grpcServiceDefinition{
+func NewGrpcServiceDefinition(returnType string, description *grpc.ServiceDesc) GrpcServerServiceDefinition {
+	return &grpcServerServiceDefinition{
 		returnType:  returnType,
 		description: description,
 	}
 }
 
-func (d *grpcServiceDefinition) ReturnType() string {
+func (d *grpcServerServiceDefinition) ReturnType() string {
 	return d.returnType
 }
 
-func (d *grpcServiceDefinition) Description() *grpc.ServiceDesc {
+func (d *grpcServerServiceDefinition) Description() *grpc.ServiceDesc {
 	return d.description
 }

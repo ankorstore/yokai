@@ -5,6 +5,26 @@ import (
 	"google.golang.org/grpc"
 )
 
+func AsGrpcServerUnaryInterceptor(constructor any) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			constructor,
+			fx.As(new(GrpcServerUnaryInterceptor)),
+			fx.ResultTags(`group:"grpc-server-unary-interceptors"`),
+		),
+	)
+}
+
+func AsGrpcServerStreamInterceptor(constructor any) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			constructor,
+			fx.As(new(GrpcServerStreamInterceptor)),
+			fx.ResultTags(`group:"grpc-server-stream-interceptors"`),
+		),
+	)
+}
+
 func AsGrpcServerService(constructor any, description *grpc.ServiceDesc) fx.Option {
 	return fx.Options(
 		fx.Provide(
@@ -17,7 +37,7 @@ func AsGrpcServerService(constructor any, description *grpc.ServiceDesc) fx.Opti
 		fx.Supply(
 			fx.Annotate(
 				NewGrpcServiceDefinition(GetReturnType(constructor), description),
-				fx.As(new(GrpcServiceDefinition)),
+				fx.As(new(GrpcServerServiceDefinition)),
 				fx.ResultTags(`group:"grpc-server-service-definitions"`),
 			),
 		),
