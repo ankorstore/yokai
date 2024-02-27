@@ -5,6 +5,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+// AsGrpcServerOptions registers a list of grpc server options into Fx.
 func AsGrpcServerOptions(options ...grpc.ServerOption) fx.Option {
 	var serverOptions []fx.Option
 
@@ -24,6 +25,7 @@ func AsGrpcServerOptions(options ...grpc.ServerOption) fx.Option {
 	return fx.Options(serverOptions...)
 }
 
+// AsGrpcServerUnaryInterceptor registers a grpc server unary interceptor into Fx.
 func AsGrpcServerUnaryInterceptor(constructor any) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
@@ -34,6 +36,7 @@ func AsGrpcServerUnaryInterceptor(constructor any) fx.Option {
 	)
 }
 
+// AsGrpcServerStreamInterceptor registers a grpc server stream interceptor into Fx.
 func AsGrpcServerStreamInterceptor(constructor any) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
@@ -44,6 +47,7 @@ func AsGrpcServerStreamInterceptor(constructor any) fx.Option {
 	)
 }
 
+// AsGrpcServerService registers a grpc server service into Fx.
 func AsGrpcServerService(constructor any, description *grpc.ServiceDesc) fx.Option {
 	return fx.Options(
 		fx.Provide(

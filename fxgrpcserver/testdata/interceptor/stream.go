@@ -1,24 +1,24 @@
 package interceptor
 
 import (
-	"github.com/ankorstore/yokai/config"
+	"github.com/ankorstore/yokai/fxgrpcserver/testdata/service"
 	"github.com/ankorstore/yokai/log"
 	"google.golang.org/grpc"
 )
 
 type StreamInterceptor struct {
-	config *config.Config
+	dependency *service.TestServiceDependency
 }
 
-func NewStreamInterceptor(cfg *config.Config) *StreamInterceptor {
+func NewStreamInterceptor(dependency *service.TestServiceDependency) *StreamInterceptor {
 	return &StreamInterceptor{
-		config: cfg,
+		dependency: dependency,
 	}
 }
 
 func (i *StreamInterceptor) HandleStream() grpc.StreamServerInterceptor {
 	return func(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		log.CtxLogger(ss.Context()).Info().Msgf("in stream interceptor of %s", i.config.AppName())
+		log.CtxLogger(ss.Context()).Info().Msgf("in stream interceptor of %s", i.dependency.AppName())
 
 		return handler(srv, ss)
 	}

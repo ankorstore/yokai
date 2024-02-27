@@ -30,6 +30,9 @@ const (
 	DefaultBufconnSize = 1024 * 1024
 )
 
+// FxGrpcServerModule is the [Fx] grpcserver module.
+//
+// [Fx]: https://github.com/uber-go/fx
 var FxGrpcServerModule = fx.Module(
 	ModuleName,
 	fx.Provide(
@@ -45,11 +48,13 @@ var FxGrpcServerModule = fx.Module(
 	),
 )
 
+// FxGrpcBufconnListenerParam allows injection of the required dependencies in [NewFxGrpcBufconnListener].
 type FxGrpcBufconnListenerParam struct {
 	fx.In
 	Config *config.Config
 }
 
+// NewFxGrpcBufconnListener returns a new [bufconn.Listener].
 func NewFxGrpcBufconnListener(p FxGrpcBufconnListenerParam) *bufconn.Listener {
 	size := p.Config.GetInt("modules.grpc.server.test.bufconn.size")
 	if size == 0 {
@@ -59,6 +64,7 @@ func NewFxGrpcBufconnListener(p FxGrpcBufconnListenerParam) *bufconn.Listener {
 	return grpcservertest.NewBufconnListener(size)
 }
 
+// FxGrpcServerParam allows injection of the required dependencies in [NewFxGrpcBufconnListener].
 type FxGrpcServerParam struct {
 	fx.In
 	LifeCycle       fx.Lifecycle
@@ -73,6 +79,8 @@ type FxGrpcServerParam struct {
 	MetricsRegistry *prometheus.Registry
 }
 
+// NewFxGrpcServer returns a new [grpc.Server].
+//
 //nolint:cyclop
 func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 	// server interceptors
@@ -137,6 +145,8 @@ func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 						p.Logger.Error().Err(err).Msgf("failed to listen on %d for grpc server", port)
 					}
 				}
+
+				p.Logger.Info().Msgf("grpc server starting on port %d", port)
 
 				if err = grpcServer.Serve(lis); err != nil {
 					p.Logger.Error().Err(err).Msg("failed to serve grpc server")

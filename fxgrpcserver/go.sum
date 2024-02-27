@@ -37,8 +37,8 @@ dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
-github.com/ankorstore/yokai/config v1.1.0 h1:z6xnsVXAbWhhjcb5kqVaw0VlaGZziGc7Di1bJlt5rf0=
-github.com/ankorstore/yokai/config v1.1.0/go.mod h1:yDANaMWIOfAUkAMClG22Q4bzQk91NLwWK3WbL5IFnbg=
+github.com/ankorstore/yokai/config v1.2.0 h1:OqgrPGGIWEJoXEKGsveSBwLPGMnI3ZZBvIfxZs7FGeo=
+github.com/ankorstore/yokai/config v1.2.0/go.mod h1:yDANaMWIOfAUkAMClG22Q4bzQk91NLwWK3WbL5IFnbg=
 github.com/ankorstore/yokai/fxconfig v1.0.0 h1:zaYOLfpurqFJuS/IHeAXPOzrCNuttsFjJWNOK39opR4=
 github.com/ankorstore/yokai/fxconfig v1.0.0/go.mod h1:p+x6Jp8aLv1+uE1qO42KF+yahBK+VJdPP1/YReBjJ7M=
 github.com/ankorstore/yokai/fxgenerate v1.0.0 h1:jLe6FVnUqTkHZINK/LmjoD3C+CaZuNlMlQ/JJp0T1Cg=
@@ -57,10 +57,10 @@ github.com/ankorstore/yokai/grpcserver v1.0.0 h1:NqyM1xRiK45SlshOLaYztEsQhLqoWXI
 github.com/ankorstore/yokai/grpcserver v1.0.0/go.mod h1:TeufbHykIHiWSIrQIbMkMM+U5TkTy4BkFlWbO/G77TM=
 github.com/ankorstore/yokai/healthcheck v1.0.0 h1:uX6RrchsvbxCV70dh5d6RX5LEuGIf+Pt+14waV0CzY0=
 github.com/ankorstore/yokai/healthcheck v1.0.0/go.mod h1:Frz73NuG8ruLDz04vQxzf0bWhKK1Ru2Ktod+3ltaIxs=
-github.com/ankorstore/yokai/log v1.0.0 h1:9NsM0J+1O028WuNDW7vr0yeUdWDX1JKYTkuz7hiYCSs=
-github.com/ankorstore/yokai/log v1.0.0/go.mod h1:lyBRVA8VkrmlNjaR2jVTH9XjV06ioolWTuDVN6wF0vk=
-github.com/ankorstore/yokai/trace v1.0.0 h1:EKWXyg2W8v3xszIiB5JfiDwU2OUfSDOo8LXJMDxlSrw=
-github.com/ankorstore/yokai/trace v1.0.0/go.mod h1:OhCIJouVmBD7je1dIynqR1mhMEFCBzidy16a624lwBw=
+github.com/ankorstore/yokai/log v1.1.0 h1:7+kkmbGMtpfkEEaWSZ4/4Yp+dieVoolOVG24NpEJDO4=
+github.com/ankorstore/yokai/log v1.1.0/go.mod h1:lyBRVA8VkrmlNjaR2jVTH9XjV06ioolWTuDVN6wF0vk=
+github.com/ankorstore/yokai/trace v1.1.0 h1:DEJP+0ZjtjPSxEVLkmOY/xKEj11T7uR3eCHGpD5jMRI=
+github.com/ankorstore/yokai/trace v1.1.0/go.mod h1:OhCIJouVmBD7je1dIynqR1mhMEFCBzidy16a624lwBw=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
 github.com/benbjohnson/clock v1.3.0 h1:ip6w0uFQkncKQ979AypyG0ER7mqUSBdKLOgAle/AT8A=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=

@@ -3,7 +3,7 @@ module github.com/ankorstore/yokai/fxgrpcserver
 go 1.20
 
 require (
-	github.com/ankorstore/yokai/config v1.1.0
+	github.com/ankorstore/yokai/config v1.2.0
 	github.com/ankorstore/yokai/fxconfig v1.0.0
 	github.com/ankorstore/yokai/fxgenerate v1.0.0
 	github.com/ankorstore/yokai/fxhealthcheck v1.0.0
@@ -13,8 +13,8 @@ require (
 	github.com/ankorstore/yokai/generate v1.0.0
 	github.com/ankorstore/yokai/grpcserver v1.0.0
 	github.com/ankorstore/yokai/healthcheck v1.0.0
-	github.com/ankorstore/yokai/log v1.0.0
-	github.com/ankorstore/yokai/trace v1.0.0
+	github.com/ankorstore/yokai/log v1.1.0
+	github.com/ankorstore/yokai/trace v1.1.0
 	github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus v1.0.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.1
 	github.com/prometheus/client_golang v1.18.0
