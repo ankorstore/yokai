@@ -9,19 +9,20 @@
 > [Fx](https://uber-go.github.io/fx/) module for [grpcserver](https://github.com/ankorstore/yokai/tree/main/grpcserver).
 
 <!-- TOC -->
-
 * [Installation](#installation)
 * [Features](#features)
 * [Documentation](#documentation)
-	* [Dependencies](#dependencies)
-	* [Loading](#loading)
-	* [Configuration](#configuration)
-	* [Registration](#registration)
-	* [Reflection](#reflection)
-	* [Healthcheck](#healthcheck)
-	* [Decoration](#decoration)
-	* [Testing](#testing)
-
+  * [Dependencies](#dependencies)
+  * [Loading](#loading)
+  * [Configuration](#configuration)
+  * [Registration](#registration)
+    * [gRPC server options](#grpc-server-options)
+    * [gRPC server interceptors](#grpc-server-interceptors)
+    * [gRPC server services](#grpc-server-services)
+  * [Reflection](#reflection)
+  * [Healthcheck](#healthcheck)
+  * [Override](#override)
+  * [Testing](#testing)
 <!-- TOC -->
 
 ## Installation
