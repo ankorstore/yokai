@@ -13,6 +13,7 @@ import (
 	"github.com/ankorstore/yokai/fxgenerate"
 	"github.com/ankorstore/yokai/fxgrpcserver"
 	"github.com/ankorstore/yokai/fxgrpcserver/testdata/factory"
+	"github.com/ankorstore/yokai/fxgrpcserver/testdata/interceptor"
 	"github.com/ankorstore/yokai/fxgrpcserver/testdata/probes"
 	"github.com/ankorstore/yokai/fxgrpcserver/testdata/proto"
 	"github.com/ankorstore/yokai/fxgrpcserver/testdata/service"
@@ -65,6 +66,8 @@ func TestModule(t *testing.T) {
 		fxgrpcserver.FxGrpcServerModule,
 		fx.Provide(service.NewTestServiceDependency),
 		fx.Options(
+			fxgrpcserver.AsGrpcServerUnaryInterceptor(interceptor.NewUnaryInterceptor),
+			fxgrpcserver.AsGrpcServerStreamInterceptor(interceptor.NewStreamInterceptor),
 			fxgrpcserver.AsGrpcServerService(service.NewTestServiceServer, &proto.Service_ServiceDesc),
 		),
 		fx.Populate(&grpcServer, &lis, &logBuffer, &traceExporter, &metricsRegistry),

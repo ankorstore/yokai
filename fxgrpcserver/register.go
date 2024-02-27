@@ -5,6 +5,25 @@ import (
 	"google.golang.org/grpc"
 )
 
+func AsGrpcServerOptions(options ...grpc.ServerOption) fx.Option {
+	var serverOptions []fx.Option
+
+	for _, option := range options {
+		serverOptions = append(
+			serverOptions,
+			fx.Supply(
+				fx.Annotate(
+					option,
+					fx.As(new(grpc.ServerOption)),
+					fx.ResultTags(`group:"grpc-server-options"`),
+				),
+			),
+		)
+	}
+
+	return fx.Options(serverOptions...)
+}
+
 func AsGrpcServerUnaryInterceptor(constructor any) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
@@ -42,23 +61,4 @@ func AsGrpcServerService(constructor any, description *grpc.ServiceDesc) fx.Opti
 			),
 		),
 	)
-}
-
-func AsGrpcServerOptions(options ...grpc.ServerOption) fx.Option {
-	var serverOptions []fx.Option
-
-	for _, option := range options {
-		serverOptions = append(
-			serverOptions,
-			fx.Supply(
-				fx.Annotate(
-					option,
-					fx.As(new(grpc.ServerOption)),
-					fx.ResultTags(`group:"grpc-server-options"`),
-				),
-			),
-		)
-	}
-
-	return fx.Options(serverOptions...)
 }

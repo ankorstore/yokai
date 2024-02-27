@@ -17,7 +17,7 @@ func TestNewResolvedGrpcService(t *testing.T) {
 
 	resolvedService := fxgrpcserver.NewResolvedGrpcService(service, description)
 
-	assert.IsType(t, &fxgrpcserver.ResolvedGrpcService{}, resolvedService)
+	assert.IsType(t, &fxgrpcserver.ResolvedGrpcServerService{}, resolvedService)
 	assert.Equal(t, service, resolvedService.Implementation())
 	assert.Equal(t, description, resolvedService.Description())
 }

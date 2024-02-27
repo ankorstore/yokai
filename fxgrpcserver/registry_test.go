@@ -14,7 +14,7 @@ func TestNewGrpcServerRegistry(t *testing.T) {
 
 	param := fxgrpcserver.FxGrpcServiceRegistryParam{
 		Services:    []any{},
-		Definitions: []fxgrpcserver.GrpcServiceDefinition{},
+		Definitions: []fxgrpcserver.GrpcServerServiceDefinition{},
 	}
 
 	registry := fxgrpcserver.NewFxGrpcServerRegistry(param)
@@ -30,7 +30,7 @@ func TestResolveGrpcServicesSuccess(t *testing.T) {
 
 	param := fxgrpcserver.FxGrpcServiceRegistryParam{
 		Services: []any{service},
-		Definitions: []fxgrpcserver.GrpcServiceDefinition{
+		Definitions: []fxgrpcserver.GrpcServerServiceDefinition{
 			fxgrpcserver.NewGrpcServiceDefinition(fxgrpcserver.GetType(service), description),
 		},
 	}
@@ -53,7 +53,7 @@ func TestResolveCheckerProbesRegistrationsFailure(t *testing.T) {
 
 	param := fxgrpcserver.FxGrpcServiceRegistryParam{
 		Services: []any{service},
-		Definitions: []fxgrpcserver.GrpcServiceDefinition{
+		Definitions: []fxgrpcserver.GrpcServerServiceDefinition{
 			fxgrpcserver.NewGrpcServiceDefinition("invalid", description),
 		},
 	}

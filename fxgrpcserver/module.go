@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"strconv"
-	"strings"
 
 	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/generate/uuid"
@@ -74,6 +73,7 @@ type FxGrpcServerParam struct {
 	MetricsRegistry *prometheus.Registry
 }
 
+//nolint:cyclop
 func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 	// server interceptors
 	unaryInterceptors, streamInterceptors := createInterceptors(p)
@@ -87,12 +87,13 @@ func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 	}
 
 	// server options
-	grpcServerOptions := []grpc.ServerOption{
-		grpc.ChainUnaryInterceptor(unaryInterceptors...),
-		grpc.ChainStreamInterceptor(streamInterceptors...),
-	}
-
-	grpcServerOptions = append(grpcServerOptions, p.Registry.ResolveGrpcServerOptions()...)
+	grpcServerOptions := append(
+		[]grpc.ServerOption{
+			grpc.ChainUnaryInterceptor(unaryInterceptors...),
+			grpc.ChainStreamInterceptor(streamInterceptors...),
+		},
+		p.Registry.ResolveGrpcServerOptions()...,
+	)
 
 	// server
 	grpcServer, err := p.Factory.Create(
@@ -103,12 +104,12 @@ func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 		return nil, err
 	}
 
-	// server healthcheck
+	// server healthcheck registration
 	if p.Config.GetBool("modules.grpc.server.healthcheck.enabled") {
 		grpcServer.RegisterService(&grpc_health_v1.Health_ServiceDesc, grpcserver.NewGrpcHealthCheckService(p.Checker))
 	}
 
-	// server services
+	// server services registration
 	resolvedServices, err := p.Registry.ResolveGrpcServerServices()
 	if err != nil {
 		return nil, err
@@ -218,11 +219,11 @@ func createInterceptors(p FxGrpcServerParam) ([]grpc.UnaryServerInterceptor, []g
 			subsystem = ModuleName
 		}
 
-		grpcSrvMetricsSubsystem := strings.ReplaceAll(fmt.Sprintf("%s_%s", namespace, subsystem), "-", "_")
+		grpcSrvMetricsSubsystem := Sanitize(fmt.Sprintf("%s_%s", namespace, subsystem))
 
 		var grpcSrvMetricsBuckets []float64
 		if bucketsConfig := p.Config.GetString("modules.grpc.server.metrics.buckets"); bucketsConfig != "" {
-			for _, s := range strings.Split(strings.ReplaceAll(bucketsConfig, " ", ""), ",") {
+			for _, s := range Split(bucketsConfig) {
 				f, err := strconv.ParseFloat(s, 64)
 				if err == nil {
 					grpcSrvMetricsBuckets = append(grpcSrvMetricsBuckets, f)
