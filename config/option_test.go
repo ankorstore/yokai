@@ -24,3 +24,19 @@ func TestWithFilePaths(t *testing.T) {
 
 	assert.Equal(t, []string{"path1", "path2"}, opts.FilePaths)
 }
+
+func TestDefaultConfigOptions(t *testing.T) {
+	opts := config.DefaultConfigOptions()
+
+	assert.Equal(t, "config", opts.FileName)
+	assert.Equal(t, []string{".", "./configs"}, opts.FilePaths)
+}
+
+func TestDefaultConfigOptions_KoBuild(t *testing.T) {
+	t.Setenv("KO_DATA_PATH", "/var/run/ko")
+
+	opts := config.DefaultConfigOptions()
+
+	assert.Equal(t, "config", opts.FileName)
+	assert.Equal(t, []string{".", "./configs", "/var/run/ko", "/var/run/ko/configs"}, opts.FilePaths)
+}
