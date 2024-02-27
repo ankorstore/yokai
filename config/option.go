@@ -1,5 +1,10 @@
 package config
 
+import (
+	"os"
+	"path"
+)
+
 // Options are options for the [ConfigFactory] implementations.
 type Options struct {
 	FileName  string
@@ -8,13 +13,20 @@ type Options struct {
 
 // DefaultConfigOptions are the default options used in the [DefaultConfigFactory].
 func DefaultConfigOptions() Options {
-	return Options{
+	opts := Options{
 		FileName: "config",
 		FilePaths: []string{
 			".",
 			"./configs",
 		},
 	}
+
+	// check if the OCI image has been build using ko and use KO_DATA_PATH as config root
+	if val, ok := os.LookupEnv("KO_DATA_PATH"); ok {
+		opts.FilePaths = append(opts.FilePaths, val, path.Join(val, "configs"))
+	}
+
+	return opts
 }
 
 // ConfigOption are functional options for the [ConfigFactory] implementations.
