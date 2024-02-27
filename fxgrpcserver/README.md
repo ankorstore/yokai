@@ -40,7 +40,7 @@ This module provides the possibility to provide to your Fx application a gRPC se
 - automatic logging and tracing (method, duration, status, ...)
 - automatic metrics
 - automatic healthcheck
-- possibility to register gRPC services
+- possibility to register gRPC server options, interceptors and services
 
 ## Documentation
 
