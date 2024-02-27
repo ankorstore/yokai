@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/config/v1.1.0...config/v1.2.0) (2024-02-27)
+
+
+### Features
+
+* **config:** Auto-detect ko.build OCI images and set config paths ([#100](https://github.com/ankorstore/yokai/issues/100)) ([c214cad](https://github.com/ankorstore/yokai/commit/c214cad80af6e0fa43aa3aa16af3fb159c76270f))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/config/v1.0.0...config/v1.1.0) (2024-01-11)
 
 
