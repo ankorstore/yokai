@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"strconv"
-	"strings"
 
 	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/generate/uuid"
@@ -31,6 +30,9 @@ const (
 	DefaultBufconnSize = 1024 * 1024
 )
 
+// FxGrpcServerModule is the [Fx] grpcserver module.
+//
+// [Fx]: https://github.com/uber-go/fx
 var FxGrpcServerModule = fx.Module(
 	ModuleName,
 	fx.Provide(
@@ -46,11 +48,13 @@ var FxGrpcServerModule = fx.Module(
 	),
 )
 
+// FxGrpcBufconnListenerParam allows injection of the required dependencies in [NewFxGrpcBufconnListener].
 type FxGrpcBufconnListenerParam struct {
 	fx.In
 	Config *config.Config
 }
 
+// NewFxGrpcBufconnListener returns a new [bufconn.Listener].
 func NewFxGrpcBufconnListener(p FxGrpcBufconnListenerParam) *bufconn.Listener {
 	size := p.Config.GetInt("modules.grpc.server.test.bufconn.size")
 	if size == 0 {
@@ -60,6 +64,7 @@ func NewFxGrpcBufconnListener(p FxGrpcBufconnListenerParam) *bufconn.Listener {
 	return grpcservertest.NewBufconnListener(size)
 }
 
+// FxGrpcServerParam allows injection of the required dependencies in [NewFxGrpcBufconnListener].
 type FxGrpcServerParam struct {
 	fx.In
 	LifeCycle       fx.Lifecycle
@@ -74,17 +79,29 @@ type FxGrpcServerParam struct {
 	MetricsRegistry *prometheus.Registry
 }
 
+// NewFxGrpcServer returns a new [grpc.Server].
+//
+//nolint:cyclop
 func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 	// server interceptors
 	unaryInterceptors, streamInterceptors := createInterceptors(p)
 
-	// server options
-	grpcServerOptions := []grpc.ServerOption{
-		grpc.ChainUnaryInterceptor(unaryInterceptors...),
-		grpc.ChainStreamInterceptor(streamInterceptors...),
+	for _, unaryInterceptor := range p.Registry.ResolveGrpcServerUnaryInterceptors() {
+		unaryInterceptors = append(unaryInterceptors, unaryInterceptor.HandleUnary())
 	}
 
-	grpcServerOptions = append(grpcServerOptions, p.Registry.ResolveGrpcServerOptions()...)
+	for _, streamInterceptor := range p.Registry.ResolveGrpcServerStreamInterceptors() {
+		streamInterceptors = append(streamInterceptors, streamInterceptor.HandleStream())
+	}
+
+	// server options
+	grpcServerOptions := append(
+		[]grpc.ServerOption{
+			grpc.ChainUnaryInterceptor(unaryInterceptors...),
+			grpc.ChainStreamInterceptor(streamInterceptors...),
+		},
+		p.Registry.ResolveGrpcServerOptions()...,
+	)
 
 	// server
 	grpcServer, err := p.Factory.Create(
@@ -95,12 +112,12 @@ func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 		return nil, err
 	}
 
-	// healthcheck
+	// server healthcheck registration
 	if p.Config.GetBool("modules.grpc.server.healthcheck.enabled") {
 		grpcServer.RegisterService(&grpc_health_v1.Health_ServiceDesc, grpcserver.NewGrpcHealthCheckService(p.Checker))
 	}
 
-	// registrations
+	// server services registration
 	resolvedServices, err := p.Registry.ResolveGrpcServerServices()
 	if err != nil {
 		return nil, err
@@ -128,6 +145,8 @@ func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 						p.Logger.Error().Err(err).Msgf("failed to listen on %d for grpc server", port)
 					}
 				}
+
+				p.Logger.Info().Msgf("grpc server starting on port %d", port)
 
 				if err = grpcServer.Serve(lis); err != nil {
 					p.Logger.Error().Err(err).Msg("failed to serve grpc server")
@@ -210,11 +229,11 @@ func createInterceptors(p FxGrpcServerParam) ([]grpc.UnaryServerInterceptor, []g
 			subsystem = ModuleName
 		}
 
-		grpcSrvMetricsSubsystem := strings.ReplaceAll(fmt.Sprintf("%s_%s", namespace, subsystem), "-", "_")
+		grpcSrvMetricsSubsystem := Sanitize(fmt.Sprintf("%s_%s", namespace, subsystem))
 
 		var grpcSrvMetricsBuckets []float64
 		if bucketsConfig := p.Config.GetString("modules.grpc.server.metrics.buckets"); bucketsConfig != "" {
-			for _, s := range strings.Split(strings.ReplaceAll(bucketsConfig, " ", ""), ",") {
+			for _, s := range Split(bucketsConfig) {
 				f, err := strconv.ParseFloat(s, 64)
 				if err == nil {
 					grpcSrvMetricsBuckets = append(grpcSrvMetricsBuckets, f)

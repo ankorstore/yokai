@@ -2,22 +2,26 @@ package fxgrpcserver
 
 import "google.golang.org/grpc"
 
-type ResolvedGrpcService struct {
+// ResolvedGrpcServerService is an interface for the resolved grpc server services.
+type ResolvedGrpcServerService struct {
 	implementation any
 	description    *grpc.ServiceDesc
 }
 
-func NewResolvedGrpcService(implementation any, description *grpc.ServiceDesc) *ResolvedGrpcService {
-	return &ResolvedGrpcService{
+// NewResolvedGrpcService returns a new [ResolvedGrpcServerService].
+func NewResolvedGrpcService(implementation any, description *grpc.ServiceDesc) *ResolvedGrpcServerService {
+	return &ResolvedGrpcServerService{
 		implementation: implementation,
 		description:    description,
 	}
 }
 
-func (r *ResolvedGrpcService) Implementation() any {
+// Implementation return the resolved grpc server service implementation.
+func (r *ResolvedGrpcServerService) Implementation() any {
 	return r.implementation
 }
 
-func (r *ResolvedGrpcService) Description() *grpc.ServiceDesc {
+// Description return the resolved grpc server service description.
+func (r *ResolvedGrpcServerService) Description() *grpc.ServiceDesc {
 	return r.description
 }

@@ -8,12 +8,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewGrpcServiceDefinition(t *testing.T) {
+func TestNewGrpcServerServiceDefinition(t *testing.T) {
 	t.Parallel()
 
 	definition := fxgrpcserver.NewGrpcServiceDefinition("*TestService", &proto.Service_ServiceDesc)
 
-	assert.Implements(t, (*fxgrpcserver.GrpcServiceDefinition)(nil), definition)
+	assert.Implements(t, (*fxgrpcserver.GrpcServerServiceDefinition)(nil), definition)
 	assert.Equal(t, "*TestService", definition.ReturnType())
 	assert.Equal(t, &proto.Service_ServiceDesc, definition.Description())
 }

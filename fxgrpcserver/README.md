@@ -1,19 +1,27 @@
 # Fx gRPC Server Module
 
-> Go [Fx](https://uber-go.github.io/fx/) module for the [grpcserver](https://github.com/ankorstore/yokai/tree/main/grpcserver) module
+[![ci](https://github.com/ankorstore/yokai/actions/workflows/fxgrpcserver-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxgrpcserver-ci.yml)
+[![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxgrpcserver)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxgrpcserver)
+[![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR&flag=fxgrpcserver)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/fxgrpcserver)
+[![Deps](https://img.shields.io/badge/osi-deps-blue)](https://deps.dev/go/github.com%2Fankorstore%2Fyokai%2Ffxgrpcserver)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/ankorstore/yokai/fxgrpcserver)](https://pkg.go.dev/github.com/ankorstore/yokai/fxgrpcserver)
+
+> [Fx](https://uber-go.github.io/fx/) module for [grpcserver](https://github.com/ankorstore/yokai/tree/main/grpcserver).
 
 <!-- TOC -->
+
 * [Installation](#installation)
 * [Features](#features)
 * [Documentation](#documentation)
-  * [Dependencies](#dependencies)
-  * [Loading](#loading)
-  * [Configuration](#configuration)
-  * [Registration](#registration)
-  * [Reflection](#reflection)
-  * [Healthcheck](#healthcheck)
-  * [Decoration](#decoration)
-  * [Testing](#testing)
+	* [Dependencies](#dependencies)
+	* [Loading](#loading)
+	* [Configuration](#configuration)
+	* [Registration](#registration)
+	* [Reflection](#reflection)
+	* [Healthcheck](#healthcheck)
+	* [Decoration](#decoration)
+	* [Testing](#testing)
+
 <!-- TOC -->
 
 ## Installation
@@ -25,6 +33,7 @@ go get github.com/ankorstore/yokai/fxgrpcserver
 ## Features
 
 This module provides the possibility to provide to your Fx application a gRPC server with:
+
 - automatic panic recovery
 - automatic reflection
 - automatic logging and tracing (method, duration, status, ...)
@@ -37,6 +46,7 @@ This module provides the possibility to provide to your Fx application a gRPC se
 ### Dependencies
 
 This module is intended to be used alongside:
+
 - the [fxconfig](https://github.com/ankorstore/yokai/tree/main/fxconfig) module
 - the [fxlog](https://github.com/ankorstore/yokai/tree/main/fxlog) module
 - the [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module
@@ -69,7 +79,7 @@ func main() {
 		fxtrace.FxTraceModule,
 		fxgenerate.FxGenerateModule,
 		fxmetrics.FxMetricsModule,
-		fxhealthcheck.FxCheckerModule,
+		fxhealthcheck.FxHealthcheckModule,
 		fxgrpcserver.FxGrpcServerModule, // load the module
 	).Run()
 }
@@ -110,27 +120,114 @@ modules:
         collect:
           enabled: true             # to collect gRPC server metrics, disabled by default
           namespace: app            # gRPC server metrics namespace (default app.name value)
-          subsystem: grpcserver  # gRPC server metrics subsystem (default grpcserver)
+          subsystem: grpcserver     # gRPC server metrics subsystem (default grpcserver)
         buckets: 0.1, 1, 10         # to override default request duration buckets (default prometheus.DefBuckets)
       reflection:
         enabled: true               # to expose gRPC reflection service, disabled by default
       healthcheck:
         enabled: true               # to expose gRPC healthcheck service, disabled by default
       test:
-      	bufconn:
+        bufconn:
           size: 1048576             # test gRPC bufconn size, 1024*1024 by default
 ```
 
 Notes:
+
 - the gRPC calls logging will be based on the [fxlog](https://github.com/ankorstore/yokai/tree/main/fxlog) module configuration
 - the gRPC calls tracing will be based on the [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module configuration
 - if a request to an excluded gRPC method fails, the gRPC server will still log for observability purposes.
 
 ### Registration
 
-This module offers the `fxgrpcserver.AsGrpcService()` function to easily register your gRPC services.
+This module offers the possibility to easily gRPC server options, interceptors and services.
 
-Example with the [TestService](testdata/service/service.go), server implementation for the [test.proto](testdata/proto/test.proto):
+#### gRPC server options
+
+This module offers the `AsGrpcServerOptions()` function to easily register your gRPC server options.
+
+For example:
+
+```go
+package main
+
+import (
+	"github.com/ankorstore/yokai/fxconfig"
+	"github.com/ankorstore/yokai/fxgenerate"
+	"github.com/ankorstore/yokai/fxgrpcserver"
+	"github.com/ankorstore/yokai/fxgrpcserver/testdata/proto"
+	"github.com/ankorstore/yokai/fxgrpcserver/testdata/service"
+	"github.com/ankorstore/yokai/fxhealthcheck"
+	"github.com/ankorstore/yokai/fxlog"
+	"github.com/ankorstore/yokai/fxmetrics"
+	"github.com/ankorstore/yokai/fxtrace"
+	"go.uber.org/fx"
+	"google.golang.org/grpc"
+)
+
+func main() {
+	fx.New(
+		fxconfig.FxConfigModule, // load the module dependencies
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxgenerate.FxGenerateModule,
+		fxmetrics.FxMetricsModule,
+		fxhealthcheck.FxHealthcheckModule,
+		fxgrpcserver.FxGrpcServerModule, // load the module
+		fx.Provide(
+			fxgrpcserver.AsGrpcServerOptions(grpc.MaxSendMsgSize(1000), grpc.MaxRecvMsgSize(1000)), // configure the server send and receive max message size
+		),
+	).Run()
+}
+```
+
+#### gRPC server interceptors
+
+This module offers the possibility to easily register your gRPC server interceptors:
+
+- `AsGrpcServerUnaryInterceptor()` to register a server unary interceptor
+- `AsGrpcServerStreamInterceptor()` to register a server stream interceptor
+
+For example, with [UnaryInterceptor](testdata/interceptor/unary.go) and [StreamInterceptor](testdata/interceptor/stream.go) interceptors:
+
+```go
+package main
+
+import (
+	"github.com/ankorstore/yokai/fxconfig"
+	"github.com/ankorstore/yokai/fxgenerate"
+	"github.com/ankorstore/yokai/fxgrpcserver"
+	"github.com/ankorstore/yokai/fxgrpcserver/testdata/interceptor"
+	"github.com/ankorstore/yokai/fxgrpcserver/testdata/proto"
+	"github.com/ankorstore/yokai/fxgrpcserver/testdata/service"
+	"github.com/ankorstore/yokai/fxhealthcheck"
+	"github.com/ankorstore/yokai/fxlog"
+	"github.com/ankorstore/yokai/fxmetrics"
+	"github.com/ankorstore/yokai/fxtrace"
+	"go.uber.org/fx"
+)
+
+func main() {
+	fx.New(
+		fxconfig.FxConfigModule, // load the module dependencies
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxgenerate.FxGenerateModule,
+		fxmetrics.FxMetricsModule,
+		fxhealthcheck.FxHealthcheckModule,
+		fxgrpcserver.FxGrpcServerModule, // load the module
+		fx.Provide(
+			fxgrpcserver.AsGrpcServerUnaryInterceptor(interceptor.NewUnaryInterceptor),   // registers UnaryInterceptor as server unary interceptor
+			fxgrpcserver.AsGrpcServerStreamInterceptor(interceptor.NewStreamInterceptor), // registers UnaryInterceptor as server stream interceptor
+		),
+	).Run()
+}
+```
+
+#### gRPC server services
+
+This module offers the `AsGrpcServerService()` function to easily register your gRPC server services and their definitions.
+
+For example, with the [TestService](testdata/service/service.go), server implementation for the [test.proto](testdata/proto/test.proto):
 
 ```go
 package main
@@ -155,10 +252,10 @@ func main() {
 		fxtrace.FxTraceModule,
 		fxgenerate.FxGenerateModule,
 		fxmetrics.FxMetricsModule,
-		fxhealthcheck.FxCheckerModule,
+		fxhealthcheck.FxHealthcheckModule,
 		fxgrpcserver.FxGrpcServerModule, // load the module
 		fx.Provide(
-			fxgrpcserver.AsGrpcService(service.NewTestServiceServer, &proto.Service_ServiceDesc), // register the TestServiceServer for the proto.Service_ServiceDesc
+			fxgrpcserver.AsGrpcServerService(service.NewTestServiceServer, &proto.Service_ServiceDesc), // register the TestServiceServer for the proto.Service_ServiceDesc
 		),
 	).Run()
 }
@@ -166,13 +263,15 @@ func main() {
 
 ### Reflection
 
-This module provides the possibility to enable [gRPC server reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) if `modules.grpc.server.reflection.enabled=true`.
+This module provides the possibility to enable [gRPC server reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) with `modules.grpc.server.reflection.enabled=true`.
 
-Reflection usage is helpful for developing or testing your gRPC services, but it is not recommended for production usage (disabled by default).
+Reflection usage is helpful for developing or testing your gRPC services, but it is not recommended for production
+usage (disabled by default).
 
 ### Healthcheck
 
-This module automatically expose the [GrpcHealthCheckService](https://github.com/ankorstore/yokai/blob/main/grpcserver/healthcheck.go) if `modules.grpc.server.healthcheck.enabled=true`, to offer the [Check and Watch](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto) RPCs, suitable for [k8s gRPC startup, readiness or liveness probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/).
+This module automatically expose the [GrpcHealthCheckService](https://github.com/ankorstore/yokai/blob/main/grpcserver/healthcheck.go) with `modules.grpc.server.healthcheck.enabled=true`, to offer the [Check and Watch](https://github.com/grpc/grpc-proto/blob/master/grpc/health/v1/health.proto) RPCs, suitable
+for [k8s gRPC startup, readiness or liveness probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/).
 
 You can use the `fxhealthcheck.AsCheckerProbe()` function to register several [CheckerProbe](https://github.com/ankorstore/yokai/blob/main/healthcheck/probe.go) (more details on the [fxhealthcheck](https://github.com/ankorstore/yokai/tree/main/fxhealthcheck) module documentation).
 
@@ -231,8 +330,8 @@ func main() {
 		fxtrace.FxTraceModule,
 		fxgenerate.FxGenerateModule,
 		fxmetrics.FxMetricsModule,
-		fxhealthcheck.FxCheckerModule,
-		fxgrpcserver.FxGrpcServerModule,  // load the module
+		fxhealthcheck.FxHealthcheckModule,
+		fxgrpcserver.FxGrpcServerModule, // load the module
 		fx.Provide(
 			fxhealthcheck.AsCheckerProbe(NewSuccessProbe),                       // register the SuccessProbe probe for startup, liveness and readiness checks
 			fxhealthcheck.AsCheckerProbe(NewFailureProbe, healthcheck.Liveness), // register the FailureProbe probe for liveness checks only
@@ -242,15 +341,19 @@ func main() {
 ```
 
 In this example, the `GrpcHealthCheckService` will:
-- run the liveness probes checks if the request service name contains liveness (like kubernetes::liveness) and will return a check failure
-- or run the readiness probes checks if the request service name contains readiness (like kubernetes::readiness) and will return a check success
+
+- run the liveness probes checks if the request service name contains liveness (like kubernetes::liveness) and will
+  return a check failure
+- or run the readiness probes checks if the request service name contains readiness (like kubernetes::readiness) and
+  will return a check success
 - or run the startup probes checks otherwise, and will return a check success
 
-### Decoration
+### Override
 
-By default, the `grpc.Server` is created by the [DefaultGrpcServerFactory](https://github.com/ankorstore/yokai/blob/main/grpcserver/factory.go).
+By default, the `grpc.Server` is created by
+the [DefaultGrpcServerFactory](https://github.com/ankorstore/yokai/blob/main/grpcserver/factory.go).
 
-If needed, you can provide your own factory and decorate the module:
+If needed, you can provide your own factory and override the module:
 
 ```go
 package main
@@ -285,9 +388,9 @@ func main() {
 		fxtrace.FxTraceModule,
 		fxgenerate.FxGenerateModule,
 		fxmetrics.FxMetricsModule,
-		fxhealthcheck.FxCheckerModule,
-		fxgrpcserver.FxGrpcServerModule,         // load the module
-		fx.Decorate(NewCustomGrpcServerFactory), // decorate the module with a custom factory
+		fxhealthcheck.FxHealthcheckModule,
+		fxgrpcserver.FxGrpcServerModule,          // load the module
+		fx.Decorate(NewCustomGrpcServerFactory),  // override the module with a custom factory
 		fx.Invoke(func(grpcServer *grpc.Server) { // invoke the gRPC server
 			// ...
 		}),

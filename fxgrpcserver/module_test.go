@@ -13,6 +13,7 @@ import (
 	"github.com/ankorstore/yokai/fxgenerate"
 	"github.com/ankorstore/yokai/fxgrpcserver"
 	"github.com/ankorstore/yokai/fxgrpcserver/testdata/factory"
+	"github.com/ankorstore/yokai/fxgrpcserver/testdata/interceptor"
 	"github.com/ankorstore/yokai/fxgrpcserver/testdata/probes"
 	"github.com/ankorstore/yokai/fxgrpcserver/testdata/proto"
 	"github.com/ankorstore/yokai/fxgrpcserver/testdata/service"
@@ -43,6 +44,7 @@ var (
 	testTraceParent = fmt.Sprintf("00-%s-%s-01", testTraceId, testSpanId)
 )
 
+//nolint:maintidx
 func TestModule(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("APP_ENV", "test")
@@ -65,6 +67,8 @@ func TestModule(t *testing.T) {
 		fxgrpcserver.FxGrpcServerModule,
 		fx.Provide(service.NewTestServiceDependency),
 		fx.Options(
+			fxgrpcserver.AsGrpcServerUnaryInterceptor(interceptor.NewUnaryInterceptor),
+			fxgrpcserver.AsGrpcServerStreamInterceptor(interceptor.NewStreamInterceptor),
 			fxgrpcserver.AsGrpcServerService(service.NewTestServiceServer, &proto.Service_ServiceDesc),
 		),
 		fx.Populate(&grpcServer, &lis, &logBuffer, &traceExporter, &metricsRegistry),
@@ -115,6 +119,15 @@ func TestModule(t *testing.T) {
 		"level":     "info",
 		"system":    "grpcserver",
 		"service":   "test",
+		"message":   "in unary interceptor of test",
+		"requestID": testRequestId,
+		"foo":       "foo",
+	})
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "info",
+		"system":    "grpcserver",
+		"service":   "test",
 		"message":   "unary call on test",
 		"requestID": testRequestId,
 		"foo":       "foo",
@@ -143,15 +156,15 @@ func TestModule(t *testing.T) {
 	tracetest.AssertHasNotTraceSpan(t, traceExporter, "test.Service/Unary")
 
 	expectedUnaryMetric := `
-		# HELP foo_bar_grpc_server_started_total Total number of RPCs started on the server.
-		# TYPE foo_bar_grpc_server_started_total counter
-		foo_bar_grpc_server_started_total{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
+		# HELP test_grpcserver_grpc_server_started_total Total number of RPCs started on the server.
+		# TYPE test_grpcserver_grpc_server_started_total counter
+		test_grpcserver_grpc_server_started_total{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
 	`
 
 	err = testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expectedUnaryMetric),
-		"foo_bar_grpc_server_started_total",
+		"test_grpcserver_grpc_server_started_total",
 	)
 	assert.NoError(t, err)
 
@@ -215,6 +228,15 @@ func TestModule(t *testing.T) {
 		"requestID":  testRequestId,
 		"traceID":    testTraceId,
 		"foo":        "foo",
+	})
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "info",
+		"system":    "grpcserver",
+		"message":   "in stream interceptor of test",
+		"requestID": testRequestId,
+		"traceID":   testTraceId,
+		"foo":       "foo",
 	})
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
@@ -285,16 +307,16 @@ func TestModule(t *testing.T) {
 	tracetest.AssertHasTraceSpan(t, traceExporter, "test.Service/Bidi")
 
 	expectedBidiMetric := `
-		# HELP foo_bar_grpc_server_handled_total Total number of RPCs completed on the server, regardless of success or failure.
-		# TYPE foo_bar_grpc_server_handled_total counter
-		foo_bar_grpc_server_handled_total{grpc_code="OK",grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
-		foo_bar_grpc_server_handled_total{grpc_code="OK",grpc_method="Bidi",grpc_service="test.Service",grpc_type="bidi_stream"} 1
+		# HELP test_grpcserver_grpc_server_handled_total Total number of RPCs completed on the server, regardless of success or failure.
+		# TYPE test_grpcserver_grpc_server_handled_total counter
+		test_grpcserver_grpc_server_handled_total{grpc_code="OK",grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
+		test_grpcserver_grpc_server_handled_total{grpc_code="OK",grpc_method="Bidi",grpc_service="test.Service",grpc_type="bidi_stream"} 1
 	`
 
 	err = testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expectedBidiMetric),
-		"foo_bar_grpc_server_handled_total",
+		"test_grpcserver_grpc_server_handled_total",
 	)
 	assert.NoError(t, err)
 }
