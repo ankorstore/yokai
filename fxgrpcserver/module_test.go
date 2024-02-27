@@ -44,6 +44,7 @@ var (
 	testTraceParent = fmt.Sprintf("00-%s-%s-01", testTraceId, testSpanId)
 )
 
+//nolint:maintidx
 func TestModule(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("APP_ENV", "test")
