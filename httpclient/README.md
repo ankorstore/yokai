@@ -9,14 +9,13 @@
 > Http client module based on [net/http](https://pkg.go.dev/net/http).
 
 <!-- TOC -->
-
 * [Installation](#installation)
 * [Documentation](#documentation)
-	* [Requests](#requests)
-	* [Transports](#transports)
-		* [BaseTransport](#basetransport)
-		* [LoggerTransport](#loggertransport)
-
+  * [Requests](#requests)
+  * [Transports](#transports)
+    * [BaseTransport](#basetransport)
+    * [LoggerTransport](#loggertransport)
+    * [MetricsTransport](#metricstransport)
 <!-- TOC -->
 
 ## Installation
@@ -166,3 +165,48 @@ var client, _ = httpclient.NewDefaultHttpClientFactory().Create(
 ```
 
 Note: if no transport is provided for decoration in `transport.NewLoggerTransport(nil)`, the [BaseTransport](transport/base.go) will be used as base transport.
+
+#### MetricsTransport
+
+This module provide a [MetricsTransport](transport/metrics.go), able to decorate any `http.RoundTripper` to add metrics:
+
+- about requests total count (labelled by url, http method and status code)
+- about requests duration (labelled by url and http method)
+
+To use it:
+
+```go
+package main
+
+import (
+	"github.com/ankorstore/yokai/httpclient"
+	"github.com/ankorstore/yokai/httpclient/transport"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rs/zerolog"
+)
+
+var client, _ = httpclient.NewDefaultHttpClientFactory().Create(
+	httpclient.WithTransport(transport.NewMetricsTransport(nil)),
+)
+
+// equivalent to:
+var client, _ = httpclient.NewDefaultHttpClientFactory().Create(
+	httpclient.WithTransport(
+		transport.NewMetricsTransportWithConfig(
+			transport.NewBaseTransport(),
+			&transport.MetricsTransportConfig{
+				Registry:            prometheus.DefaultRegisterer, // metrics registry
+				Namespace:           "",                           // metrics namespace
+				Subsystem:           "",                           // metrics subsystem
+				Buckets:             prometheus.DefBuckets,        // metrics duration buckets
+				NormalizeHTTPStatus: true,                         // normalize the response HTTP code (ex: 201 => 2xx)
+			},
+		),
+	),
+)
+```
+
+Notes:
+
+- if no transport is provided for decoration in `transport.NewMetricsTransport(nil)`, the [BaseTransport](transport/base.go) will be used as base transport
+- if no registry is provided in the `config` in `transport.NewMetricsTransportWithConfig(nil, config)`, the `prometheus.DefaultRegisterer` will be used a metrics registry
