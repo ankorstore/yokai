@@ -1,14 +1,16 @@
 package fxhttpclient
 
 import (
-	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/httpclient"
 	"github.com/ankorstore/yokai/httpclient/transport"
 	"github.com/ankorstore/yokai/log"
+	"github.com/prometheus/client_golang/prometheus"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/fx"
@@ -28,27 +30,29 @@ const (
 var FxHttpClientModule = fx.Module(
 	ModuleName,
 	fx.Provide(
+		fx.Annotate(
+			NewFxHttpClientTransport,
+			fx.As(new(http.RoundTripper)),
+		),
 		httpclient.NewDefaultHttpClientFactory,
 		NewFxHttpClient,
 	),
 )
 
-// FxHttpClientParam allows injection of the required dependencies in [NewFxHttpClient].
-type FxHttpClientParam struct {
+// FxHttpClientTransportParam allows injection of the required dependencies in [NewFxHttpClientTransport].
+type FxHttpClientTransportParam struct {
 	fx.In
-	Factory        httpclient.HttpClientFactory
-	TracerProvider trace.TracerProvider
-	Config         *config.Config
-	Logger         *log.Logger
+	TracerProvider  trace.TracerProvider
+	Config          *config.Config
+	Logger          *log.Logger
+	MetricsRegistry *prometheus.Registry
 }
 
-// NewFxHttpClient returns a new [http.Client].
-func NewFxHttpClient(p FxHttpClientParam) (*http.Client, error) {
-	timeout := p.Config.GetInt("modules.http.client.timeout")
-	if timeout == 0 {
-		timeout = DefaultTimeout
-	}
-
+// NewFxHttpClientTransport returns a new [http.RoundTripper].
+//
+//nolint:nestif,cyclop
+func NewFxHttpClientTransport(p FxHttpClientTransportParam) http.RoundTripper {
+	// base round tripper config
 	maxIdleConnections := p.Config.GetInt("modules.http.client.transport.max_idle_connections")
 	if maxIdleConnections == 0 {
 		maxIdleConnections = DefaultMaxIdleConnections
@@ -70,6 +74,7 @@ func NewFxHttpClient(p FxHttpClientParam) (*http.Client, error) {
 		MaxIdleConnectionsPerHost: maxIdleConnectionsPerHost,
 	}
 
+	// logger round tripper config
 	loggerTransportConfig := &transport.LoggerTransportConfig{
 		LogRequest:                       p.Config.GetBool("modules.http.client.log.request.enabled"),
 		LogRequestBody:                   p.Config.GetBool("modules.http.client.log.request.body"),
@@ -80,27 +85,76 @@ func NewFxHttpClient(p FxHttpClientParam) (*http.Client, error) {
 		LogResponseLevelFromResponseCode: p.Config.GetBool("modules.http.client.log.response.level_from_response"),
 	}
 
+	// round tripper
 	var roundTripper http.RoundTripper
 	roundTripper = transport.NewLoggerTransportWithConfig(
 		transport.NewBaseTransportWithConfig(baseTransportConfig),
 		loggerTransportConfig,
 	)
 
-	p.Logger.
-		Debug().
-		Int("timeout", timeout).
-		Str("base transport config", fmt.Sprintf("%+v", baseTransportConfig)).
-		Str("logger transport config", fmt.Sprintf("%+v", loggerTransportConfig)).
-		Msg("http client: applied configs")
-
+	// round tripper tracing extension
 	if p.Config.GetBool("modules.http.client.trace.enabled") {
 		roundTripper = otelhttp.NewTransport(roundTripper, otelhttp.WithTracerProvider(p.TracerProvider))
 
 		p.Logger.Debug().Msg("http client: enabled tracing")
 	}
 
+	// round tripper metrics extension
+	if p.Config.GetBool("modules.http.client.metrics.collect.enabled") {
+		namespace := p.Config.GetString("modules.http.client.metrics.collect.namespace")
+		if namespace == "" {
+			namespace = p.Config.AppName()
+		}
+
+		subsystem := p.Config.GetString("modules.http.client.metrics.collect.subsystem")
+		if subsystem == "" {
+			subsystem = ModuleName
+		}
+
+		var buckets []float64
+		if bucketsConfig := p.Config.GetString("modules.http.client.metrics.buckets"); bucketsConfig != "" {
+			for _, s := range strings.Split(strings.ReplaceAll(bucketsConfig, " ", ""), ",") {
+				f, err := strconv.ParseFloat(s, 64)
+				if err == nil {
+					buckets = append(buckets, f)
+				}
+			}
+		}
+
+		roundTripper = transport.NewMetricsTransportWithConfig(
+			roundTripper,
+			&transport.MetricsTransportConfig{
+				Registry:            p.MetricsRegistry,
+				Namespace:           Sanitize(namespace),
+				Subsystem:           Sanitize(subsystem),
+				Buckets:             buckets,
+				NormalizeHTTPStatus: p.Config.GetBool("modules.http.client.metrics.normalize"),
+			},
+		)
+
+		p.Logger.Debug().Msg("http client: enabled metrics")
+	}
+
+	return roundTripper
+}
+
+// FxHttpClientParam allows injection of the required dependencies in [NewFxHttpClient].
+type FxHttpClientParam struct {
+	fx.In
+	Factory      httpclient.HttpClientFactory
+	RoundTripper http.RoundTripper
+	Config       *config.Config
+}
+
+// NewFxHttpClient returns a new [http.Client].
+func NewFxHttpClient(p FxHttpClientParam) (*http.Client, error) {
+	timeout := p.Config.GetInt("modules.http.client.timeout")
+	if timeout == 0 {
+		timeout = DefaultTimeout
+	}
+
 	return p.Factory.Create(
 		httpclient.WithTimeout(time.Duration(timeout)*time.Second),
-		httpclient.WithTransport(roundTripper),
+		httpclient.WithTransport(p.RoundTripper),
 	)
 }

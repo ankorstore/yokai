@@ -31,6 +31,7 @@ This module provides the possibility to provide to your Fx application a `http.C
 - configurable transport
 - automatic and configurable request / response logging
 - configurable request / response tracing
+- configurable request metrics
 
 ## Documentation
 
@@ -40,6 +41,7 @@ This module is intended to be used alongside:
 
 - the [fxconfig](https://github.com/ankorstore/yokai/tree/main/fxconfig) module
 - the [fxlog](https://github.com/ankorstore/yokai/tree/main/fxlog) module
+- the [fxmetrics](https://github.com/ankorstore/yokai/tree/main/fxmetrics) module
 - the [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module
 
 ### Loading
@@ -55,16 +57,18 @@ import (
 	"github.com/ankorstore/yokai/fxconfig"
 	"github.com/ankorstore/yokai/fxhttpclient"
 	"github.com/ankorstore/yokai/fxlog"
+	"github.com/ankorstore/yokai/fxmetrics"
 	"github.com/ankorstore/yokai/fxtrace"
 	"go.uber.org/fx"
 )
 
 func main() {
 	fx.New(
-		fxconfig.FxConfigModule,                  // load the module dependencies
+		fxconfig.FxConfigModule, // load the module dependencies
 		fxlog.FxLogModule,
+		fxmetrics.FxMetricsModule,
 		fxtrace.FxTraceModule,
-		fxhttpclient.FxHttpClientModule,          // load the module
+		fxhttpclient.FxHttpClientModule, // load the module
 		fx.Invoke(func(httpClient *http.Client) { // invoke the client
 			resp, err := httpClient.Get("https://example.com")
 		}),
@@ -109,6 +113,13 @@ modules:
           level_from_response: true          # to use response code for response logging
       trace:
         enabled: true                        # to trace http calls, disabled by default
+      metrics:
+        collect:
+          enabled: true                      # to collect http client metrics
+          namespace: app                     # http client metrics namespace (default app.name value)
+          subsystem: httpclient              # http client metrics subsystem (default httpclient)
+        buckets: 0.1, 1, 10                  # to override default request duration buckets
+        normalize: true                      # to normalize http status code (2xx, 3xx, ...)
 ```
 
 If `modules.http.client.log.response.level_from_response=true`, the response code will be used to determinate the log level:
@@ -119,10 +130,8 @@ If `modules.http.client.log.response.level_from_response=true`, the response cod
 
 Notes:
 
-- the http client logging will be based on the [fxlog](https://github.com/ankorstore/yokai/tree/main/fxlog) module
-  configuration
-- the http client tracing will be based on the [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module
-  configuration
+- the http client logging will be based on the [fxlog](https://github.com/ankorstore/yokai/tree/main/fxlog) module configuration
+- the http client tracing will be based on the [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module configuration
 
 ### Override
 
@@ -140,6 +149,7 @@ import (
 	"github.com/ankorstore/yokai/fxconfig"
 	"github.com/ankorstore/yokai/fxhttpclient"
 	"github.com/ankorstore/yokai/fxlog"
+	"github.com/ankorstore/yokai/fxmetrics"
 	"github.com/ankorstore/yokai/fxtrace"
 	"github.com/ankorstore/yokai/httpclient"
 	"go.uber.org/fx"
@@ -159,6 +169,7 @@ func main() {
 	fx.New(
 		fxconfig.FxConfigModule, // load the module dependencies
 		fxlog.FxLogModule,
+		fxmetrics.FxMetricsModule,
 		fxtrace.FxTraceModule,
 		fxhttpclient.FxHttpClientModule,          // load the module
 		fx.Decorate(NewCustomHttpClientFactory),  // override the module with a custom factory

@@ -3,19 +3,24 @@ package fxhttpclient_test
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/ankorstore/yokai/fxconfig"
 	"github.com/ankorstore/yokai/fxhttpclient"
 	"github.com/ankorstore/yokai/fxhttpclient/testdata/factory"
 	"github.com/ankorstore/yokai/fxlog"
+	"github.com/ankorstore/yokai/fxmetrics"
 	"github.com/ankorstore/yokai/fxtrace"
 	"github.com/ankorstore/yokai/log"
 	"github.com/ankorstore/yokai/log/logtest"
 	"github.com/ankorstore/yokai/trace/tracetest"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"go.uber.org/fx"
@@ -29,15 +34,17 @@ func TestModule(t *testing.T) {
 	var logger *log.Logger
 	var logBuffer logtest.TestLogBuffer
 	var traceExporter tracetest.TestTraceExporter
+	var metricsRegistry *prometheus.Registry
 
 	fxtest.New(
 		t,
 		fx.NopLogger,
 		fxconfig.FxConfigModule,
 		fxlog.FxLogModule,
+		fxmetrics.FxMetricsModule,
 		fxtrace.FxTraceModule,
 		fxhttpclient.FxHttpClientModule,
-		fx.Populate(&httpClient, &logger, &logBuffer, &traceExporter),
+		fx.Populate(&httpClient, &logger, &logBuffer, &traceExporter, &metricsRegistry),
 	).RequireStart().RequireStop()
 
 	httpServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -92,6 +99,22 @@ func TestModule(t *testing.T) {
 		semconv.HTTPStatusCode(http.StatusOK),
 	)
 
+	expectedMetric := fmt.Sprintf(
+		`
+			# HELP app_httpclient_client_requests_total Number of performed HTTP requests
+			# TYPE app_httpclient_client_requests_total counter
+			app_httpclient_client_requests_total{method="POST",status="2xx",url="%s"} 1
+		`,
+		httpServer.URL,
+	)
+
+	err = testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"app_httpclient_client_requests_total",
+	)
+	assert.NoError(t, err)
+
 	// 400 response
 	data = []byte(`{"input":"data"}`)
 	req = httptest.NewRequest(http.MethodPost, httpServer.URL, bytes.NewBuffer(data))
@@ -133,6 +156,24 @@ func TestModule(t *testing.T) {
 		semconv.HTTPStatusCode(http.StatusBadRequest),
 	)
 
+	expectedMetric = fmt.Sprintf(
+		`
+			# HELP app_httpclient_client_requests_total Number of performed HTTP requests
+			# TYPE app_httpclient_client_requests_total counter
+			app_httpclient_client_requests_total{method="POST",status="2xx",url="%s"} 1
+			app_httpclient_client_requests_total{method="POST",status="4xx",url="%s"} 1
+		`,
+		httpServer.URL,
+		httpServer.URL,
+	)
+
+	err = testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"app_httpclient_client_requests_total",
+	)
+	assert.NoError(t, err)
+
 	// 500 response
 	data = []byte(`{"input":"data"}`)
 	req = httptest.NewRequest(http.MethodPost, httpServer.URL, bytes.NewBuffer(data))
@@ -173,6 +214,26 @@ func TestModule(t *testing.T) {
 		semconv.HTTPURL(httpServer.URL),
 		semconv.HTTPStatusCode(http.StatusInternalServerError),
 	)
+
+	expectedMetric = fmt.Sprintf(
+		`
+			# HELP app_httpclient_client_requests_total Number of performed HTTP requests
+			# TYPE app_httpclient_client_requests_total counter
+			app_httpclient_client_requests_total{method="POST",status="2xx",url="%s"} 1
+			app_httpclient_client_requests_total{method="POST",status="4xx",url="%s"} 1
+			app_httpclient_client_requests_total{method="POST",status="5xx",url="%s"} 1
+		`,
+		httpServer.URL,
+		httpServer.URL,
+		httpServer.URL,
+	)
+
+	err = testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"app_httpclient_client_requests_total",
+	)
+	assert.NoError(t, err)
 }
 
 func TestModuleDecoration(t *testing.T) {
@@ -187,6 +248,7 @@ func TestModuleDecoration(t *testing.T) {
 		fxconfig.FxConfigModule,
 		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
 		fxhttpclient.FxHttpClientModule,
 		fx.Decorate(factory.NewTestHttpClientFactory),
 		fx.Populate(&httpClient),
