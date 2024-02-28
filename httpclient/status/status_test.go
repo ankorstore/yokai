@@ -22,11 +22,10 @@ func TestNormalizeHTTPStatus(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := status.NormalizeHTTPStatus(tt.code)
-			if got != tt.want {
-				t.Errorf("expected %s, got %s", tt.want, got)
-			}
-		})
+		got := status.NormalizeHTTPStatus(tt.code)
+
+		if got != tt.want {
+			t.Errorf("expected %s, got %s", tt.want, got)
+		}
 	}
 }
