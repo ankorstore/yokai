@@ -145,6 +145,48 @@ modules:
 
 The HTTP client tracing will be based on the [fxtrace](fxtrace.md) module configuration.
 
+## Metrics
+
+This module enables to automatically generate metrics about HTTP the requests made by the [Client](https://pkg.go.dev/net/http#Client):
+
+```yaml title="configs/config.yaml"
+modules:
+  http:
+    client:
+      metrics:
+        collect:
+          enabled: true          # to collect http client metrics
+          namespace: app         # http client metrics namespace (default app.name value)
+          subsystem: httpclient  # http client metrics subsystem (default httpclient)
+        buckets: 0.1, 1, 10      # to override default request duration buckets
+        normalize: true          # to normalize http status code (2xx, 3xx, ...)
+```
+
+For example, after calling `client.Get("https://example.com")`, the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will expose in the configured metrics endpoint:
+
+```makefile title="[GET] /metrics"
+# ...
+# HELP app_httpclient_client_request_duration_seconds Time spent performing HTTP requests
+# TYPE app_httpclient_client_request_duration_seconds histogram
+app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.005"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.01"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.025"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.05"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.1"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.25"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.5"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="1"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="2.5"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="5"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="10"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="+Inf"} 1
+app_httpclient_client_request_duration_seconds_sum{method="GET",url="https://example.com"} 0.00064455
+app_httpclient_client_request_duration_seconds_count{method="GET",url="https://example.com"} 1
+# HELP app_httpclient_client_requests_total Number of performed HTTP requests
+# TYPE app_httpclient_client_requests_total counter
+app_httpclient_client_requests_total{method="GET",status="2xx",url="https://example.com"} 1
+```
+
 ## Testing
 
 See [net/http/httptest](https://pkg.go.dev/net/http/httptest) documentation.
