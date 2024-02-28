@@ -1,5 +1,5 @@
 app:
-  name: dev
+  name: app
 modules:
   log:
     level: info
@@ -21,3 +21,8 @@ modules:
           body: true
       trace:
         enabled: true
+      metrics:
+        collect:
+          enabled: true
+        buckets: 0.1, 1, 10
+        normalize: true

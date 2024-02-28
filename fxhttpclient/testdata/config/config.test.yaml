@@ -1,2 +1,7 @@
-app:
-  name: test
+modules:
+  log:
+    level: info
+    output: test
+  trace:
+    processor:
+      type: test
