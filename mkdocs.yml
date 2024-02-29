@@ -80,6 +80,7 @@ nav:
       - "Config": modules/fxconfig.md
       - "Cron": modules/fxcron.md
       - "Generate": modules/fxgenerate.md
+      - "gRPC Server": modules/fxgrpcserver.md
       - "Health Check": modules/fxhealthcheck.md
       - "HTTP Client": modules/fxhttpclient.md
       - "HTTP Server": modules/fxhttpserver.md

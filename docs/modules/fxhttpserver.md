@@ -413,6 +413,15 @@ modules:
         level_from_response: true # to use response status code for log level (ex: 500=error)
 ```
 
+As a result, in your application logs:
+
+```
+INT service=app example message requestID=0f507e36-ea56-4842-b2f5-a53467e227e5 spanID=950c48301f39d2e3 traceID=d69d972b00302ec3e5369c8d439c4fac
+INF service=app request logger latency="12.34µs" method=GET uri=/example status=200 module=httpserver requestID=0f507e36-ea56-4842-b2f5-a53467e227e5 spanID=950c48301f39d2e3 traceID=d69d972b00302ec3e5369c8d439c4fac
+```
+
+If both HTTP server logging and tracing are enabled, log records will automatically have the current `traceID` and `spanID` to be able to correlate logs and trace spans.
+
 To get logs correlation in your handlers, you need to retrieve the logger from the context with `log.CtxLogger()`:
 
 ```go
@@ -424,15 +433,6 @@ You can also use the shortcut function `httpserver.CtxLogger()` to work with Ech
 ```go
 httpserver.CtxLogger(c).Info().Msg("example message")
 ```
-
-As a result, in your application logs:
-
-```
-INT service=app example message requestID=0f507e36-ea56-4842-b2f5-a53467e227e5 spanID=950c48301f39d2e3 traceID=d69d972b00302ec3e5369c8d439c4fac
-INF service=app request logger latency="12.34µs" method=GET uri=/example status=200 module=httpserver requestID=0f507e36-ea56-4842-b2f5-a53467e227e5 spanID=950c48301f39d2e3 traceID=d69d972b00302ec3e5369c8d439c4fac
-```
-
-If both HTTP server logging and tracing are enabled, log records will automatically have the current `traceID` and `spanID` to be able to correlate logs and trace spans.
 
 The HTTP server logging will be based on the [fxlog](fxlog.md) module configuration.
 
@@ -451,6 +451,16 @@ modules:
           - /bar
 ```
 
+As a result, in your application trace spans attributes:
+
+```
+service.name: app
+http.method: GET
+http.route: /example
+http.status_code: 200
+...
+```
+
 To get traces correlation in your handlers, you need to retrieve the tracer provider from the context with `trace.CtxTracerProvider()`:
 
 ```go
@@ -464,16 +474,6 @@ You can also use the shortcut function `httpserver.CtxTracer()` to work with Ech
 ```go
 ctx, span := httpserver.CtxTracer(c).Start(c.Request().Context(), "example span")
 defer span.End()
-```
-
-As a result, in your application trace spans attributes:
-
-```
-service.name: app
-http.method: GET
-http.route: /example
-http.status_code: 200
-...
 ```
 
 The HTTP server tracing will be based on the [fxtrace](fxtrace.md) module configuration.
