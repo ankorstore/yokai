@@ -9,20 +9,22 @@
 > [Fx](https://uber-go.github.io/fx/) module for [grpcserver](https://github.com/ankorstore/yokai/tree/main/grpcserver).
 
 <!-- TOC -->
+
 * [Installation](#installation)
 * [Features](#features)
 * [Documentation](#documentation)
-  * [Dependencies](#dependencies)
-  * [Loading](#loading)
-  * [Configuration](#configuration)
-  * [Registration](#registration)
-    * [gRPC server options](#grpc-server-options)
-    * [gRPC server interceptors](#grpc-server-interceptors)
-    * [gRPC server services](#grpc-server-services)
-  * [Reflection](#reflection)
-  * [Healthcheck](#healthcheck)
-  * [Override](#override)
-  * [Testing](#testing)
+	* [Dependencies](#dependencies)
+	* [Loading](#loading)
+	* [Configuration](#configuration)
+	* [Registration](#registration)
+		* [gRPC server options](#grpc-server-options)
+		* [gRPC server interceptors](#grpc-server-interceptors)
+		* [gRPC server services](#grpc-server-services)
+	* [Reflection](#reflection)
+	* [Healthcheck](#healthcheck)
+	* [Override](#override)
+	* [Testing](#testing)
+
 <!-- TOC -->
 
 ## Installation
@@ -140,7 +142,7 @@ Notes:
 
 ### Registration
 
-This module offers the possibility to easily gRPC server options, interceptors and services.
+This module offers the possibility to easily register gRPC server options, interceptors and services.
 
 #### gRPC server options
 
@@ -175,7 +177,11 @@ func main() {
 		fxhealthcheck.FxHealthcheckModule,
 		fxgrpcserver.FxGrpcServerModule, // load the module
 		fx.Provide(
-			fxgrpcserver.AsGrpcServerOptions(grpc.MaxSendMsgSize(1000), grpc.MaxRecvMsgSize(1000)), // configure the server send and receive max message size
+			// configure the server send and receive max message size
+			fxgrpcserver.AsGrpcServerOptions(
+				grpc.MaxSendMsgSize(1000),
+				grpc.MaxRecvMsgSize(1000),
+			),
 		),
 	).Run()
 }
@@ -217,8 +223,10 @@ func main() {
 		fxhealthcheck.FxHealthcheckModule,
 		fxgrpcserver.FxGrpcServerModule, // load the module
 		fx.Provide(
-			fxgrpcserver.AsGrpcServerUnaryInterceptor(interceptor.NewUnaryInterceptor),   // registers UnaryInterceptor as server unary interceptor
-			fxgrpcserver.AsGrpcServerStreamInterceptor(interceptor.NewStreamInterceptor), // registers UnaryInterceptor as server stream interceptor
+			// registers UnaryInterceptor as server unary interceptor
+			fxgrpcserver.AsGrpcServerUnaryInterceptor(interceptor.NewUnaryInterceptor),
+			// registers StreamInterceptor as server stream interceptor
+			fxgrpcserver.AsGrpcServerStreamInterceptor(interceptor.NewStreamInterceptor), 
 		),
 	).Run()
 }
