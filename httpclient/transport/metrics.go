@@ -24,13 +24,13 @@ type MetricsTransport struct {
 
 // MetricsTransportConfig is the configuration of the [MetricsTransport].
 type MetricsTransportConfig struct {
-	Registry           prometheus.Registerer
-	Namespace          string
-	Subsystem          string
-	Buckets            []float64
-	NormalizeStatus    bool
-	NormalizePath      bool
-	NormalizePathMasks map[string]string
+	Registry                  prometheus.Registerer
+	Namespace                 string
+	Subsystem                 string
+	Buckets                   []float64
+	NormalizeRequestPath      bool
+	NormalizeRequestPathMasks map[string]string
+	NormalizeResponseStatus   bool
 }
 
 // NewMetricsTransport returns a [MetricsTransport] instance with default [MetricsTransportConfig] configuration.
@@ -38,13 +38,13 @@ func NewMetricsTransport(base http.RoundTripper) *MetricsTransport {
 	return NewMetricsTransportWithConfig(
 		base,
 		&MetricsTransportConfig{
-			Registry:           prometheus.DefaultRegisterer,
-			Namespace:          "",
-			Subsystem:          "",
-			Buckets:            prometheus.DefBuckets,
-			NormalizeStatus:    true,
-			NormalizePath:      false,
-			NormalizePathMasks: map[string]string{},
+			Registry:                  prometheus.DefaultRegisterer,
+			Namespace:                 "",
+			Subsystem:                 "",
+			Buckets:                   prometheus.DefBuckets,
+			NormalizeRequestPath:      false,
+			NormalizeRequestPathMasks: map[string]string{},
+			NormalizeResponseStatus:   true,
 		},
 	)
 }
@@ -116,8 +116,8 @@ func (t *MetricsTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 		path = fmt.Sprintf("%s?%s", path, req.URL.RawQuery)
 	}
 
-	if t.config.NormalizePath {
-		path = normalization.NormalizePath(t.config.NormalizePathMasks, path)
+	if t.config.NormalizeRequestPath {
+		path = normalization.NormalizePath(t.config.NormalizeRequestPathMasks, path)
 	}
 
 	timer := prometheus.NewTimer(t.requestsDuration.WithLabelValues(req.Method, host, path))
@@ -129,7 +129,7 @@ func (t *MetricsTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 	if err != nil {
 		respStatus = "error"
 	} else {
-		if t.config.NormalizeStatus {
+		if t.config.NormalizeResponseStatus {
 			respStatus = normalization.NormalizeStatus(resp.StatusCode)
 		} else {
 			respStatus = strconv.Itoa(resp.StatusCode)

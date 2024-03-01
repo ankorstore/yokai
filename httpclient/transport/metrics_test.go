@@ -69,15 +69,15 @@ func TestMetricsTransportRoundTripWithBaseAndConfig(t *testing.T) {
 	trans := transport.NewMetricsTransportWithConfig(
 		base,
 		&transport.MetricsTransportConfig{
-			Registry:        registry,
-			Namespace:       "foo",
-			Subsystem:       "bar",
-			Buckets:         []float64{1, 2, 3},
-			NormalizeStatus: false,
-			NormalizePath:   true,
-			NormalizePathMasks: map[string]string{
+			Registry:             registry,
+			Namespace:            "foo",
+			Subsystem:            "bar",
+			Buckets:              []float64{1, 2, 3},
+			NormalizeRequestPath: true,
+			NormalizeRequestPathMasks: map[string]string{
 				`/foo/(.+)/bar\?page=(.+)`: "/foo/{fooId}/bar?page={pageId}",
 			},
+			NormalizeResponseStatus: false,
 		},
 	)
 
