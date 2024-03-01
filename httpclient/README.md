@@ -214,7 +214,7 @@ If no transport is provided for decoration in `transport.NewMetricsTransport(nil
 
 If no registry is provided in the `config` in `transport.NewMetricsTransportWithConfig(nil, config)`, the `prometheus.DefaultRegisterer` will be used a metrics registry
 
-If the provided config uses `NormalizeRequestPath=true` with the following `NormalizeRequestPathMasks`:
+If the provided config provides `NormalizeRequestPath` to `true` and with the following `NormalizeRequestPathMasks`:
 
 ```go
 map[string]string{
@@ -222,6 +222,6 @@ map[string]string{
 },
 ```
 
-Then if the request path is `/foo/1/bar?page=2`, the metric path will be masked with `/foo/{fooId}/bar?page={pageId}`.
+Then if the request path is `/foo/1/bar?page=2`, the metric path label will be masked with `/foo/{fooId}/bar?page={pageId}`.
 
 
