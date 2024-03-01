@@ -1,7 +1,7 @@
-package status
+package normalization
 
-// NormalizeHTTPStatus normalizes an HTTP status code.
-func NormalizeHTTPStatus(status int) string {
+// NormalizeStatus normalizes an HTTP status code.
+func NormalizeStatus(status int) string {
 	switch {
 	case status < 200:
 		return "1xx"

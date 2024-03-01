@@ -195,11 +195,16 @@ var client, _ = httpclient.NewDefaultHttpClientFactory().Create(
 		transport.NewMetricsTransportWithConfig(
 			transport.NewBaseTransport(),
 			&transport.MetricsTransportConfig{
-				Registry:            prometheus.DefaultRegisterer, // metrics registry
-				Namespace:           "",                           // metrics namespace
-				Subsystem:           "",                           // metrics subsystem
-				Buckets:             prometheus.DefBuckets,        // metrics duration buckets
-				NormalizeHTTPStatus: true,                         // normalize the response HTTP code (ex: 201 => 2xx)
+				Registry:        prometheus.DefaultRegisterer, // metrics registry
+				Namespace:       "",                           // metrics namespace
+				Subsystem:       "",                           // metrics subsystem
+				Buckets:         prometheus.DefBuckets,        // metrics duration buckets
+				NormalizeStatus: true,                         // normalize the response HTTP code (ex: 201 => 2xx)
+				NormalizePath: true,                           // normalize the request path following the masks given in NormalizePathMasks
+                NormalizePathMasks: map[string]string{         // path normalization masks (key: regex to match, value: mask to apply)
+                  // for ex: if request path is /foo/1/bar?page=2, the metric path will be masked with /foo/{fooId}/bar?page={pageId}
+                  `/foo/(.+)/bar\?page=(.+)`: "/foo/{fooId}/bar?page={pageId}", 
+                },
 			},
 		),
 	),

@@ -60,6 +60,8 @@ func (t *LoggerTransport) Base() http.RoundTripper {
 }
 
 // RoundTrip performs a request / response round trip, based on the wrapped [http.RoundTripper].
+//
+//nolint:cyclop
 func (t *LoggerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	logger := log.CtxLogger(req.Context())
 
@@ -81,7 +83,14 @@ func (t *LoggerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	resp, err := t.transport.RoundTrip(req)
 	latency := time.Since(start).String()
 
+	if err != nil {
+		logger.Error().Err(err).Str("latency", latency).Msg("http client failure")
+
+		return resp, err
+	}
+
 	var respEvt *zerolog.Event
+
 	if t.config.LogResponseLevelFromResponseCode {
 		switch {
 		case resp.StatusCode >= http.StatusBadRequest && resp.StatusCode < http.StatusInternalServerError:
