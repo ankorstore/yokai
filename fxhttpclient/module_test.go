@@ -103,7 +103,7 @@ func TestModule(t *testing.T) {
 		`
 			# HELP app_httpclient_client_requests_total Number of performed HTTP requests
 			# TYPE app_httpclient_client_requests_total counter
-			app_httpclient_client_requests_total{method="POST",status="2xx",url="%s"} 1
+			app_httpclient_client_requests_total{host="%s",method="POST",path="",status="2xx"} 1
 		`,
 		httpServer.URL,
 	)
@@ -160,8 +160,8 @@ func TestModule(t *testing.T) {
 		`
 			# HELP app_httpclient_client_requests_total Number of performed HTTP requests
 			# TYPE app_httpclient_client_requests_total counter
-			app_httpclient_client_requests_total{method="POST",status="2xx",url="%s"} 1
-			app_httpclient_client_requests_total{method="POST",status="4xx",url="%s"} 1
+			app_httpclient_client_requests_total{host="%s",method="POST",path="",status="2xx"} 1
+			app_httpclient_client_requests_total{host="%s",method="POST",path="",status="4xx"} 1
 		`,
 		httpServer.URL,
 		httpServer.URL,
@@ -219,11 +219,76 @@ func TestModule(t *testing.T) {
 		`
 			# HELP app_httpclient_client_requests_total Number of performed HTTP requests
 			# TYPE app_httpclient_client_requests_total counter
-			app_httpclient_client_requests_total{method="POST",status="2xx",url="%s"} 1
-			app_httpclient_client_requests_total{method="POST",status="4xx",url="%s"} 1
-			app_httpclient_client_requests_total{method="POST",status="5xx",url="%s"} 1
+			app_httpclient_client_requests_total{host="%s",method="POST",path="",status="2xx"} 1
+        	app_httpclient_client_requests_total{host="%s",method="POST",path="",status="4xx"} 1
+        	app_httpclient_client_requests_total{host="%s",method="POST",path="",status="5xx"} 1
 		`,
 		httpServer.URL,
+		httpServer.URL,
+		httpServer.URL,
+	)
+
+	err = testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"app_httpclient_client_requests_total",
+	)
+	assert.NoError(t, err)
+
+	// request url mask with 300
+	url := fmt.Sprintf("%s/foo/1/bar?page=2", httpServer.URL)
+	mask := "/foo/{id}/bar?page={page}"
+
+	req = httptest.NewRequest(http.MethodGet, url, nil)
+	req.RequestURI = ""
+	req.Header.Add("expected-response-code", "302")
+	req.Header.Add("expected-response-body", `{"output":"ok"}`)
+	req = req.WithContext(logger.WithContext(context.Background()))
+
+	resp, err = httpClient.Do(req)
+	assert.NoError(t, err)
+
+	err = resp.Body.Close()
+	assert.NoError(t, err)
+
+	assert.Equal(t, http.StatusFound, resp.StatusCode)
+
+	logtest.AssertContainLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "info",
+		"method":  "GET",
+		"url":     url,
+		"message": "http client request",
+	})
+
+	logtest.AssertContainLogRecord(t, logBuffer, map[string]interface{}{
+		"level":    "info",
+		"url":      httpServer.URL,
+		"code":     http.StatusFound,
+		"response": `{"output":"ok"}`,
+		"message":  "http client response",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"HTTP GET",
+		semconv.HTTPMethod(http.MethodGet),
+		semconv.HTTPURL(url),
+		semconv.HTTPStatusCode(http.StatusFound),
+	)
+
+	expectedMetric = fmt.Sprintf(
+		`
+			# HELP app_httpclient_client_requests_total Number of performed HTTP requests
+			# TYPE app_httpclient_client_requests_total counter
+			app_httpclient_client_requests_total{host="%s",method="POST",path="",status="2xx"} 1
+        	app_httpclient_client_requests_total{host="%s",method="GET",path="%s",status="3xx"} 1
+        	app_httpclient_client_requests_total{host="%s",method="POST",path="",status="4xx"} 1
+        	app_httpclient_client_requests_total{host="%s",method="POST",path="",status="5xx"} 1
+		`,
+		httpServer.URL,
+		httpServer.URL,
+		mask,
 		httpServer.URL,
 		httpServer.URL,
 	)

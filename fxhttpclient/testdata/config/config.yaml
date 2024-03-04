@@ -25,4 +25,8 @@ modules:
         collect:
           enabled: true
         buckets: 0.1, 1, 10
-        normalize: true
+        normalize:
+          request_path: true
+          request_path_masks:
+            /foo/{id}/bar?page={page}: /foo/(.+)/bar\?page=(.+)
+          response_status: true

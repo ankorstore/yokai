@@ -124,11 +124,13 @@ func NewFxHttpClientTransport(p FxHttpClientTransportParam) http.RoundTripper {
 		roundTripper = transport.NewMetricsTransportWithConfig(
 			roundTripper,
 			&transport.MetricsTransportConfig{
-				Registry:            p.MetricsRegistry,
-				Namespace:           Sanitize(namespace),
-				Subsystem:           Sanitize(subsystem),
-				Buckets:             buckets,
-				NormalizeHTTPStatus: p.Config.GetBool("modules.http.client.metrics.normalize"),
+				Registry:                  p.MetricsRegistry,
+				Namespace:                 Sanitize(namespace),
+				Subsystem:                 Sanitize(subsystem),
+				Buckets:                   buckets,
+				NormalizeRequestPath:      p.Config.GetBool("modules.http.client.metrics.normalize.request_path"),
+				NormalizeRequestPathMasks: Flip(p.Config.GetStringMapString("modules.http.client.metrics.normalize.request_path_masks")),
+				NormalizeResponseStatus:   p.Config.GetBool("modules.http.client.metrics.normalize.response_status"),
 			},
 		)
 

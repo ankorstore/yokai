@@ -9,6 +9,7 @@
 > [Fx](https://uber-go.github.io/fx/) module for [httpclient](https://github.com/ankorstore/yokai/tree/main/httpclient).
 
 <!-- TOC -->
+
 * [Installation](#installation)
 * [Features](#features)
 * [Documentation](#documentation)
@@ -16,6 +17,7 @@
 	* [Loading](#loading)
 	* [Configuration](#configuration)
 	* [Override](#override)
+
 <!-- TOC -->
 
 ## Installation
@@ -119,19 +121,33 @@ modules:
           namespace: app                     # http client metrics namespace (default app.name value)
           subsystem: httpclient              # http client metrics subsystem (default httpclient)
         buckets: 0.1, 1, 10                  # to override default request duration buckets
-        normalize: true                      # to normalize http status code (2xx, 3xx, ...)
+        normalize:
+          request_path: true                 # to normalize http request path, disabled by default
+          request_path_masks:                # request path normalization masks (key: mask to apply, value: regex to match), empty by default
+            /foo/{id}/bar?page={page}: /foo/(.+)/bar\?page=(.+)
+          response_status: true              # to normalize http response status code (2xx, 3xx, ...), disabled by default
 ```
 
-If `modules.http.client.log.response.level_from_response=true`, the response code will be used to determinate the log level:
+If `modules.http.client.log.response.level_from_response=true`, the response code will be used to determinate the log
+level:
 
 - `code < 400`: log level configured in `modules.http.client.log.response.level`
 - `400 <= code < 500`: log level `warn`
 - `code >= 500`: log level `error`
 
+If `modules.http.client.metrics.normalize.request_path=true`,
+the `modules.http.client.metrics.normalize.request_path_masks` map will be used to try to apply masks on the metrics
+path label for better cardinality.
+
+For the given example, if the request path is `/foo/1/bar?page=2`, the metric path label will be masked
+with `/foo/{id}/bar?page={page}`.
+
 Notes:
 
-- the http client logging will be based on the [fxlog](https://github.com/ankorstore/yokai/tree/main/fxlog) module configuration
-- the http client tracing will be based on the [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module configuration
+- the http client logging will be based on the [fxlog](https://github.com/ankorstore/yokai/tree/main/fxlog) module
+  configuration
+- the http client tracing will be based on the [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module
+  configuration
 
 ### Override
 
@@ -171,8 +187,8 @@ func main() {
 		fxlog.FxLogModule,
 		fxmetrics.FxMetricsModule,
 		fxtrace.FxTraceModule,
-		fxhttpclient.FxHttpClientModule,          // load the module
-		fx.Decorate(NewCustomHttpClientFactory),  // override the module with a custom factory
+		fxhttpclient.FxHttpClientModule,         // load the module
+		fx.Decorate(NewCustomHttpClientFactory), // override the module with a custom factory
 		fx.Invoke(func(httpClient *http.Client) { // invoke the custom client
 			// ...
 		}),

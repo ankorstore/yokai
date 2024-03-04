@@ -44,8 +44,8 @@ github.com/ankorstore/yokai/fxmetrics v1.0.0 h1:jA1MnIRzRqBk4JsdCcQxPZ6Jvmpd+uyo
 github.com/ankorstore/yokai/fxmetrics v1.0.0/go.mod h1:No9z3tnPxAyjYiXfHcpGjZzBwYB/OSs80L7w0oiXXmM=
 github.com/ankorstore/yokai/fxtrace v1.1.0 h1:UBzz5mo0kvfbp2fEaY/2Mamy4lkWoJiWe8iz2bDl+Vw=
 github.com/ankorstore/yokai/fxtrace v1.1.0/go.mod h1:DP/aNn65I+LU1QoBVvCLhFVr2djFUNFnclITmUxjQmc=
-github.com/ankorstore/yokai/httpclient v1.1.0 h1:zUsykTof9aFMyvFpMNXYqWwN1bAfc4s+IuBe0g2aI3Q=
-github.com/ankorstore/yokai/httpclient v1.1.0/go.mod h1:VyiY8gNbyXWFq851LARE7aV7Pz02g9/Dl6oOV02yjoo=
+github.com/ankorstore/yokai/httpclient v1.2.0 h1:6uu1P6fcj+SA+8JjjpoDi2QLr2I0WJdm+Tk18RA1T7w=
+github.com/ankorstore/yokai/httpclient v1.2.0/go.mod h1:NAJ17GGeMr0EJb/F+U15BVc8oTiJUz4WEHl2nhCmNDk=
 github.com/ankorstore/yokai/log v1.1.0 h1:7+kkmbGMtpfkEEaWSZ4/4Yp+dieVoolOVG24NpEJDO4=
 github.com/ankorstore/yokai/log v1.1.0/go.mod h1:lyBRVA8VkrmlNjaR2jVTH9XjV06ioolWTuDVN6wF0vk=
 github.com/ankorstore/yokai/trace v1.1.0 h1:DEJP+0ZjtjPSxEVLkmOY/xKEj11T7uR3eCHGpD5jMRI=
