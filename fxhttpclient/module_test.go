@@ -237,7 +237,7 @@ func TestModule(t *testing.T) {
 
 	// request url mask with 300
 	url := fmt.Sprintf("%s/foo/1/bar?page=2", httpServer.URL)
-	mask := fxhttpclient.Sanitize("/foo/{fooId}/bar?page={pageId}")
+	mask := "/foo/{id}/bar?page={page}"
 
 	req = httptest.NewRequest(http.MethodGet, url, nil)
 	req.RequestURI = ""

@@ -28,5 +28,5 @@ modules:
         normalize:
           request_path: true
           request_path_masks:
-            /foo/{fooId}/bar?page={pageId}: /foo/(.+)/bar\?page=(.+)
+            /foo/{id}/bar?page={page}: /foo/(.+)/bar\?page=(.+)
           response_status: true
