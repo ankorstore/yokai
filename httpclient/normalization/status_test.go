@@ -1,9 +1,9 @@
-package status_test
+package normalization_test
 
 import (
 	"testing"
 
-	"github.com/ankorstore/yokai/httpclient/status"
+	"github.com/ankorstore/yokai/httpclient/normalization"
 )
 
 func TestNormalizeHTTPStatus(t *testing.T) {
@@ -22,7 +22,7 @@ func TestNormalizeHTTPStatus(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := status.NormalizeHTTPStatus(tt.code)
+		got := normalization.NormalizeStatus(tt.code)
 
 		if got != tt.want {
 			t.Errorf("expected %s, got %s", tt.want, got)

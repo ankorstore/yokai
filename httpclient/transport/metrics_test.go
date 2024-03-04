@@ -11,6 +11,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestMetricsTransportRoundTrip(t *testing.T) {
@@ -21,11 +22,11 @@ func TestMetricsTransportRoundTrip(t *testing.T) {
 	}))
 	defer server.Close()
 
-	req := httptest.NewRequest(http.MethodGet, server.URL, nil)
-
 	trans := transport.NewMetricsTransport(nil)
 	assert.IsType(t, &transport.MetricsTransport{}, trans)
 	assert.Implements(t, (*http.RoundTripper)(nil), trans)
+
+	req := httptest.NewRequest(http.MethodGet, server.URL, nil)
 
 	resp, err := trans.RoundTrip(req)
 	assert.NoError(t, err)
@@ -36,10 +37,11 @@ func TestMetricsTransportRoundTrip(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 
 	// requests counter assertions
-	expectedCounterMetric := fmt.Sprintf(`
+	expectedCounterMetric := fmt.Sprintf(
+		`
 			# HELP client_requests_total Number of performed HTTP requests
 			# TYPE client_requests_total counter
-			client_requests_total{method="GET",status="5xx",url="%s"} 1
+			client_requests_total{host="%s",method="GET",path="",status="5xx"} 1
 		`,
 		server.URL,
 	)
@@ -62,36 +64,106 @@ func TestMetricsTransportRoundTripWithBaseAndConfig(t *testing.T) {
 	}))
 	defer server.Close()
 
-	req := httptest.NewRequest(http.MethodGet, server.URL, nil)
-
 	base := &http.Transport{}
 
 	trans := transport.NewMetricsTransportWithConfig(
 		base,
 		&transport.MetricsTransportConfig{
-			Registry:            registry,
-			Namespace:           "foo",
-			Subsystem:           "bar",
-			Buckets:             []float64{1, 2, 3},
-			NormalizeHTTPStatus: false,
+			Registry:             registry,
+			Namespace:            "foo",
+			Subsystem:            "bar",
+			Buckets:              []float64{1, 2, 3},
+			NormalizeRequestPath: true,
+			NormalizeRequestPathMasks: map[string]string{
+				`/foo/(.+)/bar\?page=(.+)`: "/foo/{fooId}/bar?page={pageId}",
+			},
+			NormalizeResponseStatus: false,
 		},
 	)
 
 	assert.Equal(t, base, trans.Base())
 
-	resp, err := trans.RoundTrip(req)
-	assert.NoError(t, err)
+	// requests
+	urls := []string{
+		server.URL,
+		fmt.Sprintf("%s/foo/1/bar?page=1#baz", server.URL),
+		fmt.Sprintf("%s/foo/2/bar?page=2#baz", server.URL),
+		fmt.Sprintf("%s/foo/3/bar?page=3#baz", server.URL),
+		fmt.Sprintf("%s/foo/4/baz", server.URL),
+	}
 
-	err = resp.Body.Close()
-	assert.NoError(t, err)
+	for _, url := range urls {
+		req := httptest.NewRequest(http.MethodGet, url, nil)
 
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+		resp, err := trans.RoundTrip(req)
+		assert.NoError(t, err)
+
+		err = resp.Body.Close()
+		assert.NoError(t, err)
+
+		assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	}
 
 	// requests counter assertions
-	expectedCounterMetric := fmt.Sprintf(`
+	expectedCounterMetric := fmt.Sprintf(
+		`
 			# HELP foo_bar_client_requests_total Number of performed HTTP requests
 			# TYPE foo_bar_client_requests_total counter
-			foo_bar_client_requests_total{method="GET",status="204",url="%s"} 1
+    		foo_bar_client_requests_total{host="%s",method="GET",path="",status="204"} 1
+    		foo_bar_client_requests_total{host="%s",method="GET",path="/foo/4/baz",status="204"} 1
+    		foo_bar_client_requests_total{host="%s",method="GET",path="/foo/{fooId}/bar?page={pageId}",status="204"} 3
+		`,
+		server.URL,
+		server.URL,
+		server.URL,
+	)
+
+	err := testutil.GatherAndCompare(
+		registry,
+		strings.NewReader(expectedCounterMetric),
+		"foo_bar_client_requests_total",
+	)
+	assert.NoError(t, err)
+}
+
+func TestMetricsTransportRoundTripWithFailure(t *testing.T) {
+	t.Parallel()
+
+	registry := prometheus.NewPedanticRegistry()
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	defer server.Close()
+
+	base := new(transportMock)
+	base.On("RoundTrip", mock.Anything).Return(nil, fmt.Errorf("custom http error"))
+
+	trans := transport.NewMetricsTransportWithConfig(
+		base,
+		&transport.MetricsTransportConfig{
+			Registry:  registry,
+			Namespace: "foo",
+			Subsystem: "bar",
+		},
+	)
+
+	assert.Equal(t, base, trans.Base())
+
+	// request
+	req := httptest.NewRequest(http.MethodGet, server.URL, nil)
+
+	//nolint:bodyclose
+	resp, err := trans.RoundTrip(req)
+	assert.Nil(t, resp)
+	assert.Error(t, err)
+
+	// requests counter assertions
+	expectedCounterMetric := fmt.Sprintf(
+		`
+			# HELP foo_bar_client_requests_total Number of performed HTTP requests
+			# TYPE foo_bar_client_requests_total counter
+			foo_bar_client_requests_total{host="%s",method="GET",path="",status="error"} 1
 		`,
 		server.URL,
 	)

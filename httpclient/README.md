@@ -9,13 +9,15 @@
 > Http client module based on [net/http](https://pkg.go.dev/net/http).
 
 <!-- TOC -->
+
 * [Installation](#installation)
 * [Documentation](#documentation)
-  * [Requests](#requests)
-  * [Transports](#transports)
-    * [BaseTransport](#basetransport)
-    * [LoggerTransport](#loggertransport)
-    * [MetricsTransport](#metricstransport)
+	* [Requests](#requests)
+	* [Transports](#transports)
+		* [BaseTransport](#basetransport)
+		* [LoggerTransport](#loggertransport)
+		* [MetricsTransport](#metricstransport)
+
 <!-- TOC -->
 
 ## Installation
@@ -195,18 +197,31 @@ var client, _ = httpclient.NewDefaultHttpClientFactory().Create(
 		transport.NewMetricsTransportWithConfig(
 			transport.NewBaseTransport(),
 			&transport.MetricsTransportConfig{
-				Registry:            prometheus.DefaultRegisterer, // metrics registry
-				Namespace:           "",                           // metrics namespace
-				Subsystem:           "",                           // metrics subsystem
-				Buckets:             prometheus.DefBuckets,        // metrics duration buckets
-				NormalizeHTTPStatus: true,                         // normalize the response HTTP code (ex: 201 => 2xx)
+				Registry:                  prometheus.DefaultRegisterer, // metrics registry
+				Namespace:                 "",                           // metrics namespace
+				Subsystem:                 "",                           // metrics subsystem
+				Buckets:                   prometheus.DefBuckets,        // metrics duration buckets
+				NormalizeRequestPath:      false,                        // normalize the request path following the masks given in NormalizePathMasks
+				NormalizeRequestPathMasks: map[string]string{},          // request path normalization masks (key: regex to match, value: mask to apply)
+				NormalizeResponseStatus:   true,                         // normalize the response HTTP code (ex: 201 => 2xx)
 			},
 		),
 	),
 )
 ```
 
-Notes:
+If no transport is provided for decoration in `transport.NewMetricsTransport(nil)`, the [BaseTransport](transport/base.go) will be used as base transport.
 
-- if no transport is provided for decoration in `transport.NewMetricsTransport(nil)`, the [BaseTransport](transport/base.go) will be used as base transport
-- if no registry is provided in the `config` in `transport.NewMetricsTransportWithConfig(nil, config)`, the `prometheus.DefaultRegisterer` will be used a metrics registry
+If no registry is provided in the `config` in `transport.NewMetricsTransportWithConfig(nil, config)`, the `prometheus.DefaultRegisterer` will be used a metrics registry
+
+If the provided config provides `NormalizeRequestPath` to `true` and with the following `NormalizeRequestPathMasks`:
+
+```go
+map[string]string{
+    `/foo/(.+)/bar\?page=(.+)`: "/foo/{fooId}/bar?page={pageId}",
+},
+```
+
+Then if the request path is `/foo/1/bar?page=2`, the metric path label will be masked with `/foo/{fooId}/bar?page={pageId}`.
+
+

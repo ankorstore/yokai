@@ -1,10 +1,11 @@
 package transport
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
-	"github.com/ankorstore/yokai/httpclient/status"
+	"github.com/ankorstore/yokai/httpclient/normalization"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -23,11 +24,13 @@ type MetricsTransport struct {
 
 // MetricsTransportConfig is the configuration of the [MetricsTransport].
 type MetricsTransportConfig struct {
-	Registry            prometheus.Registerer
-	Namespace           string
-	Subsystem           string
-	Buckets             []float64
-	NormalizeHTTPStatus bool
+	Registry                  prometheus.Registerer
+	Namespace                 string
+	Subsystem                 string
+	Buckets                   []float64
+	NormalizeRequestPath      bool
+	NormalizeRequestPathMasks map[string]string
+	NormalizeResponseStatus   bool
 }
 
 // NewMetricsTransport returns a [MetricsTransport] instance with default [MetricsTransportConfig] configuration.
@@ -35,11 +38,13 @@ func NewMetricsTransport(base http.RoundTripper) *MetricsTransport {
 	return NewMetricsTransportWithConfig(
 		base,
 		&MetricsTransportConfig{
-			Registry:            prometheus.DefaultRegisterer,
-			Namespace:           "",
-			Subsystem:           "",
-			Buckets:             prometheus.DefBuckets,
-			NormalizeHTTPStatus: true,
+			Registry:                  prometheus.DefaultRegisterer,
+			Namespace:                 "",
+			Subsystem:                 "",
+			Buckets:                   prometheus.DefBuckets,
+			NormalizeRequestPath:      false,
+			NormalizeRequestPathMasks: map[string]string{},
+			NormalizeResponseStatus:   true,
 		},
 	)
 }
@@ -62,9 +67,10 @@ func NewMetricsTransportWithConfig(base http.RoundTripper, config *MetricsTransp
 			Help:      "Number of performed HTTP requests",
 		},
 		[]string{
-			"url",
-			"method",
 			"status",
+			"method",
+			"host",
+			"path",
 		},
 	)
 
@@ -77,8 +83,9 @@ func NewMetricsTransportWithConfig(base http.RoundTripper, config *MetricsTransp
 			Buckets:   config.Buckets,
 		},
 		[]string{
-			"url",
 			"method",
+			"host",
+			"path",
 		},
 	)
 
@@ -99,18 +106,37 @@ func (t *MetricsTransport) Base() http.RoundTripper {
 
 // RoundTrip performs a request / response round trip, based on the wrapped [http.RoundTripper].
 func (t *MetricsTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	timer := prometheus.NewTimer(t.requestsDuration.WithLabelValues(req.URL.String(), req.Method))
+	host := req.URL.Host
+	if req.URL.Scheme != "" {
+		host = fmt.Sprintf("%s://%s", req.URL.Scheme, host)
+	}
+
+	path := req.URL.Path
+	if req.URL.RawQuery != "" {
+		path = fmt.Sprintf("%s?%s", path, req.URL.RawQuery)
+	}
+
+	if t.config.NormalizeRequestPath {
+		path = normalization.NormalizePath(t.config.NormalizeRequestPathMasks, path)
+	}
+
+	timer := prometheus.NewTimer(t.requestsDuration.WithLabelValues(req.Method, host, path))
 	resp, err := t.transport.RoundTrip(req)
 	timer.ObserveDuration()
 
 	respStatus := ""
-	if t.config.NormalizeHTTPStatus {
-		respStatus = status.NormalizeHTTPStatus(resp.StatusCode)
+
+	if err != nil {
+		respStatus = "error"
 	} else {
-		respStatus = strconv.Itoa(resp.StatusCode)
+		if t.config.NormalizeResponseStatus {
+			respStatus = normalization.NormalizeStatus(resp.StatusCode)
+		} else {
+			respStatus = strconv.Itoa(resp.StatusCode)
+		}
 	}
 
-	t.requestsCounter.WithLabelValues(req.URL.String(), req.Method, respStatus).Inc()
+	t.requestsCounter.WithLabelValues(respStatus, req.Method, host, path).Inc()
 
 	return resp, err
 }

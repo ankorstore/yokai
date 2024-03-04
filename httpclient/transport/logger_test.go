@@ -3,6 +3,7 @@ package transport_test
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -13,7 +14,18 @@ import (
 	"github.com/ankorstore/yokai/log/logtest"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
+
+type transportMock struct {
+	mock.Mock
+}
+
+func (m *transportMock) RoundTrip(*http.Request) (*http.Response, error) {
+	args := m.Called()
+
+	return nil, args.Error(1)
+}
 
 func TestNewLoggerTransport(t *testing.T) {
 	t.Parallel()
@@ -199,5 +211,46 @@ func TestLoggerTransportRoundTripWithConfig(t *testing.T) {
 		"code":     http.StatusInternalServerError,
 		"response": `{"output":"error"}`,
 		"message":  "http client response",
+	})
+}
+
+func TestLoggerTransportRoundTripWithFailure(t *testing.T) {
+	t.Parallel()
+
+	logBuffer := logtest.NewDefaultTestLogBuffer()
+	logger, err := log.NewDefaultLoggerFactory().Create(
+		log.WithLevel(zerolog.DebugLevel),
+		log.WithOutputWriter(logBuffer),
+	)
+	assert.NoError(t, err)
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	defer server.Close()
+
+	req := httptest.NewRequest(http.MethodGet, server.URL, nil)
+	req = req.WithContext(logger.WithContext(context.Background()))
+
+	base := new(transportMock)
+	base.On("RoundTrip", mock.Anything).Return(nil, fmt.Errorf("custom http error"))
+
+	//nolint:bodyclose
+	resp, err := transport.NewLoggerTransport(base).RoundTrip(req)
+	assert.Nil(t, resp)
+	assert.Error(t, err)
+	assert.Equal(t, "custom http error", err.Error())
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "info",
+		"method":  "GET",
+		"url":     server.URL,
+		"message": "http client request",
+	})
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"error":   "custom http error",
+		"level":   "error",
+		"message": "http client failure",
 	})
 }
