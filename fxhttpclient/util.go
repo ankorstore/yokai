@@ -10,8 +10,8 @@ func Sanitize(str string) string {
 	return strings.ToLower(san)
 }
 
-// FlipMap flips a map in <value: key> format.
-func FlipMap(m map[string]string) map[string]string {
+// Flip reverses a map in {value: key} format.
+func Flip(m map[string]string) map[string]string {
 	n := make(map[string]string, len(m))
 	for k, v := range m {
 		n[v] = k
