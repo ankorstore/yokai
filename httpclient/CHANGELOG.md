@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/httpclient/v1.1.0...httpclient/v1.2.0) (2024-03-04)
+
+
+### Features
+
+* **httpclient:** Added request path normalization mechanism in metrics transport for better metrics cardinality ([#113](https://github.com/ankorstore/yokai/issues/113)) ([3c8811c](https://github.com/ankorstore/yokai/commit/3c8811c878c0d446d4ca307254ab49d0b9cb40b2))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/httpclient/v1.0.0...httpclient/v1.1.0) (2024-02-28)
 
 
