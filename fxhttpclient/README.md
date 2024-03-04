@@ -124,7 +124,7 @@ modules:
         normalize:
           request_path: true                 # to normalize http request path, disabled by default
           request_path_masks:                # request path normalization masks (key: mask to apply, value: regex to match), empty by default
-            /foo/{fooId}/bar?page={pageId}: /foo/(.+)/bar\?page=(.+)
+            /foo/{id}/bar?page={page}: /foo/(.+)/bar\?page=(.+)
           response_status: true              # to normalize http response status code (2xx, 3xx, ...), disabled by default
 ```
 
@@ -136,11 +136,11 @@ level:
 - `code >= 500`: log level `error`
 
 If `modules.http.client.metrics.normalize.request_path=true`,
-the `modules.http.client.metrics.normalize.request_path_masks` list will be used to try to apply masks on the metrics
+the `modules.http.client.metrics.normalize.request_path_masks` map will be used to try to apply masks on the metrics
 path label for better cardinality.
 
 For the given example, if the request path is `/foo/1/bar?page=2`, the metric path label will be masked
-with `/foo/{fooId}/bar?page={pageId}`.
+with `/foo/{id}/bar?page={page}`.
 
 Notes:
 
