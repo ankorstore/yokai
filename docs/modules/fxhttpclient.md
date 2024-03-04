@@ -101,6 +101,18 @@ modules:
           level_from_response: true          # to use response code for response logging
       trace:
         enabled: true                        # to trace http calls, disabled by default
+      metrics:
+        collect:
+          enabled: true                      # to collect http client metrics
+          namespace: app                     # http client metrics namespace (default app.name value)
+          subsystem: httpclient              # http client metrics subsystem (default httpclient)
+        buckets: 0.1, 1, 10                  # to override default request duration buckets
+        normalize:
+          request_path: true                 # to normalize http request path, disabled by default
+          request_path_masks:                # request path normalization masks (key: mask to apply, value: regex to match), empty by default
+            /foo/{id}: /foo/(.+)
+            /bar/{id}: /bar/(.+)
+          response_status: true              # to normalize http response status code (2xx, 3xx, ...), disabled by default
 ```
 
 ## Logging
@@ -155,36 +167,40 @@ modules:
     client:
       metrics:
         collect:
-          enabled: true          # to collect http client metrics
-          namespace: app         # http client metrics namespace (default app.name value)
-          subsystem: httpclient  # http client metrics subsystem (default httpclient)
-        buckets: 0.1, 1, 10      # to override default request duration buckets
-        normalize: true          # to normalize http status code (2xx, 3xx, ...)
+          enabled: true                      # to collect http client metrics
+          namespace: app                     # http client metrics namespace (default app.name value)
+          subsystem: httpclient              # http client metrics subsystem (default httpclient)
+        buckets: 0.1, 1, 10                  # to override default request duration buckets
+        normalize:
+          request_path: true                 # to normalize http request path, disabled by default
+          request_path_masks:                # request path normalization masks (key: mask to apply, value: regex to match), empty by default
+            /foo/{id}/bar?page={page}: /foo/(.+)/bar\?page=(.+)
+          response_status: true              # to normalize http response status code (2xx, 3xx, ...), disabled by default
 ```
 
-For example, after calling `client.Get("https://example.com")`, the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will expose in the configured metrics endpoint:
+In this example, after calling `client.Get("https://example.com/foo/1/bar?page=2")`, the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will expose in the configured metrics endpoint:
 
 ```makefile title="[GET] /metrics"
 # ...
 # HELP app_httpclient_client_request_duration_seconds Time spent performing HTTP requests
 # TYPE app_httpclient_client_request_duration_seconds histogram
-app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.005"} 1
-app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.01"} 1
-app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.025"} 1
-app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.05"} 1
-app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.1"} 1
-app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.25"} 1
-app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="0.5"} 1
-app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="1"} 1
-app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="2.5"} 1
-app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="5"} 1
-app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="10"} 1
-app_httpclient_client_request_duration_seconds_bucket{method="GET",url="https://example.com",le="+Inf"} 1
-app_httpclient_client_request_duration_seconds_sum{method="GET",url="https://example.com"} 0.00064455
-app_httpclient_client_request_duration_seconds_count{method="GET",url="https://example.com"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}",le="0.005"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}",le="0.01"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}",le="0.025"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}",le="0.05"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}",le="0.1"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}",le="0.25"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}",le="0.5"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}",le="1"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}",le="2.5"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}",le="5"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}",le="10"} 1
+app_httpclient_client_request_duration_seconds_bucket{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}",le="+Inf"} 1
+app_httpclient_client_request_duration_seconds_sum{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}"} 0.00064455
+app_httpclient_client_request_duration_seconds_count{method="GET",host="https://example.com",path="/foo/{id}/bar?page={page}"} 1
 # HELP app_httpclient_client_requests_total Number of performed HTTP requests
 # TYPE app_httpclient_client_requests_total counter
-app_httpclient_client_requests_total{method="GET",status="2xx",url="https://example.com"} 1
+app_httpclient_client_requests_total{method="GET",status="2xx",host="https://example.com",path="/foo/{id}/bar?page={page}"} 1
 ```
 
 ## Testing
