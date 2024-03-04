@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/fxhttpclient/v1.1.0...fxhttpclient/v1.2.0) (2024-03-04)
+
+
+### Features
+
+* **fxhttpclient:** Added request path normalization mechanism for client metrics ([#115](https://github.com/ankorstore/yokai/issues/115)) ([1d33130](https://github.com/ankorstore/yokai/commit/1d331308dfd1d377bd097c21336a67663593efcb))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/fxhttpclient/v1.0.0...fxhttpclient/v1.1.0) (2024-02-28)
 
 
