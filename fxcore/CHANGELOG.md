@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.3.0...fxcore/v1.4.0) (2024-03-06)
+
+
+### Features
+
+* **fxcore:** Updated core http server metrics configurations ([#121](https://github.com/ankorstore/yokai/issues/121)) ([e7fe4ce](https://github.com/ankorstore/yokai/commit/e7fe4ce468ee64188fe235633f85a54475095f43))
+
 ## [1.3.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.2.0...fxcore/v1.3.0) (2024-01-24)
 
 
