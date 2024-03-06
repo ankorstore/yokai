@@ -459,7 +459,7 @@ func main() {
 }
 ```
 
-If you need, you can configure the metrics registry, namespace, subsystem, buckets and status code normalization:
+If you need, you can configure the metrics registry, namespace, subsystem, buckets and request path / response code normalization:
 
 ```go
 import (
@@ -473,9 +473,24 @@ server.Use(middleware.RequestMetricsMiddlewareWithConfig(middleware.RequestMetri
 	Namespace:           "foo",
 	Subsystem:           "bar",
 	Buckets:             []float64{0.01, 1, 10},
-	NormalizeHTTPStatus: true,
+	NormalizeRequestPath: true,
+	NormalizeResponseStatus: true,
 }))
 ```
+
+Regarding metrics normalization, if you create a handler like:
+
+```go
+server.GET("/foo/bar/:id", func(c echo.Context) error {
+	// returns a 200 response
+	return c.String(http.StatusOK, c.Param("id"))
+})
+```
+
+And receive requests on `/foo/bar/baz?page=1`:
+
+- if `NormalizeRequestPath=true`, the metrics `path` label will be `/foo/bar/:id`, otherwise it'll be `/foo/bar/baz?page=1`
+- if `NormalizeResponseStatus=true`, the metrics `status` label will be `2xx`, otherwise it'll be `200`
 
 #### HTML Templates
 

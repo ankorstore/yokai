@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/ankorstore/yokai/httpserver"
@@ -13,6 +14,8 @@ import (
 	"github.com/ankorstore/yokai/trace"
 	"github.com/ankorstore/yokai/trace/tracetest"
 	"github.com/labstack/echo/v4"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
@@ -1931,6 +1934,92 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnGenericErrorWit
 		"requestID": testRequestId,
 		"traceID":   testTraceId,
 	})
+}
+
+func TestCreateWithRequestMetricsAndWithNormalization(t *testing.T) {
+	t.Parallel()
+
+	registry := prometheus.NewPedanticRegistry()
+
+	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create()
+	assert.NoError(t, err)
+	assert.IsType(t, &echo.Echo{}, httpServer)
+
+	httpServer.Use(middleware.RequestMetricsMiddlewareWithConfig(middleware.RequestMetricsMiddlewareConfig{
+		Registry:                registry,
+		Namespace:               "namespace",
+		Subsystem:               "subsystem",
+		NormalizeResponseStatus: true,
+		NormalizeRequestPath:    true,
+	}))
+
+	httpServer.GET("/foo/bar/:id", func(c echo.Context) error {
+		return c.String(http.StatusOK, c.Param("id"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/foo/bar/baz?page=1", nil)
+
+	rec := httptest.NewRecorder()
+	httpServer.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Contains(t, rec.Body.String(), `baz`)
+
+	expectedCounterMetric := `
+		# HELP namespace_subsystem_requests_total Number of processed HTTP requests
+        # TYPE namespace_subsystem_requests_total counter
+        namespace_subsystem_requests_total{method="GET",path="/foo/bar/:id",status="2xx"} 1
+	`
+
+	err = testutil.GatherAndCompare(
+		registry,
+		strings.NewReader(expectedCounterMetric),
+		"namespace_subsystem_requests_total",
+	)
+	assert.NoError(t, err)
+}
+
+func TestCreateWithRequestMetricsAndWithoutNormalization(t *testing.T) {
+	t.Parallel()
+
+	registry := prometheus.NewPedanticRegistry()
+
+	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create()
+	assert.NoError(t, err)
+	assert.IsType(t, &echo.Echo{}, httpServer)
+
+	httpServer.Use(middleware.RequestMetricsMiddlewareWithConfig(middleware.RequestMetricsMiddlewareConfig{
+		Registry:                registry,
+		Namespace:               "namespace",
+		Subsystem:               "subsystem",
+		NormalizeResponseStatus: false,
+		NormalizeRequestPath:    false,
+	}))
+
+	httpServer.GET("/foo/bar/:id", func(c echo.Context) error {
+		return c.String(http.StatusOK, c.Param("id"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/foo/bar/baz?page=1", nil)
+
+	rec := httptest.NewRecorder()
+	httpServer.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Contains(t, rec.Body.String(), `baz`)
+
+	expectedCounterMetric := `
+		# HELP namespace_subsystem_requests_total Number of processed HTTP requests
+        # TYPE namespace_subsystem_requests_total counter
+        namespace_subsystem_requests_total{method="GET",path="/foo/bar/baz?page=1",status="200"} 1
+	`
+
+	err = testutil.GatherAndCompare(
+		registry,
+		strings.NewReader(expectedCounterMetric),
+		"namespace_subsystem_requests_total",
+	)
+	assert.NoError(t, err)
 }
 
 func TestCreateWithPanicRecovery(t *testing.T) {

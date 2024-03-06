@@ -41,7 +41,7 @@ func TestRequestMetricsMiddlewareWithDefaults(t *testing.T) {
 	expectedCounterMetric := `
 		# HELP requests_total Number of processed HTTP requests
 		# TYPE requests_total counter
-        requests_total{handler="/not-found",method="GET",status="2xx"} 1
+		requests_total{method="GET",path="/not-found",status="2xx"} 1
 	`
 
 	err = testutil.GatherAndCompare(
@@ -73,7 +73,7 @@ func TestRequestMetricsMiddlewareWithSkipper(t *testing.T) {
 		Skipper: func(echo.Context) bool {
 			return true
 		},
-		NormalizeHTTPStatus: false,
+		NormalizeResponseStatus: false,
 	})
 	h := m(handler)
 
@@ -87,7 +87,7 @@ func TestRequestMetricsMiddlewareWithSkipper(t *testing.T) {
 	expectedCounterMetric := `
 		# HELP requests_total Number of processed HTTP requests
 		# TYPE requests_total counter
-        requests_total{handler="/not-found",method="GET",status="200"} 1
+        requests_total{path="/not-found",method="GET",status="200"} 1
 	`
 
 	err = testutil.GatherAndCompare(
@@ -116,11 +116,11 @@ func TestRequestMetricsMiddlewareWithCustomOptions(t *testing.T) {
 	}
 
 	m := middleware.RequestMetricsMiddlewareWithConfig(middleware.RequestMetricsMiddlewareConfig{
-		Registry:            registry,
-		Namespace:           "namespace",
-		Subsystem:           "subsystem",
-		Buckets:             []float64{0.01, 1, 10},
-		NormalizeHTTPStatus: true,
+		Registry:                registry,
+		Namespace:               "namespace",
+		Subsystem:               "subsystem",
+		Buckets:                 []float64{0.01, 1, 10},
+		NormalizeResponseStatus: true,
 	})
 	h := m(handler)
 
@@ -134,7 +134,7 @@ func TestRequestMetricsMiddlewareWithCustomOptions(t *testing.T) {
 	expectedCounterMetric := `
 		# HELP namespace_subsystem_requests_total Number of processed HTTP requests
         # TYPE namespace_subsystem_requests_total counter
-        namespace_subsystem_requests_total{handler="/not-found",method="GET",status="4xx"} 1
+        namespace_subsystem_requests_total{method="GET",path="/not-found",status="4xx"} 1
 	`
 
 	err = testutil.GatherAndCompare(
