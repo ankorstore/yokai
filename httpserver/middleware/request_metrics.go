@@ -1,9 +1,11 @@
 package middleware
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 
+	"github.com/ankorstore/yokai/httpserver/normalization"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/prometheus/client_golang/prometheus"
@@ -17,22 +19,24 @@ const (
 
 // RequestMetricsMiddlewareConfig is the configuration for the [RequestMetricsMiddleware].
 type RequestMetricsMiddlewareConfig struct {
-	Skipper             middleware.Skipper
-	Registry            prometheus.Registerer
-	Namespace           string
-	Buckets             []float64
-	Subsystem           string
-	NormalizeHTTPStatus bool
+	Skipper                 middleware.Skipper
+	Registry                prometheus.Registerer
+	Namespace               string
+	Buckets                 []float64
+	Subsystem               string
+	NormalizeRequestPath    bool
+	NormalizeResponseStatus bool
 }
 
 // DefaultRequestMetricsMiddlewareConfig is the default configuration for the [RequestMetricsMiddleware].
 var DefaultRequestMetricsMiddlewareConfig = RequestMetricsMiddlewareConfig{
-	Skipper:             middleware.DefaultSkipper,
-	Registry:            prometheus.DefaultRegisterer,
-	Namespace:           "",
-	Subsystem:           "",
-	Buckets:             prometheus.DefBuckets,
-	NormalizeHTTPStatus: true,
+	Skipper:                 middleware.DefaultSkipper,
+	Registry:                prometheus.DefaultRegisterer,
+	Namespace:               "",
+	Subsystem:               "",
+	Buckets:                 prometheus.DefBuckets,
+	NormalizeRequestPath:    true,
+	NormalizeResponseStatus: true,
 }
 
 // RequestMetricsMiddleware returns a [RequestMetricsMiddleware] with the [DefaultRequestMetricsMiddlewareConfig].
@@ -72,7 +76,7 @@ func RequestMetricsMiddlewareWithConfig(config RequestMetricsMiddlewareConfig) e
 		[]string{
 			"status",
 			"method",
-			"handler",
+			"path",
 		},
 	)
 
@@ -86,7 +90,7 @@ func RequestMetricsMiddlewareWithConfig(config RequestMetricsMiddlewareConfig) e
 		},
 		[]string{
 			"method",
-			"handler",
+			"path",
 		},
 	)
 
@@ -100,10 +104,19 @@ func RequestMetricsMiddlewareWithConfig(config RequestMetricsMiddlewareConfig) e
 			}
 
 			req := c.Request()
-			path := c.Path()
 
-			// to avoid high cardinality
-			if isNotFoundHandler(c.Handler()) {
+			var path string
+			if config.NormalizeRequestPath {
+				path = c.Path()
+			} else {
+				path = req.URL.Path
+				if req.URL.RawQuery != "" {
+					path = fmt.Sprintf("%s?%s", path, req.URL.RawQuery)
+				}
+			}
+
+			// to avoid high cardinality on 404s
+			if reflect.ValueOf(c.Handler()).Pointer() == reflect.ValueOf(echo.NotFoundHandler).Pointer() {
 				path = HttpServerMetricsNotFoundPath
 			}
 
@@ -116,8 +129,8 @@ func RequestMetricsMiddlewareWithConfig(config RequestMetricsMiddlewareConfig) e
 			}
 
 			status := ""
-			if config.NormalizeHTTPStatus {
-				status = normalizeHTTPStatus(c.Response().Status)
+			if config.NormalizeResponseStatus {
+				status = normalization.NormalizeStatus(c.Response().Status)
 			} else {
 				status = strconv.Itoa(c.Response().Status)
 			}
@@ -127,23 +140,4 @@ func RequestMetricsMiddlewareWithConfig(config RequestMetricsMiddlewareConfig) e
 			return err
 		}
 	}
-}
-
-func normalizeHTTPStatus(status int) string {
-	switch {
-	case status < 200:
-		return "1xx"
-	case status >= 200 && status < 300:
-		return "2xx"
-	case status >= 300 && status < 400:
-		return "3xx"
-	case status >= 400 && status < 500:
-		return "4xx"
-	default:
-		return "5xx"
-	}
-}
-
-func isNotFoundHandler(handler echo.HandlerFunc) bool {
-	return reflect.ValueOf(handler).Pointer() == reflect.ValueOf(echo.NotFoundHandler).Pointer()
 }
