@@ -764,7 +764,7 @@ func TestModuleWithMetrics(t *testing.T) {
 		# TYPE foo_bar_requests_total counter
 	`
 	expectedMetric := `
-		foo_bar_requests_total{handler="/bar",method="GET",status="2xx"} 1
+		foo_bar_requests_total{method="GET",path="/bar",status="2xx"} 1
 	`
 
 	err := testutil.GatherAndCompare(

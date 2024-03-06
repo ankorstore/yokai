@@ -322,7 +322,9 @@ modules:
           namespace: app          # http server metrics namespace (default app.name value)
           subsystem: httpserver   # http server metrics subsystem (default httpserver)
         buckets: 0.1, 1, 10       # to override default request duration buckets
-        normalize: true           # to normalize http status code (2xx, 3xx, ...)
+        normalize:
+          request_path: true      # to normalize http request path, disabled by default
+          response_status: true   # to normalize http response status code (2xx, 3xx, ...), disabled by default
       templates:
         enabled: true             # disabled by default
         path: templates/*.html    # templates path lookup pattern
@@ -387,7 +389,7 @@ func NewTemplateHandler(cfg *config.Config) *TemplateHandler {
 
 func (h *TemplateHandler) Handle() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		// will render (HTML output): "App name is app"
+		// will render: "<html><body><h1>App name is app</h1></body></html>"
 		return c.Render(http.StatusOK, "app.html", map[string]interface{}{
 			"name": h.config.AppName(),
 		})
@@ -492,7 +494,9 @@ modules:
           namespace: app         # http server metrics namespace (default app.name value)
           subsystem: httpserver  # http server metrics subsystem (default httpserver)
         buckets: 0.1, 1, 10      # to override default request duration buckets
-        normalize: true          # to normalize http status code (2xx, 3xx, ...)
+        normalize:
+          request_path: true     # to normalize http request path, disabled by default
+          response_status: true  # to normalize http response status code (2xx, 3xx, ...), disabled by default
 ```
 
 For example, after calling `[GET] /example`, the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will expose in the configured metrics endpoint:
@@ -501,23 +505,33 @@ For example, after calling `[GET] /example`, the [fxcore](https://github.com/ank
 # ...
 # HELP app_httpserver_request_duration_seconds Time spent processing HTTP requests
 # TYPE app_httpserver_request_duration_seconds histogram
-app_httpserver_request_duration_seconds_bucket{handler="/example",method="GET",le="0.005"} 1
-app_httpserver_request_duration_seconds_bucket{handler="/example",method="GET",le="0.01"} 1
-app_httpserver_request_duration_seconds_bucket{handler="/example",method="GET",le="0.025"} 1
-app_httpserver_request_duration_seconds_bucket{handler="/example",method="GET",le="0.05"} 1
-app_httpserver_request_duration_seconds_bucket{handler="/example",method="GET",le="0.1"} 1
-app_httpserver_request_duration_seconds_bucket{handler="/example",method="GET",le="0.25"} 1
-app_httpserver_request_duration_seconds_bucket{handler="/example",method="GET",le="0.5"} 1
-app_httpserver_request_duration_seconds_bucket{handler="/example",method="GET",le="1"} 1
-app_httpserver_request_duration_seconds_bucket{handler="/example",method="GET",le="2.5"} 1
-app_httpserver_request_duration_seconds_bucket{handler="/example",method="GET",le="5"} 1
-app_httpserver_request_duration_seconds_bucket{handler="/example",method="GET",le="10"} 1
-app_httpserver_request_duration_seconds_bucket{handler="/example",method="GET",le="+Inf"} 1
-app_httpserver_request_duration_seconds_sum{handler="/",method="GET"} 0.0014433150000000001
+app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.005"} 1
+app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.01"} 1
+app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.025"} 1
+app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.05"} 1
+app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.1"} 1
+app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.25"} 1
+app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.5"} 1
+app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="1"} 1
+app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="2.5"} 1
+app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="5"} 1
+app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="10"} 1
+app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="+Inf"} 1
+app_httpserver_request_duration_seconds_sum{path="/",method="GET"} 0.0014433150000000001
 # HELP app_httpserver_requests_total Number of processed HTTP requests
 # TYPE app_httpserver_requests_total counter
-app_httpserver_requests_total{handler="/example",method="GET",status="200"} 1
+app_httpserver_requests_total{path="/example",method="GET",status="2xx"} 1
 ```
+
+Regarding metrics normalization, if you register for example a handler:
+
+- with `fxhttpserver.AsHandler("GET", "/foo/bar/:id", handler.NewExampleHandler)`
+- that returns `200` as response code
+
+And receive requests on `/foo/bar/baz?page=1`:
+
+- if `modules.http.server.metrics.normalize.request_path=true`, the metrics `path` label will be `/foo/bar/:id`, otherwise it'll be `/foo/bar/baz?page=1`
+- if `modules.http.server.metrics.normalize.response_status=true`, the metrics `status` label will be `2xx`, otherwise it'll be `200`
 
 ## Testing
 
