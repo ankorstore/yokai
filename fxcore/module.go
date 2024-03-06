@@ -218,11 +218,12 @@ func withMiddlewares(coreServer *echo.Echo, p FxCoreParam) *echo.Echo {
 		}
 
 		metricsMiddlewareConfig := httpservermiddleware.RequestMetricsMiddlewareConfig{
-			Registry:            p.MetricsRegistry,
-			Namespace:           strings.ReplaceAll(namespace, "-", "_"),
-			Subsystem:           strings.ReplaceAll(subsystem, "-", "_"),
-			Buckets:             buckets,
-			NormalizeHTTPStatus: p.Config.GetBool("modules.core.server.metrics.normalize"),
+			Registry:                p.MetricsRegistry,
+			Namespace:               strings.ReplaceAll(namespace, "-", "_"),
+			Subsystem:               strings.ReplaceAll(subsystem, "-", "_"),
+			Buckets:                 buckets,
+			NormalizeRequestPath:    p.Config.GetBool("modules.core.server.metrics.normalize.request_path"),
+			NormalizeResponseStatus: p.Config.GetBool("modules.core.server.metrics.normalize.response_status"),
 		}
 
 		coreServer.Use(httpservermiddleware.RequestMetricsMiddlewareWithConfig(metricsMiddlewareConfig))

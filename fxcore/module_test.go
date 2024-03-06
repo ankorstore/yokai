@@ -89,7 +89,7 @@ func TestModuleWithMetricsEnabledAndCollected(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec.Code)
 
 	// assert [GET] / counter = 2
-	assert.Contains(t, rec.Body.String(), `foo_bar_request_duration_seconds_bucket{handler="/",method="GET",le="1"} 2`)
+	assert.Contains(t, rec.Body.String(), `foo_bar_request_duration_seconds_bucket{method="GET",path="/",le="1"} 2`)
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
@@ -113,8 +113,8 @@ func TestModuleWithMetricsEnabledAndCollected(t *testing.T) {
 	expectedMetric := `
 		# HELP foo_bar_requests_total Number of processed HTTP requests
 		# TYPE foo_bar_requests_total counter
-        foo_bar_requests_total{handler="/",method="GET",status="2xx"} 2
-        foo_bar_requests_total{handler="/metrics",method="GET",status="2xx"} 1
+		foo_bar_requests_total{method="GET",path="/",status="2xx"} 2
+		foo_bar_requests_total{method="GET",path="/metrics",status="2xx"} 1
 	`
 
 	err := testutil.GatherAndCompare(

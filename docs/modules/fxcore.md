@@ -199,7 +199,9 @@ modules:
           namespace: app               # core http server metrics namespace (default app.name value)
           subsystem: fx-core           # core http server metrics subsystem (default fx-core)
         buckets: 0.1, 1, 10            # to override default request duration buckets
-        normalize: true                # to normalize http status code (2xx, 3xx, ...)
+        normalize:
+          request_path: true          # to normalize http request path, disabled by default
+          response_status: true       # to normalize http response status code (2xx, 3xx, ...), disabled by default
       healthcheck:
         startup:
           expose: true                 # to expose health check startup route, disabled by default
@@ -266,6 +268,7 @@ It accepts a list of `fx.Option`, for example:
 
 - `fx.Populate()` to extract from the test application autowired components for your tests
 - `fx.Invoke()` to execute a function at runtime
+- `fx.Decorate()` to override components
 - `fx.Replace()` to replace components
 - etc.
 
