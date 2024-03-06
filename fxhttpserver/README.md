@@ -125,7 +125,9 @@ modules:
           namespace: app              # http server metrics namespace (default app.name value)
           subsystem: httpserver       # http server metrics subsystem (default httpserver)
         buckets: 0.1, 1, 10           # to override default request duration buckets
-        normalize: true               # to normalize http status code (2xx, 3xx, ...)
+        normalize:               
+          request_path: true          # to normalize http request path, disabled by default
+          response_status: true       # to normalize http response status code (2xx, 3xx, ...), disabled by default
       templates:
         enabled: true                 # disabled by default
         path: templates/*.html        # templates path lookup pattern
@@ -585,7 +587,7 @@ func (h *SomeHandler) Handle() echo.HandlerFunc {
 }
 ```
 
-You can then test it, considering logs, traces and metrics are enabled:
+You can then test it, considering `logs`, `traces` and `metrics` are enabled:
 
 ```go
 package handler_test
@@ -669,7 +671,7 @@ func TestSomeHandler(t *testing.T) {
 	expectedMetric := `
 		# HELP app_httpserver_requests_total Number of processed HTTP requests
 		# TYPE app_httpserver_requests_total counter
-		app_httpserver_requests_total{handler="/test",method="GET",status="2xx"} 1
+		app_httpserver_requests_total{path="/test",method="GET",status="2xx"} 1
 	`
 
 	err := testutil.GatherAndCompare(

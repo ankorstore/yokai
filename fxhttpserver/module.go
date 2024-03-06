@@ -168,7 +168,7 @@ func withDefaultMiddlewares(httpServer *echo.Echo, p FxHttpServerParam) *echo.Ec
 
 		var buckets []float64
 		if bucketsConfig := p.Config.GetString("modules.http.server.metrics.buckets"); bucketsConfig != "" {
-			for _, s := range strings.Split(strings.ReplaceAll(bucketsConfig, " ", ""), ",") {
+			for _, s := range Split(bucketsConfig) {
 				f, err := strconv.ParseFloat(s, 64)
 				if err == nil {
 					buckets = append(buckets, f)
@@ -177,11 +177,12 @@ func withDefaultMiddlewares(httpServer *echo.Echo, p FxHttpServerParam) *echo.Ec
 		}
 
 		metricsMiddlewareConfig := httpservermiddleware.RequestMetricsMiddlewareConfig{
-			Registry:            p.MetricsRegistry,
-			Namespace:           strings.ReplaceAll(namespace, "-", "_"),
-			Subsystem:           strings.ReplaceAll(subsystem, "-", "_"),
-			Buckets:             buckets,
-			NormalizeHTTPStatus: p.Config.GetBool("modules.http.server.metrics.normalize"),
+			Registry:                p.MetricsRegistry,
+			Namespace:               Sanitize(namespace),
+			Subsystem:               Sanitize(subsystem),
+			Buckets:                 buckets,
+			NormalizeRequestPath:    p.Config.GetBool("modules.http.server.metrics.normalize.request_path"),
+			NormalizeResponseStatus: p.Config.GetBool("modules.http.server.metrics.normalize.response_status"),
 		}
 
 		httpServer.Use(httpservermiddleware.RequestMetricsMiddlewareWithConfig(metricsMiddlewareConfig))
@@ -207,7 +208,7 @@ func withRegisteredResources(httpServer *echo.Echo, p FxHttpServerParam) *echo.E
 				h.Handler(),
 				h.Middlewares()...,
 			)
-			httpServer.Logger.Debugf("registering handler in group for [%s]%s%s", h.Method(), g.Prefix(), h.Path())
+			httpServer.Logger.Debugf("registering handler in group for [%s] %s%s", h.Method(), g.Prefix(), h.Path())
 		}
 
 		httpServer.Logger.Debugf("registered handlers group for prefix %s", g.Prefix())
@@ -245,7 +246,7 @@ func withRegisteredResources(httpServer *echo.Echo, p FxHttpServerParam) *echo.E
 			h.Middlewares()...,
 		)
 
-		httpServer.Logger.Debugf("registered handler for [%s]%s", h.Method(), h.Path())
+		httpServer.Logger.Debugf("registered handler for [%s] %s", h.Method(), h.Path())
 	}
 
 	return httpServer
