@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 
@@ -209,7 +208,7 @@ func withMiddlewares(coreServer *echo.Echo, p FxCoreParam) *echo.Echo {
 
 		var buckets []float64
 		if bucketsConfig := p.Config.GetString("modules.core.server.metrics.buckets"); bucketsConfig != "" {
-			for _, s := range strings.Split(strings.ReplaceAll(bucketsConfig, " ", ""), ",") {
+			for _, s := range Split(bucketsConfig) {
 				f, err := strconv.ParseFloat(s, 64)
 				if err == nil {
 					buckets = append(buckets, f)
@@ -218,11 +217,12 @@ func withMiddlewares(coreServer *echo.Echo, p FxCoreParam) *echo.Echo {
 		}
 
 		metricsMiddlewareConfig := httpservermiddleware.RequestMetricsMiddlewareConfig{
-			Registry:            p.MetricsRegistry,
-			Namespace:           strings.ReplaceAll(namespace, "-", "_"),
-			Subsystem:           strings.ReplaceAll(subsystem, "-", "_"),
-			Buckets:             buckets,
-			NormalizeHTTPStatus: p.Config.GetBool("modules.core.server.metrics.normalize"),
+			Registry:                p.MetricsRegistry,
+			Namespace:               Sanitize(namespace),
+			Subsystem:               Sanitize(subsystem),
+			Buckets:                 buckets,
+			NormalizeRequestPath:    p.Config.GetBool("modules.core.server.metrics.normalize.request_path"),
+			NormalizeResponseStatus: p.Config.GetBool("modules.core.server.metrics.normalize.response_status"),
 		}
 
 		coreServer.Use(httpservermiddleware.RequestMetricsMiddlewareWithConfig(metricsMiddlewareConfig))
