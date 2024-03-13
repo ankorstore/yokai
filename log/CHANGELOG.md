@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/log/v1.1.0...log/v1.2.0) (2024-03-13)
+
+
+### Features
+
+* **log:** Updated dependencies ([#125](https://github.com/ankorstore/yokai/issues/125)) ([a87e3ec](https://github.com/ankorstore/yokai/commit/a87e3ec976220c01613dd25bc18c0ba5b1d207da))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/log/v1.0.0...log/v1.1.0) (2024-02-22)
 
 
