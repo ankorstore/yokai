@@ -79,7 +79,10 @@ This module provides the `CtxTracerProvider()` function that allow to extract th
 a `context.Context`.
 
 If no tracer provider is found in context,
-the [global tracer](https://github.com/open-telemetry/opentelemetry-go/blob/main/trace.go) will be used.
+the [global tracer provider](https://github.com/open-telemetry/opentelemetry-go/blob/main/trace.go) will be used.
+
+This module also provides the `CtxTracer()` function that allow to create a tracer (named `yokai`) from the tracer provider got from
+a `context.Context`.
 
 #### Span processors
 
