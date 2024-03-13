@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/config/v1.2.0...config/v1.3.0) (2024-03-13)
+
+
+### Features
+
+* **config:** Updated dependencies ([#131](https://github.com/ankorstore/yokai/issues/131)) ([f20e8b6](https://github.com/ankorstore/yokai/commit/f20e8b617639607c9bc0f22cf9857505bbbd7384))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/config/v1.1.0...config/v1.2.0) (2024-02-27)
 
 
