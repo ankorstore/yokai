@@ -14,9 +14,6 @@ func NewDefaultUuidGeneratorFactory() UuidGeneratorFactory {
 }
 
 // Create returns a new [UuidGenerator].
-// For example:
-//
-//	var generator, _ = uuid.NewDefaultConfigFactory().Create()
 func (g *DefaultUuidGeneratorFactory) Create() UuidGenerator {
 	return NewDefaultUuidGenerator()
 }
