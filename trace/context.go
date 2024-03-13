@@ -7,6 +7,9 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+// TracerName is the default tracer name.
+const TracerName = "yokai"
+
 // CtxKey is a contextual struct key.
 type CtxKey struct{}
 
@@ -26,4 +29,11 @@ func CtxTracerProvider(ctx context.Context) trace.TracerProvider {
 	} else {
 		return otel.GetTracerProvider()
 	}
+}
+
+// CtxTracer returns the default contextual [OTEL Tracer] from a provided context (or returns the default one if missing).
+//
+// [OTEL Tracer]: https://go.opentelemetry.io/otel/trace
+func CtxTracer(ctx context.Context) trace.Tracer {
+	return CtxTracerProvider(ctx).Tracer(TracerName)
 }

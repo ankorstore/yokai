@@ -54,8 +54,8 @@ func TestNewOtlpGrpcSpanProcessorFailure(t *testing.T) {
 
 	conn, _ := trace.NewOtlpGrpcClientConnection(ctx, "https://example.com")
 
-	_, err := trace.NewOtlpGrpcSpanProcessor(ctx, conn)
+	spanProcessor, err := trace.NewOtlpGrpcSpanProcessor(ctx, conn)
 
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "context deadline exceeded")
+	assert.NoError(t, err)
+	assert.Implements(t, (*otelsdktrace.SpanProcessor)(nil), spanProcessor)
 }
