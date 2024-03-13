@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/trace/v1.1.0...trace/v1.2.0) (2024-03-13)
+
+
+### Features
+
+* **trace:** Added CtxTracer function and updated dependencies ([#123](https://github.com/ankorstore/yokai/issues/123)) ([cbd8986](https://github.com/ankorstore/yokai/commit/cbd8986349fcc6cecabcf4a41d5196208c594e96))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/trace/v1.0.0...trace/v1.1.0) (2024-02-23)
 
 
