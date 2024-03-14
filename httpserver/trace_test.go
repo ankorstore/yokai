@@ -6,21 +6,8 @@ import (
 
 	"github.com/ankorstore/yokai/httpserver"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/trace"
 	"go.opentelemetry.io/otel/trace/noop"
 )
-
-type tracerProviderMock struct {
-	mock.Mock
-}
-
-func (m *tracerProviderMock) Tracer(string, ...trace.TracerOption) trace.Tracer {
-	args := m.Called()
-
-	return otel.GetTracerProvider().Tracer(args.String(0))
-}
 
 func TestAnnotateTracerProviderWithNonSdkTracerProvider(t *testing.T) {
 	t.Parallel()
