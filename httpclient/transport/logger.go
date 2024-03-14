@@ -65,19 +65,19 @@ func (t *LoggerTransport) Base() http.RoundTripper {
 func (t *LoggerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	logger := log.CtxLogger(req.Context())
 
-	reqEvt := logger.WithLevel(t.config.LogRequestLevel)
-
 	if t.config.LogRequest {
+		reqEvt := logger.WithLevel(t.config.LogRequestLevel)
+
 		reqDump, err := httputil.DumpRequestOut(req, t.config.LogRequestBody)
 		if err == nil {
 			reqEvt.Bytes("request", reqDump)
 		}
-	}
 
-	reqEvt.
-		Str("method", req.Method).
-		Str("url", req.URL.String()).
-		Msg("http client request")
+		reqEvt.
+			Str("method", req.Method).
+			Str("url", req.URL.String()).
+			Msg("http client request")
+	}
 
 	start := time.Now()
 	resp, err := t.transport.RoundTrip(req)
@@ -89,34 +89,34 @@ func (t *LoggerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		return resp, err
 	}
 
-	var respEvt *zerolog.Event
+	if t.config.LogResponse {
+		var respEvt *zerolog.Event
 
-	if t.config.LogResponseLevelFromResponseCode {
-		switch {
-		case resp.StatusCode >= http.StatusBadRequest && resp.StatusCode < http.StatusInternalServerError:
-			respEvt = logger.Warn()
-		case resp.StatusCode >= http.StatusInternalServerError:
-			respEvt = logger.Error()
-		default:
+		if t.config.LogResponseLevelFromResponseCode {
+			switch {
+			case resp.StatusCode >= http.StatusBadRequest && resp.StatusCode < http.StatusInternalServerError:
+				respEvt = logger.Warn()
+			case resp.StatusCode >= http.StatusInternalServerError:
+				respEvt = logger.Error()
+			default:
+				respEvt = logger.WithLevel(t.config.LogResponseLevel)
+			}
+		} else {
 			respEvt = logger.WithLevel(t.config.LogResponseLevel)
 		}
-	} else {
-		respEvt = logger.WithLevel(t.config.LogResponseLevel)
-	}
 
-	if t.config.LogResponse {
 		respDump, err := httputil.DumpResponse(resp, t.config.LogResponseBody)
 		if err == nil {
 			respEvt.Bytes("response", respDump)
 		}
-	}
 
-	respEvt.
-		Str("method", resp.Request.Method).
-		Str("url", resp.Request.URL.String()).
-		Int("code", resp.StatusCode).
-		Str("latency", latency).
-		Msg("http client response")
+		respEvt.
+			Str("method", resp.Request.Method).
+			Str("url", resp.Request.URL.String()).
+			Int("code", resp.StatusCode).
+			Str("latency", latency).
+			Msg("http client response")
+	}
 
 	return resp, err
 }

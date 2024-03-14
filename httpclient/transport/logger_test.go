@@ -72,14 +72,14 @@ func TestLoggerTransportRoundTrip(t *testing.T) {
 
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 
-	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
 		"method":  "GET",
 		"url":     server.URL,
 		"message": "http client request",
 	})
 
-	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
 		"url":     server.URL,
 		"code":    http.StatusNoContent,
@@ -241,7 +241,7 @@ func TestLoggerTransportRoundTripWithFailure(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "custom http error", err.Error())
 
-	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
 		"method":  "GET",
 		"url":     server.URL,
