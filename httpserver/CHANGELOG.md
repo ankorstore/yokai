@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/httpserver/v1.1.0...httpserver/v1.2.0) (2024-03-14)
+
+
+### Features
+
+* **httpserver:** Updated dependencies ([#141](https://github.com/ankorstore/yokai/issues/141)) ([f35482e](https://github.com/ankorstore/yokai/commit/f35482e72b4818c6d401a9b68c0c9921e3ff943f))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/httpserver/v1.0.0...httpserver/v1.1.0) (2024-03-06)
 
 
