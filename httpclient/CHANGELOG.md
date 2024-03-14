@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/httpclient/v1.2.0...httpclient/v1.3.0) (2024-03-14)
+
+
+### Features
+
+* **httpclient:** Updated dependencies ([#133](https://github.com/ankorstore/yokai/issues/133)) ([b7d5665](https://github.com/ankorstore/yokai/commit/b7d5665bf38aea0823f6739930d5fbc352b50903))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/httpclient/v1.1.0...httpclient/v1.2.0) (2024-03-04)
 
 
