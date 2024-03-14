@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/fxtrace/v1.1.0...fxtrace/v1.2.0) (2024-03-14)
+
+
+### Features
+
+* **fxtrace:** Updated dependencies ([#149](https://github.com/ankorstore/yokai/issues/149)) ([cbafdb7](https://github.com/ankorstore/yokai/commit/cbafdb7d5ddef34ce63f680eafe28d61ed4c3df3))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/fxtrace/v1.0.0...fxtrace/v1.1.0) (2024-01-11)
 
 
