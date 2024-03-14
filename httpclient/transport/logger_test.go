@@ -72,14 +72,14 @@ func TestLoggerTransportRoundTrip(t *testing.T) {
 
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 
-	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
 		"method":  "GET",
 		"url":     server.URL,
 		"message": "http client request",
 	})
 
-	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
 		"url":     server.URL,
 		"code":    http.StatusNoContent,
@@ -212,6 +212,48 @@ func TestLoggerTransportRoundTripWithConfig(t *testing.T) {
 		"response": `{"output":"error"}`,
 		"message":  "http client response",
 	})
+
+	// other transport with response level logging
+	trans2 := transport.NewLoggerTransportWithConfig(nil, &transport.LoggerTransportConfig{
+		LogRequest:                       true,
+		LogResponse:                      true,
+		LogRequestBody:                   true,
+		LogResponseBody:                  true,
+		LogRequestLevel:                  zerolog.DebugLevel,
+		LogResponseLevel:                 zerolog.WarnLevel,
+		LogResponseLevelFromResponseCode: false,
+	})
+
+	// 404 response
+	data = []byte(`{"input":"data"}`)
+	req = httptest.NewRequest(http.MethodPost, server.URL, bytes.NewBuffer(data))
+	req.Header.Add("expected-response-code", "404")
+	req.Header.Add("expected-response-body", `{"output":"not found"}`)
+	req = req.WithContext(logger.WithContext(context.Background()))
+
+	resp, err = trans2.RoundTrip(req)
+	assert.NoError(t, err)
+
+	err = resp.Body.Close()
+	assert.NoError(t, err)
+
+	assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+
+	logtest.AssertContainLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "debug",
+		"method":  "POST",
+		"url":     server.URL,
+		"request": `{"input":"data"}`,
+		"message": "http client request",
+	})
+
+	logtest.AssertContainLogRecord(t, logBuffer, map[string]interface{}{
+		"level":    "warn",
+		"url":      server.URL,
+		"code":     http.StatusNotFound,
+		"response": `{"output":"not found"}`,
+		"message":  "http client response",
+	})
 }
 
 func TestLoggerTransportRoundTripWithFailure(t *testing.T) {
@@ -241,7 +283,7 @@ func TestLoggerTransportRoundTripWithFailure(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "custom http error", err.Error())
 
-	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
 		"method":  "GET",
 		"url":     server.URL,
