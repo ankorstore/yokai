@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/ankorstore/yokai/compare/httpclient/v1.3.0...httpclient/v1.3.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **httpclient:** Fixed logger transport config ([#143](https://github.com/ankorstore/yokai/issues/143)) ([a4438a4](https://github.com/ankorstore/yokai/commit/a4438a4cbd9d252e3c15195c141524c7ef816590))
+
 ## [1.3.0](https://github.com/ankorstore/yokai/compare/httpclient/v1.2.0...httpclient/v1.3.0) (2024-03-14)
 
 
