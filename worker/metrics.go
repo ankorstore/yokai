@@ -25,7 +25,7 @@ func NewWorkerMetrics(namespace string, subsystem string) *WorkerMetrics {
 		prometheus.CounterOpts{
 			Namespace: Sanitize(namespace),
 			Subsystem: Sanitize(subsystem),
-			Name:      "worker_execution_total",
+			Name:      "worker_executions_total",
 			Help:      "Total number of workers executions",
 		},
 		[]string{

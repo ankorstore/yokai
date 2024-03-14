@@ -150,16 +150,16 @@ func TestExecutionWithClassicWorker(t *testing.T) {
 
 	// metrics assertions
 	expectedMetrics := `
-		# HELP worker_execution_total Total number of workers executions
-        # TYPE worker_execution_total counter
-		worker_execution_total{status="started",worker="classicworker"} 1
-        worker_execution_total{status="success",worker="classicworker"} 1
+		# HELP worker_executions_total Total number of workers executions
+        # TYPE worker_executions_total counter
+		worker_executions_total{status="started",worker="classicworker"} 1
+        worker_executions_total{status="success",worker="classicworker"} 1
 	`
 
 	err = testutil.GatherAndCompare(
 		registry,
 		strings.NewReader(expectedMetrics),
-		"worker_execution_total",
+		"worker_executions_total",
 	)
 	assert.NoError(t, err)
 }
@@ -269,16 +269,16 @@ func TestExecutionWithDeferredAndCancellableWorker(t *testing.T) {
 
 	// metrics assertions
 	expectedMetrics := `
-		# HELP worker_execution_total Total number of workers executions
-        # TYPE worker_execution_total counter
-		worker_execution_total{status="started",worker="cancellableworker"} 1
-        worker_execution_total{status="success",worker="cancellableworker"} 1
+		# HELP worker_executions_total Total number of workers executions
+        # TYPE worker_executions_total counter
+		worker_executions_total{status="started",worker="cancellableworker"} 1
+        worker_executions_total{status="success",worker="cancellableworker"} 1
 	`
 
 	err = testutil.GatherAndCompare(
 		registry,
 		strings.NewReader(expectedMetrics),
-		"worker_execution_total",
+		"worker_executions_total",
 	)
 	assert.NoError(t, err)
 }
@@ -400,17 +400,17 @@ func TestExecutionWithRestartingErrorWorker(t *testing.T) {
 
 	// metrics assertions
 	expectedMetrics := `
-		# HELP worker_execution_total Total number of workers executions
-        # TYPE worker_execution_total counter
-        worker_execution_total{status="error",worker="errorworker"} 2
-        worker_execution_total{status="restarted",worker="errorworker"} 1
-        worker_execution_total{status="started",worker="errorworker"} 2
+		# HELP worker_executions_total Total number of workers executions
+        # TYPE worker_executions_total counter
+        worker_executions_total{status="error",worker="errorworker"} 2
+        worker_executions_total{status="restarted",worker="errorworker"} 1
+        worker_executions_total{status="started",worker="errorworker"} 2
 	`
 
 	err = testutil.GatherAndCompare(
 		registry,
 		strings.NewReader(expectedMetrics),
-		"worker_execution_total",
+		"worker_executions_total",
 	)
 	assert.NoError(t, err)
 }
@@ -530,17 +530,17 @@ func TestExecutionWithRestartingPanicWorker(t *testing.T) {
 
 	// metrics assertions
 	expectedMetrics := `
-		# HELP worker_execution_total Total number of workers executions
-        # TYPE worker_execution_total counter
-        worker_execution_total{status="error",worker="panicworker"} 2
-        worker_execution_total{status="restarted",worker="panicworker"} 1
-        worker_execution_total{status="started",worker="panicworker"} 2
+		# HELP worker_executions_total Total number of workers executions
+        # TYPE worker_executions_total counter
+        worker_executions_total{status="error",worker="panicworker"} 2
+        worker_executions_total{status="restarted",worker="panicworker"} 1
+        worker_executions_total{status="started",worker="panicworker"} 2
 	`
 
 	err = testutil.GatherAndCompare(
 		registry,
 		strings.NewReader(expectedMetrics),
-		"worker_execution_total",
+		"worker_executions_total",
 	)
 	assert.NoError(t, err)
 }
