@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace/noop"
 )
 
 type tracerProviderMock struct {
@@ -24,7 +25,7 @@ func (m *tracerProviderMock) Tracer(string, ...trace.TracerOption) trace.Tracer 
 func TestAnnotateTracerProviderWithNonSdkTracerProvider(t *testing.T) {
 	t.Parallel()
 
-	tp := new(tracerProviderMock)
+	tp := noop.NewTracerProvider()
 
 	assert.Equal(t, tp, httpserver.AnnotateTracerProvider(tp))
 }
