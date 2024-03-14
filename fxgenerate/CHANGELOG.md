@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/ankorstore/yokai/compare/fxgenerate/v1.0.0...fxgenerate/v1.1.0) (2024-03-14)
+
+
+### Features
+
+* **fxgenerate:** Updated dependencies ([#151](https://github.com/ankorstore/yokai/issues/151)) ([75233be](https://github.com/ankorstore/yokai/commit/75233be78d58fbdf0434399a3e34a25b653cec2f))
+
 ## 1.0.0 (2024-01-11)
 
 
