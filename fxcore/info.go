@@ -8,7 +8,7 @@ import (
 	"go.uber.org/fx"
 )
 
-// FxExtraInfo is the struct used by modules or apps to provide their extra info to fxcore.
+// FxExtraInfo is the struct used by modules or apps to provide their extra info to the core.
 type FxExtraInfo interface {
 	Name() string
 	Value() string
@@ -38,13 +38,13 @@ func (i *fxExtraInfo) Value() string {
 	return i.value
 }
 
-// FxModuleInfo is the interface to implement by modules to provide their info to fxcore.
+// FxModuleInfo is the interface to implement by modules to provide their info to the core.
 type FxModuleInfo interface {
 	Name() string
 	Data() map[string]any
 }
 
-// FxCoreModuleInfo is a module info collector for fxcore.
+// FxCoreModuleInfo is a module info collector for the core.
 type FxCoreModuleInfo struct {
 	AppName        string
 	AppEnv         string

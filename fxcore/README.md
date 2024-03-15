@@ -118,8 +118,7 @@ modules:
         path: /metrics                 # metrics route path (default /metrics)
         collect:       
           enabled: true                # to collect core http server metrics, disabled by default
-          namespace: app               # core http server metrics namespace (default app.name value)
-          subsystem: fx-core           # core http server metrics subsystem (default fx-core)
+          namespace: foo               # core http server metrics namespace (empty by default)
         buckets: 0.1, 1, 10            # to override default request duration buckets
         normalize:
           request_path: true          # to normalize http request path, disabled by default

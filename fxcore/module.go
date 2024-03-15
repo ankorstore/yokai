@@ -111,9 +111,7 @@ func NewFxCore(p FxCoreParam) (*Core, error) {
 		httpserver.WithBanner(false),
 		httpserver.WithRecovery(true),
 		httpserver.WithLogger(coreLogger),
-		httpserver.WithRenderer(
-			NewDashboardRenderer(templatesFS, "templates/dashboard.html"),
-		),
+		httpserver.WithRenderer(NewDashboardRenderer(templatesFS, "templates/dashboard.html")),
 		httpserver.WithHttpErrorHandler(
 			httpserver.JsonErrorHandler(
 				p.Config.GetBool("modules.core.server.errors.obfuscate") || !appDebug,
@@ -196,16 +194,6 @@ func withMiddlewares(coreServer *echo.Echo, p FxCoreParam) *echo.Echo {
 
 	// request metrics middleware
 	if p.Config.GetBool("modules.core.server.metrics.collect.enabled") {
-		namespace := p.Config.GetString("modules.core.server.metrics.collect.namespace")
-		if namespace == "" {
-			namespace = p.Config.AppName()
-		}
-
-		subsystem := p.Config.GetString("modules.core.server.metrics.collect.subsystem")
-		if subsystem == "" {
-			subsystem = ModuleName
-		}
-
 		var buckets []float64
 		if bucketsConfig := p.Config.GetString("modules.core.server.metrics.buckets"); bucketsConfig != "" {
 			for _, s := range Split(bucketsConfig) {
@@ -218,8 +206,8 @@ func withMiddlewares(coreServer *echo.Echo, p FxCoreParam) *echo.Echo {
 
 		metricsMiddlewareConfig := httpservermiddleware.RequestMetricsMiddlewareConfig{
 			Registry:                p.MetricsRegistry,
-			Namespace:               Sanitize(namespace),
-			Subsystem:               Sanitize(subsystem),
+			Namespace:               Sanitize(p.Config.GetString("modules.core.server.metrics.collect.namespace")),
+			Subsystem:               Sanitize(ModuleName),
 			Buckets:                 buckets,
 			NormalizeRequestPath:    p.Config.GetBool("modules.core.server.metrics.normalize.request_path"),
 			NormalizeResponseStatus: p.Config.GetBool("modules.core.server.metrics.normalize.response_status"),
