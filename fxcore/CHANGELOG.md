@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.4.0...fxcore/v1.5.0) (2024-03-15)
+
+
+### Features
+
+* **fxcore:** Updated dependencies ([#175](https://github.com/ankorstore/yokai/issues/175)) ([62e8ad2](https://github.com/ankorstore/yokai/commit/62e8ad2e7e7d780fb2b357a9194b4c493beeb1ac))
+
 ## [1.4.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.3.0...fxcore/v1.4.0) (2024-03-06)
 
 
