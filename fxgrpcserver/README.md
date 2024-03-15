@@ -122,8 +122,8 @@ modules:
       metrics:
         collect:
           enabled: true             # to collect gRPC server metrics, disabled by default
-          namespace: app            # gRPC server metrics namespace (default app.name value)
-          subsystem: grpcserver     # gRPC server metrics subsystem (default grpcserver)
+          namespace: foo            # gRPC server metrics namespace (empty by default)
+          subsystem: bar            # gRPC server metrics subsystem (empty by default)
         buckets: 0.1, 1, 10         # to override default request duration buckets (default prometheus.DefBuckets)
       reflection:
         enabled: true               # to expose gRPC reflection service, disabled by default
