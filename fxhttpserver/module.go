@@ -156,15 +156,8 @@ func withDefaultMiddlewares(httpServer *echo.Echo, p FxHttpServerParam) *echo.Ec
 
 	// request metrics middleware
 	if p.Config.GetBool("modules.http.server.metrics.collect.enabled") {
-		namespace := p.Config.GetString("modules.http.server.metrics.collect.namespace")
-		if namespace == "" {
-			namespace = p.Config.AppName()
-		}
-
-		subsystem := p.Config.GetString("modules.http.server.metrics.collect.subsystem")
-		if subsystem == "" {
-			subsystem = ModuleName
-		}
+		namespace := Sanitize(p.Config.GetString("modules.http.server.metrics.collect.namespace"))
+		subsystem := Sanitize(p.Config.GetString("modules.http.server.metrics.collect.subsystem"))
 
 		var buckets []float64
 		if bucketsConfig := p.Config.GetString("modules.http.server.metrics.buckets"); bucketsConfig != "" {
@@ -178,8 +171,8 @@ func withDefaultMiddlewares(httpServer *echo.Echo, p FxHttpServerParam) *echo.Ec
 
 		metricsMiddlewareConfig := httpservermiddleware.RequestMetricsMiddlewareConfig{
 			Registry:                p.MetricsRegistry,
-			Namespace:               Sanitize(namespace),
-			Subsystem:               Sanitize(subsystem),
+			Namespace:               namespace,
+			Subsystem:               subsystem,
 			Buckets:                 buckets,
 			NormalizeRequestPath:    p.Config.GetBool("modules.http.server.metrics.normalize.request_path"),
 			NormalizeResponseStatus: p.Config.GetBool("modules.http.server.metrics.normalize.response_status"),

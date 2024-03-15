@@ -759,18 +759,89 @@ func TestModuleWithMetrics(t *testing.T) {
 		semconv.HTTPStatusCode(http.StatusOK),
 	)
 
-	expectedHelp := `
-		# HELP foo_bar_requests_total Number of processed HTTP requests
-		# TYPE foo_bar_requests_total counter
-	`
 	expectedMetric := `
-		foo_bar_requests_total{method="GET",path="/bar",status="2xx"} 1
+		# HELP http_server_requests_total Number of processed HTTP requests
+		# TYPE http_server_requests_total counter
+		http_server_requests_total{method="GET",path="/bar",status="2xx"} 1
 	`
-
 	err := testutil.GatherAndCompare(
 		metricsRegistry,
-		strings.NewReader(expectedHelp+expectedMetric),
-		"foo_bar_requests_total",
+		strings.NewReader(expectedMetric),
+		"http_server_requests_total",
+	)
+	assert.NoError(t, err)
+}
+
+func TestModuleWithMetricsWithNamespaceAndSubsystem(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("METRICS_NAMESPACE", "foo")
+	t.Setenv("METRICS_SUBSYSTEM", "bar")
+	t.Setenv("APP_DEBUG", "true")
+
+	var httpServer *echo.Echo
+	var logBuffer logtest.TestLogBuffer
+	var traceExporter tracetest.TestTraceExporter
+	var metricsRegistry *prometheus.Registry
+
+	fxtest.New(
+		t,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxhttpserver.FxHttpServerModule,
+		fx.Provide(service.NewTestService),
+		fx.Options(
+			fxhttpserver.AsHandler("GET", "/bar", handler.NewTestBarHandler),
+		),
+		fx.Populate(&httpServer, &logBuffer, &traceExporter, &metricsRegistry),
+	).RequireStart().RequireStop()
+
+	// [GET] /bar
+	req := httptest.NewRequest(http.MethodGet, "/bar", nil)
+	rec := httptest.NewRecorder()
+	httpServer.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Contains(t, rec.Body.String(), "bar: test")
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "info",
+		"service": "test",
+		"module":  "httpserver",
+		"message": "in bar handler",
+	})
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "info",
+		"service": "test",
+		"module":  "httpserver",
+		"method":  "GET",
+		"uri":     "/bar",
+		"status":  200,
+		"message": "request logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"GET /bar",
+		semconv.HTTPMethod(http.MethodGet),
+		semconv.HTTPRoute("/bar"),
+		semconv.HTTPStatusCode(http.StatusOK),
+	)
+
+	expectedMetric := `
+		# HELP foo_bar_http_server_requests_total Number of processed HTTP requests
+		# TYPE foo_bar_http_server_requests_total counter
+		foo_bar_http_server_requests_total{method="GET",path="/bar",status="2xx"} 1
+	`
+	err := testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"foo_bar_http_server_requests_total",
 	)
 	assert.NoError(t, err)
 }
