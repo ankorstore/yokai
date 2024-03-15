@@ -101,9 +101,9 @@ func TestModule(t *testing.T) {
 
 	expectedMetric := fmt.Sprintf(
 		`
-			# HELP foo_bar_httpclient_requests_total Number of performed HTTP requests
-			# TYPE foo_bar_httpclient_requests_total counter
-			foo_bar_httpclient_requests_total{host="%s",method="POST",path="",status="2xx"} 1
+			# HELP foo_bar_http_client_requests_total Number of performed HTTP requests
+			# TYPE foo_bar_http_client_requests_total counter
+			foo_bar_http_client_requests_total{host="%s",method="POST",path="",status="2xx"} 1
 		`,
 		httpServer.URL,
 	)
@@ -111,7 +111,7 @@ func TestModule(t *testing.T) {
 	err = testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expectedMetric),
-		"foo_bar_httpclient_requests_total",
+		"foo_bar_http_client_requests_total",
 	)
 	assert.NoError(t, err)
 
@@ -158,10 +158,10 @@ func TestModule(t *testing.T) {
 
 	expectedMetric = fmt.Sprintf(
 		`
-			# HELP foo_bar_httpclient_requests_total Number of performed HTTP requests
-			# TYPE foo_bar_httpclient_requests_total counter
-			foo_bar_httpclient_requests_total{host="%s",method="POST",path="",status="2xx"} 1
-			foo_bar_httpclient_requests_total{host="%s",method="POST",path="",status="4xx"} 1
+			# HELP foo_bar_http_client_requests_total Number of performed HTTP requests
+			# TYPE foo_bar_http_client_requests_total counter
+			foo_bar_http_client_requests_total{host="%s",method="POST",path="",status="2xx"} 1
+			foo_bar_http_client_requests_total{host="%s",method="POST",path="",status="4xx"} 1
 		`,
 		httpServer.URL,
 		httpServer.URL,
@@ -170,7 +170,7 @@ func TestModule(t *testing.T) {
 	err = testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expectedMetric),
-		"foo_bar_httpclient_requests_total",
+		"foo_bar_http_client_requests_total",
 	)
 	assert.NoError(t, err)
 
@@ -217,11 +217,11 @@ func TestModule(t *testing.T) {
 
 	expectedMetric = fmt.Sprintf(
 		`
-			# HELP foo_bar_httpclient_requests_total Number of performed HTTP requests
-			# TYPE foo_bar_httpclient_requests_total counter
-			foo_bar_httpclient_requests_total{host="%s",method="POST",path="",status="2xx"} 1
-        	foo_bar_httpclient_requests_total{host="%s",method="POST",path="",status="4xx"} 1
-        	foo_bar_httpclient_requests_total{host="%s",method="POST",path="",status="5xx"} 1
+			# HELP foo_bar_http_client_requests_total Number of performed HTTP requests
+			# TYPE foo_bar_http_client_requests_total counter
+			foo_bar_http_client_requests_total{host="%s",method="POST",path="",status="2xx"} 1
+        	foo_bar_http_client_requests_total{host="%s",method="POST",path="",status="4xx"} 1
+        	foo_bar_http_client_requests_total{host="%s",method="POST",path="",status="5xx"} 1
 		`,
 		httpServer.URL,
 		httpServer.URL,
@@ -231,7 +231,7 @@ func TestModule(t *testing.T) {
 	err = testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expectedMetric),
-		"foo_bar_httpclient_requests_total",
+		"foo_bar_http_client_requests_total",
 	)
 	assert.NoError(t, err)
 
@@ -279,12 +279,12 @@ func TestModule(t *testing.T) {
 
 	expectedMetric = fmt.Sprintf(
 		`
-			# HELP foo_bar_httpclient_requests_total Number of performed HTTP requests
-			# TYPE foo_bar_httpclient_requests_total counter
-			foo_bar_httpclient_requests_total{host="%s",method="POST",path="",status="2xx"} 1
-        	foo_bar_httpclient_requests_total{host="%s",method="GET",path="%s",status="3xx"} 1
-        	foo_bar_httpclient_requests_total{host="%s",method="POST",path="",status="4xx"} 1
-        	foo_bar_httpclient_requests_total{host="%s",method="POST",path="",status="5xx"} 1
+			# HELP foo_bar_http_client_requests_total Number of performed HTTP requests
+			# TYPE foo_bar_http_client_requests_total counter
+			foo_bar_http_client_requests_total{host="%s",method="POST",path="",status="2xx"} 1
+        	foo_bar_http_client_requests_total{host="%s",method="GET",path="%s",status="3xx"} 1
+        	foo_bar_http_client_requests_total{host="%s",method="POST",path="",status="4xx"} 1
+        	foo_bar_http_client_requests_total{host="%s",method="POST",path="",status="5xx"} 1
 		`,
 		httpServer.URL,
 		httpServer.URL,
@@ -296,7 +296,7 @@ func TestModule(t *testing.T) {
 	err = testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expectedMetric),
-		"foo_bar_httpclient_requests_total",
+		"foo_bar_http_client_requests_total",
 	)
 	assert.NoError(t, err)
 }
