@@ -100,16 +100,16 @@ func TestModuleWithDefaultConfig(t *testing.T) {
 
 	// workers metrics assertions
 	expected := `
-		# HELP test_worker_worker_execution_total Total number of workers executions
-		# TYPE test_worker_worker_execution_total counter
-        test_worker_worker_execution_total{status="started",worker="classicworker"} 1
-        test_worker_worker_execution_total{status="success",worker="classicworker"} 1
+		# HELP worker_executions_total Total number of workers executions
+		# TYPE worker_executions_total counter
+        worker_executions_total{status="started",worker="classicworker"} 1
+        worker_executions_total{status="success",worker="classicworker"} 1
 	`
 
 	err := testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expected),
-		"test_worker_worker_execution_total",
+		"worker_executions_total",
 	)
 	assert.NoError(t, err)
 }
@@ -196,16 +196,16 @@ func TestModuleWithCustomConfig(t *testing.T) {
 
 	// workers metrics assertions
 	expected := `
-		# HELP foo_bar_worker_execution_total Total number of workers executions
-		# TYPE foo_bar_worker_execution_total counter
-        foo_bar_worker_execution_total{status="started",worker="cancellableworker"} 1
-        foo_bar_worker_execution_total{status="success",worker="cancellableworker"} 1
+		# HELP foo_bar_worker_executions_total Total number of workers executions
+		# TYPE foo_bar_worker_executions_total counter
+        foo_bar_worker_executions_total{status="started",worker="cancellableworker"} 1
+        foo_bar_worker_executions_total{status="success",worker="cancellableworker"} 1
 	`
 
 	err := testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expected),
-		"foo_bar_worker_execution_total",
+		"foo_bar_worker_executions_total",
 	)
 	assert.NoError(t, err)
 }

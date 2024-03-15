@@ -101,8 +101,8 @@ modules:
     metrics:
       collect:
         enabled: true      # to collect metrics about workers executions
-        namespace: app     # workers metrics namespace (default app.name value)
-        subsystem: worker  # workers metrics subsystem (default worker)
+        namespace: foo     # workers metrics namespace (empty by default)
+        subsystem: bar     # workers metrics subsystem (empty by default)
 ```
 
 Notes:
