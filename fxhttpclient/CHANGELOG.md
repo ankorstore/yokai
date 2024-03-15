@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/fxhttpclient/v1.2.0...fxhttpclient/v1.3.0) (2024-03-15)
+
+
+### Features
+
+* **fxhttpclient:** Updated dependencies ([#161](https://github.com/ankorstore/yokai/issues/161)) ([8ab9f60](https://github.com/ankorstore/yokai/commit/8ab9f6074fbb71c39509526dd2cb1c656497d06f))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/fxhttpclient/v1.1.0...fxhttpclient/v1.2.0) (2024-03-04)
 
 
