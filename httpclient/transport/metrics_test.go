@@ -39,9 +39,9 @@ func TestMetricsTransportRoundTrip(t *testing.T) {
 	// requests counter assertions
 	expectedCounterMetric := fmt.Sprintf(
 		`
-			# HELP httpclient_requests_total Number of performed HTTP requests
-			# TYPE httpclient_requests_total counter
-			httpclient_requests_total{host="%s",method="GET",path="",status="5xx"} 1
+			# HELP http_client_requests_total Number of performed HTTP requests
+			# TYPE http_client_requests_total counter
+			http_client_requests_total{host="%s",method="GET",path="",status="5xx"} 1
 		`,
 		server.URL,
 	)
@@ -49,7 +49,7 @@ func TestMetricsTransportRoundTrip(t *testing.T) {
 	err = testutil.GatherAndCompare(
 		prometheus.DefaultGatherer,
 		strings.NewReader(expectedCounterMetric),
-		"httpclient_requests_total",
+		"http_client_requests_total",
 	)
 	assert.NoError(t, err)
 }
@@ -107,11 +107,11 @@ func TestMetricsTransportRoundTripWithBaseAndConfig(t *testing.T) {
 	// requests counter assertions
 	expectedCounterMetric := fmt.Sprintf(
 		`
-			# HELP foo_bar_httpclient_requests_total Number of performed HTTP requests
-			# TYPE foo_bar_httpclient_requests_total counter
-    		foo_bar_httpclient_requests_total{host="%s",method="GET",path="",status="204"} 1
-    		foo_bar_httpclient_requests_total{host="%s",method="GET",path="/foo/4/baz",status="204"} 1
-    		foo_bar_httpclient_requests_total{host="%s",method="GET",path="/foo/{fooId}/bar?page={pageId}",status="204"} 3
+			# HELP foo_bar_http_client_requests_total Number of performed HTTP requests
+			# TYPE foo_bar_http_client_requests_total counter
+    		foo_bar_http_client_requests_total{host="%s",method="GET",path="",status="204"} 1
+    		foo_bar_http_client_requests_total{host="%s",method="GET",path="/foo/4/baz",status="204"} 1
+    		foo_bar_http_client_requests_total{host="%s",method="GET",path="/foo/{fooId}/bar?page={pageId}",status="204"} 3
 		`,
 		server.URL,
 		server.URL,
@@ -121,7 +121,7 @@ func TestMetricsTransportRoundTripWithBaseAndConfig(t *testing.T) {
 	err := testutil.GatherAndCompare(
 		registry,
 		strings.NewReader(expectedCounterMetric),
-		"foo_bar_httpclient_requests_total",
+		"foo_bar_http_client_requests_total",
 	)
 	assert.NoError(t, err)
 }
@@ -161,9 +161,9 @@ func TestMetricsTransportRoundTripWithFailure(t *testing.T) {
 	// requests counter assertions
 	expectedCounterMetric := fmt.Sprintf(
 		`
-			# HELP foo_bar_httpclient_requests_total Number of performed HTTP requests
-			# TYPE foo_bar_httpclient_requests_total counter
-			foo_bar_httpclient_requests_total{host="%s",method="GET",path="",status="error"} 1
+			# HELP foo_bar_http_client_requests_total Number of performed HTTP requests
+			# TYPE foo_bar_http_client_requests_total counter
+			foo_bar_http_client_requests_total{host="%s",method="GET",path="",status="error"} 1
 		`,
 		server.URL,
 	)
@@ -171,7 +171,7 @@ func TestMetricsTransportRoundTripWithFailure(t *testing.T) {
 	err = testutil.GatherAndCompare(
 		registry,
 		strings.NewReader(expectedCounterMetric),
-		"foo_bar_httpclient_requests_total",
+		"foo_bar_http_client_requests_total",
 	)
 	assert.NoError(t, err)
 }
