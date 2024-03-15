@@ -66,17 +66,10 @@ func NewFxWorkerPool(p FxWorkerPoolParam) (*worker.WorkerPool, error) {
 	}
 
 	// metrics
-	workerMetricsNamespace := p.Config.GetString("modules.worker.metrics.collect.namespace")
-	if workerMetricsNamespace == "" {
-		workerMetricsNamespace = p.Config.AppName()
-	}
-
-	workerMetricsSubsystem := p.Config.GetString("modules.worker.metrics.collect.subsystem")
-	if workerMetricsSubsystem == "" {
-		workerMetricsSubsystem = ModuleName
-	}
-
-	workerMetrics := worker.NewWorkerMetrics(workerMetricsNamespace, workerMetricsSubsystem)
+	workerMetrics := worker.NewWorkerMetrics(
+		p.Config.GetString("modules.worker.metrics.collect.namespace"),
+		p.Config.GetString("modules.worker.metrics.collect.subsystem"),
+	)
 
 	// pool
 	workerPool, err := p.Factory.Create(
