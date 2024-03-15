@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/ankorstore/yokai/compare/fxhttpclient/v1.3.0...fxhttpclient/v1.4.0) (2024-03-15)
+
+
+### Features
+
+* **fxhttpclient:** Updated metrics base name ([#169](https://github.com/ankorstore/yokai/issues/169)) ([7bb8e22](https://github.com/ankorstore/yokai/commit/7bb8e22eb890a7a4bf932243eadc554d3a53b210))
+
 ## [1.3.0](https://github.com/ankorstore/yokai/compare/fxhttpclient/v1.2.0...fxhttpclient/v1.3.0) (2024-03-15)
 
 
