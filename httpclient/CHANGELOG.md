@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/ankorstore/yokai/compare/httpclient/v1.3.1...httpclient/v1.4.0) (2024-03-15)
+
+
+### Features
+
+* **httpclient:** Updated metrics base name ([#167](https://github.com/ankorstore/yokai/issues/167)) ([0b91487](https://github.com/ankorstore/yokai/commit/0b91487c8e8f5a94a3878433fa0fba6380fa02fe))
+
 ## [1.3.1](https://github.com/ankorstore/yokai/compare/httpclient/v1.3.0...httpclient/v1.3.1) (2024-03-14)
 
 
