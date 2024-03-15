@@ -20,3 +20,8 @@ func Sanitize(str string) string {
 
 	return strings.ToLower(str)
 }
+
+// Split trims and splits a provided string by comma.
+func Split(str string) []string {
+	return strings.Split(strings.ReplaceAll(str, " ", ""), ",")
+}

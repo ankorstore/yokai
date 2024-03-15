@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/ankorstore/yokai/config"
@@ -92,20 +91,13 @@ func NewFxCron(p FxCronParam) (gocron.Scheduler, error) {
 
 	// jobs metrics
 	cronJobMetricsNamespace := p.Config.GetString("modules.cron.metrics.collect.namespace")
-	if cronJobMetricsNamespace == "" {
-		cronJobMetricsNamespace = p.Config.AppName()
-	}
-
 	cronJobMetricsSubsystem := p.Config.GetString("modules.cron.metrics.collect.subsystem")
-	if cronJobMetricsSubsystem == "" {
-		cronJobMetricsSubsystem = ModuleName
-	}
 
 	var cronJobMetrics *CronJobMetrics
 	if cronJobMetricsBuckets := p.Config.GetString("modules.cron.metrics.buckets"); cronJobMetricsBuckets != "" {
 		var buckets []float64
 
-		for _, s := range strings.Split(strings.ReplaceAll(cronJobMetricsBuckets, " ", ""), ",") {
+		for _, s := range Split(cronJobMetricsBuckets) {
 			f, err := strconv.ParseFloat(s, 64)
 			if err == nil {
 				buckets = append(buckets, f)
