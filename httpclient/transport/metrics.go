@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	HttpClientMetricsRequestsCount    = "httpclient_requests_total"
-	HttpClientMetricsRequestsDuration = "httpclient_requests_duration_seconds"
+	HttpClientMetricsRequestsCount    = "http_client_requests_total"
+	HttpClientMetricsRequestsDuration = "http_client_requests_duration_seconds"
 )
 
 // MetricsTransport is a wrapper around [http.RoundTripper] with some [MetricsTransportConfig] configuration.
