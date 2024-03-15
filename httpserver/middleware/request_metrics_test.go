@@ -39,15 +39,15 @@ func TestRequestMetricsMiddlewareWithDefaults(t *testing.T) {
 
 	// requests counter assertions
 	expectedCounterMetric := `
-		# HELP httpserver_requests_total Number of processed HTTP requests
-		# TYPE httpserver_requests_total counter
-		httpserver_requests_total{method="GET",path="/not-found",status="2xx"} 1
+		# HELP http_server_requests_total Number of processed HTTP requests
+		# TYPE http_server_requests_total counter
+		http_server_requests_total{method="GET",path="/not-found",status="2xx"} 1
 	`
 
 	err = testutil.GatherAndCompare(
 		prometheus.DefaultGatherer,
 		strings.NewReader(expectedCounterMetric),
-		"httpserver_requests_total",
+		"http_server_requests_total",
 	)
 	assert.NoError(t, err)
 }
@@ -85,15 +85,15 @@ func TestRequestMetricsMiddlewareWithSkipper(t *testing.T) {
 
 	// requests counter assertions
 	expectedCounterMetric := `
-		# HELP httpserver_requests_total Number of processed HTTP requests
-		# TYPE httpserver_requests_total counter
-        httpserver_requests_total{path="/not-found",method="GET",status="200"} 1
+		# HELP http_server_requests_total Number of processed HTTP requests
+		# TYPE http_server_requests_total counter
+        http_server_requests_total{path="/not-found",method="GET",status="200"} 1
 	`
 
 	err = testutil.GatherAndCompare(
 		registry,
 		strings.NewReader(expectedCounterMetric),
-		"httpserver_requests_total",
+		"http_server_requests_total",
 	)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "metric output does not match expectation")
@@ -132,15 +132,15 @@ func TestRequestMetricsMiddlewareWithCustomOptions(t *testing.T) {
 
 	// requests counter assertions
 	expectedCounterMetric := `
-		# HELP namespace_subsystem_httpserver_requests_total Number of processed HTTP requests
-        # TYPE namespace_subsystem_httpserver_requests_total counter
-        namespace_subsystem_httpserver_requests_total{method="GET",path="/not-found",status="4xx"} 1
+		# HELP namespace_subsystem_http_server_requests_total Number of processed HTTP requests
+        # TYPE namespace_subsystem_http_server_requests_total counter
+        namespace_subsystem_http_server_requests_total{method="GET",path="/not-found",status="4xx"} 1
 	`
 
 	err = testutil.GatherAndCompare(
 		registry,
 		strings.NewReader(expectedCounterMetric),
-		"namespace_subsystem_httpserver_requests_total",
+		"namespace_subsystem_http_server_requests_total",
 	)
 	assert.NoError(t, err)
 }

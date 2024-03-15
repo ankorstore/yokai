@@ -1966,15 +1966,15 @@ func TestCreateWithRequestMetricsAndWithNormalization(t *testing.T) {
 	assert.Contains(t, rec.Body.String(), `baz`)
 
 	expectedCounterMetric := `
-		# HELP namespace_subsystem_httpserver_requests_total Number of processed HTTP requests
-        # TYPE namespace_subsystem_httpserver_requests_total counter
-        namespace_subsystem_httpserver_requests_total{method="GET",path="/foo/bar/:id",status="2xx"} 1
+		# HELP namespace_subsystem_http_server_requests_total Number of processed HTTP requests
+        # TYPE namespace_subsystem_http_server_requests_total counter
+        namespace_subsystem_http_server_requests_total{method="GET",path="/foo/bar/:id",status="2xx"} 1
 	`
 
 	err = testutil.GatherAndCompare(
 		registry,
 		strings.NewReader(expectedCounterMetric),
-		"namespace_subsystem_httpserver_requests_total",
+		"namespace_subsystem_http_server_requests_total",
 	)
 	assert.NoError(t, err)
 }
@@ -2009,15 +2009,15 @@ func TestCreateWithRequestMetricsAndWithoutNormalization(t *testing.T) {
 	assert.Contains(t, rec.Body.String(), `baz`)
 
 	expectedCounterMetric := `
-		# HELP namespace_subsystem_httpserver_requests_total Number of processed HTTP requests
-        # TYPE namespace_subsystem_httpserver_requests_total counter
-        namespace_subsystem_httpserver_requests_total{method="GET",path="/foo/bar/baz?page=1",status="200"} 1
+		# HELP namespace_subsystem_http_server_requests_total Number of processed HTTP requests
+        # TYPE namespace_subsystem_http_server_requests_total counter
+        namespace_subsystem_http_server_requests_total{method="GET",path="/foo/bar/baz?page=1",status="200"} 1
 	`
 
 	err = testutil.GatherAndCompare(
 		registry,
 		strings.NewReader(expectedCounterMetric),
-		"namespace_subsystem_httpserver_requests_total",
+		"namespace_subsystem_http_server_requests_total",
 	)
 	assert.NoError(t, err)
 }

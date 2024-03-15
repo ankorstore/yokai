@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	HttpServerMetricsRequestsCount    = "httpserver_requests_total"
-	HttpServerMetricsRequestsDuration = "httpserver_requests_duration_seconds"
+	HttpServerMetricsRequestsCount    = "http_server_requests_total"
+	HttpServerMetricsRequestsDuration = "http_server_requests_duration_seconds"
 	HttpServerMetricsNotFoundPath     = "/not-found"
 )
 
