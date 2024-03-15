@@ -118,8 +118,8 @@ modules:
       metrics:
         collect:
           enabled: true                      # to collect http client metrics
-          namespace: app                     # http client metrics namespace (default app.name value)
-          subsystem: httpclient              # http client metrics subsystem (default httpclient)
+          namespace: foo                     # http client metrics namespace (empty by default)
+          subsystem: bar                     # http client metrics subsystem (empty by default)
         buckets: 0.1, 1, 10                  # to override default request duration buckets
         normalize:
           request_path: true                 # to normalize http request path, disabled by default

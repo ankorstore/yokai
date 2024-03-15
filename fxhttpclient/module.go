@@ -49,8 +49,6 @@ type FxHttpClientTransportParam struct {
 }
 
 // NewFxHttpClientTransport returns a new [http.RoundTripper].
-//
-//nolint:nestif,cyclop
 func NewFxHttpClientTransport(p FxHttpClientTransportParam) http.RoundTripper {
 	// base round tripper config
 	maxIdleConnections := p.Config.GetInt("modules.http.client.transport.max_idle_connections")
@@ -102,14 +100,7 @@ func NewFxHttpClientTransport(p FxHttpClientTransportParam) http.RoundTripper {
 	// round tripper metrics extension
 	if p.Config.GetBool("modules.http.client.metrics.collect.enabled") {
 		namespace := p.Config.GetString("modules.http.client.metrics.collect.namespace")
-		if namespace == "" {
-			namespace = p.Config.AppName()
-		}
-
 		subsystem := p.Config.GetString("modules.http.client.metrics.collect.subsystem")
-		if subsystem == "" {
-			subsystem = ModuleName
-		}
 
 		var buckets []float64
 		if bucketsConfig := p.Config.GetString("modules.http.client.metrics.buckets"); bucketsConfig != "" {
