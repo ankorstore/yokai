@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"strings"
 
 	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/generate/uuid"
@@ -192,6 +193,7 @@ func createInterceptors(p FxGrpcServerParam) ([]grpc.UnaryServerInterceptor, []g
 			methodFilters = append(methodFilters, filters.FullMethodName(method))
 		}
 
+		//nolint:staticcheck
 		unaryInterceptors = append(
 			unaryInterceptors,
 			otelgrpc.UnaryServerInterceptor(
@@ -199,6 +201,8 @@ func createInterceptors(p FxGrpcServerParam) ([]grpc.UnaryServerInterceptor, []g
 				otelgrpc.WithInterceptorFilter(filters.None(methodFilters...)),
 			),
 		)
+
+		//nolint:staticcheck
 		streamInterceptors = append(
 			streamInterceptors,
 			otelgrpc.StreamServerInterceptor(
@@ -220,16 +224,17 @@ func createInterceptors(p FxGrpcServerParam) ([]grpc.UnaryServerInterceptor, []g
 	// metrics
 	if p.Config.GetBool("modules.grpc.server.metrics.collect.enabled") {
 		namespace := p.Config.GetString("modules.grpc.server.metrics.collect.namespace")
-		if namespace == "" {
-			namespace = p.Config.AppName()
-		}
-
 		subsystem := p.Config.GetString("modules.grpc.server.metrics.collect.subsystem")
-		if subsystem == "" {
-			subsystem = ModuleName
+
+		var grpcSrvMetricsSubsystemParts []string
+		if namespace != "" {
+			grpcSrvMetricsSubsystemParts = append(grpcSrvMetricsSubsystemParts, namespace)
+		}
+		if subsystem != "" {
+			grpcSrvMetricsSubsystemParts = append(grpcSrvMetricsSubsystemParts, subsystem)
 		}
 
-		grpcSrvMetricsSubsystem := Sanitize(fmt.Sprintf("%s_%s", namespace, subsystem))
+		grpcSrvMetricsSubsystem := Sanitize(strings.Join(grpcSrvMetricsSubsystemParts, "_"))
 
 		var grpcSrvMetricsBuckets []float64
 		if bucketsConfig := p.Config.GetString("modules.grpc.server.metrics.buckets"); bucketsConfig != "" {

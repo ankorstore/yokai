@@ -12,6 +12,8 @@ modules:
       metrics:
         collect:
           enabled: true
+          namespace: ${METRICS_NAMESPACE}
+          subsystem: ${METRICS_SUBSYSTEM}
         buckets: .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10
       trace:
         exclude:

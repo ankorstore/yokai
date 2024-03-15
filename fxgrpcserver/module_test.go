@@ -47,6 +47,8 @@ var (
 //nolint:maintidx
 func TestModule(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("METRICS_NAMESPACE", "foo")
+	t.Setenv("METRICS_SUBSYSTEM", "bar")
 	t.Setenv("APP_ENV", "test")
 
 	var grpcServer *grpc.Server
@@ -156,15 +158,15 @@ func TestModule(t *testing.T) {
 	tracetest.AssertHasNotTraceSpan(t, traceExporter, "test.Service/Unary")
 
 	expectedUnaryMetric := `
-		# HELP test_grpcserver_grpc_server_started_total Total number of RPCs started on the server.
-		# TYPE test_grpcserver_grpc_server_started_total counter
-		test_grpcserver_grpc_server_started_total{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
+		# HELP foo_bar_grpc_server_started_total Total number of RPCs started on the server.
+		# TYPE foo_bar_grpc_server_started_total counter
+		foo_bar_grpc_server_started_total{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
 	`
 
 	err = testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expectedUnaryMetric),
-		"test_grpcserver_grpc_server_started_total",
+		"foo_bar_grpc_server_started_total",
 	)
 	assert.NoError(t, err)
 
@@ -307,16 +309,16 @@ func TestModule(t *testing.T) {
 	tracetest.AssertHasTraceSpan(t, traceExporter, "test.Service/Bidi")
 
 	expectedBidiMetric := `
-		# HELP test_grpcserver_grpc_server_handled_total Total number of RPCs completed on the server, regardless of success or failure.
-		# TYPE test_grpcserver_grpc_server_handled_total counter
-		test_grpcserver_grpc_server_handled_total{grpc_code="OK",grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
-		test_grpcserver_grpc_server_handled_total{grpc_code="OK",grpc_method="Bidi",grpc_service="test.Service",grpc_type="bidi_stream"} 1
+		# HELP foo_bar_grpc_server_handled_total Total number of RPCs completed on the server, regardless of success or failure.
+		# TYPE foo_bar_grpc_server_handled_total counter
+		foo_bar_grpc_server_handled_total{grpc_code="OK",grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
+		foo_bar_grpc_server_handled_total{grpc_code="OK",grpc_method="Bidi",grpc_service="test.Service",grpc_type="bidi_stream"} 1
 	`
 
 	err = testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expectedBidiMetric),
-		"test_grpcserver_grpc_server_handled_total",
+		"foo_bar_grpc_server_handled_total",
 	)
 	assert.NoError(t, err)
 }
@@ -329,6 +331,7 @@ func TestModuleHealthCheck(t *testing.T) {
 	var lis *bufconn.Listener
 	var logBuffer logtest.TestLogBuffer
 	var traceExporter tracetest.TestTraceExporter
+	var metricsRegistry *prometheus.Registry
 
 	fxtest.New(
 		t,
@@ -344,7 +347,7 @@ func TestModuleHealthCheck(t *testing.T) {
 			fxhealthcheck.AsCheckerProbe(probes.NewSuccessProbe),
 			fxhealthcheck.AsCheckerProbe(probes.NewFailureProbe, healthcheck.Liveness, healthcheck.Readiness),
 		),
-		fx.Populate(&grpcServer, &lis, &logBuffer, &traceExporter),
+		fx.Populate(&grpcServer, &lis, &logBuffer, &traceExporter, &metricsRegistry),
 	).RequireStart().RequireStop()
 
 	defer func() {
@@ -419,6 +422,20 @@ func TestModuleHealthCheck(t *testing.T) {
 	})
 
 	assert.True(t, traceExporter.HasSpan("grpc.health.v1.Health/Check"))
+
+	// metrics
+	expectedMetrics := `
+		# HELP grpc_server_handled_total Total number of RPCs completed on the server, regardless of success or failure.
+		# TYPE grpc_server_handled_total counter
+		grpc_server_handled_total{grpc_code="OK",grpc_method="Check",grpc_service="grpc.health.v1.Health",grpc_type="unary"} 3
+	`
+
+	err = testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetrics),
+		"grpc_server_handled_total",
+	)
+	assert.NoError(t, err)
 }
 
 func TestModuleDecoration(t *testing.T) {
