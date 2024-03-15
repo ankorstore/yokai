@@ -8,7 +8,7 @@ require (
 	github.com/ankorstore/yokai/fxlog v1.1.0
 	github.com/ankorstore/yokai/fxmetrics v1.1.0
 	github.com/ankorstore/yokai/fxtrace v1.2.0
-	github.com/ankorstore/yokai/httpclient v1.3.1
+	github.com/ankorstore/yokai/httpclient v1.4.0
 	github.com/ankorstore/yokai/log v1.2.0
 	github.com/ankorstore/yokai/trace v1.2.0
 	github.com/prometheus/client_golang v1.19.0
