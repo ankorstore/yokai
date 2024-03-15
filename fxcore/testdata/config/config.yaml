@@ -34,8 +34,7 @@ modules:
         expose: ${METRICS_ENABLED}
         collect:
           enabled: ${METRICS_COLLECT}
-          namespace: foo
-          subsystem: bar
+          namespace: ${METRICS_NAMESPACE}
         buckets: 0.1, 1, 10
         normalize:
           request_path: true

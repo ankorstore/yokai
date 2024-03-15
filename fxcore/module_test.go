@@ -89,7 +89,7 @@ func TestModuleWithMetricsEnabledAndCollected(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec.Code)
 
 	// assert [GET] / counter = 2
-	assert.Contains(t, rec.Body.String(), `foo_bar_request_duration_seconds_bucket{method="GET",path="/",le="1"} 2`)
+	assert.Contains(t, rec.Body.String(), `core_http_server_requests_duration_seconds_bucket{method="GET",path="/",le="1"} 2`)
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
@@ -111,16 +111,86 @@ func TestModuleWithMetricsEnabledAndCollected(t *testing.T) {
 
 	// assert metrics
 	expectedMetric := `
-		# HELP foo_bar_requests_total Number of processed HTTP requests
-		# TYPE foo_bar_requests_total counter
-		foo_bar_requests_total{method="GET",path="/",status="2xx"} 2
-		foo_bar_requests_total{method="GET",path="/metrics",status="2xx"} 1
+		# HELP core_http_server_requests_total Number of processed HTTP requests
+		# TYPE core_http_server_requests_total counter
+		core_http_server_requests_total{method="GET",path="/",status="2xx"} 2
+		core_http_server_requests_total{method="GET",path="/metrics",status="2xx"} 1
 	`
 
 	err := testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expectedMetric),
-		"foo_bar_requests_total",
+		"core_http_server_requests_total",
+	)
+	assert.NoError(t, err)
+}
+
+func TestModuleWithMetricsEnabledAndCollectedWithNamespace(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("METRICS_ENABLED", "true")
+	t.Setenv("METRICS_COLLECT", "true")
+	t.Setenv("METRICS_NAMESPACE", "foo")
+
+	var core *fxcore.Core
+	var logBuffer logtest.TestLogBuffer
+	var traceExporter tracetest.TestTraceExporter
+	var metricsRegistry *prometheus.Registry
+
+	fxcore.NewBootstrapper().RunTestApp(t, fx.Populate(&core, &logBuffer, &traceExporter, &metricsRegistry))
+
+	// [GET] / twice to generate some metrics
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec := httptest.NewRecorder()
+
+	core.HttpServer().ServeHTTP(rec, req)
+	assert.Equal(t, http.StatusOK, rec.Code)
+
+	req = httptest.NewRequest(http.MethodGet, "/", nil)
+	rec = httptest.NewRecorder()
+
+	core.HttpServer().ServeHTTP(rec, req)
+	assert.Equal(t, http.StatusOK, rec.Code)
+
+	// [GET] /metrics to check the metrics
+	req = httptest.NewRequest(http.MethodGet, "/metrics", nil)
+	rec = httptest.NewRecorder()
+	core.HttpServer().ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+
+	// assert [GET] / counter = 2
+	assert.Contains(t, rec.Body.String(), `foo_core_http_server_requests_duration_seconds_bucket{method="GET",path="/",le="1"} 2`)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "info",
+		"service": "core-app",
+		"module":  "core",
+		"uri":     "/metrics",
+		"status":  200,
+		"message": "request logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"GET /metrics",
+		semconv.HTTPMethod(http.MethodGet),
+		semconv.HTTPRoute("/metrics"),
+		semconv.HTTPStatusCode(http.StatusOK),
+	)
+
+	// assert metrics
+	expectedMetric := `
+		# HELP foo_core_http_server_requests_total Number of processed HTTP requests
+		# TYPE foo_core_http_server_requests_total counter
+		foo_core_http_server_requests_total{method="GET",path="/",status="2xx"} 2
+		foo_core_http_server_requests_total{method="GET",path="/metrics",status="2xx"} 1
+	`
+
+	err := testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"foo_core_http_server_requests_total",
 	)
 	assert.NoError(t, err)
 }
