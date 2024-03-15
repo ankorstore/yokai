@@ -293,17 +293,17 @@ func TestModule(t *testing.T) {
 
 	// cron metrics assertions
 	expected := `
-		# HELP foo_bar_job_execution_total Total number of cron job executions
-		# TYPE foo_bar_job_execution_total counter
-        foo_bar_job_execution_total{job="success",status="success"} 3
-        foo_bar_job_execution_total{job="error",status="error"} 2
-        foo_bar_job_execution_total{job="panic",status="error"} 1
+		# HELP foo_bar_cron_executions_total Total number of cron job executions
+		# TYPE foo_bar_cron_executions_total counter
+        foo_bar_cron_executions_total{job="success",status="success"} 3
+        foo_bar_cron_executions_total{job="error",status="error"} 2
+        foo_bar_cron_executions_total{job="panic",status="error"} 1
 	`
 
 	err := testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expected),
-		"foo_bar_job_execution_total",
+		"foo_bar_cron_executions_total",
 	)
 	assert.NoError(t, err)
 }

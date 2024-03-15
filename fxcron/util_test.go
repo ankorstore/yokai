@@ -33,3 +33,13 @@ func TestSanitize(t *testing.T) {
 	assert.Equal(t, "foo_bar", fxcron.Sanitize("Foo-Bar"))
 	assert.Equal(t, "foo_bar", fxcron.Sanitize("Foo Bar"))
 }
+
+func TestSplit(t *testing.T) {
+	t.Parallel()
+
+	assert.Equal(t, []string{"1", "2", "3"}, fxcron.Split("1,2,3"))
+	assert.Equal(t, []string{"1", "2", "3"}, fxcron.Split(" 1,2,3"))
+	assert.Equal(t, []string{"1", "2", "3"}, fxcron.Split("1,2,3 "))
+	assert.Equal(t, []string{"1", "2", "3"}, fxcron.Split("1, 2, 3"))
+	assert.Equal(t, []string{"1", "2", "3"}, fxcron.Split(" 1, 2, 3 "))
+}

@@ -108,7 +108,7 @@ func create(namespace string, subsystem string, buckets []float64) *CronJobMetri
 		prometheus.HistogramOpts{
 			Namespace: Sanitize(namespace),
 			Subsystem: Sanitize(subsystem),
-			Name:      "job_execution_duration_seconds",
+			Name:      "cron_executions_duration_seconds",
 			Help:      "Duration of cron job executions in seconds",
 			Buckets:   buckets,
 		},
@@ -121,7 +121,7 @@ func create(namespace string, subsystem string, buckets []float64) *CronJobMetri
 		prometheus.CounterOpts{
 			Namespace: Sanitize(namespace),
 			Subsystem: Sanitize(subsystem),
-			Name:      "job_execution_total",
+			Name:      "cron_executions_total",
 			Help:      "Total number of cron job executions",
 		},
 		[]string{

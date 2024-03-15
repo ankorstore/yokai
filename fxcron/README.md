@@ -128,8 +128,8 @@ modules:
     metrics:
       collect:
         enabled: true                 # to collect cron jobs executions metrics (executions count and duration), disabled by default
-        namespace: app                # cron jobs metrics namespace (default app.name value)
-        subsystem: cron               # cron jobs metrics subsystem (default cron)
+        namespace: foo                # cron jobs metrics namespace (empty by default)
+        subsystem: bar                # cron jobs metrics subsystem (empty by default)
       buckets: 1, 1.5, 10, 15, 100    # to define custom cron jobs executions durations metric buckets (in seconds)
     trace:
       enabled: true                   # to trace cron jobs executions, disabled by default
