@@ -24,6 +24,8 @@ modules:
       metrics:
         collect:
           enabled: true
+          namespace: foo
+          subsystem: bar
         buckets: 0.1, 1, 10
         normalize:
           request_path: true
