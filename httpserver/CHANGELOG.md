@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/httpserver/v1.2.0...httpserver/v1.3.0) (2024-03-15)
+
+
+### Features
+
+* **httpserver:** Updated metrics base name ([#171](https://github.com/ankorstore/yokai/issues/171)) ([8df5130](https://github.com/ankorstore/yokai/commit/8df5130af80d8edd4dd935adc8d55efa16557e79))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/httpserver/v1.1.0...httpserver/v1.2.0) (2024-03-14)
 
 
