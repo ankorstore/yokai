@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.1.0...fxhttpserver/v1.2.0) (2024-03-15)
+
+
+### Features
+
+* **fxhttpserver:** Updated dependencies ([#173](https://github.com/ankorstore/yokai/issues/173)) ([e8647ab](https://github.com/ankorstore/yokai/commit/e8647abb3e6b08ad5284805ccfca66295e4d3e0d))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.0.0...fxhttpserver/v1.1.0) (2024-03-06)
 
 
