@@ -109,3 +109,16 @@ You can also get, real time, the status of your metrics on the [fxcore](https://
 
 ![](../../assets/images/dash-metrics-light.png#only-light)
 ![](../../assets/images/dash-metrics-dark.png#only-dark)
+
+## Configuration
+
+The following metrics collectors can be enabled:
+
+```yaml title="configs/config.yaml"
+modules:
+  metrics:
+    collect:
+      build: true    # to collect build infos metrics (disabled by default)
+      go: true       # to collect go metrics (disabled by default)
+      process: true  # to collect process metrics (disabled by default)
+```
