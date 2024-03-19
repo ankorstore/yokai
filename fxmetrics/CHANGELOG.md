@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/fxmetrics/v1.1.0...fxmetrics/v1.2.0) (2024-03-19)
+
+
+### Features
+
+* **fxmetrics:** Added build info, process and go metrics collectors ([#177](https://github.com/ankorstore/yokai/issues/177)) ([44fba35](https://github.com/ankorstore/yokai/commit/44fba35499b1aa794d3b6253ad20db341e65fd4e))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/fxmetrics/v1.0.0...fxmetrics/v1.1.0) (2024-03-14)
 
 
