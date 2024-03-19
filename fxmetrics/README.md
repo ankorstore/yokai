@@ -60,6 +60,25 @@ func main() {
 }
 ```
 
+### Configuration
+
+Configuration reference:
+
+```yaml
+# ./configs/config.yaml
+app:
+  name: app
+  env: dev
+  version: 0.1.0
+  debug: true
+modules:
+  metrics:
+    collect:
+      build: true    # to collect build infos metrics (disabled by default)
+      go: true       # to collect go metrics (disabled by default)
+      process: true  # to collect process metrics (disabled by default)
+```
+
 ### Registration
 
 This module provides the possibility to register your metrics [collectors](https://github.com/prometheus/client_golang/blob/main/prometheus/collector.go) in a common `*prometheus.Registry` via `AsMetricsCollector()`:

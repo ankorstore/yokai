@@ -1,8 +1,10 @@
 package fxmetrics
 
 import (
+	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/log"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"go.uber.org/fx"
 )
 
@@ -24,6 +26,7 @@ var FxMetricsModule = fx.Module(
 type FxMetricsRegistryParam struct {
 	fx.In
 	Factory    MetricsRegistryFactory
+	Config     *config.Config
 	Logger     *log.Logger
 	Collectors []prometheus.Collector `group:"metrics-collectors"`
 }
@@ -37,7 +40,23 @@ func NewFxMetricsRegistry(p FxMetricsRegistryParam) (*prometheus.Registry, error
 		return nil, err
 	}
 
-	for _, collector := range p.Collectors {
+	var registrableCollectors []prometheus.Collector
+
+	if p.Config.GetBool("modules.metrics.collect.build") {
+		registrableCollectors = append(registrableCollectors, collectors.NewBuildInfoCollector())
+	}
+
+	if p.Config.GetBool("modules.metrics.collect.process") {
+		registrableCollectors = append(registrableCollectors, collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
+	}
+
+	if p.Config.GetBool("modules.metrics.collect.go") {
+		registrableCollectors = append(registrableCollectors, collectors.NewGoCollector())
+	}
+
+	registrableCollectors = append(registrableCollectors, p.Collectors...)
+
+	for _, collector := range registrableCollectors {
 		err = registry.Register(collector)
 		if err != nil {
 			p.Logger.Error().Err(err).Msgf("failed to register metrics collector %+T", collector)

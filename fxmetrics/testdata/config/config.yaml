@@ -4,3 +4,8 @@ modules:
   log:
     level: debug
     output: test
+  metrics:
+    collect:
+      build: true
+      go: true
+      process: true

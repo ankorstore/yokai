@@ -44,17 +44,30 @@ func TestModule(t *testing.T) {
 		"message": "registered metrics collector *prometheus.counter",
 	})
 
-	expectedHelp := `
-		# HELP test_total test help
-		# TYPE test_total counter
-	`
+	// go metric
 	expectedMetric := `
-		test_total 9
+		# HELP go_memstats_lookups_total Total number of pointer lookups.
+		# TYPE go_memstats_lookups_total counter
+		go_memstats_lookups_total 0
 	`
 
 	err := testutil.GatherAndCompare(
 		registry,
-		strings.NewReader(expectedHelp+expectedMetric),
+		strings.NewReader(expectedMetric),
+		"go_memstats_lookups_total",
+	)
+	assert.NoError(t, err)
+
+	// custom metric
+	expectedMetric = `
+		# HELP test_total test help
+		# TYPE test_total counter
+		test_total 9
+	`
+
+	err = testutil.GatherAndCompare(
+		registry,
+		strings.NewReader(expectedMetric),
 		"test_total",
 	)
 	assert.NoError(t, err)
