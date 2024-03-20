@@ -68,9 +68,9 @@ func RequestTracerMiddlewareWithConfig(serviceName string, config RequestTracerM
 			ctx = context.WithValue(ctx, httpserver.CtxRequestIdKey{}, requestId)
 
 			// tracer provider context propagation
-			tracerProvider := httpserver.AnnotateTracerProvider(config.TracerProvider)
+			//tracerProvider := httpserver.AnnotateTracerProvider(config.TracerProvider)
 
-			ctx = trace.WithContext(ctx, tracerProvider)
+			ctx = trace.WithContext(ctx, config.TracerProvider)
 
 			c.SetRequest(request.WithContext(ctx))
 
@@ -93,7 +93,7 @@ func RequestTracerMiddlewareWithConfig(serviceName string, config RequestTracerM
 
 			spanName := fmt.Sprintf("%s %s", request.Method, path)
 
-			ctx, span := tracerProvider.Tracer(serviceName).Start(ctx, spanName, spanOptions...)
+			ctx, span := config.TracerProvider.Tracer(serviceName).Start(ctx, spanName, spanOptions...)
 			defer span.End()
 
 			c.SetRequest(request.WithContext(ctx))
