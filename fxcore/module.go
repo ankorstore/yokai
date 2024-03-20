@@ -182,7 +182,7 @@ func withMiddlewares(coreServer *echo.Echo, p FxCoreParam) *echo.Echo {
 	))*/
 
 	// request tracer middleware
-	if p.Config.GetBool("modules.core.server.trace.enabled") {
+	/*	if p.Config.GetBool("modules.core.server.trace.enabled") {
 		coreServer.Use(httpservermiddleware.RequestTracerMiddlewareWithConfig(
 			p.Config.AppName(),
 			httpservermiddleware.RequestTracerMiddlewareConfig{
@@ -190,7 +190,7 @@ func withMiddlewares(coreServer *echo.Echo, p FxCoreParam) *echo.Echo {
 				RequestUriPrefixesToExclude: p.Config.GetStringSlice("modules.core.server.trace.exclude"),
 			},
 		))
-	}
+	}*/
 
 	// request metrics middleware
 	if p.Config.GetBool("modules.core.server.metrics.collect.enabled") {
