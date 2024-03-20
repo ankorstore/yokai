@@ -165,21 +165,21 @@ func withMiddlewares(coreServer *echo.Echo, p FxCoreParam) *echo.Echo {
 	))
 
 	// request logger middleware
-	requestHeadersToLog := map[string]string{
-		httpservermiddleware.HeaderXRequestId: httpservermiddleware.LogFieldRequestId,
-	}
+	/*	requestHeadersToLog := map[string]string{
+			httpservermiddleware.HeaderXRequestId: httpservermiddleware.LogFieldRequestId,
+		}
 
-	for headerName, fieldName := range p.Config.GetStringMapString("modules.core.server.log.headers") {
-		requestHeadersToLog[headerName] = fieldName
-	}
+		for headerName, fieldName := range p.Config.GetStringMapString("modules.core.server.log.headers") {
+			requestHeadersToLog[headerName] = fieldName
+		}*/
 
-	coreServer.Use(httpservermiddleware.RequestLoggerMiddlewareWithConfig(
+	/*	coreServer.Use(httpservermiddleware.RequestLoggerMiddlewareWithConfig(
 		httpservermiddleware.RequestLoggerMiddlewareConfig{
 			RequestHeadersToLog:             requestHeadersToLog,
 			RequestUriPrefixesToExclude:     p.Config.GetStringSlice("modules.core.server.log.exclude"),
 			LogLevelFromResponseOrErrorCode: p.Config.GetBool("modules.core.server.log.level_from_response"),
 		},
-	))
+	))*/
 
 	// request tracer middleware
 	if p.Config.GetBool("modules.core.server.trace.enabled") {
