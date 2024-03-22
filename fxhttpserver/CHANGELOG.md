@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.2.0...fxhttpserver/v1.3.0) (2024-03-22)
+
+
+### Features
+
+* **fxhttpserver:** Updated httpserver dependency and added tracer annotator ([#184](https://github.com/ankorstore/yokai/issues/184)) ([849f2b4](https://github.com/ankorstore/yokai/commit/849f2b4a67bdf1b4482cdc54b73378a8253d1073))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.1.0...fxhttpserver/v1.2.0) (2024-03-15)
 
 
