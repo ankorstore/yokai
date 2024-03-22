@@ -186,7 +186,7 @@ func withMiddlewares(coreServer *echo.Echo, p FxCoreParam) *echo.Echo {
 		coreServer.Use(httpservermiddleware.RequestTracerMiddlewareWithConfig(
 			p.Config.AppName(),
 			httpservermiddleware.RequestTracerMiddlewareConfig{
-				TracerProvider:              p.TracerProvider,
+				TracerProvider:              httpserver.AnnotateTracerProvider(p.TracerProvider),
 				RequestUriPrefixesToExclude: p.Config.GetStringSlice("modules.core.server.trace.exclude"),
 			},
 		))
