@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/ankorstore/yokai/compare/httpserver/v1.4.0...httpserver/v1.4.1) (2024-03-22)
+
+
+### Bug Fixes
+
+* **httpserver:** Fixed semconv compatibility ([#182](https://github.com/ankorstore/yokai/issues/182)) ([35f3952](https://github.com/ankorstore/yokai/commit/35f3952e662755e5a379b92b9d6c382a0df8fdbf))
+
 ## [1.4.0](https://github.com/ankorstore/yokai/compare/httpserver/v1.3.0...httpserver/v1.4.0) (2024-03-22)
 
 
