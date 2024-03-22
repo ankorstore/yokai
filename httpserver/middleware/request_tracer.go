@@ -10,8 +10,8 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
+	semconv "go.opentelemetry.io/otel/semconv/v1.20.0"
 	"go.opentelemetry.io/otel/semconv/v1.20.0/httpconv"
-	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
@@ -99,7 +99,7 @@ func RequestTracerMiddlewareWithConfig(serviceName string, config RequestTracerM
 			span.SetStatus(httpconv.ServerStatus(status))
 
 			if status > 0 {
-				span.SetAttributes(semconv.HTTPResponseStatusCode(status))
+				span.SetAttributes(semconv.HTTPStatusCode(status))
 			}
 
 			return err
