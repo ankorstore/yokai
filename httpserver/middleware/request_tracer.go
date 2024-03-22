@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/ankorstore/yokai/httpserver"
@@ -11,8 +10,8 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
-	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
-	"go.opentelemetry.io/otel/semconv/v1.17.0/httpconv"
+	"go.opentelemetry.io/otel/semconv/v1.20.0/httpconv"
+	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
@@ -53,24 +52,14 @@ func RequestTracerMiddlewareWithConfig(serviceName string, config RequestTracerM
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			// req / resp
+			// req
 			request := c.Request()
-			response := c.Response()
 
 			// header carrier context propagation
 			ctx := config.TextMapPropagator.Extract(request.Context(), propagation.HeaderCarrier(request.Header))
 
-			// request id context propagation
-			requestId := request.Header.Get(HeaderXRequestId)
-			if requestId == "" {
-				requestId = response.Header().Get(HeaderXRequestId)
-			}
-			ctx = context.WithValue(ctx, httpserver.CtxRequestIdKey{}, requestId)
-
 			// tracer provider context propagation
-			tracerProvider := httpserver.AnnotateTracerProvider(config.TracerProvider)
-
-			ctx = trace.WithContext(ctx, tracerProvider)
+			ctx = trace.WithContext(ctx, config.TracerProvider)
 
 			c.SetRequest(request.WithContext(ctx))
 
@@ -93,7 +82,7 @@ func RequestTracerMiddlewareWithConfig(serviceName string, config RequestTracerM
 
 			spanName := fmt.Sprintf("%s %s", request.Method, path)
 
-			ctx, span := tracerProvider.Tracer(serviceName).Start(ctx, spanName, spanOptions...)
+			ctx, span := config.TracerProvider.Tracer(serviceName).Start(ctx, spanName, spanOptions...)
 			defer span.End()
 
 			c.SetRequest(request.WithContext(ctx))
@@ -110,7 +99,7 @@ func RequestTracerMiddlewareWithConfig(serviceName string, config RequestTracerM
 			span.SetStatus(httpconv.ServerStatus(status))
 
 			if status > 0 {
-				span.SetAttributes(semconv.HTTPStatusCode(status))
+				span.SetAttributes(semconv.HTTPResponseStatusCode(status))
 			}
 
 			return err
