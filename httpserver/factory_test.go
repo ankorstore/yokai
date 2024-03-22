@@ -18,7 +18,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/otel/attribute"
-	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.20.0"
 )
 
 var (
@@ -134,7 +134,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOn2xx(t *testing.T) {
 		exporter,
 		"GET /test",
 		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
-		semconv.HTTPResponseStatusCode(http.StatusOK),
+		semconv.HTTPStatusCode(http.StatusOK),
 	)
 }
 
@@ -200,7 +200,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOn4xx(t *testing.T) {
 		exporter,
 		"GET /test",
 		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
-		semconv.HTTPResponseStatusCode(http.StatusBadRequest),
+		semconv.HTTPStatusCode(http.StatusBadRequest),
 	)
 }
 
@@ -266,7 +266,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOn5xx(t *testing.T) {
 		exporter,
 		"GET /test",
 		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
-		semconv.HTTPResponseStatusCode(http.StatusInternalServerError),
+		semconv.HTTPStatusCode(http.StatusInternalServerError),
 	)
 }
 
@@ -336,7 +336,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOn2xx(t *testing.
 		exporter,
 		"GET /test",
 		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
-		semconv.HTTPResponseStatusCode(http.StatusOK),
+		semconv.HTTPStatusCode(http.StatusOK),
 	)
 }
 
@@ -406,7 +406,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOn4xx(t *testing.
 		exporter,
 		"GET /test",
 		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
-		semconv.HTTPResponseStatusCode(http.StatusBadRequest),
+		semconv.HTTPStatusCode(http.StatusBadRequest),
 	)
 }
 
