@@ -7,10 +7,10 @@ require (
 	github.com/ankorstore/yokai/fxconfig v1.1.0
 	github.com/ankorstore/yokai/fxgenerate v1.1.0
 	github.com/ankorstore/yokai/fxlog v1.1.0
-	github.com/ankorstore/yokai/fxmetrics v1.1.0
+	github.com/ankorstore/yokai/fxmetrics v1.2.0
 	github.com/ankorstore/yokai/fxtrace v1.2.0
 	github.com/ankorstore/yokai/generate v1.1.0
-	github.com/ankorstore/yokai/httpserver v1.3.0
+	github.com/ankorstore/yokai/httpserver v1.4.1
 	github.com/ankorstore/yokai/log v1.2.0
 	github.com/ankorstore/yokai/trace v1.2.0
 	github.com/labstack/echo/v4 v4.11.4
@@ -40,7 +40,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
+	github.com/pelletier/go-toml/v2 v2.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_model v0.6.0 // indirect
 	github.com/prometheus/common v0.48.0 // indirect
