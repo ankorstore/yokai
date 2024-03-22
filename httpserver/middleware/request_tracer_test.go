@@ -5,7 +5,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ankorstore/yokai/httpserver"
 	"github.com/ankorstore/yokai/httpserver/middleware"
 	"github.com/ankorstore/yokai/trace"
 	"github.com/ankorstore/yokai/trace/tracetest"
@@ -57,7 +56,6 @@ func TestRequestTracerMiddlewareWithOptions(t *testing.T) {
 
 	httpServer := echo.New()
 	req := httptest.NewRequest(http.MethodPost, "/test", nil)
-	req.Header.Add(middleware.HeaderXRequestId, "test-request-id")
 	rec := httptest.NewRecorder()
 
 	ctx := httpServer.NewContext(req, rec)
@@ -77,18 +75,8 @@ func TestRequestTracerMiddlewareWithOptions(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, http.StatusOK, rec.Code)
-	tracetest.AssertHasTraceSpan(
-		t,
-		exporter,
-		"POST /test",
-		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, "test-request-id"),
-	)
-	tracetest.AssertHasTraceSpan(
-		t,
-		exporter,
-		"test span",
-		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, "test-request-id"),
-	)
+	tracetest.AssertHasTraceSpan(t, exporter, "POST /test")
+	tracetest.AssertHasTraceSpan(t, exporter, "test span")
 }
 
 func TestRequestTracerMiddlewareWithSkipper(t *testing.T) {
@@ -102,7 +90,6 @@ func TestRequestTracerMiddlewareWithSkipper(t *testing.T) {
 
 	httpServer := echo.New()
 	req := httptest.NewRequest(http.MethodDelete, "/test", nil)
-	req.Header.Add(middleware.HeaderXRequestId, "test-request-id")
 	rec := httptest.NewRecorder()
 
 	ctx := httpServer.NewContext(req, rec)
@@ -126,12 +113,7 @@ func TestRequestTracerMiddlewareWithSkipper(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rec.Code)
 	tracetest.AssertHasNotTraceSpan(t, exporter, "DELETE /test")
-	tracetest.AssertHasTraceSpan(
-		t,
-		exporter,
-		"test span",
-		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, "test-request-id"),
-	)
+	tracetest.AssertHasTraceSpan(t, exporter, "test span")
 }
 
 func TestRequestTracerMiddlewareWithCustomRequestUriToExclude(t *testing.T) {
@@ -145,7 +127,6 @@ func TestRequestTracerMiddlewareWithCustomRequestUriToExclude(t *testing.T) {
 
 	httpServer := echo.New()
 	req := httptest.NewRequest(http.MethodPut, "/test", nil)
-	req.Header.Add(middleware.HeaderXRequestId, "test-request-id")
 	rec := httptest.NewRecorder()
 
 	ctx := httpServer.NewContext(req, rec)
@@ -169,12 +150,7 @@ func TestRequestTracerMiddlewareWithCustomRequestUriToExclude(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rec.Code)
 	tracetest.AssertHasNotTraceSpan(t, exporter, "PUT /test")
-	tracetest.AssertHasTraceSpan(
-		t,
-		exporter,
-		"test span",
-		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, "test-request-id"),
-	)
+	tracetest.AssertHasTraceSpan(t, exporter, "test span")
 }
 
 func TestRequestTracerMiddlewareWithFailingHandler(t *testing.T) {
@@ -188,7 +164,6 @@ func TestRequestTracerMiddlewareWithFailingHandler(t *testing.T) {
 
 	httpServer := echo.New()
 	req := httptest.NewRequest(http.MethodPatch, "/test", nil)
-	req.Header.Add(middleware.HeaderXRequestId, "test-request-id")
 	rec := httptest.NewRecorder()
 
 	ctx := httpServer.NewContext(req, rec)
@@ -208,17 +183,6 @@ func TestRequestTracerMiddlewareWithFailingHandler(t *testing.T) {
 	assert.Error(t, err)
 
 	assert.Equal(t, http.StatusInternalServerError, rec.Code)
-	tracetest.AssertHasTraceSpan(
-		t,
-		exporter,
-		"PATCH /test",
-		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, "test-request-id"),
-		attribute.String("handler.error", "code=500, message=custom error"),
-	)
-	tracetest.AssertHasTraceSpan(
-		t,
-		exporter,
-		"test span",
-		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, "test-request-id"),
-	)
+	tracetest.AssertHasTraceSpan(t, exporter, "PATCH /test", attribute.String("handler.error", "code=500, message=custom error"))
+	tracetest.AssertHasTraceSpan(t, exporter, "test span")
 }

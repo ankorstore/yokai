@@ -18,7 +18,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/otel/attribute"
-	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 )
 
 var (
@@ -95,10 +95,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOn2xx(t *testing.T) {
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -132,7 +134,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOn2xx(t *testing.T) {
 		exporter,
 		"GET /test",
 		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
-		semconv.HTTPStatusCode(http.StatusOK),
+		semconv.HTTPResponseStatusCode(http.StatusOK),
 	)
 }
 
@@ -159,10 +161,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOn4xx(t *testing.T) {
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -196,7 +200,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOn4xx(t *testing.T) {
 		exporter,
 		"GET /test",
 		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
-		semconv.HTTPStatusCode(http.StatusBadRequest),
+		semconv.HTTPResponseStatusCode(http.StatusBadRequest),
 	)
 }
 
@@ -223,10 +227,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOn5xx(t *testing.T) {
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -260,7 +266,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOn5xx(t *testing.T) {
 		exporter,
 		"GET /test",
 		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
-		semconv.HTTPStatusCode(http.StatusInternalServerError),
+		semconv.HTTPResponseStatusCode(http.StatusInternalServerError),
 	)
 }
 
@@ -287,10 +293,12 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOn2xx(t *testing.
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddlewareWithConfig(
@@ -328,7 +336,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOn2xx(t *testing.
 		exporter,
 		"GET /test",
 		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
-		semconv.HTTPStatusCode(http.StatusOK),
+		semconv.HTTPResponseStatusCode(http.StatusOK),
 	)
 }
 
@@ -355,10 +363,12 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOn4xx(t *testing.
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddlewareWithConfig(
@@ -396,7 +406,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOn4xx(t *testing.
 		exporter,
 		"GET /test",
 		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
-		semconv.HTTPStatusCode(http.StatusBadRequest),
+		semconv.HTTPResponseStatusCode(http.StatusBadRequest),
 	)
 }
 
@@ -423,10 +433,12 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOn5xx(t *testing.
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddlewareWithConfig(
@@ -483,10 +495,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnHttpError2xx(t *testin
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -548,10 +562,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnHttpError4xx(t *testin
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -613,10 +629,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnHttpError5xx(t *testin
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -678,10 +696,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnHttpError5xxWithStack(
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -745,10 +765,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnHttpError5xxWithObfusc
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -812,10 +834,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnComplexHttpError2xx(t 
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -877,10 +901,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnComplexHttpError4xx(t 
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -942,10 +968,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnComplexHttpError5xx(t 
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -1007,10 +1035,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnComplexHttpError5xxWit
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -1074,10 +1104,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnComplexHttpError5xxWit
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -1141,10 +1173,12 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnHttpError2xx(t 
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddlewareWithConfig(
@@ -1210,10 +1244,12 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnHttpError4xx(t 
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddlewareWithConfig(
@@ -1279,10 +1315,12 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnHttpError5xx(t 
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddlewareWithConfig(
@@ -1348,10 +1386,12 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnComplexHttpErro
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddlewareWithConfig(
@@ -1417,10 +1457,12 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnComplexHttpErro
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddlewareWithConfig(
@@ -1486,10 +1528,12 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnComplexHttpErro
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddlewareWithConfig(
@@ -1555,10 +1599,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnGenericError(t *testin
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -1619,10 +1665,12 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnGenericError(t 
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddlewareWithConfig(
@@ -1687,10 +1735,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnGenericErrorWithStack(
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -1753,10 +1803,12 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnGenericErrorWithObfusc
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddleware())
@@ -1819,10 +1871,12 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnGenericErrorWit
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddlewareWithConfig(
@@ -1889,10 +1943,12 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnGenericErrorWit
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
 
+	httpServer.Use(middleware.RequestIdMiddleware())
+
 	httpServer.Use(middleware.RequestTracerMiddlewareWithConfig(
 		"test",
 		middleware.RequestTracerMiddlewareConfig{
-			TracerProvider: tracerProvider,
+			TracerProvider: httpserver.AnnotateTracerProvider(tracerProvider),
 		},
 	))
 	httpServer.Use(middleware.RequestLoggerMiddlewareWithConfig(
