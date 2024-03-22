@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/ankorstore/yokai/compare/httpserver/v1.3.0...httpserver/v1.4.0) (2024-03-22)
+
+
+### Features
+
+* **httpserver:** Disabled automatic http server tracer provider spans annotations ([#180](https://github.com/ankorstore/yokai/issues/180)) ([f37ed6b](https://github.com/ankorstore/yokai/commit/f37ed6b25c362505eb97506631c444e8bb5e03b8))
+
 ## [1.3.0](https://github.com/ankorstore/yokai/compare/httpserver/v1.2.0...httpserver/v1.3.0) (2024-03-15)
 
 
