@@ -7,10 +7,10 @@ import (
 	"github.com/ankorstore/yokai/trace"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho/internal/semconvutil"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/semconv/v1.20.0/httpconv"
 	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
@@ -71,7 +71,7 @@ func RequestTracerMiddlewareWithConfig(serviceName string, config RequestTracerM
 			// request tracing preparation
 			spanOptions := []oteltrace.SpanStartOption{
 				oteltrace.WithAttributes(semconv.HTTPRoute(request.URL.Path)),
-				oteltrace.WithAttributes(semconvutil.HTTPServerRequest(serviceName, request)...),
+				oteltrace.WithAttributes(httpconv.ServerRequest(serviceName, request)...),
 				oteltrace.WithSpanKind(oteltrace.SpanKindServer),
 			}
 
@@ -96,7 +96,7 @@ func RequestTracerMiddlewareWithConfig(serviceName string, config RequestTracerM
 
 			// response span annotation
 			status := c.Response().Status
-			span.SetStatus(semconvutil.HTTPServerStatus(status))
+			span.SetStatus(httpconv.ServerStatus(status))
 
 			if status > 0 {
 				span.SetAttributes(semconv.HTTPResponseStatusCode(status))
