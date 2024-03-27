@@ -9,21 +9,19 @@ import (
 )
 
 // DefaultOtlpGrpcTimeout is the default timeout in seconds for the OTLP gRPC connection.
-const DefaultOtlpGrpcTimeout = 5
+const DefaultOtlpGrpcTimeout = 30
 
-// NewOtlpGrpcClientConnection returns a gRPC connection, and accept a host and a list of [DialOption]
-//
-// [DialOption]: https://github.com/grpc/grpc-go
+// NewOtlpGrpcClientConnection returns a gRPC connection, and accept a host and a list of [grpc.DialOption].
 func NewOtlpGrpcClientConnection(ctx context.Context, host string, dialOptions ...grpc.DialOption) (*grpc.ClientConn, error) {
 	dialCtx, cancel := context.WithTimeout(ctx, DefaultOtlpGrpcTimeout*time.Second)
 	defer cancel()
 
-	if len(dialOptions) == 0 {
-		dialOptions = []grpc.DialOption{
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-			grpc.WithBlock(),
-		}
+	dialContextOptions := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
 	}
 
-	return grpc.DialContext(dialCtx, host, dialOptions...)
+	dialContextOptions = append(dialContextOptions, dialOptions...)
+
+	return grpc.DialContext(dialCtx, host, dialContextOptions...)
 }

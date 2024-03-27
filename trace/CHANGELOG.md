@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/trace/v1.2.0...trace/v1.3.0) (2024-03-27)
+
+
+### Features
+
+* **trace:** Updated otlp-grpc connection constructor to have default values ([#188](https://github.com/ankorstore/yokai/issues/188)) ([c964798](https://github.com/ankorstore/yokai/commit/c964798aca705b6746774f3880de3b77299de307))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/trace/v1.1.0...trace/v1.2.0) (2024-03-13)
 
 
