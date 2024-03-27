@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
 )
 
@@ -35,8 +34,6 @@ func TestNewOtlpGrpcInsecureConnectionSuccess(t *testing.T) {
 		context.Background(),
 		"bufnet",
 		grpc.WithContextDialer(bufDialer),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
 	)
 	assert.NoError(t, err)
 
