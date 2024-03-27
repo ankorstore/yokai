@@ -18,32 +18,24 @@ const (
 	Noop     = "noop"      // processor to void the trace spans
 )
 
-// NewTestSpanProcessor returns a [OTEL SpanProcessor] using a sync [tracetest.TestTraceExporter].
-//
-// [OTEL SpanProcessor]: https://github.com/open-telemetry/opentelemetry-go
+// NewTestSpanProcessor returns a [trace.SpanProcessor] using a sync [tracetest.TestTraceExporter].
 func NewTestSpanProcessor(testTraceExporter tracetest.TestTraceExporter) trace.SpanProcessor {
 	return trace.NewSimpleSpanProcessor(testTraceExporter)
 }
 
-// NewNoopSpanProcessor returns a [OTEL SpanProcessor] that voids trace spans via an async [otelsdktracetest.NoopExporter].
-//
-// [OTEL SpanProcessor]: https://github.com/open-telemetry/opentelemetry-go
+// NewNoopSpanProcessor returns a [trace.SpanProcessor] that voids trace spans via an async [otelsdktracetest.NoopExporter].
 func NewNoopSpanProcessor() trace.SpanProcessor {
 	return trace.NewBatchSpanProcessor(otelsdktracetest.NewNoopExporter())
 }
 
-// NewTestSpanProcessor returns a [OTEL SpanProcessor] using an async [stdouttrace.Exporter].
-//
-// [OTEL SpanProcessor]: https://github.com/open-telemetry/opentelemetry-go
+// NewStdoutSpanProcessor returns a [trace.SpanProcessor] using an async [stdouttrace.Exporter].
 func NewStdoutSpanProcessor(options ...stdouttrace.Option) trace.SpanProcessor {
 	exporter, _ := stdouttrace.New(options...)
 
 	return trace.NewBatchSpanProcessor(exporter)
 }
 
-// NewOtlpGrpcSpanProcessor returns a [OTEL SpanProcessor] using an async [otlptracegrpc.Exporter].
-//
-// [OTEL SpanProcessor]: https://github.com/open-telemetry/opentelemetry-go
+// NewOtlpGrpcSpanProcessor returns a [trace.SpanProcessor] using an async [otlptracegrpc.Exporter].
 func NewOtlpGrpcSpanProcessor(ctx context.Context, conn *grpc.ClientConn) (trace.SpanProcessor, error) {
 	exporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithGRPCConn(conn))
 	if err != nil {
