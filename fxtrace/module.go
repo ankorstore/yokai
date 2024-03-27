@@ -13,6 +13,7 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	oteltrace "go.opentelemetry.io/otel/trace"
 	"go.uber.org/fx"
+	"google.golang.org/grpc"
 )
 
 // ModuleName is the module name.
@@ -121,7 +122,16 @@ func createSpanProcessor(ctx context.Context, p FxTraceParam) (otelsdktrace.Span
 	case trace.TestSpanProcessor:
 		return trace.NewTestSpanProcessor(p.Exporter), nil
 	case trace.OtlpGrpcSpanProcessor:
-		conn, err := trace.NewOtlpGrpcClientConnection(ctx, p.Config.GetString("modules.trace.processor.options.host"))
+		var dialOptions []grpc.DialOption
+		if p.Config.GetBool("modules.trace.processor.options.retry.enabled") {
+			dialOptions = append(dialOptions, grpc.WithDefaultServiceConfig(BuildOtlpGrpcDialRetryPolicy(p.Config)))
+		}
+
+		conn, err := trace.NewOtlpGrpcClientConnection(
+			ctx,
+			p.Config.GetString("modules.trace.processor.options.host"),
+			dialOptions...,
+		)
 		if err != nil {
 			return nil, err
 		}
