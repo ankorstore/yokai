@@ -1,2 +1,15 @@
 app:
   name: test
+modules:
+  trace:
+    processor:
+      options:
+        retry:
+          enabled: true
+          max_attempts: 8
+          initial_backoff: 0.2
+          max_backoff: 2
+          backoff_multiplier: 2
+          retryable_status_codes:
+            - "UNAVAILABLE"
+            - "INTERNAL"
