@@ -70,6 +70,10 @@ extra_css:
 nav:
   - "Overview": 'index.md'
   - "Getting started":
+      - "gRPC application": getting-started/grpc-application.md
+      - "HTTP application": getting-started/http-application.md
+      - "Worker application": getting-started/worker-application.md
+  - "Tutorials":
       - "HTTP application": tutorials/http-application.md
       - "Worker application": tutorials/worker-application.md
   - "Applications":
