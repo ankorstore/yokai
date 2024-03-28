@@ -18,10 +18,9 @@ It wraps the [generate](https://github.com/ankorstore/yokai/tree/main/generate) 
 
 ## Installation
 
-The [fxgenerate](https://github.com/ankorstore/yokai/tree/main/fxgenerate) module is automatically loaded by
-the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore).
+The [fxgenerate](https://github.com/ankorstore/yokai/tree/main/fxgenerate) module is automatically loaded by Yokai's [core](https://github.com/ankorstore/yokai/tree/main/fxcore).
 
-When you use a Yokai [application template](https://ankorstore.github.io/yokai/applications/templates/), you have nothing to install, it's ready to use.
+When you use a Yokai `application template`, you have nothing to install, it's ready to use.
 
 ## Usage
 

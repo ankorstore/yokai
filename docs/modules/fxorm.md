@@ -82,7 +82,7 @@ See [GORM Config](https://github.com/go-gorm/gorm/blob/master/gorm.go) for more 
 
 ## Usage
 
-You can declare your [models](https://gorm.io/docs/models.html), for example:
+You can [declare your models](https://gorm.io/docs/models.html), for example:
 
 ```go title="internal/model/example.go"
 package model
@@ -296,7 +296,7 @@ modules:
 
 ## Health Check
 
-This module provides a ready to use [OrmProbe](https://github.com/ankorstore/yokai/blob/main/orm/healthcheck/probe.go), to be used by the [fxhealthcheck](fxhealthcheck.md) module.
+This module provides a ready to use [OrmProbe](https://github.com/ankorstore/yokai/blob/main/orm/healthcheck/probe.go), to be used by the [health check](fxhealthcheck.md) module.
 
 It will perform a `ping` to the configured database connection to ensure it is healthy.
 

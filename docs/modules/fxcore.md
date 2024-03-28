@@ -18,9 +18,9 @@ It comes with:
 
 - a [bootstrapper](https://github.com/ankorstore/yokai/blob/main/fxcore/bootstrap.go)
 - a [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) system, based on [Fx](https://github.com/uber-go/fx)
-- a dedicated core HTTP server
-- pre-enabled [Config](fxconfig.mdo), [Health Check](fxhealthcheck.md), [Log](fxlog.md), [Trace](fxtrace.md), [Metrics](fxmetrics.md) and [Generate](fxgenerate.md) modules
-- a plugin system for Yokai modules and your own modules
+- a dedicated HTTP server
+- pre-enabled [config](fxconfig.md), [health check](fxhealthcheck.md), [log](fxlog.md), [trace](fxtrace.md), [metrics](fxmetrics.md) and [generate](fxgenerate.md) modules
+- an extension system for Yokai `built-in`, [contrib](https://github.com/ankorstore/yokai-contrib) or your `own` modules
 
 The core HTTP server runs automatically on a dedicated port (default `8081`), to serve:
 
@@ -29,15 +29,15 @@ The core HTTP server runs automatically on a dedicated port (default `8081`), to
 - the health check endpoints: to expose the configured [health check probes](fxhealthcheck.md#probes-registration) of your application
 - the metrics endpoint: to expose all [collected metrics](fxmetrics.md#metrics-registration) from your application
 
-Whatever your type of application (HTTP server, gRPC server, worker, etc.), all platform concerns are handled by this
+Whatever your type of application (HTTP, gRPC, worker, etc.), all platform concerns are handled by this
 dedicated server:
 
-- to avoid to expose sensitive information (health checks, metrics, debug, etc) to your users
+- to avoid to expose sensitive information (health checks, metrics, debug, etc.) to your users
 - and most importantly to enable your application to focus on its logic
 
 ## Installation
 
-When you use a Yokai [application template](https://ankorstore.github.io/yokai/applications/templates/), you have nothing to install, it's ready to use.
+When you use a Yokai `application template`, you have nothing to install, it's ready to use.
 
 ## Configuration
 
@@ -119,8 +119,8 @@ modules:
 
 Notes:
 
-- the core HTTP server requests logging will be based on the [fxlog](fxlog.md) module configuration
-- the core HTTP server requests tracing will be based on the [fxtrace](fxtrace.md) module configuration
+- the core HTTP server requests logging will be based on the [log](fxlog.md) module configuration
+- the core HTTP server requests tracing will be based on the [trace](fxtrace.md) module configuration
 - if `app.debug=true` (or env var `APP_DEBUG=true`):
   - the dashboard will be automatically enabled
   - all the debug endpoints will be automatically exposed
@@ -130,14 +130,14 @@ Notes:
 
 ### Bootstrap
 
-When you use a Yokai [application template](https://ankorstore.github.io/yokai/applications/templates/), a `internal/bootstrap.go` file is provided.
+When you use a Yokai application template, a `internal/bootstrap.go` file is provided.
 
 This is where you can:
 
-- load Yokai or your own modules
+- load Yokai `built-in`, [contrib](https://github.com/ankorstore/yokai-contrib) or your `own` modules
 - configure the application with any `fx.Option`, at bootstrap on runtime
 
-Example of bootstrap loading the [fxhttpserver](fxhttpserver.md) module:
+Example of bootstrap loading the [HTTP server](fxhttpserver.md) module:
 
 ```go title="internal/bootstrap.go"
 package internal

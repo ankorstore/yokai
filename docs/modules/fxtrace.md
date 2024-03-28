@@ -18,10 +18,9 @@ It wraps the [trace](https://github.com/ankorstore/yokai/tree/main/trace) module
 
 ## Installation
 
-The [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module is automatically loaded by
-the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore).
+The [fxtrace](https://github.com/ankorstore/yokai/tree/main/fxtrace) module is automatically loaded by Yokai's [core](fxcore.md).
 
-When you use a Yokai [application template](https://ankorstore.github.io/yokai/applications/templates/), you have nothing to install, it's ready to use.
+When you use a Yokai `application template`, you have nothing to install, it's ready to use.
 
 ## Configuration
 
@@ -93,7 +92,7 @@ modules:
       type: test # to send traces to test buffer
 ```
 
-You can use the provided [test assertion helpers](https://github.com/ankorstore/yokai/blob/main/trace/tracetest/assert.goo) in your tests:
+You can use the provided [test assertion helpers](https://github.com/ankorstore/yokai/blob/main/trace/tracetest/assert.go) in your tests:
 
 - `AssertHasTraceSpan`: to assert on exact name and exact attributes match
 - `AssertHasNotTraceSpan`: to assert on exact name and exact attributes non match

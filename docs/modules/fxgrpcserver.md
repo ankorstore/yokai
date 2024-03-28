@@ -115,7 +115,7 @@ func ProvideServices() fx.Option {
 
 ### Server interceptors registration
 
-You can create [gRPC server interceptors](https://github.com/grpc/grpc-go/blob/master/examples/features/interceptor/README.md#server-side) for your [gRPC server](https://pkg.go.dev/google.golang.org/grpc#Server)
+You can create [gRPC server interceptors](https://github.com/grpc/grpc-go/blob/master/examples/features/interceptor/README.md#server-side) for your [gRPC server](https://pkg.go.dev/google.golang.org/grpc#Server).
 
 You need to implement:
 
@@ -255,7 +255,7 @@ modules:
         enabled: true # to expose gRPC reflection service, disabled by default
 ```
 
-Reflection usage is helpful for developing or testing your gRPC services, but it is not recommended for production usage (disabled by default).
+Reflection usage is helpful for developing or testing your gRPC services, but it is NOT recommended for production usage (disabled by default).
 
 ## Health Check
 
@@ -273,8 +273,8 @@ You can use the `fxhealthcheck.AsCheckerProbe()` function to register several Ch
 
 The [GrpcHealthCheckService](https://github.com/ankorstore/yokai/blob/main/grpcserver/healthcheck.go) will:
 
-- run the `liveness` probes checks if the request service name contains `liveness` (like kubernetes::liveness)
-- or run the `readiness` probes checks if the request service name contains `readiness` (like kubernetes::readiness)
+- run the `liveness` probes checks if the request service name contains `liveness` (like `kubernetes::liveness`)
+- or run the `readiness` probes checks if the request service name contains `readiness` (like `kubernetes::readiness`)
 - or run the `startup` probes checks otherwise
 
 ## Logging
@@ -316,7 +316,7 @@ You can also use the function `grpcserver.CtxLogger()`:
 grpcserver.CtxLogger(ctx).Info().Msg("example message")
 ```
 
-The gRPC server logging will be based on the [fxlog](fxlog.md) module configuration.
+The gRPC server logging will be based on the [log](fxlog.md) module configuration.
 
 ## Tracing
 
@@ -356,7 +356,7 @@ ctx, span := grpcserver.CtxTracer(ctx).Start(ctx, "example span")
 defer span.End()
 ```
 
-The gRPC server tracing will be based on the [fxtrace](fxtrace.md) module configuration.
+The gRPC server tracing will be based on the [trace](fxtrace.md) module configuration.
 
 ## Metrics
 
@@ -369,43 +369,43 @@ modules:
       metrics:
         collect:
           enabled: true          # to collect gRPC server metrics, disabled by default
-          namespace: app         # gRPC server metrics namespace (default app.name value)
-          subsystem: grpcserver  # gRPC server metrics subsystem (default grpcserver)
+          namespace: foo         # gRPC server metrics namespace (empty by default)
+          subsystem: bar         # gRPC server metrics subsystem (empty by default)
         buckets: 0.1, 1, 10      # to override default request duration buckets (default prometheus.DefBuckets)
 ```
 
-For example, after calling `/test.Service/Unary`, the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will expose in the configured metrics endpoint:
+For example, after calling `/test.Service/Unary`, the [core](fxcore.md) HTTP server will expose in the configured metrics endpoint:
 
 ```makefile title="[GET] /metrics"
 # ...
-# HELP app_grpcserver_grpc_server_started_total Total number of RPCs started on the server.
-# TYPE app_grpcserver_grpc_server_started_total counter
-app_grpcserver_grpc_server_started_total{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
-# HELP app_grpcserver_grpc_server_handled_total Total number of RPCs completed on the server, regardless of success or failure.
-# TYPE app_grpcserver_grpc_server_handled_total counter
-app_grpcserver_grpc_server_handled_total{grpc_code="OK",grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
-# HELP app_grpcserver_grpc_server_msg_received_total Total number of RPC stream messages received on the server.
-# TYPE app_grpcserver_grpc_server_msg_received_total counter
-app_grpcserver_grpc_server_msg_received_total{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
-# HELP app_grpcserver_grpc_server_msg_sent_total Total number of gRPC stream messages sent by the server.
-# TYPE app_grpcserver_grpc_server_msg_sent_total counter
-app_grpcserver_grpc_server_msg_sent_total{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
-# HELP app_grpcserver_grpc_server_handling_seconds Histogram of response latency (seconds) of gRPC that had been application-level handled by the server.
-# TYPE app_grpcserver_grpc_server_handling_seconds histogram
-app_grpcserver_grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.005"} 1
-app_grpcserver_grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.01"} 1
-app_grpcserver_grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.025"} 1
-app_grpcserver_grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.05"} 1
-app_grpcserver_grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.1"} 1
-app_grpcserver_grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.25"} 1
-app_grpcserver_grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.5"} 1
-app_grpcserver_grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="1"} 1
-app_grpcserver_grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="2.5"} 1
-app_grpcserver_grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="5"} 1
-app_grpcserver_grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="10"} 1
-app_grpcserver_grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="+Inf"} 1
-app_grpcserver_grpc_server_handling_seconds_sum{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 0.000103358
-app_grpcserver_grpc_server_handling_seconds_count{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
+# HELP grpc_server_started_total Total number of RPCs started on the server.
+# TYPE grpc_server_started_total counter
+grpc_server_started_total{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
+# HELP grpc_server_handled_total Total number of RPCs completed on the server, regardless of success or failure.
+# TYPE grpc_server_handled_total counter
+rpc_server_handled_total{grpc_code="OK",grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
+# HELP rpc_server_msg_received_total Total number of RPC stream messages received on the server.
+# TYPE rpc_server_msg_received_total counter
+grpc_server_msg_received_total{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
+# HELP grpc_server_msg_sent_total Total number of gRPC stream messages sent by the server.
+# TYPE grpc_server_msg_sent_total counter
+grpc_server_msg_sent_total{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
+# HELP grpc_server_handling_seconds Histogram of response latency (seconds) of gRPC that had been application-level handled by the server.
+# TYPE grpc_server_handling_seconds histogram
+grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.005"} 1
+grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.01"} 1
+grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.025"} 1
+grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.05"} 1
+grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.1"} 1
+grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.25"} 1
+grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="0.5"} 1
+grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="1"} 1
+grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="2.5"} 1
+grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="5"} 1
+grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="10"} 1
+grpc_server_handling_seconds_bucket{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary",le="+Inf"} 1
+grpc_server_handling_seconds_sum{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 0.000103358
+grpc_server_handling_seconds_count{grpc_method="Unary",grpc_service="test.Service",grpc_type="unary"} 1
 ```
 
 ## Testing
@@ -414,4 +414,4 @@ This module provides a `*bufconn.Listener` that will automatically be used by th
 
 You can then use this listener with your gRPC clients to provide `functional` tests for your gRPC services.
 
-You can find tests examples in this [module own tests](https://github.com/ankorstore/yokai/blob/main/fxgrpcserver/module_test.go).
+You can find tests examples in the [gRPC server module tests](https://github.com/ankorstore/yokai/blob/main/fxgrpcserver/module_test.go).

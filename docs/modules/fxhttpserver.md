@@ -436,7 +436,7 @@ You can also use the shortcut function `httpserver.CtxLogger()` to work with Ech
 httpserver.CtxLogger(c).Info().Msg("example message")
 ```
 
-The HTTP server logging will be based on the [fxlog](fxlog.md) module configuration.
+The HTTP server logging will be based on the [log](fxlog.md) module configuration.
 
 ## Tracing
 
@@ -478,7 +478,7 @@ ctx, span := httpserver.CtxTracer(c).Start(c.Request().Context(), "example span"
 defer span.End()
 ```
 
-The HTTP server tracing will be based on the [fxtrace](fxtrace.md) module configuration.
+The HTTP server tracing will be based on the [fxtrace](trace.md) module configuration.
 
 ## Metrics
 
@@ -491,36 +491,36 @@ modules:
       metrics:
         collect:
           enabled: true          # to collect http server metrics
-          namespace: app         # http server metrics namespace (default app.name value)
-          subsystem: httpserver  # http server metrics subsystem (default httpserver)
+          namespace: foo         # http server metrics namespace (empty by default)
+          subsystem: bar         # http server metrics subsystem (empty by default)
         buckets: 0.1, 1, 10      # to override default request duration buckets
         normalize:
           request_path: true     # to normalize http request path, disabled by default
           response_status: true  # to normalize http response status code (2xx, 3xx, ...), disabled by default
 ```
 
-For example, after calling `[GET] /example`, the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will expose in the configured metrics endpoint:
+For example, after calling `[GET] /example`, the [core](fxcore.md) HTTP server will expose in the configured metrics endpoint:
 
 ```makefile title="[GET] /metrics"
 # ...
-# HELP app_httpserver_request_duration_seconds Time spent processing HTTP requests
-# TYPE app_httpserver_request_duration_seconds histogram
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.005"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.01"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.025"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.05"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.1"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.25"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.5"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="1"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="2.5"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="5"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="10"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="+Inf"} 1
-app_httpserver_request_duration_seconds_sum{path="/",method="GET"} 0.0014433150000000001
-# HELP app_httpserver_requests_total Number of processed HTTP requests
-# TYPE app_httpserver_requests_total counter
-app_httpserver_requests_total{path="/example",method="GET",status="2xx"} 1
+# HELP http_server_request_duration_seconds Time spent processing HTTP requests
+# TYPE http_server_request_duration_seconds histogram
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.005"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.01"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.025"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.05"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.1"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.25"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.5"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="1"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="2.5"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="5"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="10"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="+Inf"} 1
+http_server_request_duration_seconds_sum{path="/",method="GET"} 0.0014433150000000001
+# HELP http_server_requests_total Number of processed HTTP requests
+# TYPE http_server_requests_total counter
+http_server_requests_total{path="/example",method="GET",status="2xx"} 1
 ```
 
 Regarding metrics normalization, if you register for example a handler:
@@ -618,15 +618,15 @@ func TestExampleHandler(t *testing.T) {
 
 	// metrics assertion example
 	expectedMetric := `
-		# HELP app_httpserver_requests_total Number of processed HTTP requests
-		# TYPE app_httpserver_requests_total counter
-		app_httpserver_requests_total{handler="/example",method="GET",status="2xx"} 1
+		# HELP http_server_requests_total Number of processed HTTP requests
+		# TYPE http_server_requests_total counter
+		http_server_requests_total{handler="/example",method="GET",status="2xx"} 1
 	`
 
 	err := testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expectedMetric),
-		"app_httpserver_requests_total",
+		"http_server_requests_total",
 	)
 	assert.NoError(t, err)
 }
