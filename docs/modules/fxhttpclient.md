@@ -67,16 +67,25 @@ modules:
       metrics:
         collect:
           enabled: true                      # to collect http client metrics
-          namespace: app                     # http client metrics namespace (default app.name value)
-          subsystem: httpclient              # http client metrics subsystem (default httpclient)
+          namespace: foo                     # http client metrics namespace (empty by default)
+          subsystem: bar                     # http client metrics subsystem (empty by default)
         buckets: 0.1, 1, 10                  # to override default request duration buckets
         normalize:
           request_path: true                 # to normalize http request path, disabled by default
           request_path_masks:                # request path normalization masks (key: mask to apply, value: regex to match), empty by default
-            /foo/{id}: /foo/(.+)
-            /bar/{id}: /bar/(.+)
+            /foo/{id}/bar?page={page}: /foo/(.+)/bar\?page=(.+)
           response_status: true              # to normalize http response status code (2xx, 3xx, ...), disabled by default
 ```
+
+If `modules.http.client.log.response.level_from_response=true`, the response code will be used to determinate the log level:
+
+- `code < 400`: log level configured in modules.http.client.log.response.level
+- `400 <= code < 500`: log level warn
+- `code >= 500`: log level error
+
+If` modules.http.client.metrics.normalize.request_path=true`, the `modules.http.client.metrics.normalize.request_path_masks` map will be used to try to apply masks on the metrics path label for better cardinality.
+
+For the given example, if the request path is `/foo/1/bar?page=2`, the metric path label will be masked with `/foo/{id}/bar?page={page}`.
 
 ## Usage
 

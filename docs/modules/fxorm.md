@@ -53,11 +53,6 @@ This module provides the possibility to configure the database `driver`:
 You can also provide to the ORM the database`dsn`, some `config`, and configure SQL queries automatic `logging` and `tracing`.
 
 ```yaml title="configs/config.yaml"
-app:
-  name: app
-  env: dev
-  version: 0.1.0
-  debug: false
 modules:
   orm:
     driver: mysql                                               # driver to use
