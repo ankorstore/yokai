@@ -47,6 +47,49 @@ var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 )
 ```
 
+## Configuration
+
+```yaml title="configs/config.yaml"
+modules:
+  cron:
+    scheduler:
+      seconds: true                   # to allow seconds based cron jobs expressions (impact all jobs), disabled by default
+      concurrency:
+        limit:
+          enabled: true               # to limit concurrent cron jobs executions, disabled by default
+          max: 3                      # concurrency limit
+          mode: wait                  # "wait" or "reschedule"
+      stop:
+        timeout: 5s                   # scheduler shutdown timeout for graceful cron jobs termination, 10 seconds by default
+    jobs:                             # common cron jobs options
+      execution:
+        start:
+          immediately: true           # to start cron jobs executions immediately (by default)
+          at: "2023-01-01T14:00:00Z"  # or a given date time (RFC3339)
+        limit:
+          enabled: true               # to limit the number of per cron jobs executions, disabled by default
+          max: 3                      # executions limit
+      singleton:
+        enabled: true                 # to execute the cron jobs in singleton mode, disabled by default
+        mode: wait                    # "wait" or "reschedule"
+    log:
+      enabled: true                   # to log cron jobs executions, disabled by default (errors will always be logged).
+      exclude:                        # to exclude by name cron jobs from logging
+        - foo
+        - bar
+    metrics:
+      collect:
+        enabled: true                 # to collect cron jobs executions metrics (executions count and duration), disabled by default
+        namespace: app                # cron jobs metrics namespace (default app.name value)
+        subsystem: cron               # cron jobs metrics subsystem (default cron)
+      buckets: 1, 1.5, 10, 15, 100    # to define custom cron jobs executions durations metric buckets (in seconds)
+    trace:
+      enabled: true                   # to trace cron jobs executions, disabled by default
+      exclude:                        # to exclude by name cron jobs from tracing
+        - foo
+        - bar
+```
+
 ## Usage
 
 This module provides the possibility to register [CronJob](https://github.com/ankorstore/yokai/blob/main/fxcron/registry.go) implementations, with:
@@ -156,51 +199,6 @@ You can get, in real time, the status of your cron jobs on the [fxcore](https://
 
 ![](../../assets/images/cron-tutorial-core-jobs-light.png#only-light)
 ![](../../assets/images/cron-tutorial-core-jobs-dark.png#only-dark)
-
-## Configuration
-
-Configuration reference:
-
-```yaml title="configs/config.yaml"
-modules:
-  cron:
-    scheduler:
-      seconds: true                   # to allow seconds based cron jobs expressions (impact all jobs), disabled by default
-      concurrency:
-        limit:
-          enabled: true               # to limit concurrent cron jobs executions, disabled by default
-          max: 3                      # concurrency limit
-          mode: wait                  # "wait" or "reschedule"
-      stop:
-        timeout: 5s                   # scheduler shutdown timeout for graceful cron jobs termination, 10 seconds by default
-    jobs:                             # common cron jobs options
-      execution:
-        start:
-          immediately: true           # to start cron jobs executions immediately (by default)
-          at: "2023-01-01T14:00:00Z"  # or a given date time (RFC3339)
-        limit:
-          enabled: true               # to limit the number of per cron jobs executions, disabled by default
-          max: 3                      # executions limit
-      singleton:
-        enabled: true                 # to execute the cron jobs in singleton mode, disabled by default
-        mode: wait                    # "wait" or "reschedule"
-    log:
-      enabled: true                   # to log cron jobs executions, disabled by default (errors will always be logged).
-      exclude:                        # to exclude by name cron jobs from logging
-        - foo
-        - bar
-    metrics:
-      collect:
-        enabled: true                 # to collect cron jobs executions metrics (executions count and duration), disabled by default
-        namespace: app                # cron jobs metrics namespace (default app.name value)
-        subsystem: cron               # cron jobs metrics subsystem (default cron)
-      buckets: 1, 1.5, 10, 15, 100    # to define custom cron jobs executions durations metric buckets (in seconds)
-    trace:
-      enabled: true                   # to trace cron jobs executions, disabled by default
-      exclude:                        # to exclude by name cron jobs from tracing
-        - foo
-        - bar
-```
 
 ## Logging
 

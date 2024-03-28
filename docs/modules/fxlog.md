@@ -23,15 +23,6 @@ the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore).
 
 When you use a Yokai [application template](https://ankorstore.github.io/yokai/applications/templates/), you have nothing to install, it's ready to use.
 
-## Usage
-
-This module makes available the [Logger](https://github.com/ankorstore/yokai/blob/main/log/logger.go) in
-Yokai dependency injection system.
-
-It is built on top of `Zerolog`, see its [documentation](https://github.com/rs/zerolog) for more details about available methods.
-
-You can inject the logger where needed, but it's recommended to use the one carried by the `context.Context` when possible (for automatic logs correlation).
-
 ## Configuration
 
 This module provides the possibility to configure:
@@ -52,6 +43,15 @@ modules:
     level: info    # by default
     output: stdout # by default
 ```
+
+## Usage
+
+This module makes available the [Logger](https://github.com/ankorstore/yokai/blob/main/log/logger.go) in
+Yokai dependency injection system.
+
+It is built on top of `Zerolog`, see its [documentation](https://github.com/rs/zerolog) for more details about available methods.
+
+You can inject the logger where needed, but it's recommended to use the one carried by the `context.Context` when possible (for automatic logs correlation).
 
 ## Testing
 

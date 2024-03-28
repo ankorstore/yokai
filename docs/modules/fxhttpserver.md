@@ -68,6 +68,45 @@ func ProvideRouting() fx.Option {
 
 It is recommended to keep routing definition separated from services definitions, for better maintainability. If you use the [HTTP application template](../../applications/templates/#http-application-template), this is already done for you.
 
+## Configuration
+
+```yaml title="configs/config.yaml"
+modules:
+  http:
+    server:
+      port: 8080                  # http server port (default 8080)
+      errors:
+        obfuscate: false          # to obfuscate error messages on the http server responses
+        stack: false              # to add error stack trace to error response of the http server
+      log:
+        headers:                  # to log incoming request headers on the http server
+          x-foo: foo              # to log for example the header x-foo in the log field foo
+          x-bar: bar
+        exclude:                  # to exclude specific routes from logging
+          - /foo
+          - /bar
+        level_from_response: true # to use response status code for log level (ex: 500=error)
+      trace:
+        enabled: true             # to trace incoming request headers on the http server
+        exclude:                  # to exclude specific routes from tracing
+          - /foo
+          - /bar
+      metrics:
+        collect:
+          enabled: true           # to collect http server metrics
+          namespace: app          # http server metrics namespace (default app.name value)
+          subsystem: httpserver   # http server metrics subsystem (default httpserver)
+        buckets: 0.1, 1, 10       # to override default request duration buckets
+        normalize:
+          request_path: true      # to normalize http request path, disabled by default
+          response_status: true   # to normalize http response status code (2xx, 3xx, ...), disabled by default
+      templates:
+        enabled: true             # disabled by default
+        path: templates/*.html    # templates path lookup pattern
+```
+
+If `app.debug=true` (or env var `APP_DEBUG=true`), error responses will not be obfuscated and stack trace will be added.
+
 ## Usage
 
 This module offers the possibility to easily register HTTP handlers, groups and middlewares.
@@ -292,45 +331,6 @@ func ProvideRouting() fx.Option {
 	)
 }
 ```
-
-## Configuration
-
-```yaml title="configs/config.yaml"
-modules:
-  http:
-    server:
-      port: 8080                  # http server port (default 8080)
-      errors:
-        obfuscate: false          # to obfuscate error messages on the http server responses
-        stack: false              # to add error stack trace to error response of the http server
-      log:
-        headers:                  # to log incoming request headers on the http server
-          x-foo: foo              # to log for example the header x-foo in the log field foo
-          x-bar: bar
-        exclude:                  # to exclude specific routes from logging
-          - /foo
-          - /bar
-        level_from_response: true # to use response status code for log level (ex: 500=error)
-      trace:
-        enabled: true             # to trace incoming request headers on the http server
-        exclude:                  # to exclude specific routes from tracing
-          - /foo
-          - /bar
-      metrics:
-        collect:
-          enabled: true           # to collect http server metrics
-          namespace: app          # http server metrics namespace (default app.name value)
-          subsystem: httpserver   # http server metrics subsystem (default httpserver)
-        buckets: 0.1, 1, 10       # to override default request duration buckets
-        normalize:
-          request_path: true      # to normalize http request path, disabled by default
-          response_status: true   # to normalize http response status code (2xx, 3xx, ...), disabled by default
-      templates:
-        enabled: true             # disabled by default
-        path: templates/*.html    # templates path lookup pattern
-```
-
-If `app.debug=true` (or env var `APP_DEBUG=true`), error responses will not be obfuscated and stack trace will be added.
 
 ## Templates
 

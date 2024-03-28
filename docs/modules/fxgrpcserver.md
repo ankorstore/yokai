@@ -50,6 +50,38 @@ var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 )
 ```
 
+## Configuration
+
+```yaml title="configs/config.yaml"
+modules:
+  grpc:
+    server:
+      port: 50051                   # 50051 by default
+      log:
+        metadata:                   # list of gRPC metadata to add to logs on top of x-request-id, empty by default
+          x-foo: foo                # to log for example the metadata x-foo in the log field foo
+          x-bar: bar
+        exclude:                    # list of gRPC methods to exclude from logging, empty by default
+          - /test.Service/Unary
+      trace:
+        enabled: true               # to trace gRPC calls, disabled by default
+        exclude:                    # list of gRPC methods to exclude from tracing, empty by default
+          - /test.Service/Bidi
+      metrics:
+        collect:
+          enabled: true             # to collect gRPC server metrics, disabled by default
+          namespace: app            # gRPC server metrics namespace (default app.name value)
+          subsystem: grpcserver     # gRPC server metrics subsystem (default grpcserver)
+        buckets: 0.1, 1, 10         # to override default request duration buckets (default prometheus.DefBuckets)
+      reflection:
+        enabled: true               # to expose gRPC reflection service, disabled by default
+      healthcheck:
+        enabled: true               # to expose gRPC healthcheck service, disabled by default
+      test:
+        bufconn:
+          size: 1048576             # test gRPC bufconn size, 1024*1024 by default
+```
+
 ## Usage
 
 This module offers the possibility to easily register gRPC server options, interceptors and services.
@@ -210,40 +242,6 @@ func ProvideServices() fx.Option {
 ```
 
 The dependencies of your services will be autowired.
-
-## Configuration
-
-You can configure the [gRPC server](https://pkg.go.dev/google.golang.org/grpc#Server) with the following:
-
-```yaml title="configs/config.yaml"
-modules:
-  grpc:
-    server:
-      port: 50051                   # 50051 by default
-      log:
-        metadata:                   # list of gRPC metadata to add to logs on top of x-request-id, empty by default
-          x-foo: foo                # to log for example the metadata x-foo in the log field foo
-          x-bar: bar
-        exclude:                    # list of gRPC methods to exclude from logging, empty by default
-          - /test.Service/Unary
-      trace:
-        enabled: true               # to trace gRPC calls, disabled by default
-        exclude:                    # list of gRPC methods to exclude from tracing, empty by default
-          - /test.Service/Bidi
-      metrics:
-        collect:
-          enabled: true             # to collect gRPC server metrics, disabled by default
-          namespace: app            # gRPC server metrics namespace (default app.name value)
-          subsystem: grpcserver     # gRPC server metrics subsystem (default grpcserver)
-        buckets: 0.1, 1, 10         # to override default request duration buckets (default prometheus.DefBuckets)
-      reflection:
-        enabled: true               # to expose gRPC reflection service, disabled by default
-      healthcheck:
-        enabled: true               # to expose gRPC healthcheck service, disabled by default
-      test:
-        bufconn:
-          size: 1048576             # test gRPC bufconn size, 1024*1024 by default
-```
 
 ## Reflection
 

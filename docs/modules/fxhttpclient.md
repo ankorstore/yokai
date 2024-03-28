@@ -41,44 +41,7 @@ var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 )
 ```
 
-## Usage
-
-This module makes available the [Client](https://pkg.go.dev/net/http#Client) in
-Yokai dependency injection system.
-
-To access it, you just need to inject it where needed, for example:
-
-```go title="internal/service/example.go"
-package service
-
-import (
-	"context"
-	"net/http"
-)
-
-type ExampleService struct {
-	client *http.Client
-}
-
-func ExampleService(client *http.Client) *ExampleService {
-	return &ExampleService{
-		client: client,
-	}
-}
-
-func (s *ExampleService) Call(ctx context.Context) (*http.Response, error) {
-	req, err := http.NewRequest(http.MethodGet, "https://example.com", nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Do(req.WithContext(ctx))
-}
-```
-
 ## Configuration
-
-You can configure the [Client](https://pkg.go.dev/net/http#Client) `timeout`, `transport`, `logging` and `tracing`:
 
 ```yaml title="configs/config.yaml"
 modules:
@@ -113,6 +76,41 @@ modules:
             /foo/{id}: /foo/(.+)
             /bar/{id}: /bar/(.+)
           response_status: true              # to normalize http response status code (2xx, 3xx, ...), disabled by default
+```
+
+## Usage
+
+This module makes available the [Client](https://pkg.go.dev/net/http#Client) in
+Yokai dependency injection system.
+
+To access it, you just need to inject it where needed, for example:
+
+```go title="internal/service/example.go"
+package service
+
+import (
+	"context"
+	"net/http"
+)
+
+type ExampleService struct {
+	client *http.Client
+}
+
+func ExampleService(client *http.Client) *ExampleService {
+	return &ExampleService{
+		client: client,
+	}
+}
+
+func (s *ExampleService) Call(ctx context.Context) (*http.Response, error) {
+	req, err := http.NewRequest(http.MethodGet, "https://example.com", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.client.Do(req.WithContext(ctx))
+}
 ```
 
 ## Logging

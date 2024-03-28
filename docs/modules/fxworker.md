@@ -49,6 +49,21 @@ var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 )
 ```
 
+## Configuration
+
+```yaml title="configs/config.yaml"
+modules:
+  worker:
+    defer: 0.1             # threshold in seconds to wait before starting all workers, immediate start by default
+    attempts: 3            # max execution attempts in case of failures for all workers, no restart by default
+    metrics:
+      collect:
+        enabled: true      # to collect metrics about workers executions
+        namespace: app     # workers metrics namespace (default app.name value)
+        subsystem: worker  # workers metrics subsystem (default worker)
+```
+
+
 ## Usage
 
 This module provides the possibility to register several [Worker](https://github.com/ankorstore/yokai/blob/main/worker/worker.go) implementations, with an
@@ -148,22 +163,6 @@ You can get, in real time, the status of your workers executions on the [fxcore]
 
 ![](../../assets/images/dash-workers-light.png#only-light)
 ![](../../assets/images/dash-workers-dark.png#only-dark)
-
-## Configuration
-
-You can configure this module to `defer` ALL workers start, set an execution max `attempts` and enable `metrics` collection:
-
-```yaml title="configs/config.yaml"
-modules:
-  worker:
-    defer: 0.1             # threshold in seconds to wait before starting all workers, immediate start by default
-    attempts: 3            # max execution attempts in case of failures for all workers, no restart by default
-    metrics:
-      collect:
-        enabled: true      # to collect metrics about workers executions
-        namespace: app     # workers metrics namespace (default app.name value)
-        subsystem: worker  # workers metrics subsystem (default worker)
-```
 
 ## Logging
 

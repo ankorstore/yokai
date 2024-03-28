@@ -23,6 +23,17 @@ the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore).
 
 When you use a Yokai [application template](https://ankorstore.github.io/yokai/applications/templates/), you have nothing to install, it's ready to use.
 
+## Configuration
+
+```yaml title="configs/config.yaml"
+modules:
+  metrics:
+    collect:
+      build: true    # to collect build infos metrics (disabled by default)
+      go: true       # to collect go metrics (disabled by default)
+      process: true  # to collect process metrics (disabled by default)
+```
+
 ## Usage
 
 This module will enable Yokai to collect registered metrics [collectors](https://github.com/prometheus/client_golang/blob/main/prometheus/collector.go), and make them available to a metrics [registry](https://github.com/prometheus/client_golang/blob/main/prometheus/registry.go) in
@@ -110,15 +121,3 @@ You can also get, real time, the status of your metrics on the [fxcore](https://
 ![](../../assets/images/dash-metrics-light.png#only-light)
 ![](../../assets/images/dash-metrics-dark.png#only-dark)
 
-## Configuration
-
-The following metrics collectors can be enabled:
-
-```yaml title="configs/config.yaml"
-modules:
-  metrics:
-    collect:
-      build: true    # to collect build infos metrics (disabled by default)
-      go: true       # to collect go metrics (disabled by default)
-      process: true  # to collect process metrics (disabled by default)
-```

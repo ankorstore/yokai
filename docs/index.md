@@ -39,9 +39,7 @@ In other words, Yokai let you focus on your application logic while taking care 
 
 ### Foundation
 
-Yokai was built using `robust` and `well known` Go libraries.
-
-To list a few of them:
+Yokai was built using `robust` and `well known` Go libraries, like:
 
 - [Echo](https://github.com/labstack/echo) for HTTP servers
 - [gRPC-go](https://github.com/grpc/grpc-go) for gRPC servers
