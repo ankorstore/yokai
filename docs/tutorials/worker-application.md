@@ -2,7 +2,7 @@
 icon: material/school-outline
 ---
 
-# :material-school-outline: Worker application tutorial
+# :material-school-outline: Tutorial - worker application
 
 > How to build, step by step, a worker application with Yokai.
 

@@ -2,7 +2,7 @@
 icon: material/school-outline
 ---
 
-# :material-school-outline: HTTP application tutorial
+# :material-school-outline: Tutorial - HTTP application 
 
 > How to build, step by step, an HTTP application with Yokai.
 

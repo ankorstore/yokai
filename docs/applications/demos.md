@@ -2,32 +2,42 @@
 icon: material/application-cog-outline
 ---
 
-# :material-application-cog-outline: Applications demos
+# :material-application-cog-outline: Demo applications
 
 > Yokai provides a [showroom](https://github.com/ankorstore/yokai-showroom) for its demo applications.
 
-## :material-application-cog-outline: HTTP application demo
+## gRPC demo application
 
-This [demo application](https://github.com/ankorstore/yokai-showroom/tree/main/http-demo) is a simple HTTP REST API (CRUD) to manage [gophers](https://go.dev/blog/gopher).
+This [gRPC demo application](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo) is a simple gRPC API offering a [text transformation service](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/transform.proto).
 
 It provides:
 
-- a Yokai application container, with
-  	- the [fxhttpserver](https://github.com/ankorstore/yokai/tree/main/fxhttpserver) module to expose the REST API
-  	- the [fxorm](https://github.com/ankorstore/yokai/tree/main/fxorm) module to enable database interactions
+- a [Yokai](https://github.com/ankorstore/yokai) application container, with the [gRPC server](../modules/fxgrpcserver.md) module to offer the gRPC API
+- a [Jaeger](https://www.jaegertracing.io/) container to collect the application traces
+
+To try it, just follow the [README](https://github.com/ankorstore/yokai-showroom/blob/main/grpc-demo/README.md) instructions.
+
+## HTTP demo application 
+
+This [HTTP demo application](https://github.com/ankorstore/yokai-showroom/tree/main/http-demo) is a simple HTTP REST API (CRUD) to manage [gophers](https://go.dev/blog/gopher).
+
+It provides:
+
+- a [Yokai](https://github.com/ankorstore/yokai) application container, with the [HTTP server](../modules/fxhttpserver.md) module to offer the gophers API
 - a [MySQL](https://www.mysql.com/) container to store the gophers
+- a [Jaeger](https://www.jaegertracing.io/) container to collect the application traces
 
-Available on [:fontawesome-brands-github: GitHub](https://github.com/ankorstore/yokai-showroom/tree/main/http-demo).
+To try it, just follow the [README](https://github.com/ankorstore/yokai-showroom/blob/main/http-demo/README.md) instructions.
 
-## :material-application-cog-outline: Worker application demo
+## Worker demo application
 
-This [demo application](https://github.com/ankorstore/yokai-showroom/tree/main/worker-demo) provides is a simple worker example subscribing to [Pub/Sub](https://cloud.google.com/pubsub).
+This [worker demo application](https://github.com/ankorstore/yokai-showroom/tree/main/worker-demo) provides is a simple worker example subscribing to [Pub/Sub](https://cloud.google.com/pubsub).
 
 It provides:
 
-- a Yokai application container, with:
-	- the [fxhttpserver](https://github.com/ankorstore/yokai/tree/main/fxhttpserver) module to expose a Pub/Sub publication endpoint
-	- the [fxworker](https://github.com/ankorstore/yokai/tree/main/fxworker) module to provide a worker running a Pub/Sub subscriber
-- a Pub/Sub emulator container
+- a [Yokai](https://github.com/ankorstore/yokai) application container, with the [worker](../modules/fxworker.md) module to offer a worker subscribing to Pub/Sub (using the [fxgcppubsub](https://github.com/ankorstore/yokai-contrib/tree/main/fxgcppubsub) contrib module)
+- a [Pub/Sub emulator](https://cloud.google.com/pubsub) container, with preconfigured topic and subscription
+- a [Pub/Sub emulator UI](https://github.com/echocode-io/gcp-pubsub-emulator-ui) container, preconfigured to work with the emulator container
+- a [Jaeger](https://www.jaegertracing.io/) container to collect the application traces
 
-Available on [:fontawesome-brands-github: GitHub](https://github.com/ankorstore/yokai-showroom/tree/main/worker-demo).
+To try it, just follow the [README](https://github.com/ankorstore/yokai-showroom/blob/main/worker-demo/README.md) instructions.
