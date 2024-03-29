@@ -81,3 +81,4 @@ To go further, you can:
 
 - check the [gRPC server](../modules/fxgrpcserver.md) module documentation to learn more about its features
 - follow the [gPRC application tutorial](../tutorials/grpc-application.md) to create, step by step, an gRPC application
+- check the [gPRC demo application](../demos/grpc-application.md) to create, step by step, an gRPC application

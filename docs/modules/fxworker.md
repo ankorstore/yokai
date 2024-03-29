@@ -232,7 +232,7 @@ This will collect metrics about:
 - workers `successes`
 - workers `failures`
 
-For example, after starting Yokai's workers pool, the [core](fxcore.md#dashboard) HTTP server will expose in the configured metrics endpoint:
+For example, after starting Yokai's workers pool, the [core](fxcore.md) HTTP server will expose in the configured metrics endpoint:
 
 ```makefile title="[GET] /metrics"
 # ...

@@ -1,5 +1,5 @@
 ---
-icon: material/magnify-expand
+icon: material/book-open-page-variant-outline
 ---
 
 # Yokai
@@ -17,7 +17,7 @@ icon: material/magnify-expand
 
 Building backend applications with Go is amazing.
 
-But to build production ready applications, you need to put in place a bunch of boilerplate code and efforts, introducing complexity not even related to the logic of your application (like dependencies wiring, configuration management, observability instrumentation, etc.).
+But to build production-grade applications, you need to put in place a bunch of efforts and boilerplate code, introducing complexity not even related to the logic of your application (like dependencies wiring, configuration management, observability instrumentation, etc.).
 
 To solve this, Yokai was created with the following goals in mind:
 
@@ -25,7 +25,7 @@ To solve this, Yokai was created with the following goals in mind:
 - `Modular`: it can be extended with the available Yokai modules, or with your own, to build evolvable applications.
 - `Observable`: it comes with built-in logging, tracing and metrics instrumentation, to build reliable applications.
 
-In other words, Yokai let you focus on your application logic while taking care of the rest.
+In other words, Yokai enables you to focus on your application logic, while taking care of the rest.
 
 ## Overview
 
@@ -33,11 +33,11 @@ In other words, Yokai let you focus on your application logic while taking care 
 
 ![Architecture](assets/images/architecture.jpg){: #overview-architecture}
 
-- `Yokai Core modules` preloads logging, tracing, metrics and health check instrumentation, and expose a private HTTP server for infrastructure and debugging needs.
+- `Yokai core modules` preloads logging, tracing, metrics and health check instrumentation, and expose a private HTTP server for infrastructure and debugging needs.
 - `Yokai extensions modules` can be added to enrich your application features, like public HTTP / gRPC servers, workers, ORM, etc. You can also add your own.
-- All this is made available in `Yokai Dependency Injection system` (based on [Fx](https://github.com/uber-go/fx)), on which you can rely to build your application logic.
+- All this is made available in `Yokai dependency injection system`, based on [Fx](https://github.com/uber-go/fx), on which you can rely to build your application logic.
 
-### Foundation
+### Foundations
 
 Yokai was built using `robust` and `well known` Go libraries, like:
 
@@ -46,12 +46,12 @@ Yokai was built using `robust` and `well known` Go libraries, like:
 - [Viper](https://github.com/spf13/viper) for configuration management
 - [OTEL](https://github.com/open-telemetry/opentelemetry-go) for observability instrumentation
 - [Fx](https://github.com/uber-go/fx) for dependency injection system
-- etc.
+- and more...
 
 
-### Extension
+### Extensions
 
-Yokai `extension system` enables you to enrich your application features with:
+Yokai `extension system` enables you to `enrich` your application features with:
 
 - the Yokai `built-in` modules
 - the Yokai [contrib modules](https://github.com/ankorstore/yokai-contrib)
