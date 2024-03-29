@@ -34,7 +34,7 @@ In other words, Yokai lets you focus on your application logic, while taking car
 ![Architecture](assets/images/architecture.jpg){: #overview-architecture}
 
 - Yokai `core modules` preloads logging, tracing, metrics and health check instrumentation, and expose a private HTTP server for infrastructure and debugging needs.
-- Yokai `extensions modules` can be added to enrich your application features, like public HTTP / gRPC servers, workers, ORM, etc. You can also add your own.
+- Yokai `extensions modules` can be added to enrich your application features, like public HTTP / gRPC servers, workers, ORM, etc. You can also add the [contrib modules](https://github.com/ankorstore/yokai-contrib) or your own.
 - Those are made available in Yokai `dependency injection system`, on which you can rely to build your application logic.
 
 ### Foundations
