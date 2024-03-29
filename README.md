@@ -5,7 +5,9 @@
 [![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR)](https://codecov.io/gh/ankorstore/yokai)
 [![Awesome Go](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/avelino/awesome-go)
 
-<img src="docs/assets/images/yokai-bck.png" align="center" width="300" />
+<p align="center">
+  <img src="docs/assets/images/yokai-bck.png" width="300" />
+</p>
 
 > Simple, modular, and observable Go framework for backend applications.
 
