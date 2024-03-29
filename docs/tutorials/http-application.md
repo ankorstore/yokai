@@ -2,28 +2,29 @@
 icon: material/school-outline
 ---
 
-# :material-school-outline: HTTP application tutorial
+# :material-school-outline: Tutorial - HTTP application 
 
 > How to build, step by step, an HTTP application with Yokai.
 
 ## Overview
 
-In this tutorial, we will create an `HTTP REST API` to manage [gophers](https://go.dev/blog/gopher).
+In this tutorial, we will create an `HTTP REST` API to manage [gophers](https://go.dev/blog/gopher).
 
-You can find a complete implementation in the [HTTP application demo](../../applications/demos#http-application-demo).
+You can find a complete implementation in the [HTTP demo application](../demos/http-application.md).
 
-## Application setup
+## Setup
 
 In this tutorial, we will create our application in the `github.com/foo/bar` example repository.
 
 ### Repository creation
 
-To create your `github.com/foo/bar` repository, you can use the [HTTP application template](../../applications/templates#http-application-template).
+To create your `github.com/foo/bar` repository, you can use the [HTTP application template](../getting-started/http-application.md).
 
 It provides:
 
-- a ready to extend Yokai application, with the [fxhttpserver](https://github.com/ankorstore/yokai/tree/main/fxhttpserver) module installed
+- a ready to extend [Yokai](https://github.com/ankorstore/yokai) application, with the [HTTP server](../modules/fxhttpserver.md) module installed
 - a ready to use [dev environment](https://github.com/ankorstore/yokai-http-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/cosmtrek/air) (for live reloading)
+- some examples of [handler](https://github.com/ankorstore/yokai-http-template/blob/main/internal/handler/example.go) and [test](https://github.com/ankorstore/yokai-http-template/blob/main/internal/handler/example_test.go) to get started
 
 ### Repository content
 
@@ -48,7 +49,7 @@ make test   # run tests
 make lint   # run linter
 ```
 
-## Application discovery
+## Discovery
 
 You can start your application by running:
 
@@ -71,12 +72,11 @@ Welcome to http-app.
 
 To ease development, [Air](https://github.com/cosmtrek/air) is watching any changes you perform on `Go code` or `config files` to perform hot reload.
 
-Let's rename your application in `gopher-api` by updating `app.name`:
+Let's rename your application in `gopher-api` by updating `app.name` in the configuration:
 
 ```yaml title="config/config.yaml"
 app:
 	name: gopher-api
-	version: 0.1.0
 	# ...
 ```
 
@@ -88,7 +88,7 @@ Welcome to gopher-api.
 
 ### Core dashboard
 
-Yokai is providing a core dashboard on [http://localhost:8081](http://localhost:8081):
+Yokai is providing a [core](../modules/fxcore.md) dashboard on [http://localhost:8081](http://localhost:8081):
 
 ![](../../assets/images/http-tutorial-core-dash-light.png#only-light)
 ![](../../assets/images/http-tutorial-core-dash-dark.png#only-dark)
@@ -100,25 +100,25 @@ From there, you can get:
 - access to the configured health check endpoints
 - access to the loaded modules information (when exposed)
 
-Here we can see for example the [fxhttpserver](../modules/fxhttpserver.md) information in the `Modules` section:
+Here we can see for example the [HTTP server](../modules/fxhttpserver.md) information in the `Modules` section:
 
 - server port
 - active routes
 - error handler
 - etc
 
-See [fxcore](../modules/fxcore.md) documentation for more information.
+See Yokai's [core](../modules/fxcore.md) documentation for more information.
 
-## Application implementation
+## Implementation
 
 Let's start your application implementation, by:
 
 - adding database support
 - implementing endpoints to create and list gophers
 
-### Database setup
+### Database
 
-#### MySQL installation
+#### MySQL setup
 
 Let's update your `docker-compose.yaml` to add a [MySQL](https://www.mysql.com/) container to your stack:
 
@@ -126,13 +126,13 @@ Let's update your `docker-compose.yaml` to add a [MySQL](https://www.mysql.com/)
 version: '3.9'
 
 services:
-  gohper-api-app:
-    container_name: gohper-api-app
+  gopher-api-app:
+    container_name: gopher-api-app
     build:
       dockerfile: dev.Dockerfile
       context: .
     networks:
-      - gohper-api
+      - gopher-api
     ports:
       - "8080:8080"
       - "8081:8081"
@@ -144,23 +144,23 @@ services:
     env_file:
       - .env
 
-  gohper-api-database:
-    container_name: gohper-api-database
+  gopher-api-database:
+    container_name: gopher-api-database
     image: mysql:8
     restart: always
     networks:
-      - gohper-api
+      - gopher-api
     volumes:
-      - gohper-api-database-data:/var/lib/mysql
+      - gopher-api-database-data:/var/lib/mysql
     env_file:
       - .env
 
 volumes:
-  gohper-api-database-data:
+  gopher-api-database-data:
     driver: local
 
 networks:
-  gohper-api:
+  gopher-api:
     driver: bridge
 ```
 
@@ -169,9 +169,9 @@ And the configuration in your `.env` file:
 ```env title=".env"
 APP_ENV=dev
 APP_DEBUG=true
-MYSQL_HOST=gohper-api-database
+MYSQL_HOST=gopher-api-database
 MYSQL_PORT=3306
-MYSQL_DATABASE=gohper-api
+MYSQL_DATABASE=gopher-api
 MYSQL_USER=user
 MYSQL_PASSWORD=password
 MYSQL_ROOT_PASSWORD=rootpassword
@@ -183,9 +183,9 @@ You can then refresh your stack to bring this up:
 make fresh
 ```
 
-#### ORM module installation
+#### ORM module
 
-Yokai provides the [fxorm](../modules/fxorm.md) module, extending your application with [GORM](https://gorm.io/).
+Yokai provides the [ORM](../modules/fxorm.md) module, extending your application with [GORM](https://gorm.io/).
 
 You can install it:
 
@@ -230,7 +230,7 @@ modules:
 
 #### Model creation
 
-To manage [gophers](https://go.dev/blog/gopher), we need to [create a model](https://gorm.io/docs/models.html):
+To manage our [gophers](https://go.dev/blog/gopher), we need to [create a model](https://gorm.io/docs/models.html):
 
 ```go title="internal/model/gopher.go"
 package model
@@ -248,7 +248,7 @@ type Gopher struct {
 
 #### Model migrations
 
-The [fxorm](../modules/fxorm.md) module [provides ways](../modules/fxorm.md#migrations) to apply your [schemas migrations](https://gorm.io/docs/migration.html).
+The [ORM](../modules/fxorm.md) module [provides ways](../modules/fxorm.md#migrations) to apply your [schemas migrations](https://gorm.io/docs/migration.html).
 
 To run the migrations automatically at bootstrap, we just need to pass our model to `RunFxOrmAutoMigrate()`:
 
@@ -280,11 +280,11 @@ INF ORM auto migration success service=gopher-api
 
 #### Health check
 
-Yokai's [fxhealthcheck](../modules/fxhealthcheck.md) module allows the core HTTP server to expose health check endpoints, useful if your application runs on [Kunernetes](https://kubernetes.io/). It will execute the [registered probes](../modules/fxhealthcheck.md#usage).
+Yokai's [health check](../modules/fxhealthcheck.md) module allows the [core](../modules/fxcore.md) HTTP server to expose health check endpoints, useful if your application runs on [Kubernetes](https://kubernetes.io/). It will execute the [registered probes](../modules/fxhealthcheck.md#usage).
 
-The [fxorm](../modules/fxorm.md#health-check) provides a ready to use [OrmProbe](https://github.com/ankorstore/yokai/blob/main/orm/healthcheck/probe.go), that will `ping` the database connection to check if it's healthy.
+The [ORM](../modules/fxorm.md#health-check) module provides a ready to use [OrmProbe](https://github.com/ankorstore/yokai/blob/main/orm/healthcheck/probe.go), that will `ping` the database connection to check if it's healthy.
 
-To activate it, you can use the `fxhealthcheck.AsCheckerProbe()` function in `internal/services.go`:
+To register it, you can use the `fxhealthcheck.AsCheckerProbe()` function in `internal/services.go`:
 
 ```go title="internal/services.go"
 package internal
@@ -310,12 +310,12 @@ You can check that it's properly activated on the [core dashboard](http://localh
 ![](../../assets/images/http-tutorial-core-hc-light.png#only-light)
 ![](../../assets/images/http-tutorial-core-hc-dark.png#only-dark)
 
-### Repository implementation
+### Repository
 
 We can create a `GopherRepository` to manage our gophers, with:
 
-- the `Create()` function to create a gopher 
-- and the `FindAll()` function to list all gophers
+- the `Create()` function to `create` a gopher 
+- and the `FindAll()` function to `list` all gophers
 
 ```go title="internal/repository/gopher.go"
 package repository
@@ -387,12 +387,12 @@ func ProvideServices() fx.Option {
 
 This will automatically inject the `*gorm.DB` in the `GopherRepository` constructor.
 
-### Service implementation
+### Service
 
 Now that we have a repository, let's create a `GopherService`, with:
 
-- the `Create()` function to create a gopher
-- and the `List()` function to list all gophers
+- the `Create()` function to `create` a gopher
+- and the `List()` function to `list` all gophers
 
 ```go title="internal/service/gopher.go"
 package service
@@ -453,11 +453,11 @@ func ProvideServices() fx.Option {
 
 This will automatically inject the `*repository.GopherRepository` in the `GopherService` constructor.
 
-### HTTP handlers implementation
+### HTTP handlers
 
 Now that we have a `GopherService` able to create and list gophers, let's expose it via HTTP endpoints in your application.
 
-#### Create HTTP handler
+#### Create handler
 
 Let's create a `CreateGopherHandler` to handle requests on `[POST] /gophers` to create gophers:
 
@@ -537,9 +537,9 @@ curl -X POST http://localhost:8080/gophers -H 'Content-Type: application/json' -
 
 You should receive a response with status `201` (created), and with the created gopher representation.
 
-You can check the [fxhttpserver](../modules/fxhttpserver.md#handlers-registration) module documentation if you need more information about registering handlers.
+You can check the [HTTP server](../modules/fxhttpserver.md#handlers-registration) module documentation if you need more information about registering handlers.
 
-#### List HTTP handler
+#### List handler
 
 Let's now create a `ListGopherHandler` to handle requests on `[GET] /gophers` to list gophers:
 
@@ -605,7 +605,7 @@ func ProvideRouting() fx.Option {
 }
 ```
 
-You can check the [fxhttpserver](../modules/fxhttpserver.md#handlers-groups-registration) module documentation if you need more information about registering handlers groups.
+You can check the [HTTP server](../modules/fxhttpserver.md#handlers-groups-registration) module documentation if you need more information about registering handlers groups.
 
 Let's try to call it:
 
@@ -625,7 +625,7 @@ curl http://localhost:8080/gophers
 
 You should receive a response with status `200` (ok), and with a list of gophers containing the one previously created.
 
-## Application observability
+## Observability
 
 At this stage, we are able to create and list gophers.
 
@@ -635,13 +635,13 @@ To provide a better understanding of what is happening at runtime, let's instrum
 - traces
 - metrics
 
-### Application logging
+### Logging
 
 With Yokai, `logging` is `contextual`.
 
 This means that you should [propagate the context](https://go.dev/blog/context) and retrieve the [logger](../modules/fxlog.md#usage) from it in order to produce `correlated` logs.
 
-The [fxhttpserver](../modules/fxhttpserver.md#logging) module automatically injects a logger in the context provided to HTTP handlers.
+The [HTTP server](../modules/fxhttpserver.md#logging) module automatically injects a logger in the context provided to HTTP handlers.
 
 Let's add logs to our `ListGophersHandler` with `log.CtxLogger()`:
 
@@ -729,17 +729,17 @@ You can see that:
 - all logs are automatically correlated by `requestID`, allowing you to understand what happened in a specific request scope
 - the ORM automatically logged the SQL query, also in this request scope
 
-You can get more information about ORM logging in the [fxorm](../modules/fxorm.md#logging) documentation.
+You can get more information about ORM logging in the [ORM](../modules/fxorm.md#logging) documentation.
 
-### Application tracing
+### Tracing
 
 With Yokai, `tracing` is `contextual`.
 
 This means that you should [propagate the context](https://go.dev/blog/context) and retrieve the [tracer provider](../modules/fxtrace.md#usage) from it in order to produce `correlated` trace spans.
 
-The [fxhttpserver](../modules/fxhttpserver.md#logging) module automatically injects the tracer provider in the context provided to HTTP handlers.
+The [HTTP server](../modules/fxhttpserver.md#logging) module automatically injects the tracer provider in the context provided to HTTP handlers.
 
-First let's activate the [fxtrace](../modules/fxtrace.md#configuration) exporter to `stdout`:
+First let's activate the [trace](../modules/fxtrace.md#configuration) module exporter to `stdout`:
 
 ```yaml title="configs/config.yaml"
 modules:
@@ -747,7 +747,7 @@ modules:
     processor: stdout
 ```
 
-Let's then add trace spans to our `ListGophersHandler` with `trace.CtxTracerProvider()`:
+Let's then add trace spans from our `ListGophersHandler` with `trace.CtxTracerProvider()`:
 
 ```go title="internal/handler/gopher/list.go"
 package gopher
@@ -817,18 +817,18 @@ And on trace spans side, that:
 - they contain the `guid:x-request-id` attribute matching the logs `requestID`
 - the ORM automatically traced the SQL query
 
-You can get more information about ORM tracing in the [fxorm](../modules/fxorm.md#tracing) documentation.
+You can get more information about ORM tracing in the [ORM](../modules/fxorm.md#tracing) documentation.
 
-### Application metrics
+### Metrics
 
-Yokai, via the [fxmetrics](../modules/fxmetrics.md) module, is collecting and exposing automatically metrics.
+Yokai's [metrics](../modules/fxmetrics.md) module is collecting and exposing automatically metrics.
 
-The core HTTP server of your application will expose them by default on [http://localhost:8081/metrics](http://localhost:8081/metrics), but you can also see them on your [core dashboard](http://localhost:8081):
+The [core](../modules/fxcore.md) HTTP server of your application will expose them by default on [http://localhost:8081/metrics](http://localhost:8081/metrics), but you can also see them on your [core dashboard](http://localhost:8081):
 
 ![](../../assets/images/http-tutorial-core-metrics-light.png#only-light)
 ![](../../assets/images/http-tutorial-core-metrics-dark.png#only-dark)
 
-You can see that, by default, the [fxhttpserver](../modules/fxhttpserver.md#metrics) module automatically collects HTTP requests metrics on your HTTP handlers.
+You can see that, by default, the [HTTP server](../modules/fxhttpserver.md#metrics) module automatically collects HTTP requests metrics on your HTTP handlers.
 
 Let's now add an example custom metric in our `GopherService` to count the number of times we listed the gophers:
 
@@ -912,13 +912,13 @@ If you call `[GET] http://localhost:8080/gophers`, you can then check the metric
 gophers_list_total 1
 ```
 
-## Application testing
+## Testing
 
 At this stage, we are able to create and list gophers, and we have observability signals to monitor this.
 
 The next step is to provide tests for your application, to ensure it's behaving as expected.
 
-### Tests configuration
+### Configuration
 
 Yokai's [bootstrapper](../modules/fxcore.md#bootstrap) provides a `RunTest()` function to start your application in `test` mode.
 
@@ -926,9 +926,9 @@ This will automatically set the env var `APP_ENV=test`, and will [load your test
 
 For our tests, we can configure:
 
-- the [fxlog](../modules/fxlog.md#testing) module to send logs to a `test buffer`
-- the [fxtrace](../modules/fxtrace.md#testing) module to send trace spans to a `test exporter`
-- the [fxorm](../modules/fxorm.md#testing) module to use an [SQLite database](https://www.sqlite.org/index.html), in memory, to make our tests easily portable on any CI pipeline (no need to spin up a MySQL instance)
+- the [log](../modules/fxlog.md#testing) module to send logs to a `test buffer`
+- the [trace](../modules/fxtrace.md#testing) module to send trace spans to a `test exporter`
+- the [ORM](../modules/fxorm.md#testing) module to use an [SQLite database](https://www.sqlite.org/index.html), in memory, to make our tests easily portable on any CI pipeline (no need to spin up a MySQL instance)
 
 Let's set the testing configuration in `config/config.test.yaml` and activate the `debug`:
 
@@ -976,7 +976,7 @@ func RunTest(tb testing.TB, options ...fx.Option) {
 
 This will enable your tests to use the SQLite database automatically with the schema matching your model.
 
-### Tests implementation
+### Implementation
 
 We can now provide `functional` tests for your application endpoints.
 

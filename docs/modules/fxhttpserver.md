@@ -68,6 +68,45 @@ func ProvideRouting() fx.Option {
 
 It is recommended to keep routing definition separated from services definitions, for better maintainability. If you use the [HTTP application template](../../applications/templates/#http-application-template), this is already done for you.
 
+## Configuration
+
+```yaml title="configs/config.yaml"
+modules:
+  http:
+    server:
+      port: 8080                  # http server port (default 8080)
+      errors:
+        obfuscate: false          # to obfuscate error messages on the http server responses
+        stack: false              # to add error stack trace to error response of the http server
+      log:
+        headers:                  # to log incoming request headers on the http server
+          x-foo: foo              # to log for example the header x-foo in the log field foo
+          x-bar: bar
+        exclude:                  # to exclude specific routes from logging
+          - /foo
+          - /bar
+        level_from_response: true # to use response status code for log level (ex: 500=error)
+      trace:
+        enabled: true             # to trace incoming request headers on the http server
+        exclude:                  # to exclude specific routes from tracing
+          - /foo
+          - /bar
+      metrics:
+        collect:
+          enabled: true           # to collect http server metrics
+          namespace: foo          # http server metrics namespace (empty by default)
+          subsystem: bar          # http server metrics subsystem (empty by default)
+        buckets: 0.1, 1, 10       # to override default request duration buckets
+        normalize:
+          request_path: true      # to normalize http request path, disabled by default
+          response_status: true   # to normalize http response status code (2xx, 3xx, ...), disabled by default
+      templates:
+        enabled: true             # disabled by default
+        path: templates/*.html    # templates path lookup pattern
+```
+
+If `app.debug=true` (or env var `APP_DEBUG=true`), error responses will not be obfuscated and stack trace will be added.
+
 ## Usage
 
 This module offers the possibility to easily register HTTP handlers, groups and middlewares.
@@ -293,45 +332,6 @@ func ProvideRouting() fx.Option {
 }
 ```
 
-## Configuration
-
-```yaml title="configs/config.yaml"
-modules:
-  http:
-    server:
-      port: 8080                  # http server port (default 8080)
-      errors:
-        obfuscate: false          # to obfuscate error messages on the http server responses
-        stack: false              # to add error stack trace to error response of the http server
-      log:
-        headers:                  # to log incoming request headers on the http server
-          x-foo: foo              # to log for example the header x-foo in the log field foo
-          x-bar: bar
-        exclude:                  # to exclude specific routes from logging
-          - /foo
-          - /bar
-        level_from_response: true # to use response status code for log level (ex: 500=error)
-      trace:
-        enabled: true             # to trace incoming request headers on the http server
-        exclude:                  # to exclude specific routes from tracing
-          - /foo
-          - /bar
-      metrics:
-        collect:
-          enabled: true           # to collect http server metrics
-          namespace: app          # http server metrics namespace (default app.name value)
-          subsystem: httpserver   # http server metrics subsystem (default httpserver)
-        buckets: 0.1, 1, 10       # to override default request duration buckets
-        normalize:
-          request_path: true      # to normalize http request path, disabled by default
-          response_status: true   # to normalize http response status code (2xx, 3xx, ...), disabled by default
-      templates:
-        enabled: true             # disabled by default
-        path: templates/*.html    # templates path lookup pattern
-```
-
-If `app.debug=true` (or env var `APP_DEBUG=true`), error responses will not be obfuscated and stack trace will be added.
-
 ## Templates
 
 The module will look up HTML templates to render if `modules.http.server.templates.enabled=true`.
@@ -436,7 +436,7 @@ You can also use the shortcut function `httpserver.CtxLogger()` to work with Ech
 httpserver.CtxLogger(c).Info().Msg("example message")
 ```
 
-The HTTP server logging will be based on the [fxlog](fxlog.md) module configuration.
+The HTTP server logging will be based on the [log](fxlog.md) module configuration.
 
 ## Tracing
 
@@ -478,7 +478,7 @@ ctx, span := httpserver.CtxTracer(c).Start(c.Request().Context(), "example span"
 defer span.End()
 ```
 
-The HTTP server tracing will be based on the [fxtrace](fxtrace.md) module configuration.
+The HTTP server tracing will be based on the [fxtrace](trace.md) module configuration.
 
 ## Metrics
 
@@ -491,36 +491,36 @@ modules:
       metrics:
         collect:
           enabled: true          # to collect http server metrics
-          namespace: app         # http server metrics namespace (default app.name value)
-          subsystem: httpserver  # http server metrics subsystem (default httpserver)
+          namespace: foo         # http server metrics namespace (empty by default)
+          subsystem: bar         # http server metrics subsystem (empty by default)
         buckets: 0.1, 1, 10      # to override default request duration buckets
         normalize:
           request_path: true     # to normalize http request path, disabled by default
           response_status: true  # to normalize http response status code (2xx, 3xx, ...), disabled by default
 ```
 
-For example, after calling `[GET] /example`, the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will expose in the configured metrics endpoint:
+For example, after calling `[GET] /example`, the [core](fxcore.md) HTTP server will expose in the configured metrics endpoint:
 
 ```makefile title="[GET] /metrics"
 # ...
-# HELP app_httpserver_request_duration_seconds Time spent processing HTTP requests
-# TYPE app_httpserver_request_duration_seconds histogram
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.005"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.01"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.025"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.05"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.1"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.25"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="0.5"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="1"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="2.5"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="5"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="10"} 1
-app_httpserver_request_duration_seconds_bucket{path="/example",method="GET",le="+Inf"} 1
-app_httpserver_request_duration_seconds_sum{path="/",method="GET"} 0.0014433150000000001
-# HELP app_httpserver_requests_total Number of processed HTTP requests
-# TYPE app_httpserver_requests_total counter
-app_httpserver_requests_total{path="/example",method="GET",status="2xx"} 1
+# HELP http_server_request_duration_seconds Time spent processing HTTP requests
+# TYPE http_server_request_duration_seconds histogram
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.005"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.01"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.025"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.05"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.1"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.25"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="0.5"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="1"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="2.5"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="5"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="10"} 1
+http_server_request_duration_seconds_bucket{path="/example",method="GET",le="+Inf"} 1
+http_server_request_duration_seconds_sum{path="/",method="GET"} 0.0014433150000000001
+# HELP http_server_requests_total Number of processed HTTP requests
+# TYPE http_server_requests_total counter
+http_server_requests_total{path="/example",method="GET",status="2xx"} 1
 ```
 
 Regarding metrics normalization, if you register for example a handler:
@@ -618,15 +618,15 @@ func TestExampleHandler(t *testing.T) {
 
 	// metrics assertion example
 	expectedMetric := `
-		# HELP app_httpserver_requests_total Number of processed HTTP requests
-		# TYPE app_httpserver_requests_total counter
-		app_httpserver_requests_total{handler="/example",method="GET",status="2xx"} 1
+		# HELP http_server_requests_total Number of processed HTTP requests
+		# TYPE http_server_requests_total counter
+		http_server_requests_total{handler="/example",method="GET",status="2xx"} 1
 	`
 
 	err := testutil.GatherAndCompare(
 		metricsRegistry,
 		strings.NewReader(expectedMetric),
-		"app_httpserver_requests_total",
+		"http_server_requests_total",
 	)
 	assert.NoError(t, err)
 }

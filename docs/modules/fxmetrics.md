@@ -18,10 +18,20 @@ It wraps the [Prometheus](https://github.com/prometheus/client_golang) module.
 
 ## Installation
 
-The [fxmetrics](https://github.com/ankorstore/yokai/tree/main/fxmetrics) module is automatically loaded by
-the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore).
+The [fxmetrics](https://github.com/ankorstore/yokai/tree/main/fxmetrics) module is automatically loaded by Yokai's [core](fxcore.md).
 
-When you use a Yokai [application template](https://ankorstore.github.io/yokai/applications/templates/), you have nothing to install, it's ready to use.
+When you use a Yokai `application template`, you have nothing to install, it's ready to use.
+
+## Configuration
+
+```yaml title="configs/config.yaml"
+modules:
+  metrics:
+    collect:
+      build: true    # to collect build infos metrics (disabled by default)
+      go: true       # to collect go metrics (disabled by default)
+      process: true  # to collect process metrics (disabled by default)
+```
 
 ## Usage
 
@@ -91,7 +101,7 @@ You can also register several metrics collectors at once with `AsMetricsCollecto
 
 ### Metrics execution
 
-The [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will automatically:
+Yokai's [core](fxcore.md) HTTP server will automatically:
 
 - expose the configured metrics endpoints
 - use the [registry](https://github.com/prometheus/client_golang/blob/main/prometheus/registry.go) to expose the registered metrics collectors
@@ -105,20 +115,8 @@ Following previous example, after invoking the `ExampleService`, the metrics end
 example_total 1
 ```
 
-You can also get, real time, the status of your metrics on the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) dashboard:
+You can also get, real time, the status of your metrics on the [core](fxcore.md#dashboard) dashboard:
 
 ![](../../assets/images/dash-metrics-light.png#only-light)
 ![](../../assets/images/dash-metrics-dark.png#only-dark)
 
-## Configuration
-
-The following metrics collectors can be enabled:
-
-```yaml title="configs/config.yaml"
-modules:
-  metrics:
-    collect:
-      build: true    # to collect build infos metrics (disabled by default)
-      go: true       # to collect go metrics (disabled by default)
-      process: true  # to collect process metrics (disabled by default)
-```

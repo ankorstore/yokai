@@ -18,10 +18,9 @@ It wraps the [healthcheck](https://github.com/ankorstore/yokai/tree/main/healthc
 
 ## Installation
 
-The [fxhealthcheck](https://github.com/ankorstore/yokai/tree/main/fxhealthcheck) module is automatically loaded by
-the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore).
+The [fxhealthcheck](https://github.com/ankorstore/yokai/tree/main/fxhealthcheck) module is automatically loaded by Yokai's [core](fxcore.md).
 
-When you use a Yokai [application template](https://ankorstore.github.io/yokai/applications/templates/), you have nothing to install, it's ready to use.
+When you use a Yokai `application template`, you have nothing to install, it's ready to use.
 
 ## Usage
 
@@ -121,7 +120,7 @@ func ProvideServices() fx.Option {
 
 ### Probes execution
 
-The [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will automatically:
+Yokai's [core](fxcore.md) HTTP server will automatically:
 
 - expose the configured health check endpoints
 - use the [Checker](https://github.com/ankorstore/yokai/blob/main/healthcheck/checker.go) to run the registered probes

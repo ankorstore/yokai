@@ -41,9 +41,48 @@ var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 )
 ```
 
+## Configuration
+
+This module provides the possibility to configure the database `driver`:
+
+- `sqlite` for SQLite databases
+- `mysql` for MySQL databases
+- `postgres` for PostgreSQL databases
+- `sqlserver` for SQL Server databases
+
+You can also provide to the ORM the database`dsn`, some `config`, and configure SQL queries automatic `logging` and `tracing`.
+
+```yaml title="configs/config.yaml"
+modules:
+  orm:
+    driver: mysql                                               # driver to use
+    dsn: "user:pass@tcp(dbhost:3306)/dbname?parseTime=True"     # database DSN to connect to
+    config:
+      dry_run: false                                            # disabled by default
+      skip_default_transaction: false                           # disabled by default
+      full_save_associations: false                             # disabled by default
+      prepare_stmt: false                                       # disabled by default
+      disable_automatic_ping: false                             # disabled by default
+      disable_foreign_key_constraint_when_migrating: false      # disabled by default
+      ignore_relationships_when_migrating: false                # disabled by default
+      disable_nested_transaction: false                         # disabled by default
+      allow_global_update: false                                # disabled by default
+      query_fields: false                                       # disabled by default
+      translate_error: false                                    # disabled by default
+    log:
+      enabled: true  # to log SQL queries, disabled by default
+      level: info    # with a minimal level
+      values: true   # by adding or not clear SQL queries parameters values in logs, disabled by default
+    trace:
+      enabled: true  # to trace SQL queries, disabled by default
+      values: true   # by adding or not clear SQL queries parameters values in trace spans, disabled by default
+```
+
+See [GORM Config](https://github.com/go-gorm/gorm/blob/master/gorm.go) for more details about the ORM configuration.
+
 ## Usage
 
-You can declare your [models](https://gorm.io/docs/models.html), for example:
+You can [declare your models](https://gorm.io/docs/models.html), for example:
 
 ```go title="internal/model/example.go"
 package model
@@ -127,50 +166,6 @@ func ProvideServices() fx.Option {
 	)
 }
 ```
-
-## Configuration
-
-This module provides the possibility to configure the database `driver`:
-
-- `sqlite` for SQLite databases
-- `mysql` for MySQL databases
-- `postgres` for PostgreSQL databases
-- `sqlserver` for SQL Server databases
-
-You can also provide to the ORM the database`dsn`, some `config`, and configure SQL queries automatic `logging` and `tracing`.
-
-```yaml title="configs/config.yaml"
-app:
-  name: app
-  env: dev
-  version: 0.1.0
-  debug: false
-modules:
-  orm:
-    driver: mysql                                               # driver to use
-    dsn: "user:pass@tcp(dbhost:3306)/dbname?parseTime=True"     # database DSN to connect to
-    config:
-      dry_run: false                                            # disabled by default
-      skip_default_transaction: false                           # disabled by default
-      full_save_associations: false                             # disabled by default
-      prepare_stmt: false                                       # disabled by default
-      disable_automatic_ping: false                             # disabled by default
-      disable_foreign_key_constraint_when_migrating: false      # disabled by default
-      ignore_relationships_when_migrating: false                # disabled by default
-      disable_nested_transaction: false                         # disabled by default
-      allow_global_update: false                                # disabled by default
-      query_fields: false                                       # disabled by default
-      translate_error: false                                    # disabled by default
-    log:
-      enabled: true  # to log SQL queries, disabled by default
-      level: info    # with a minimal level
-      values: true   # by adding or not clear SQL queries parameters values in logs, disabled by default
-    trace:
-      enabled: true  # to trace SQL queries, disabled by default
-      values: true   # by adding or not clear SQL queries parameters values in trace spans, disabled by default
-```
-
-See [GORM Config](https://github.com/go-gorm/gorm/blob/master/gorm.go) for more details about the ORM configuration.
 
 ## Migrations
 
@@ -301,7 +296,7 @@ modules:
 
 ## Health Check
 
-This module provides a ready to use [OrmProbe](https://github.com/ankorstore/yokai/blob/main/orm/healthcheck/probe.go), to be used by the [fxhealthcheck](fxhealthcheck.md) module.
+This module provides a ready to use [OrmProbe](https://github.com/ankorstore/yokai/blob/main/orm/healthcheck/probe.go), to be used by the [health check](fxhealthcheck.md) module.
 
 It will perform a `ping` to the configured database connection to ensure it is healthy.
 

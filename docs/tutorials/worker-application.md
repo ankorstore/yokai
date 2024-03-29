@@ -2,16 +2,16 @@
 icon: material/school-outline
 ---
 
-# :material-school-outline: Worker application tutorial
+# :material-school-outline: Tutorial - worker application
 
 > How to build, step by step, a worker application with Yokai.
 
 ## Overview
 
-In this tutorial, we will create a worker application subscribing to [Pub/Sub](https://cloud.google.com/pubsub).
+In this tutorial, we will create a `worker` application subscribing to [Pub/Sub](https://cloud.google.com/pubsub).
 
 You can find a complete implementation in
-the [worker application demo](../../applications/demos#worker-application-demo).
+the [worker demo application](../demos/worker-application.md).
 
 ## Application setup
 
@@ -20,14 +20,13 @@ In this tutorial, we will create our application in the `github.com/foo/bar` exa
 ### Repository creation
 
 To create your `github.com/foo/bar` repository, you can use
-the [worker application template](../../applications/templates#worker-application-template).
+the [worker application template](../getting-started/worker-application.md).
 
 It provides:
 
-- a ready to extend Yokai application, with the [fxworker](https://github.com/ankorstore/yokai/tree/main/fxworker)
-  module installed
-- a ready to use [dev environment](https://github.com/ankorstore/yokai-http-template/blob/main/docker-compose.yaml),
-  based on [Air](https://github.com/cosmtrek/air) (for live reloading)
+- a ready to extend [Yokai](https://github.com/ankorstore/yokai) application, with the [worker](../modules/fxworker.md) module installed
+- a ready to use [dev environment](https://github.com/ankorstore/yokai-worker-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/cosmtrek/air) (for live reloading)
+- some examples of [worker](https://github.com/ankorstore/yokai-worker-template/blob/main/internal/worker/example.go) and [test](https://github.com/ankorstore/yokai-worker-template/blob/main/internal/worker/example_test.go) to get started
 
 ### Repository content
 
@@ -38,7 +37,7 @@ Once your repository is created, you should have the following the content:
 - `internal/`:
 	- `worker/`: worker and test examples
 	- `bootstrap.go`: bootstrap (modules, lifecycles, etc)
-	- `services.go`: dependency injection
+	- `services.go`: services registration
 
 And a `Makefile`:
 
@@ -51,7 +50,7 @@ make test   # run tests
 make lint   # run linter
 ```
 
-## Application discovery
+## Discovery
 
 You can start your application by running:
 
@@ -59,14 +58,12 @@ You can start your application by running:
 make fresh
 ```
 
-After a short time, the application will expose the application core dashboard
+After a short time, the application will expose the application [core](../modules/fxcore.md) dashboard
 on [http://localhost:8081](http://localhost:8081).
 
 ### Example worker
 
-When you use the template,
-an [example worker ](https://github.com/ankorstore/yokai-worker-template/blob/main/internal/worker/example.go)is
-provided.
+When you use the template, an [example worker](https://github.com/ankorstore/yokai-worker-template/blob/main/internal/worker/example.go) is provided.
 
 It logs periodically the message `running`, and the interval can be configured in `configs/config.yaml`:
 
@@ -98,7 +95,7 @@ config:
     interval: 1
 ```
 
-You can observe the logs again with `make logs` to see the change hot reloaded.
+You can observe the logs again with `make logs` to see the changes hot reloaded.
 
 ### Core dashboard
 
@@ -114,24 +111,24 @@ From there, you can get:
 - access to the configured health check endpoints
 - access to the loaded modules information (when exposed)
 
-Here we can see for example the [fxworker](../modules/fxworker.md) information in the `Modules` section:
+Here we can see for example the [worker](../modules/fxworker.md) information in the `Modules` section:
 
 - active workers
 - their events
 - and their status
 
-See [fxcore](../modules/fxcore.md) documentation for more information.
+See Yokai's [core](../modules/fxcore.md) documentation for more information.
 
-## Application implementation
+## Implementation
 
 Let's start your application implementation, by:
 
 - adding Pub/Sub support
 - implementing a worker to subscribe to Pub/Sub
 
-### Pub/Sub setup
+### Pub/Sub
 
-#### Pub/Sub installation
+#### Pub/Sub setup
 
 Let's update your `docker-compose.yaml` to add to your stack:
 
@@ -139,8 +136,6 @@ Let's update your `docker-compose.yaml` to add to your stack:
 - a [Pub/Sub UI](https://hub.docker.com/r/echocode/gcp-pubsub-emulator-ui) container, working with the emulator
 
 ```yaml title="docker-compose.yaml"
-version: '3.9'
-
 services:
   pubsub-worker:
     build:
@@ -216,86 +211,31 @@ You can check that everything is set up by accessing the Pub/Sub UI on [http://l
 
 ![](../../assets/images/worker-tutorial-pubsub-ui.png)
 
-#### Pub/Sub module creation
+#### Pub/Sub module
 
-Yokai provides the possibility to create modules to extend your application.
+Yokai's [contrib modules repository](https://github.com/ankorstore/yokai-contrib) provides a [fxgcppubsub](https://github.com/ankorstore/yokai-contrib/tree/main/fxgcppubsub) module, offering a `*pubsub.Client`.
 
-Let's create a very simple one to provide a [Pub/Sub client](https://pkg.go.dev/cloud.google.com/go/pubsub) to your
-application.
+You just need to install it:
 
-You can create it in `internal/module/fxpubsub/module.go`:
-
-```go title="internal/module/fxpubsub/module.go"
-package fxpubsub
-
-import (
-	"context"
-	"fmt"
-
-	"cloud.google.com/go/pubsub"
-	"github.com/ankorstore/yokai/config"
-	"go.uber.org/fx"
-)
-
-const ModuleName = "pubsub"
-
-var FxPubSubModule = fx.Module(
-	ModuleName,
-	fx.Provide(
-		NewFxPubSub,
-	),
-)
-
-type FxPubSubParam struct {
-	fx.In
-	LifeCycle fx.Lifecycle
-	Config    *config.Config
-}
-
-func NewFxPubSub(p FxPubSubParam) (*pubsub.Client, error) {
-	return createClient(context.Background(), p.LifeCycle, p.Config)
-}
-
-func createClient(ctx context.Context, lc fx.Lifecycle, config *config.Config) (*pubsub.Client, error) {
-	// client
-	client, err := pubsub.NewClient(ctx, config.GetString("modules.pubsub.project"))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create pubsub client: %w", err)
-	}
-
-	// lifecycle
-	lc.Append(fx.Hook{
-		// close on stop the client
-		OnStop: func(ctx context.Context) error {
-			return client.Close()
-		},
-	})
-
-	return client, nil
-}
+```shell
+go get github.com/ankorstore/yokai-contrib/fxgcppubsub
 ```
 
-This will:
-
-- provide a `*pubsub.Client` in Yokai dependency injection system, configurable from your application configuration
-  files
-- and hook on application lifecycles to shut down the client when the application stops
-
-You can then activate it in your application bootstrapper:
+And activate it in your application bootstrapper:
 
 ```go title="internal/bootstrap.go"
 package internal
 
 import (
 	"github.com/ankorstore/yokai/fxcore"
-	"github.com/foo/bar/internal/module/fxpubsub"
+	"github.com/ankorstore/yokai-contrib/fxgcppubsub"
 )
 
 // ...
 
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
-	// load fxpubsub module
-	fxpubsub.FxPubSubModule,
+	// load fxgcppubsub module
+	fxgcppubsub.FxGcpPubSubModule,
 	// ...
 )
 ```
@@ -304,17 +244,56 @@ You can then provide the module configuration:
 
 ```yaml title="configs/config.yaml"
 modules:
-  pubsub:
-    project: ${PUBSUB_PROJECT_ID}
-    topic: ${PUBSUB_TOPIC_ID}
-    subscription: ${PUBSUB_SUBSCRIPTION_ID}
-    emulator: ${PUBSUB_EMULATOR_HOST}
+  gcppubsub:
+    project:
+      id: demo-project
+    healthcheck:
+      subscriptions:
+        - demo-subscription
+config:
+  topic:
+    id: demo-topic
+  subscription:
+    id: demo-subscription
 ```
 
-You can check the [fxconfig](../modules/fxconfig.md#env-var-placeholders) documentation to get more details about the
-configuration env var placeholders.
+You can check the [fxgcppubsub](https://github.com/ankorstore/yokai-contrib/tree/main/fxgcppubsub) module documentation to get more details about the
+available configuration.
 
-### Worker implementation
+#### Health check
+
+Yokai's [health check](../modules/fxhealthcheck.md) module allows the [core](../modules/fxcore.md) HTTP server to expose health check endpoints, useful if your application runs on [Kubernetes](https://kubernetes.io/). It will execute the [registered probes](../modules/fxhealthcheck.md#usage).
+
+The [fxgcppubsub](https://github.com/ankorstore/yokai-contrib/tree/main/fxgcppubsub#health-check) module provides a ready to use [GcpPubSubSubscriptionsProbe](https://github.com/ankorstore/yokai-contrib/blob/main/fxgcppubsub/healthcheck/subscription.go), that will `check` if a configured `subscription` is reachable.
+
+To register it, you can use the `fxhealthcheck.AsCheckerProbe()` function in `internal/services.go`:
+
+```go title="internal/services.go"
+package internal
+
+import (
+	"github.com/ankorstore/yokai-contrib/fxgcppubsub/healthcheck"
+	"github.com/ankorstore/yokai/fxhealthcheck"
+	"go.uber.org/fx"
+)
+
+func ProvideServices() fx.Option {
+	return fx.Options(
+		// Pub/Sub subscription probe
+		fxhealthcheck.AsCheckerProbe(healthcheck.NewGcpPubSubSubscriptionsProbe),
+		// ...
+	)
+}
+```
+
+This will register the ORM probe for `startup`, `liveness` and `readiness` checks.
+
+You can check that it's properly activated on the [core dashboard](http://localhost:8081):
+
+![](../../assets/images/worker-tutorial-core-hc-light.png#only-light)
+![](../../assets/images/worker-tutorial-core-hc-dark.png#only-dark)
+
+### Worker
 
 We can create a `SubscribeWorker` to subscribe to the `demo-subscription` subscription:
 
@@ -346,7 +325,7 @@ func (w *SubscribeWorker) Name() string {
 }
 
 func (w *SubscribeWorker) Run(ctx context.Context) error {
-	subscription := w.client.Subscription(w.config.GetString("modules.pubsub.subscription"))
+	subscription := w.client.Subscription(w.config.GetString("config.subscription.id"))
 
 	return subscription.Receive(ctx, func(c context.Context, msg *pubsub.Message) {
 		log.CtxLogger(c).Info().Msgf(
@@ -373,8 +352,9 @@ import (
 
 func ProvideServices() fx.Option {
 	return fx.Options(
-		// ...
+		// Pub/Sub worker
 		fxworker.AsWorker(worker.NewSubscribeWorker),
+		// ...
 	)
 }
 
@@ -383,9 +363,9 @@ func ProvideServices() fx.Option {
 This will:
 
 - automatically inject the `*config.Config` and the `*pubsub.Client` in the `SubscribeWorker` constructor
-- and make the `SubscribeWorker` collected by the [fxworker](../modules/fxworker.md) workers pool
+- and make the `SubscribeWorker` registered in the [worker](../modules/fxworker.md) module's workers pool
 
-### Message publication
+### Publication
 
 Let's first refresh your stack by running `make fresh`.
 
@@ -406,7 +386,7 @@ You can check your application logs with `make logs`, and you should see the wor
 INF received message: id=1, data=test message module=worker service=pubsub-worker worker=subscribe-worker
 ```
 
-## Application observability
+## Observability
 
 At this stage, your application is able to subscribe to Pub/Sub.
 
@@ -416,14 +396,14 @@ To provide a better understanding of what is happening at runtime, let's instrum
 - traces
 - metrics
 
-### Application logging
+### Logging
 
 With Yokai, `logging` is `contextual`.
 
 This means that you should [propagate the context](https://go.dev/blog/context) and retrieve
 the [logger](../modules/fxlog.md#usage) from it in order to produce `correlated` logs.
 
-The [fxworker](../modules/fxworker.md#logging) module automatically injects a logger in the context provided to workers.
+The [worker](../modules/fxworker.md#logging) module automatically injects a logger in the context provided to workers.
 
 Let's add more logs to our `SubscribeWorker` with `log.CtxLogger()`:
 
@@ -455,7 +435,7 @@ func (w *SubscribeWorker) Name() string {
 }
 
 func (w *SubscribeWorker) Run(ctx context.Context) error {
-	subscription := w.client.Subscription(w.config.GetString("modules.pubsub.subscription"))
+	subscription := w.client.Subscription(w.config.GetString("config.subscription.id"))
 
 	return subscription.Receive(ctx, func(c context.Context, msg *pubsub.Message) {
 		logger := log.CtxLogger(c)
@@ -486,19 +466,19 @@ You can see that:
 - logs are automatically correlated by `workerExecutionID`, allowing you to understand what happened in a specific worker execution
 
 
-You can get more information about workers logging in the [fxworker](../modules/fxworker.md#logging) documentation.
+You can get more information about workers logging in the [worker](../modules/fxworker.md#logging) documentation.
 
-### Application tracing
+### Tracing
 
 With Yokai, `tracing` is `contextual`.
 
 This means that you should [propagate the context](https://go.dev/blog/context) and retrieve
 the [tracer provider](../modules/fxtrace.md#usage) from it in order to produce `correlated` trace spans.
 
-The [fxworker](../modules/fxworker.md#tracing) module automatically injects the tracer provider in the context
+The [worker](../modules/fxworker.md#tracing) module automatically injects the tracer provider in the context
 provided to workers.
 
-First let's activate the [fxtrace](../modules/fxtrace.md#configuration) exporter to `stdout`:
+First let's activate the [trace](../modules/fxtrace.md#configuration) module exporter to `stdout`:
 
 ```yaml title="configs/config.yaml"
 modules:
@@ -538,7 +518,7 @@ func (w *SubscribeWorker) Name() string {
 }
 
 func (w *SubscribeWorker) Run(ctx context.Context) error {
-	subscription := w.client.Subscription(w.config.GetString("modules.pubsub.subscription"))
+	subscription := w.client.Subscription(w.config.GetString("config.subscription.id"))
 
 	return subscription.Receive(ctx, func(c context.Context, msg *pubsub.Message) {
 		c, span := trace.CtxTracerProvider(c).Tracer(w.Name()).Start(c, fmt.Sprintf("%s span", w.Name()))
@@ -581,11 +561,11 @@ And on trace span side, that:
 - it contains the `Worker` attribute matching the worker name 
 - it contains the `WorkerExecutionID` attribute matching the logs `workerExecutionID`
 
-You can get more information about workers tracing in the [fxworker](../modules/fxworker.md#tracing) documentation.
+You can get more information about workers tracing in the [worker](../modules/fxworker.md#tracing) documentation.
 
-### Application metrics
+### Metrics
 
-Yokai, via the [fxmetrics](../modules/fxmetrics.md) module, is collecting and exposing automatically metrics.
+Yokai's [metrics](../modules/fxmetrics.md) module is collecting and exposing automatically metrics.
 
 The core HTTP server of your application will expose them by default
 on [http://localhost:8081/metrics](http://localhost:8081/metrics), but you can also see them on
@@ -594,7 +574,7 @@ your [core dashboard](http://localhost:8081):
 ![](../../assets/images/worker-tutorial-core-metrics-light.png#only-light)
 ![](../../assets/images/worker-tutorial-core-metrics-dark.png#only-dark)
 
-You can see that, by default, the [fxworker](../modules/fxworker.md#metrics) module automatically collects execution metrics on your workers.
+You can see that, by default, the [worker](../modules/fxworker.md#metrics) module automatically collects execution metrics on your workers.
 
 Let's now add an example custom metric in our `SubscribeWorker` to count the number of received messages:
 
@@ -634,7 +614,7 @@ func (w *SubscribeWorker) Name() string {
 }
 
 func (w *SubscribeWorker) Run(ctx context.Context) error {
-	subscription := w.client.Subscription(w.config.GetString("modules.pubsub.subscription"))
+	subscription := w.client.Subscription(w.config.GetString("config.subscription.id"))
 
 	return subscription.Receive(ctx, func(c context.Context, msg *pubsub.Message) {
 		c, span := trace.CtxTracerProvider(c).Tracer(w.Name()).Start(c, fmt.Sprintf("%s span", w.Name()))
@@ -671,11 +651,9 @@ import (
 
 func ProvideServices() fx.Option {
 	return fx.Options(
-		// workers
-		fxworker.AsWorker(worker.NewExampleWorker),
-		fxworker.AsWorker(worker.NewSubscribeWorker),
 		// metrics
 		fxmetrics.AsMetricsCollector(worker.SubscribeCounter),
+		// ...
 	)
 }
 
@@ -691,13 +669,13 @@ the [core metrics endpoint](http://localhost:8081/metrics):
 messages_received_total 1
 ```
 
-## Application testing
+## Testing
 
 At this stage, we are able to subscribe to Pub/Sub, and we have observability signals to monitor this.
 
 The next step is to provide tests for your application, to ensure it's behaving as expected.
 
-### Tests configuration
+### Configuration
 
 Yokai's [bootstrapper](../modules/fxcore.md#bootstrap) provides a `RunTest()` function to start your application
 in `test` mode.
@@ -707,9 +685,9 @@ will [load your test configuration](../modules/fxconfig.md#dynamic-env-overrides
 
 For our tests, we can configure:
 
-- the [fxlog](../modules/fxlog.md#testing) module to send logs to a `test buffer`
-- the [fxtrace](../modules/fxtrace.md#testing) module to send trace spans to a `test exporter`
-- the fxpubsub module project, topic and subscription to use
+- the [log](../modules/fxlog.md#testing) module to send logs to a `test buffer`
+- the [trace](../modules/fxtrace.md#testing) module to send trace spans to a `test exporter`
+- the [fxgcppubsub](https://github.com/ankorstore/yokai-contrib/tree/main/fxgcppubsub) module test `project`, `topic` and `subscription` to use
 
 Let's set the testing configuration in `config/config.test.yaml` and activate the `debug`:
 
@@ -717,169 +695,20 @@ Let's set the testing configuration in `config/config.test.yaml` and activate th
 app:
   debug: true
 modules:
-  log:
-    level: debug
-    output: test
-  trace:
-    processor:
-      type: test
-  pubsub:
-    project: test-project
-    topic: test-topic
-    subscription: test-subscription
+  gcppubsub:
+    project:
+      id: test-project
+    healthcheck:
+      subscriptions:
+        - tes-subscription
+config:
+  topic:
+    id: test-topic
+  subscription:
+    id: test-subscription
 ```
 
-### Tests preparation
-
-We created a `fxpubsub` module, making available a Pub/Sub client in our application dependency injection system.
-
-But this means we need a Pub/Sub instance to use it, even in test mode, which is not making our test portable (Pub/Sub dependency).
-
-Let's adapt our module to provide, in test mode, a client using a connection to a [test server](https://pkg.go.dev/cloud.google.com/go/pubsub/pstest):
-
-```go title="internal/module/fxpubsub/module.go"
-package fxpubsub
-
-import (
-	"context"
-	"fmt"
-	"time"
-
-	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/pubsub/pstest"
-	"github.com/ankorstore/yokai/config"
-	"go.uber.org/fx"
-	"google.golang.org/api/option"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-)
-
-const ModuleName = "pubsub"
-
-var FxPubSubModule = fx.Module(
-	ModuleName,
-	fx.Provide(
-		NewFxPubSub,
-	),
-)
-
-type FxPubSubParam struct {
-	fx.In
-	LifeCycle fx.Lifecycle
-	Config    *config.Config
-}
-
-func NewFxPubSub(p FxPubSubParam) (*pubsub.Client, error) {
-	ctx := context.Background()
-
-	if p.Config.IsTestEnv() {
-		return createTestClient(ctx, p.LifeCycle, p.Config)
-	} else {
-		return createClient(ctx, p.LifeCycle, p.Config)
-	}
-}
-
-func createClient(ctx context.Context, lc fx.Lifecycle, config *config.Config) (*pubsub.Client, error) {
-	// client
-	client, err := pubsub.NewClient(ctx, config.GetString("modules.pubsub.project"))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create pubsub client: %w", err)
-	}
-
-	// lifecycle
-	lc.Append(fx.Hook{
-		// close on stop the client
-		OnStop: func(ctx context.Context) error {
-			return client.Close()
-		},
-	})
-
-	return client, nil
-}
-
-func createTestClient(ctx context.Context, lc fx.Lifecycle, config *config.Config) (*pubsub.Client, error) {
-	// test server
-	srv := pstest.NewServer()
-
-	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-
-	// test client
-	client, err := pubsub.NewClient(ctx, config.GetString("modules.pubsub.project"), option.WithGRPCConn(conn))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create test pubsub client: %w", err)
-	}
-
-	// lifecycle
-	lc.Append(fx.Hook{
-		// create on start the tests topic and subscription
-		OnStart: func(ctx context.Context) error {
-			// test topic
-			topicName := config.GetString("modules.pubsub.topic")
-			topic := client.Topic(topicName)
-
-			topicExists, err := topic.Exists(ctx)
-			if err != nil {
-				return fmt.Errorf("cannot check if topic %s exist: %w", topicName, err)
-			}
-
-			if !topicExists {
-				topic, err = client.CreateTopic(ctx, topicName)
-				if err != nil {
-					return fmt.Errorf("cannot create topic %s: %w", topicName, err)
-				}
-			}
-
-			// test subscription
-			subscriptionName := config.GetString("modules.pubsub.subscription")
-			subscription := client.Subscription(subscriptionName)
-
-			subscriptionExists, err := subscription.Exists(ctx)
-			if err != nil {
-				return fmt.Errorf("cannot check if subscription %s exist: %w", subscriptionName, err)
-			}
-
-			if !subscriptionExists {
-				_, err = client.CreateSubscription(
-					ctx,
-					subscriptionName,
-					pubsub.SubscriptionConfig{
-						Topic:       topic,
-						AckDeadline: 10 * time.Second,
-					},
-				)
-				if err != nil {
-					return fmt.Errorf("cannot create subscription %s: %w", subscriptionName, err)
-				}
-			}
-
-			return nil
-		},
-		// close on stop the client and the test server
-		OnStop: func(ctx context.Context) error {
-			err = client.Close()
-			if err != nil {
-				return err
-			}
-
-			return srv.Close()
-		},
-	})
-
-	return client, nil
-}
-```
-
-This will:
-
-- still provide a `*pubsub.Client`, and hook on application lifecycles to shut down the client when the application stops
-- but also provide, in test mode, a `*pubsub.Client` using a connection to a test server, and hook on application lifecycles:
-  	- to create test topic and subscription when the application starts on test mode
-  	- to shut down the client and the test server when the application stops on test mode
-
-### Tests implementation
+### Implementation
 
 We can now provide `functional` tests for your worker.
 
@@ -896,6 +725,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/pubsub"
+	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/log/logtest"
 	"github.com/ankorstore/yokai/trace/tracetest"
 	"github.com/foo/bar/internal"
@@ -909,8 +739,6 @@ import (
 func TestSubscribeWorker(t *testing.T) {
 	ctx := context.Background()
 
-	testMessage := "test message"
-
 	// env vars
 	t.Setenv("APP_CONFIG_PATH", fmt.Sprintf("%s/configs", internal.RootDir))
 
@@ -922,6 +750,27 @@ func TestSubscribeWorker(t *testing.T) {
 	// bootstrap test app
 	app := internal.Bootstrapper.BootstrapTestApp(
 		t,
+		fx.Invoke(func(config *config.Config, client *pubsub.Client) error {
+			// prepare test topic
+			topicName := config.GetString("config.topic.id")
+			subscriptionName := config.GetString("config.subscription.id")
+
+			topic, err := client.CreateTopic(ctx, topicName)
+			if err != nil {
+				return fmt.Errorf("cannot create test topic %s: %w", topicName, err)
+			}
+
+			// prepare test subscription
+			_, err = client.CreateSubscription(ctx, subscriptionName, pubsub.SubscriptionConfig{
+				Topic:       topic,
+				AckDeadline: 10 * time.Second,
+			})
+			if err != nil {
+				return fmt.Errorf("cannot create test subscription %s: %w", subscriptionName, err)
+			}
+
+			return nil
+		}),
 		fx.Populate(
 			&client,
 			&logBuffer,
@@ -934,6 +783,8 @@ func TestSubscribeWorker(t *testing.T) {
 	app.RequireStart()
 
 	// publish test message
+	testMessage := "test message"
+
 	result := client.Topic("test-topic").Publish(ctx, &pubsub.Message{
 		Data: []byte(testMessage),
 	})
@@ -941,20 +792,12 @@ func TestSubscribeWorker(t *testing.T) {
 	id, err := result.Get(ctx)
 	assert.NoError(t, err)
 
-	// stop test app (after 1 sec wait to avoid test flakiness)
-	time.Sleep(1 * time.Second)
+	// stop test app (after 100 ms wait to avoid test flakiness)
+	time.Sleep(100 * time.Millisecond)
 
 	app.RequireStop()
 
 	// logs assertion
-	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
-		"level":   "info",
-		"service": "pubsub-worker",
-		"module":  "worker",
-		"worker":  "subscribe-worker",
-		"message": "in subscribe-worker",
-	})
-
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":   "info",
 		"service": "pubsub-worker",
@@ -985,11 +828,13 @@ func TestSubscribeWorker(t *testing.T) {
 	)
 	assert.NoError(t, err)
 }
+
 ```
 
 In this functional test:
 
 - we start the application in test mode
+- we create the Pub/Sub test topic and subscription
 - we use the Pub/Sub client to publish a message on the test server
 - we assert on the worker logs to ensure it got the message
 - we assert on the observability signals (logs, traces and metrics)

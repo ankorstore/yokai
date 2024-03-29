@@ -49,6 +49,20 @@ var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 )
 ```
 
+## Configuration
+
+```yaml title="configs/config.yaml"
+modules:
+  worker:
+    defer: 0.1             # threshold in seconds to wait before starting all workers, immediate start by default
+    attempts: 3            # max execution attempts in case of failures for all workers, no restart by default
+    metrics:
+      collect:
+        enabled: true      # to collect metrics about workers executions
+        namespace: foo     # workers metrics namespace (empty by default)
+        subsystem: bar     # workers metrics subsystem (empty by default)
+```
+
 ## Usage
 
 This module provides the possibility to register several [Worker](https://github.com/ankorstore/yokai/blob/main/worker/worker.go) implementations, with an
@@ -144,26 +158,10 @@ func ProvideServices() fx.Option {
 
 Yokai will automatically start the [WorkerPool](https://github.com/ankorstore/yokai/blob/main/worker/pool.go) containing the registered workers.
 
-You can get, in real time, the status of your workers executions on the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) dashboard:
+You can get, in real time, the status of your workers executions on the [core](fxcore.md#dashboard) dashboard:
 
 ![](../../assets/images/dash-workers-light.png#only-light)
 ![](../../assets/images/dash-workers-dark.png#only-dark)
-
-## Configuration
-
-You can configure this module to `defer` ALL workers start, set an execution max `attempts` and enable `metrics` collection:
-
-```yaml title="configs/config.yaml"
-modules:
-  worker:
-    defer: 0.1             # threshold in seconds to wait before starting all workers, immediate start by default
-    attempts: 3            # max execution attempts in case of failures for all workers, no restart by default
-    metrics:
-      collect:
-        enabled: true      # to collect metrics about workers executions
-        namespace: app     # workers metrics namespace (default app.name value)
-        subsystem: worker  # workers metrics subsystem (default worker)
-```
 
 ## Logging
 
@@ -185,7 +183,7 @@ As a result, log records will have the `worker` name and `workerExecutionID` fie
 INF example message module=worker service=app worker=example-worker workerExecutionID=b57be88f-163f-4a81-bf24-a389c93d804b
 ```
 
-The workers logging will be based on the [fxlog](fxlog.md) module configuration.
+The workers logging will be based on the [log](fxlog.md) module configuration.
 
 ## Tracing
 
@@ -212,7 +210,7 @@ WorkerExecutionID: b57be88f-163f-4a81-bf24-a389c93d804b
 ...
 ```
 
-The workers tracing will be based on the [fxtrace](fxtrace.md) module configuration.
+The workers tracing will be based on the [trace](fxtrace.md) module configuration.
 
 ## Metrics
 
@@ -224,22 +222,21 @@ modules:
     metrics:
       collect:
         enabled: true      # to collect metrics about workers executions
-        namespace: app     # workers metrics namespace (default app.name value)
-        subsystem: worker  # workers metrics subsystem (default worker)
+        namespace: foo     # workers metrics namespace (empty by default)
+        subsystem: bar     # workers metrics subsystem (empty by default)
 ```
 
 This will collect metrics about:
 
-- workers start
-- workers restart
-- workers successes
-- workers failures
+- workers `start` and `restart`
+- workers `successes`
+- workers `failures`
 
-For example, after starting Yokai's workers pool, the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will expose in the configured metrics endpoint:
+For example, after starting Yokai's workers pool, the [core](fxcore.md) HTTP server will expose in the configured metrics endpoint:
 
 ```makefile title="[GET] /metrics"
 # ...
-# HELP app_worker_worker_execution_total Total number of workers executions
-# TYPE app_worker_worker_execution_total counter
-app_worker_worker_execution_total{status="started",worker="example-worker"} 1
+# HELP worker_executions_total Total number of workers executions
+# TYPE worker_executions_total counter
+worker_executions_total{status="started",worker="example-worker"} 1
 ```

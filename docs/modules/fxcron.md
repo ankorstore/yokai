@@ -47,6 +47,49 @@ var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 )
 ```
 
+## Configuration
+
+```yaml title="configs/config.yaml"
+modules:
+  cron:
+    scheduler:
+      seconds: true                   # to allow seconds based cron jobs expressions (impact all jobs), disabled by default
+      concurrency:
+        limit:
+          enabled: true               # to limit concurrent cron jobs executions, disabled by default
+          max: 3                      # concurrency limit
+          mode: wait                  # "wait" or "reschedule"
+      stop:
+        timeout: 5s                   # scheduler shutdown timeout for graceful cron jobs termination, 10 seconds by default
+    jobs:                             # common cron jobs options
+      execution:
+        start:
+          immediately: true           # to start cron jobs executions immediately (by default)
+          at: "2023-01-01T14:00:00Z"  # or a given date time (RFC3339)
+        limit:
+          enabled: true               # to limit the number of per cron jobs executions, disabled by default
+          max: 3                      # executions limit
+      singleton:
+        enabled: true                 # to execute the cron jobs in singleton mode, disabled by default
+        mode: wait                    # "wait" or "reschedule"
+    log:
+      enabled: true                   # to log cron jobs executions, disabled by default (errors will always be logged).
+      exclude:                        # to exclude by name cron jobs from logging
+        - foo
+        - bar
+    metrics:
+      collect:
+        enabled: true                 # to collect cron jobs executions metrics (executions count and duration), disabled by default
+        namespace: foo                # cron jobs metrics namespace (empty by default)
+        subsystem: bar                # cron jobs metrics subsystem (empty by default)
+      buckets: 1, 1.5, 10, 15, 100    # to define custom cron jobs executions durations metric buckets (in seconds)
+    trace:
+      enabled: true                   # to trace cron jobs executions, disabled by default
+      exclude:                        # to exclude by name cron jobs from tracing
+        - foo
+        - bar
+```
+
 ## Usage
 
 This module provides the possibility to register [CronJob](https://github.com/ankorstore/yokai/blob/main/fxcron/registry.go) implementations, with:
@@ -152,55 +195,10 @@ You can use [https://crontab.guru](https://crontab.guru/) for building you cron 
 
 Yokai will automatically start the [Scheduler](https://github.com/go-co-op/gocron/blob/v2/scheduler.go) with the registered cron jobs.
 
-You can get, in real time, the status of your cron jobs on the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) dashboard:
+You can get, in real time, the status of your cron jobs on the [core](fxcore.md#dashboard) dashboard:
 
 ![](../../assets/images/cron-tutorial-core-jobs-light.png#only-light)
 ![](../../assets/images/cron-tutorial-core-jobs-dark.png#only-dark)
-
-## Configuration
-
-Configuration reference:
-
-```yaml title="configs/config.yaml"
-modules:
-  cron:
-    scheduler:
-      seconds: true                   # to allow seconds based cron jobs expressions (impact all jobs), disabled by default
-      concurrency:
-        limit:
-          enabled: true               # to limit concurrent cron jobs executions, disabled by default
-          max: 3                      # concurrency limit
-          mode: wait                  # "wait" or "reschedule"
-      stop:
-        timeout: 5s                   # scheduler shutdown timeout for graceful cron jobs termination, 10 seconds by default
-    jobs:                             # common cron jobs options
-      execution:
-        start:
-          immediately: true           # to start cron jobs executions immediately (by default)
-          at: "2023-01-01T14:00:00Z"  # or a given date time (RFC3339)
-        limit:
-          enabled: true               # to limit the number of per cron jobs executions, disabled by default
-          max: 3                      # executions limit
-      singleton:
-        enabled: true                 # to execute the cron jobs in singleton mode, disabled by default
-        mode: wait                    # "wait" or "reschedule"
-    log:
-      enabled: true                   # to log cron jobs executions, disabled by default (errors will always be logged).
-      exclude:                        # to exclude by name cron jobs from logging
-        - foo
-        - bar
-    metrics:
-      collect:
-        enabled: true                 # to collect cron jobs executions metrics (executions count and duration), disabled by default
-        namespace: app                # cron jobs metrics namespace (default app.name value)
-        subsystem: cron               # cron jobs metrics subsystem (default cron)
-      buckets: 1, 1.5, 10, 15, 100    # to define custom cron jobs executions durations metric buckets (in seconds)
-    trace:
-      enabled: true                   # to trace cron jobs executions, disabled by default
-      exclude:                        # to exclude by name cron jobs from tracing
-        - foo
-        - bar
-```
 
 ## Logging
 
@@ -222,7 +220,7 @@ As a result, log records will have the `cronJob` name and `cronJobExecutionID` f
 INF job execution success cronJob=example-cron-job cronJobExecutionID=507a78d2-b466-445c-a113-9a3a89f6fbc7 service=app system=cron
 ```
 
-The cron jobs logging will be based on the [fxlog](fxlog.md) module configuration.
+The cron jobs logging will be based on the [log](fxlog.md) module configuration.
 
 ## Tracing
 
@@ -249,7 +247,7 @@ CronJobExecutionID: 507a78d2-b466-445c-a113-9a3a89f6fbc7
 ...
 ```
 
-The cron jobs tracing will be based on the [fxtrace](fxtrace.md) module configuration.
+The cron jobs tracing will be based on the [trace](fxtrace.md) module configuration.
 
 ## Metrics
 
@@ -261,8 +259,8 @@ modules:
     metrics:
       collect:
         enabled: true                 # to collect cron jobs executions metrics (executions count and duration), disabled by default
-        namespace: app                # cron jobs metrics namespace (default app.name value)
-        subsystem: cron               # cron jobs metrics subsystem (default cron)
+        namespace: foo                # cron jobs metrics namespace (empty by default)
+        subsystem: bar                # cron jobs metrics subsystem (empty by default)
       buckets: 1, 1.5, 10, 15, 100    # to define custom cron jobs executions durations metric buckets (in seconds)
 ```
 
@@ -272,37 +270,37 @@ This will collect metrics about:
 - cron job failures
 - cron job execution durations
 
-For example, after starting Yokai's cron jobs scheduler, the [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) HTTP server will expose in the configured metrics endpoint:
+For example, after starting Yokai's cron jobs scheduler, the [core](fxcore.md) HTTP server will expose in the configured metrics endpoint:
 
 ```makefile title="[GET] /metrics"
 # ...
-# HELP app_cron_job_execution_duration_seconds Duration of cron job executions in seconds
-# TYPE app_cron_job_execution_duration_seconds histogram
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="0.001"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="0.002"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="0.005"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="0.01"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="0.02"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="0.05"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="0.1"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="0.2"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="0.5"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="1"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="2"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="5"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="10"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="20"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="50"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="100"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="200"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="500"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="1000"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="2000"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="5000"} 2
-app_cron_job_execution_duration_seconds_bucket{job="example_cron_job",le="+Inf"} 2
-app_cron_job_execution_duration_seconds_sum{job="example_cron_job"} 0.000227993
-app_cron_job_execution_duration_seconds_count{job="example_cron_job"} 2
-# HELP app_cron_job_execution_total Total number of cron job executions
-# TYPE app_cron_job_execution_total counter
-app_cron_job_execution_total{job="example_cron_job",status="success"} 2
+# HELP cron_execution_duration_seconds Duration of cron job executions in seconds
+# TYPE cron_execution_duration_seconds histogram
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="0.001"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="0.002"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="0.005"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="0.01"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="0.02"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="0.05"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="0.1"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="0.2"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="0.5"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="1"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="2"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="5"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="10"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="20"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="50"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="100"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="200"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="500"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="1000"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="2000"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="5000"} 2
+cron_execution_duration_seconds_bucket{job="example_cron_job",le="+Inf"} 2
+cron_execution_duration_seconds_sum{job="example_cron_job"} 0.000227993
+cron_execution_duration_seconds_count{job="example_cron_job"} 2
+# HELP cron_execution_total Total number of cron job executions
+# TYPE cron_execution_total counter
+cron_execution_total{job="example_cron_job",status="success"} 2
 ```
