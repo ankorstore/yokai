@@ -1,4 +1,4 @@
-# Yokai <img src="docs/assets/images/yokai-bck.png" align="right" width="120" />
+# Yokai <img src="docs/assets/images/yokai-bck.png" align="right" width="150" />
 
 <!-- badges: start -->
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
