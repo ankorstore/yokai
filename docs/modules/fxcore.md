@@ -12,7 +12,7 @@ icon: material/cube-outline
 
 ## Overview
 
-Yokai provides a [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) module, the heart of your applications.
+Yokai provides a [fxcore](https://github.com/ankorstore/yokai/tree/main/fxcore) module, the `heart of your applications`.
 
 It comes with:
 

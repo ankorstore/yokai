@@ -76,3 +76,4 @@ To go further, you can:
 
 - check the [HTTP server](../modules/fxhttpserver.md) module documentation to learn more about its features
 - follow the [HTTP application tutorial](../tutorials/http-application.md) to create, step by step, an HTTP application
+- test the [HTTP demo application](../demos/http-application.md) to see all this in action

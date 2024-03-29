@@ -78,4 +78,5 @@ To go further, you can:
 
 - check the [worker](../modules/fxworker.md) module documentation to learn more about its features
 - follow the [worker application tutorial](../tutorials/worker-application.md) to create, step by step, a worker application
+- test the [worker demo application](../demos/worker-application.md) to see all this in action
 
