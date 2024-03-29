@@ -13,8 +13,8 @@
 
 <!-- TOC -->
 * [Goals](#goals)
+* [Documentation](#documentation)
 * [Overview](#overview)
-  * [Documentation](#documentation)
   * [Architecture](#architecture)
   * [Foundations](#foundations)
   * [Extensions](#extensions)
@@ -36,11 +36,11 @@ To solve this, Yokai was created with the following goals in mind:
 
 In other words, Yokai lets you focus on your application logic, while taking care of the rest.
 
-## Overview
-
-### Documentation
+## Documentation
 
 Yokai's documentation is available online: [https://ankorstore.github.io/yokai](https://ankorstore.github.io/yokai).
+
+## Overview
 
 ### Architecture
 
@@ -74,9 +74,9 @@ Yokai's `extension system` enables you to `enrich` your application features wit
 
 Yokai provides ready to use `application templates` to start your projects:
 
-- for [gRPC applications](https://ankorstore.github.io/yokai/getting-started/grpc-application.md)
-- for [HTTP applications](https://ankorstore.github.io/yokai/getting-started/http-application.md)
-- for [worker applications](https://ankorstore.github.io/yokai/getting-started/worker-application.md)
+- for [gRPC applications](https://ankorstore.github.io/yokai/getting-started/grpc-application)
+- for [HTTP applications](https://ankorstore.github.io/yokai/getting-started/http-application)
+- for [worker applications](https://ankorstore.github.io/yokai/getting-started/worker-application)
 
 ## Contributing
 
