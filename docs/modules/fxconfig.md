@@ -127,9 +127,12 @@ fmt.Printf("string_value: %s", s.config.GetString("config.values.string_value"))
 fmt.Printf("int_value: %s", s.config.GetInt("config.values.int_value"))          // int_value: 0
 ```
 
-You can use any value for `APP_ENV` (to allow you to reflect your own envs): for example if `APP_ENV=custom`, the module
-will use `config.yaml` values and override them with `config.custom.yaml` values (you just need to ensure
-that `config.custom.yaml` exists).
+You can use any value for `APP_ENV`, to reflect your own environments names.
+
+For example if `APP_ENV=custom`, the module
+will use `config.yaml` values and override them with `config.custom.yaml` values.
+
+You just need to ensure that `config.custom.yaml` exists.
 
 ### Env var placeholders
 

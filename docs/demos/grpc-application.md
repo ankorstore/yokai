@@ -8,7 +8,7 @@ icon: material/folder-eye-outline
 
 ## Overview
 
-This [gRPC demo application](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo) is a simple gRPC API offering a [text transformation service](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/transform.proto).
+This [gRPC demo application](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo) is a simple gRPC API offering a [text transformation service](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/example.proto).
 
 It provides:
 
@@ -60,7 +60,7 @@ After a short moment, the application will offer:
 
 ### Available services
 
-This demo application provides a [TransformTextService](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/transform.proto), with the following `RPCs`:
+This demo application provides a [TransformTextService](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/example.proto), with the following `RPCs`:
 
 | RPC                     | Type      | Description                                                  |
 |-------------------------|-----------|--------------------------------------------------------------|
@@ -69,7 +69,7 @@ This demo application provides a [TransformTextService](https://github.com/ankor
 
 This demo application also provides [reflection](../modules/fxgrpcserver.md#reflection) and [health check ](../modules/fxgrpcserver.md#health-check) services.
 
-If you update the [proto definition](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/transform.proto), you can run `make stubs` to regenerate the stubs.
+If you update the [proto definition](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/example.proto), you can run `make stubs` to regenerate the stubs.
 
 ### Authentication
 
@@ -86,7 +86,7 @@ Usage examples with [grpcurl](https://github.com/fullstorydev/grpcurl):
 - with `TransformTextService/TransformText`:
 
 ```shell
-grpcurl -plaintext -d '{"text":"abc","transformer":"TRANSFORMER_UPPERCASE"}' localhost:50051 transform.TransformTextService/TransformText
+grpcurl -plaintext -d '{"text":"abc","transformer":"TRANSFORMER_UPPERCASE"}' localhost:50051 example.TransformTextService/TransformText
 {
   "text": "ABC"
 }
@@ -95,7 +95,7 @@ grpcurl -plaintext -d '{"text":"abc","transformer":"TRANSFORMER_UPPERCASE"}' loc
 - with `TransformTextService/TransformAndSplitText`:
 
 ```shell
-grpcurl -plaintext -d '{"text":"ABC DEF","transformer":"TRANSFORMER_LOWERCASE"}' localhost:50051 transform.TransformTextService/TransformAndSplitText
+grpcurl -plaintext -d '{"text":"ABC DEF","transformer":"TRANSFORMER_LOWERCASE"}' localhost:50051 example.TransformTextService/TransformAndSplitText
 {
   "text": "abc"
 }

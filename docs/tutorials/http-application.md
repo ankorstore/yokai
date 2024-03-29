@@ -72,7 +72,7 @@ Welcome to http-app.
 
 To ease development, [Air](https://github.com/cosmtrek/air) is watching any changes you perform on `Go code` or `config files` to perform hot reload.
 
-Let's rename your application in `gopher-api` by updating `app.name` in the configuration:
+Let's rename your application to `gopher-api` by updating `app.name` in the configuration:
 
 ```yaml title="config/config.yaml"
 app:
@@ -123,8 +123,6 @@ Let's start your application implementation, by:
 Let's update your `docker-compose.yaml` to add a [MySQL](https://www.mysql.com/) container to your stack:
 
 ```yaml title="docker-compose.yaml"
-version: '3.9'
-
 services:
   gopher-api-app:
     container_name: gopher-api-app

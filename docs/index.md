@@ -17,7 +17,7 @@ icon: material/book-open-page-variant-outline
 
 Building backend applications with [Go](https://go.dev/) is amazing.
 
-But to build production-grade applications, you need to put in place a bunch of efforts and boilerplate code, introducing complexity not even related to the logic of your application (like dependencies wiring, configuration management, observability instrumentation, etc.).
+But to build `production-grade` applications, you need to put in place a bunch of efforts and boilerplate code, introducing complexity not even related to the logic of your application (like dependencies wiring, configuration management, observability instrumentation, etc.).
 
 To solve this, Yokai was created with the following goals in mind:
 
@@ -39,14 +39,14 @@ In other words, Yokai lets you focus on your application logic, while taking car
 
 ### Foundations
 
-Yokai was built using `robust` and `well known` Go libraries, like:
+Yokai was built using `robust` and `well known` Go libraries, such as:
 
 - [Echo](https://github.com/labstack/echo) for HTTP servers
 - [gRPC-go](https://github.com/grpc/grpc-go) for gRPC servers
 - [Viper](https://github.com/spf13/viper) for configuration management
 - [OTEL](https://github.com/open-telemetry/opentelemetry-go) for observability instrumentation
 - [Fx](https://github.com/uber-go/fx) for dependency injection system
-- and more...
+- and more.
 
 
 ### Extensions

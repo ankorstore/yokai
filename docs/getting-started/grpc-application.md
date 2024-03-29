@@ -80,5 +80,5 @@ If you update the [proto definition](https://github.com/ankorstore/yokai-grpc-te
 To go further, you can:
 
 - check the [gRPC server](../modules/fxgrpcserver.md) module documentation to learn more about its features
-- follow the [gPRC application tutorial](../tutorials/grpc-application.md) to create, step by step, an gRPC application
+- follow the [gPRC application tutorial](../tutorials/grpc-application.md) to create, step by step, a gRPC application
 - test the [gPRC demo application](../demos/grpc-application.md) to see all this in action
