@@ -13,8 +13,8 @@
 
 <!-- TOC -->
 * [Goals](#goals)
-* [Documentation](#documentation)
 * [Overview](#overview)
+  * [Documentation](#documentation)
   * [Architecture](#architecture)
   * [Foundations](#foundations)
   * [Extensions](#extensions)
@@ -36,11 +36,11 @@ To solve this, Yokai was created with the following goals in mind:
 
 In other words, Yokai lets you focus on your application logic, while taking care of the rest.
 
-## Documentation
+## Overview
+
+### Documentation
 
 Yokai's documentation is available online: [https://ankorstore.github.io/yokai](https://ankorstore.github.io/yokai).
-
-## Overview
 
 ### Architecture
 
