@@ -9,6 +9,8 @@
   <img src="docs/assets/images/yokai-bck.png" width="300" />
 </p>
 
+<hr/>
+
 > Simple, modular, and observable Go framework for backend applications.
 
 <!-- TOC -->
