@@ -66,7 +66,7 @@ func Router() fx.Option {
 }
 ```
 
-It is recommended to keep routing definition separated from services definitions, for better maintainability. If you use the [HTTP application template](../getting-started/http-application.md), this is already done for you.
+It is recommended to keep routing registration separated from dependencies registration, for better maintainability. If you use the [HTTP application template](../getting-started/http-application.md), this is already done for you.
 
 ## Configuration
 
