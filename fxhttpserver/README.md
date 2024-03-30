@@ -429,7 +429,7 @@ func main() {
 
 ### WebSocket
 
-This module, supports the `WebSocket` protocol, see the [Echo documentation](https://echo.labstack.com/docs/cookbook/websocket) for more details.
+This module supports the `WebSocket` protocol, see the [Echo documentation](https://echo.labstack.com/docs/cookbook/websocket) for more information.
 
 ### Templates
 
