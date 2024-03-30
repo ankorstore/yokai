@@ -17,7 +17,7 @@ The [gRPC application template](https://github.com/ankorstore/yokai-grpc-templat
 
 ### Layout
 
-This template is following the [recommended project layout](https://go.dev/doc/modules/layout):
+This template is following the [recommended project layout](https://go.dev/doc/modules/layout#server-project):
 
 - `cmd/`: entry points
 - `configs/`: configuration files
