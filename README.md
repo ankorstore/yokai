@@ -26,7 +26,7 @@
 
 Building backend applications with [Go](https://go.dev/) is amazing.
 
-But to build production-grade applications, you need to put in place a bunch of efforts and boilerplate code, introducing complexity not even related to the logic of your application (like dependencies wiring, configuration management, observability instrumentation, etc.).
+But to build `production-grade` applications, you need to put in place a bunch of efforts and boilerplate code, introducing complexity not even related to the logic of your application (like dependencies wiring, configuration management, observability instrumentation, etc.).
 
 To solve this, Yokai was created with the following goals in mind:
 
