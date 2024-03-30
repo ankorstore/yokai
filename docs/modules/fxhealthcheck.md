@@ -97,7 +97,7 @@ func (p *FailureProbe) Check(context.Context) *healthcheck.CheckerProbeResult {
 
 You can register your probes for `startup`, `liveness` and / or `readiness` checks with the `AsCheckerProbe()` function:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -107,7 +107,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// register the SuccessProbe probe for startup, liveness and readiness checks
 		fxhealthcheck.AsCheckerProbe(probe.NewSuccessProbe),

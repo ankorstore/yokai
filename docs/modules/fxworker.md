@@ -132,7 +132,7 @@ config:
 
 You can register your workers with the `AsWorker()` function:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -142,7 +142,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		fxworker.AsWorker(
 			w.NewExampleWorker,                   // register the ExampleWorker

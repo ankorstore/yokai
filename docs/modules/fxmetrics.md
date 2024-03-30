@@ -79,7 +79,7 @@ Even if convenient, it's recommended to NOT use the [promauto](https://github.co
 
 You can instead register your metrics collector with the `AsMetricsCollector()` function:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -88,7 +88,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// register the ExampleCounter metrics collector
 		fxmetrics.AsMetricsCollector(service.ExampleCounter),
