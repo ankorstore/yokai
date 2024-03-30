@@ -151,6 +151,11 @@ Let's start your application implementation, by:
 
 #### Definition
 
+We want to create a service that offer 2 RPC:
+
+- `TransformText`: this accepts a `text` and optionally a `transformer`, and returns the `transformed text`.
+- `TransformAndSplitText`: this accepts a `text` and optionally a `transformer`, and streams the `transformed text` split in `words`.
+
 Let's update your `proto/example.proto` to define the `TransformTextService`:
 
 ```protobuf title="proto/example.proto"
@@ -210,7 +215,9 @@ First, since we updated the `protobuf definition` and the `stubs`, you **must de
 - `internal/service/example.go`
 - `internal/service/example_test.go`
 
-as they are now obsolete. 
+as they are now obsolete.
+
+You also **must remove** the template example service registration from `internal/services.go`.
 
 We can then create a `TransformTextService` in `internal/service/transform.go`:
 
@@ -220,13 +227,10 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"strings"
 
 	"github.com/ankorstore/yokai/config"
-	"github.com/ankorstore/yokai/log"
-	"github.com/ankorstore/yokai/trace"
 	"github.com/foo/bar/proto"
 )
 
@@ -242,40 +246,22 @@ func NewTransformTextService(cfg *config.Config) *TransformTextService {
 }
 
 func (s *TransformTextService) TransformText(ctx context.Context, in *proto.TransformTextRequest) (*proto.TransformTextResponse, error) {
-	ctx, span := trace.CtxTracerProvider(ctx).Tracer("TransformTextService").Start(ctx, "TransformText")
-	defer span.End()
-
-	transformedText := s.transform(in)
-
-	log.CtxLogger(ctx).Info().Msgf("TransformText: %s -> %s", in.Text, transformedText)
-
 	return &proto.TransformTextResponse{
-		Text: transformedText,
+		Text: s.transform(in),
 	}, nil
 }
 
 func (s *TransformTextService) TransformAndSplitText(stream proto.TransformTextService_TransformAndSplitTextServer) error {
-	ctx := stream.Context()
-
-	ctx, span := trace.CtxTracerProvider(ctx).Tracer("TransformTextService").Start(ctx, "TransformAndSplitText")
-	defer span.End()
-
-	logger := log.CtxLogger(ctx)
-
 	for {
 		req, err := stream.Recv()
 
 		if errors.Is(err, io.EOF) {
-			logger.Info().Msg("TransformTextAndSplit: end of rpc")
-
 			return nil
 		}
 
 		if err != nil {
-			logger.Error().Err(err).Msgf("TransformTextAndSplit: error while receiving: %v", err)
+			return err
 		}
-
-		logger.Info().Msgf("TransformTextAndSplit: -> %s", req.Text)
 
 		split := strings.Split(s.transform(req), " ")
 
@@ -285,14 +271,8 @@ func (s *TransformTextService) TransformAndSplitText(stream proto.TransformTextS
 			})
 
 			if err != nil {
-				logger.Error().Err(err).Msgf("TransformTextAndSplit: error while sending: %v", err)
-
 				return err
 			}
-
-			span.AddEvent(fmt.Sprintf("send word: %s", word))
-
-			logger.Info().Msgf("TransformTextAndSplit: <- %s", word)
 		}
 	}
 }
@@ -304,71 +284,12 @@ func (s *TransformTextService) transform(in *proto.TransformTextRequest) string 
 	case proto.Transformer_TRANSFORMER_LOWERCASE:
 		return strings.ToLower(in.Text)
 	default:
-		return in.Text
+		if strings.ToLower(s.config.GetString("config.transform.default")) == "upper" {
+			return strings.ToUpper(in.Text)
+		} else {
+			return strings.ToLower(in.Text)
+		}
 	}
-}
-```
-
-We then need to register the repository in `internal/services.go`:
-
-```go title="internal/services.go"
-package internal
-
-import (
-	"github.com/ankorstore/yokai/fxhealthcheck"
-	"github.com/ankorstore/yokai/orm/healthcheck"
-	"github.com/foo/bar/internal/repository"
-	"go.uber.org/fx"
-)
-
-func ProvideServices() fx.Option {
-	return fx.Options(
-		// orm probe
-		fxhealthcheck.AsCheckerProbe(healthcheck.NewOrmProbe),
-		// services
-		fx.Provide(
-			// gophers repository
-			repository.NewGopherRepository,
-		),
-	)
-}
-```
-
-This will automatically inject the `*gorm.DB` in the `GopherRepository` constructor.
-
-### Service
-
-Now that we have a repository, let's create a `GopherService`, with:
-
-- the `Create()` function to `create` a gopher
-- and the `List()` function to `list` all gophers
-
-```go title="internal/service/gopher.go"
-package service
-
-import (
-	"context"
-
-	"github.com/foo/bar/internal/model"
-	"github.com/foo/bar/internal/repository"
-)
-
-type GopherService struct {
-	repository *repository.GopherRepository
-}
-
-func NewGopherService(repository *repository.GopherRepository) *GopherService {
-	return &GopherService{
-		repository: repository,
-	}
-}
-
-func (s *GopherService) Create(ctx context.Context, gopher *model.Gopher) error {
-	return s.repository.Create(ctx, gopher)
-}
-
-func (s *GopherService) List(ctx context.Context) ([]model.Gopher, error) {
-	return s.repository.FindAll(ctx)
 }
 ```
 
@@ -378,201 +299,30 @@ We then need to register the service in `internal/services.go`:
 package internal
 
 import (
-	"github.com/ankorstore/yokai/fxhealthcheck"
-	"github.com/ankorstore/yokai/orm/healthcheck"
-	"github.com/foo/bar/internal/repository"
+	"github.com/ankorstore/yokai/fxgrpcserver"
 	"github.com/foo/bar/internal/service"
+	"github.com/foo/bar/proto"
 	"go.uber.org/fx"
 )
 
+// ProvideServices is used to register the application services.
 func ProvideServices() fx.Option {
 	return fx.Options(
-		// orm probe
-		fxhealthcheck.AsCheckerProbe(healthcheck.NewOrmProbe),
-		// services
-		fx.Provide(
-			// gophers repository
-			repository.NewGopherRepository,
-			// gophers service
-			service.NewGopherService,
-		),
+		// gRPC service
+		fxgrpcserver.AsGrpcServerService(service.NewTransformTextService, &proto.TransformTextService_ServiceDesc),
 	)
 }
 ```
 
-This will automatically inject the `*repository.GopherRepository` in the `GopherService` constructor.
+This will automatically inject the `*config.Config` in the `TransformTextService` constructor.
 
-### HTTP handlers
+Lets' configure the default `transformer` to apply if none is provided:
 
-Now that we have a `GopherService` able to create and list gophers, let's expose it via HTTP endpoints in your application.
-
-#### Create handler
-
-Let's create a `CreateGopherHandler` to handle requests on `[POST] /gophers` to create gophers:
-
-```go title="internal/handler/gopher/create.go"
-package gopher
-
-import (
-	"fmt"
-	"net/http"
-
-	"github.com/foo/bar/internal/model"
-	"github.com/foo/bar/internal/service"
-	"github.com/labstack/echo/v4"
-)
-
-type CreateGopherHandler struct {
-	service *service.GopherService
-}
-
-func NewCreateGopherHandler(service *service.GopherService) *CreateGopherHandler {
-	return &CreateGopherHandler{
-		service: service,
-	}
-}
-
-func (h *CreateGopherHandler) Handle() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		gopher := new(model.Gopher)
-		if err := c.Bind(gopher); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("cannot bind gopher: %v", err))
-		}
-
-		err := h.service.Create(c.Request().Context(), gopher)
-		if err != nil {
-			return fmt.Errorf("cannot create gopher: %w", err)
-		}
-
-		return c.JSON(http.StatusCreated, gopher)
-	}
-}
+```yaml title="configs/config.yaml"
+config:
+  transform:
+    default: upper
 ```
-
-We then need to register the handler for `[POST] /gophers` in `internal/routing.go`:
-
-```go title="internal/routing.go"
-package internal
-
-import (
-	"github.com/ankorstore/yokai/fxhttpserver"
-	"github.com/foo/bar/internal/handler"
-	"github.com/foo/bar/internal/handler/gopher"
-	"go.uber.org/fx"
-)
-
-func ProvideRouting() fx.Option {
-	return fx.Options(
-		fxhttpserver.AsHandler("GET", "", handler.NewExampleHandler),
-		// gopher creation
-		fxhttpserver.AsHandler("POST", "/gophers", gopher.NewCreateGopherHandler),
-	)
-}
-```
-
-Let's try to call it:
-
-```shell title="POST http://localhost:8080/gophers"
-curl -X POST http://localhost:8080/gophers -H 'Content-Type: application/json' -d '{"name":"bob","job":"builder"}'                   
-{
-  "ID": 1,
-  "CreatedAt": "2024-02-06T10:29:26.497Z",
-  "UpdatedAt": "2024-02-06T10:29:26.497Z",
-  "DeletedAt": null,
-  "name": "bob",
-  "job": "builder"
-}
-```
-
-You should receive a response with status `201` (created), and with the created gopher representation.
-
-You can check the [HTTP server](../modules/fxhttpserver.md#handlers-registration) module documentation if you need more information about registering handlers.
-
-#### List handler
-
-Let's now create a `ListGopherHandler` to handle requests on `[GET] /gophers` to list gophers:
-
-```go title="internal/handler/gopher/list.go"
-package gopher
-
-import (
-	"fmt"
-	"net/http"
-
-	"github.com/foo/bar/internal/service"
-	"github.com/labstack/echo/v4"
-)
-
-type ListGophersHandler struct {
-	service *service.GopherService
-}
-
-func NewListGophersHandler(service *service.GopherService) *ListGophersHandler {
-	return &ListGophersHandler{
-		service: service,
-	}
-}
-
-func (h *ListGophersHandler) Handle() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		gophers, err := h.service.List(c.Request().Context())
-		if err != nil {
-			return fmt.Errorf("cannot list gophers: %w", err)
-		}
-
-		return c.JSON(http.StatusOK, gophers)
-	}
-}
-```
-
-We then need to register the handler for `[GET] /gophers` in `internal/routing.go`.
-
-We can group our handlers registration with `fxhttpserver.AsHandlersGroup()`:
-
-```go title="internal/routing.go"
-package internal
-
-import (
-	"github.com/ankorstore/yokai/fxhttpserver"
-	"github.com/foo/bar/internal/handler"
-	"github.com/foo/bar/internal/handler/gopher"
-	"go.uber.org/fx"
-)
-
-func ProvideRouting() fx.Option {
-	return fx.Options(
-		fxhttpserver.AsHandler("GET", "", handler.NewExampleHandler),
-		// gopher handlers group
-		fxhttpserver.AsHandlersGroup(
-			"/gophers",
-			[]*fxhttpserver.HandlerRegistration{
-				fxhttpserver.NewHandlerRegistration("GET", "", gopher.NewListGophersHandler),
-				fxhttpserver.NewHandlerRegistration("POST", "", gopher.NewCreateGopherHandler),
-			},
-		),
-	)
-}
-```
-
-You can check the [HTTP server](../modules/fxhttpserver.md#handlers-groups-registration) module documentation if you need more information about registering handlers groups.
-
-Let's try to call it:
-
-```shell title="GET http://localhost:8080/gophers"
-curl http://localhost:8080/gophers                                                                                
-[
-  {
-    "ID": 1,
-    "CreatedAt": "2024-02-06T10:29:26.497Z",
-    "UpdatedAt": "2024-02-06T10:29:26.497Z",
-    "DeletedAt": null,
-    "name": "bob",
-    "job": "builder"
-  }
-]
-```
-
-You should receive a response with status `200` (ok), and with a list of gophers containing the one previously created.
 
 ## Observability
 

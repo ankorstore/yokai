@@ -4,11 +4,11 @@ icon: material/folder-eye-outline
 
 # :material-folder-eye-outline: Demo - gRPC application
 
-> Yokai provides a [gRPC demo application](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo).
+> Yokai's [showroom](https://github.com/ankorstore/yokai-showroom) provides a [gRPC demo application](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo).
 
 ## Overview
 
-This [gRPC demo application](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo) is a simple gRPC API offering a [text transformation service](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/example.proto).
+This [gRPC demo application](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo) is a simple gRPC API offering a [text transformation service](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/transform.proto).
 
 It provides:
 
@@ -17,15 +17,15 @@ It provides:
 
 ### Layout
 
-This demo application is following the [standard go project layout](https://github.com/golang-standards/project-layout):
+This demo application is following the [recommended project layout](https://go.dev/doc/modules/layout):
 
 - `cmd/`: entry points
 - `configs/`: configuration files
 - `internal/`:
-	- `interceptor/`: gRPC interceptors
-	- `service/`: gRPC services
-	- `bootstrap.go`: bootstrap (modules, lifecycles, etc)
-	- `services.go`: dependency injection
+  	- `interceptor/`: gRPC interceptors
+  	- `service/`: gRPC services
+  	- `bootstrap.go`: bootstrap
+  	- `register.go`: dependencies registration
 - `proto/`: protobuf definition and stubs
 
 ### Makefile
@@ -37,7 +37,7 @@ make up     # start the docker compose stack
 make down   # stop the docker compose stack
 make logs   # stream the docker compose stack logs
 make fresh  # refresh the docker compose stack
-make stubs  # generate gRPC stubs with protoc
+make stubs  # generate gRPC stubs with protoc (ex: make stubs from=proto/transform.proto)
 make test   # run tests
 make lint   # run linter
 ```
@@ -60,16 +60,18 @@ After a short moment, the application will offer:
 
 ### Available services
 
-This demo application provides a [TransformTextService](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/example.proto), with the following `RPCs`:
+This demo application provides a [TransformTextService](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/transform.proto), with the following `RPCs`:
 
 | RPC                     | Type      | Description                                                  |
 |-------------------------|-----------|--------------------------------------------------------------|
 | `TransformText`         | unary     | Transforms a given text using a given transformer            |
 | `TransformAndSplitText` | streaming | Transforms and splits a given text using a given transformer |
 
-This demo application also provides [reflection](../modules/fxgrpcserver.md#reflection) and [health check ](../modules/fxgrpcserver.md#health-check) services.
+If no `Transformer` is provided, the transformation configured in `config.transform.default` will be applied.
 
-If you update the [proto definition](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/example.proto), you can run `make stubs` to regenerate the stubs.
+If you update the [proto definition](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/proto/example.proto), you can run `make stubs from=proto/transform.proto` to regenerate the stubs.
+
+This demo application also provides [reflection](../modules/fxgrpcserver.md#reflection) and [health check ](../modules/fxgrpcserver.md#health-check) services.
 
 ### Authentication
 
@@ -81,12 +83,12 @@ If enabled, you need to provide the secret configured in `config.authentication.
 
 ### Examples
 
-Usage examples with [grpcurl](https://github.com/fullstorydev/grpcurl):
+Usage examples with [gRPCurl](https://github.com/fullstorydev/grpcurl):
 
 - with `TransformTextService/TransformText`:
 
 ```shell
-grpcurl -plaintext -d '{"text":"abc","transformer":"TRANSFORMER_UPPERCASE"}' localhost:50051 example.TransformTextService/TransformText
+grpcurl -plaintext -d '{"text":"abc","transformer":"TRANSFORMER_UPPERCASE"}' localhost:50051 transform.TransformTextService/TransformText
 {
   "text": "ABC"
 }
@@ -95,7 +97,7 @@ grpcurl -plaintext -d '{"text":"abc","transformer":"TRANSFORMER_UPPERCASE"}' loc
 - with `TransformTextService/TransformAndSplitText`:
 
 ```shell
-grpcurl -plaintext -d '{"text":"ABC DEF","transformer":"TRANSFORMER_LOWERCASE"}' localhost:50051 example.TransformTextService/TransformAndSplitText
+grpcurl -plaintext -d '{"text":"ABC DEF","transformer":"TRANSFORMER_LOWERCASE"}' localhost:50051 transform.TransformTextService/TransformAndSplitText
 {
   "text": "abc"
 }

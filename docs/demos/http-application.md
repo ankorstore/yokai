@@ -4,7 +4,7 @@ icon: material/folder-eye-outline
 
 # :material-folder-eye-outline: Demo - HTTP application
 
-> Yokai provides a [HTTP demo application](https://github.com/ankorstore/yokai-showroom/tree/main/http-demo).
+> Yokai's [showroom](https://github.com/ankorstore/yokai-showroom) provides an [HTTP demo application](https://github.com/ankorstore/yokai-showroom/tree/main/http-demo).
 
 ## Overview
 
@@ -12,25 +12,25 @@ This [HTTP demo application](https://github.com/ankorstore/yokai-showroom/tree/m
 
 It provides:
 
-- a [Yokai](https://github.com/ankorstore/yokai) application container, with the [HTTP server](../modules/fxhttpserver.md) module to offer the gophers API
+- a [Yokai](https://github.com/ankorstore/yokai) application container, with the [HTTP server](../modules/fxhttpserver.md) and [ORM](../modules/fxorm.md) modules to offer the gophers API
 - a [MySQL](https://www.mysql.com/) container to store the gophers
 - a [Jaeger](https://www.jaegertracing.io/) container to collect the application traces
 
 ### Layout
 
-This demo application is following the [standard go project layout](https://github.com/golang-standards/project-layout):
+This demo application is following the [recommended project layout](https://go.dev/doc/modules/layout):
 
 - `cmd/`: entry points
 - `configs/`: configuration files
 - `internal/`:
-	- `handler/`: HTTP handlers
-	- `middleware/`: HTTP middlewares
-	- `model/`: models
-	- `repository/`: models repositories
-	- `service/`: services
-	- `bootstrap.go`: bootstrap (modules, lifecycles, etc)
-	- `routing.go`: routing
-	- `services.go`: dependency injection
+  	- `handler/`: HTTP handlers
+  	- `middleware/`: HTTP middlewares
+  	- `model/`: models
+  	- `repository/`: models repositories
+  	- `service/`: services
+  	- `bootstrap.go`: bootstrap
+  	- `register.go`: dependencies registration
+  	- `router.go`: routing registration
 
 ### Makefile
 

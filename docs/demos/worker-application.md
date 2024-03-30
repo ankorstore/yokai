@@ -4,7 +4,7 @@ icon: material/folder-eye-outline
 
 # :material-folder-eye-outline: Demo - worker application
 
-> Yokai provides a [worker demo application](https://github.com/ankorstore/yokai-showroom/tree/main/worker-demo).
+> Yokai's [showroom](https://github.com/ankorstore/yokai-showroom) provides a [worker demo application](https://github.com/ankorstore/yokai-showroom/tree/main/worker-demo).
 
 ## Overview
 
@@ -19,14 +19,14 @@ It provides:
 
 ### Layout
 
-This demo application is following the [standard go project layout](https://github.com/golang-standards/project-layout):
+This demo application is following the [recommended project layout](https://go.dev/doc/modules/layout):
 
 - `cmd/`: entry points
 - `configs/`: configuration files
 - `internal/`:
 	- `worker/`: workers
-	- `bootstrap.go`: bootstrap (modules, lifecycles, etc)
-	- `services.go`: dependency injection
+	- `bootstrap.go`: bootstrap
+	- `register.go`: dependencies registration
 
 ### Makefile
 

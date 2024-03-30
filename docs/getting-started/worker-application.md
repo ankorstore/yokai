@@ -12,18 +12,19 @@ The [worker application template](https://github.com/ankorstore/yokai-worker-tem
 
 - a ready to extend [Yokai](https://github.com/ankorstore/yokai) application, with the [worker](../modules/fxworker.md) module installed
 - a ready to use [dev environment](https://github.com/ankorstore/yokai-worker-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/cosmtrek/air) (for live reloading)
+- a ready to use [Dockerfile](https://github.com/ankorstore/yokai-worker-template/blob/main/Dockerfile) for production
 - some examples of [worker](https://github.com/ankorstore/yokai-worker-template/blob/main/internal/worker/example.go) and [test](https://github.com/ankorstore/yokai-worker-template/blob/main/internal/worker/example_test.go) to get started
 
 ### Layout
 
-This template is following the [standard Go project layout](https://github.com/golang-standards/project-layout):
+This template is following the [recommended project layout](https://go.dev/doc/modules/layout):
 
 - `cmd/`: entry points
 - `configs/`: configuration files
 - `internal/`:
 	- `worker/`: worker and test examples
-	- `bootstrap.go`: bootstrap (modules, lifecycles, etc)
-	- `services.go`: services registration
+	- `bootstrap.go`: bootstrap
+	- `register.go`: dependencies registration
 
 ### Makefile
 
@@ -44,7 +45,7 @@ make lint   # run linter
 
 You can create your repository [using the GitHub template](https://github.com/new?template_name=yokai-worker-template&template_owner=ankorstore).
 
-It will automatically rename your project resources and push them, this operation can take a few minutes.
+It will automatically rename your project resources, this operation can take a few minutes.
 
 Once ready, after cloning and going into your repository, simply run:
 
