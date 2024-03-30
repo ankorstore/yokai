@@ -24,6 +24,7 @@ It provides:
 
 - a ready to extend [Yokai](https://github.com/ankorstore/yokai) application, with the [HTTP server](../modules/fxhttpserver.md) module installed
 - a ready to use [dev environment](https://github.com/ankorstore/yokai-http-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/cosmtrek/air) (for live reloading)
+- a ready to use [Dockerfile](https://github.com/ankorstore/yokai-http-template/blob/main/Dockerfile) for production
 - some examples of [handler](https://github.com/ankorstore/yokai-http-template/blob/main/internal/handler/example.go) and [test](https://github.com/ankorstore/yokai-http-template/blob/main/internal/handler/example_test.go) to get started
 
 ### Repository content
@@ -33,10 +34,10 @@ Once your repository is created, you should have the following the content:
 - `cmd/`: entry points
 - `configs/`: configuration files
 - `internal/`:
-	- `handler/`: handler and test examples
-	- `bootstrap.go`: bootstrap (modules, lifecycles, etc)
-	- `routing.go`: routing
-	- `services.go`: dependency injection
+	- `handler/`: HTTP handler and test examples
+	- `bootstrap.go`: bootstrap
+	- `register.go`: dependencies registration
+	- `router.go`: routing registration
 
 And a `Makefile`:
 
@@ -72,7 +73,7 @@ Welcome to http-app.
 
 To ease development, [Air](https://github.com/cosmtrek/air) is watching any changes you perform on `Go code` or `config files` to perform hot reload.
 
-Let's rename your application in `gopher-api` by updating `app.name` in the configuration:
+Let's rename your application to `gopher-api` by updating `app.name` in the configuration:
 
 ```yaml title="config/config.yaml"
 app:
@@ -123,8 +124,6 @@ Let's start your application implementation, by:
 Let's update your `docker-compose.yaml` to add a [MySQL](https://www.mysql.com/) container to your stack:
 
 ```yaml title="docker-compose.yaml"
-version: '3.9'
-
 services:
   gopher-api-app:
     container_name: gopher-api-app
@@ -206,7 +205,7 @@ import (
 // ...
 
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
-	// load fxorm module
+	// modules registration
 	fxorm.FxOrmModule,
 	// ...
 )
@@ -284,9 +283,9 @@ Yokai's [health check](../modules/fxhealthcheck.md) module allows the [core](../
 
 The [ORM](../modules/fxorm.md#health-check) module provides a ready to use [OrmProbe](https://github.com/ankorstore/yokai/blob/main/orm/healthcheck/probe.go), that will `ping` the database connection to check if it's healthy.
 
-To register it, you can use the `fxhealthcheck.AsCheckerProbe()` function in `internal/services.go`:
+To register it, you can use the `fxhealthcheck.AsCheckerProbe()` function in `internal/register.go`:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -295,7 +294,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// orm probe
 		fxhealthcheck.AsCheckerProbe(healthcheck.NewOrmProbe),
@@ -360,9 +359,9 @@ func (r *GopherRepository) FindAll(ctx context.Context) ([]model.Gopher, error) 
 }
 ```
 
-We then need to register the repository in `internal/services.go`:
+We then need to register the repository in `internal/register.go`:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -372,7 +371,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// orm probe
 		fxhealthcheck.AsCheckerProbe(healthcheck.NewOrmProbe),
@@ -423,9 +422,9 @@ func (s *GopherService) List(ctx context.Context) ([]model.Gopher, error) {
 }
 ```
 
-We then need to register the service in `internal/services.go`:
+We then need to register the service in `internal/register.go`:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -436,7 +435,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// orm probe
 		fxhealthcheck.AsCheckerProbe(healthcheck.NewOrmProbe),
@@ -452,6 +451,10 @@ func ProvideServices() fx.Option {
 ```
 
 This will automatically inject the `*repository.GopherRepository` in the `GopherService` constructor.
+
+In this example, this service layer is just using the repository, but in real applications, service layers are useful for example to separate business logic from data access (using the injected repository).
+
+Yokai's automatic dependency injection encourages to create clean code with a good separation of concerns.
 
 ### HTTP handlers
 
@@ -500,9 +503,9 @@ func (h *CreateGopherHandler) Handle() echo.HandlerFunc {
 }
 ```
 
-We then need to register the handler for `[POST] /gophers` in `internal/routing.go`:
+We then need to register the handler for `[POST] /gophers` in `internal/router.go`:
 
-```go title="internal/routing.go"
+```go title="internal/router.go"
 package internal
 
 import (
@@ -512,7 +515,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideRouting() fx.Option {
+func Router() fx.Option {
 	return fx.Options(
 		fxhttpserver.AsHandler("GET", "", handler.NewExampleHandler),
 		// gopher creation
@@ -576,11 +579,11 @@ func (h *ListGophersHandler) Handle() echo.HandlerFunc {
 }
 ```
 
-We then need to register the handler for `[GET] /gophers` in `internal/routing.go`.
+We then need to register the handler for `[GET] /gophers` in `internal/router.go`.
 
 We can group our handlers registration with `fxhttpserver.AsHandlersGroup()`:
 
-```go title="internal/routing.go"
+```go title="internal/router.go"
 package internal
 
 import (
@@ -590,7 +593,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideRouting() fx.Option {
+func Router() fx.Option {
 	return fx.Options(
 		fxhttpserver.AsHandler("GET", "", handler.NewExampleHandler),
 		// gopher handlers group
@@ -872,9 +875,9 @@ func (s *GopherService) List(ctx context.Context) ([]model.Gopher, error) {
 }
 ```
 
-To collect this metric, we need to register it with `fxmetrics.AsMetricsCollector()` in `internal/services.go`:
+To collect this metric, we need to register it with `fxmetrics.AsMetricsCollector()` in `internal/register.go`:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -886,7 +889,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// orm probe
 		fxhealthcheck.AsCheckerProbe(healthcheck.NewOrmProbe),

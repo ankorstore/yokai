@@ -4,4 +4,6 @@ icon: material/school-outline
 
 # :material-school-outline: Tutorial - gRPC application
 
-:material-sign-caution: Coming soon.
+> How to build, step by step, an gRPC application with Yokai.
+
+:material-sign-caution: Coming soon...

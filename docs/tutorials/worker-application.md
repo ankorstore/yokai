@@ -26,6 +26,7 @@ It provides:
 
 - a ready to extend [Yokai](https://github.com/ankorstore/yokai) application, with the [worker](../modules/fxworker.md) module installed
 - a ready to use [dev environment](https://github.com/ankorstore/yokai-worker-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/cosmtrek/air) (for live reloading)
+- a ready to use [Dockerfile](https://github.com/ankorstore/yokai-worker-template/blob/main/Dockerfile) for production
 - some examples of [worker](https://github.com/ankorstore/yokai-worker-template/blob/main/internal/worker/example.go) and [test](https://github.com/ankorstore/yokai-worker-template/blob/main/internal/worker/example_test.go) to get started
 
 ### Repository content
@@ -36,8 +37,8 @@ Once your repository is created, you should have the following the content:
 - `configs/`: configuration files
 - `internal/`:
 	- `worker/`: worker and test examples
-	- `bootstrap.go`: bootstrap (modules, lifecycles, etc)
-	- `services.go`: services registration
+	- `bootstrap.go`: bootstrap
+	- `register.go`: dependencies registration
 
 And a `Makefile`:
 
@@ -234,7 +235,7 @@ import (
 // ...
 
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
-	// load fxgcppubsub module
+	// modules registration
 	fxgcppubsub.FxGcpPubSubModule,
 	// ...
 )
@@ -266,9 +267,9 @@ Yokai's [health check](../modules/fxhealthcheck.md) module allows the [core](../
 
 The [fxgcppubsub](https://github.com/ankorstore/yokai-contrib/tree/main/fxgcppubsub#health-check) module provides a ready to use [GcpPubSubSubscriptionsProbe](https://github.com/ankorstore/yokai-contrib/blob/main/fxgcppubsub/healthcheck/subscription.go), that will `check` if a configured `subscription` is reachable.
 
-To register it, you can use the `fxhealthcheck.AsCheckerProbe()` function in `internal/services.go`:
+To register it, you can use the `fxhealthcheck.AsCheckerProbe()` function in `internal/register.go`:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -277,7 +278,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// Pub/Sub subscription probe
 		fxhealthcheck.AsCheckerProbe(healthcheck.NewGcpPubSubSubscriptionsProbe),
@@ -339,9 +340,9 @@ func (w *SubscribeWorker) Run(ctx context.Context) error {
 }
 ```
 
-We then need to register the worker in `internal/services.go` with `fxworker.AsWorker()`:
+We then need to register the worker in `internal/register.go` with `fxworker.AsWorker()`:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -350,7 +351,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// Pub/Sub worker
 		fxworker.AsWorker(worker.NewSubscribeWorker),
@@ -637,9 +638,9 @@ func (w *SubscribeWorker) Run(ctx context.Context) error {
 }
 ```
 
-To collect this metric, we need to register it with `fxmetrics.AsMetricsCollector()` in `internal/services.go`:
+To collect this metric, we need to register it with `fxmetrics.AsMetricsCollector()` in `internal/register.go`:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -649,7 +650,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// metrics
 		fxmetrics.AsMetricsCollector(worker.SubscribeCounter),

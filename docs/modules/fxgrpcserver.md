@@ -326,7 +326,6 @@ You can enable RPC calls automatic tracing with `modules.grpc.server.trace.enabl
 modules:
   grpc:
     server:
-      log:
       trace:
         enabled: true   # to trace gRPC calls, disabled by default
         exclude:        # list of gRPC methods to exclude from tracing, empty by default
