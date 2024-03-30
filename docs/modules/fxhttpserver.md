@@ -43,17 +43,17 @@ import (
 )
 
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
-	// load fxhttpserver module
+	// modules registration
 	fxhttpserver.FxHttpServerModule,
-	// routing
-	ProvideRouting(),
+	// routing registration
+	Router(),
 	// ...
 )
 ```
 
-Then create, if not existing, the `internal/routing.go` file for your registrations:
+Then create, if not existing, the `internal/router.go` file for your registrations:
 
-```go title="internal/routing.go"
+```go title="internal/router.go"
 package internal
 
 import (
@@ -61,12 +61,12 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideRouting() fx.Option {
+func Router() fx.Option {
 	return fx.Options()
 }
 ```
 
-It is recommended to keep routing definition separated from services definitions, for better maintainability. If you use the [HTTP application template](../../applications/templates/#http-application-template), this is already done for you.
+It is recommended to keep routing definition separated from services definitions, for better maintainability. If you use the [HTTP application template](../getting-started/http-application.md), this is already done for you.
 
 ## Configuration
 
@@ -158,7 +158,7 @@ func (m *ExampleMiddleware) Handle() echo.MiddlewareFunc {
 
 You can then register your middlewares:
 
-```go title="internal/routing.go"
+```go title="internal/router.go"
 package internal
 
 import (
@@ -168,7 +168,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideRouting() fx.Option {
+func Router() fx.Option {
 	return fx.Options(
 		// registers the Echo CORS middleware via echo.Use()
 		fxhttpserver.AsMiddleware(echomiddleware.CORS(), fxhttpserver.GlobalUse),
@@ -229,7 +229,7 @@ func (h *ExampleHandler) Handle() echo.HandlerFunc {
 
 You can then register it:
 
-```go title="internal/routing.go"
+```go title="internal/router.go"
 package internal
 
 import (
@@ -240,7 +240,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideRouting() fx.Option {
+func Router() fx.Option {
 	return fx.Options(
 		// registers and autowire the ExampleHandler for [GET] /example, with the ExampleMiddleware and Echo CORS() middlewares
 		fxhttpserver.AsHandler("GET", "/example", handler.NewExampleHandler, middleware.NewExampleMiddleware, echomiddleware.CORS()),
@@ -302,7 +302,7 @@ func (h *OtherHandler) Handle() echo.HandlerFunc {
 
 You can then register your handlers in a group:
 
-```go title="internal/routing.go"
+```go title="internal/router.go"
 package internal
 
 import (
@@ -313,7 +313,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideRouting() fx.Option {
+func Router() fx.Option {
 	return fx.Options(
 		fxhttpserver.AsHandlersGroup(
 			// common route prefix

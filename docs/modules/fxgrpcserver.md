@@ -44,7 +44,7 @@ import (
 )
 
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
-	// load fxgrpcserver module
+	// modules registration
 	fxgrpcserver.FxGrpcServerModule,
 	// ...
 )
@@ -92,7 +92,7 @@ You can use the `AsGrpcServerOptions()` function to register [grpc.ServerOption]
 
 For example:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -101,7 +101,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// configure the server send and receive max message size
 		fxgrpcserver.AsGrpcServerOptions(
@@ -191,7 +191,7 @@ You can register your interceptors:
 - with `AsGrpcServerUnaryInterceptor()` to register a `unary` interceptor
 - with `AsGrpcServerStreamInterceptor()` to register a `stream` interceptor
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -201,7 +201,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// registers UnaryInterceptor as server unary interceptor
 		fxgrpcserver.AsGrpcServerUnaryInterceptor(interceptor.NewUnaryInterceptor),
@@ -220,7 +220,7 @@ You can use the `AsGrpcServerService()` function to register your gRPC server se
 
 For example, with the [TestService](https://github.com/ankorstore/yokai/blob/main/fxgrpcserver/testdata/service/service.go), server implementation for the [test.proto](https://github.com/ankorstore/yokai/blob/main/fxgrpcserver/testdata/proto/test.proto):
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -232,7 +232,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// register the TestServiceServer for the proto.Service_ServiceDesc
 		fxgrpcserver.AsGrpcServerService(service.NewTestServiceServer, &proto.Service_ServiceDesc),

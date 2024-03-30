@@ -41,7 +41,7 @@ import (
 )
 
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
-	// load fxcron module
+	// modules registration
 	fxcron.FxCronModule,
 	// ...
 )
@@ -157,9 +157,9 @@ You can access from the provided context:
 
 ### Cron jobs registration
 
-You can register your cron jobs with the `AsCronJob()` function:
+You can register your cron jobs with the `AsCronJob()` function in `internal/register.go`:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -169,7 +169,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		fxcron.AsCronJob(
 			cron.NewExampleCronJob,        // register the ExampleCronJob

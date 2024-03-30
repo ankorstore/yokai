@@ -220,9 +220,9 @@ func (s *ExampleService) PrintAppName() {
 }
 ```
 
-You then need to register it, by providing its constructor in `internal/services.go`:
+You then need to register it, by providing its constructor in `internal/register.go`:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -230,7 +230,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// register the ExampleService
 		fx.Provide(service.NewExampleService),

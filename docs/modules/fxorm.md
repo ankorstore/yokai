@@ -150,7 +150,7 @@ func (r *ExampleRepository) Create(ctx context.Context, exampleModel *model.Exam
 
 Like any other services, the `ExampleRepository` needs to be registered to have its dependencies autowired:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -158,7 +158,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// register the ExampleRepository
 		fx.Provide(repository.NewExampleRepository),
@@ -302,7 +302,7 @@ It will perform a `ping` to the configured database connection to ensure it is h
 
 You just need to register it:
 
-```go title="internal/services.go"
+```go title="internal/register.go"
 package internal
 
 import (
@@ -311,7 +311,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideServices() fx.Option {
+func Register() fx.Option {
 	return fx.Options(
 		// register the OrmProbe probe for startup, liveness and readiness checks
 		fxhealthcheck.AsCheckerProbe(healthcheck.NewOrmProbe),

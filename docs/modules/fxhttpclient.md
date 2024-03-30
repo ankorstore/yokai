@@ -35,7 +35,7 @@ import (
 )
 
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
-	// load fxhttpclient module
+	// modules registration
 	fxhttpclient.FxHttpClientModule,
 	// ...
 )
