@@ -19,7 +19,7 @@ It provides:
 
 ### Layout
 
-This demo application is following the [recommended project layout](https://go.dev/doc/modules/layout):
+This demo application is following the [recommended project layout](https://go.dev/doc/modules/layout#server-project):
 
 - `cmd/`: entry points
 - `configs/`: configuration files
