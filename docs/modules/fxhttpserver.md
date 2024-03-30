@@ -332,6 +332,10 @@ func Router() fx.Option {
 }
 ```
 
+## WebSocket
+
+This module, supports the `WebSocket` protocol, see the [Echo documentation](https://echo.labstack.com/docs/cookbook/websocket) for more details.
+
 ## Templates
 
 The module will look up HTML templates to render if `modules.http.server.templates.enabled=true`.

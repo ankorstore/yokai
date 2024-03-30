@@ -12,16 +12,17 @@
 * [Installation](#installation)
 * [Features](#features)
 * [Documentation](#documentation)
-	* [Dependencies](#dependencies)
-	* [Loading](#loading)
-	* [Configuration](#configuration)
-	* [Registration](#registration)
-		* [Middlewares](#middlewares)
-		* [Handlers](#handlers)
-		* [Handlers groups](#handlers-groups)
-	* [Templates](#templates)
-	* [Override](#override)
-	* [Testing](#testing)
+  * [Dependencies](#dependencies)
+  * [Loading](#loading)
+  * [Configuration](#configuration)
+  * [Registration](#registration)
+    * [Middlewares](#middlewares)
+    * [Handlers](#handlers)
+    * [Handlers groups](#handlers-groups)
+  * [WebSocket](#websocket)
+  * [Templates](#templates)
+  * [Override](#override)
+  * [Testing](#testing)
 <!-- TOC -->
 
 ## Installation
@@ -425,6 +426,10 @@ func main() {
 	).Run()
 }
 ```
+
+### WebSocket
+
+This module, supports the `WebSocket` protocol, see the [Echo documentation](https://echo.labstack.com/docs/cookbook/websocket) for more details.
 
 ### Templates
 
