@@ -1,4 +1,5 @@
 ---
+title: Tutorials - gRPC application
 icon: material/school-outline
 ---
 

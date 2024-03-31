@@ -1,4 +1,5 @@
 ---
+title: Modules - Config
 icon: material/cube-outline
 ---
 

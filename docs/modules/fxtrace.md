@@ -1,4 +1,5 @@
 ---
+title: Modules - Trace
 icon: material/cube-outline
 ---
 

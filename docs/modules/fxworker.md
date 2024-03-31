@@ -1,4 +1,5 @@
 ---
+title: Modules - Worker
 icon: material/cube-outline
 ---
 

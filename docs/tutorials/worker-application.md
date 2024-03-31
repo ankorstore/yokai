@@ -1,4 +1,5 @@
 ---
+title: Tutorials - Worker application
 icon: material/school-outline
 ---
 

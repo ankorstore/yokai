@@ -1,4 +1,5 @@
 ---
+title: Demos - HTTP application
 icon: material/folder-eye-outline
 ---
 

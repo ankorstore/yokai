@@ -1,4 +1,5 @@
 ---
+title: Modules - Cron
 icon: material/cube-outline
 ---
 

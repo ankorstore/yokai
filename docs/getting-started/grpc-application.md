@@ -1,4 +1,5 @@
 ---
+title: Getting started - gRPC application
 icon: material/rocket-launch-outline
 ---
 

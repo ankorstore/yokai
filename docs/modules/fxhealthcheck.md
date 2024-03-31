@@ -1,4 +1,5 @@
 ---
+title: Modules - Health Check
 icon: material/cube-outline
 ---
 
