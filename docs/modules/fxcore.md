@@ -19,18 +19,18 @@ It comes with:
 
 - a [bootstrapper](https://github.com/ankorstore/yokai/blob/main/fxcore/bootstrap.go)
 - a [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) system, based on [Fx](https://github.com/uber-go/fx)
-- a dedicated HTTP server
+- a dedicated core HTTP server
 - pre-enabled [config](fxconfig.md), [health check](fxhealthcheck.md), [log](fxlog.md), [trace](fxtrace.md), [metrics](fxmetrics.md) and [generate](fxgenerate.md) modules
 - an extension system for Yokai `built-in`, [contrib](https://github.com/ankorstore/yokai-contrib) or your `own` modules
 
-The core HTTP server runs automatically on a dedicated port (default `8081`), to serve:
+The `core HTTP server` runs automatically on a dedicated port (default `8081`), to serve:
 
 - the dashboard: UI to get an overview of your application
 - the debug endpoints: to expose information about your build, config, loaded modules, etc.
 - the health check endpoints: to expose the configured [health check probes](fxhealthcheck.md#probes-registration) of your application
 - the metrics endpoint: to expose all [collected metrics](fxmetrics.md#metrics-registration) from your application
 
-Whatever your type of application (HTTP, gRPC, worker, etc.), all platform concerns are handled by this
+Whatever your type of application (HTTP, gRPC, worker, etc.), all `platform concerns` are handled by this
 dedicated server:
 
 - to avoid to expose sensitive information (health checks, metrics, debug, etc.) to your users
@@ -85,8 +85,8 @@ modules:
           namespace: foo               # core http server metrics namespace (empty by default)
         buckets: 0.1, 1, 10            # to override default request duration buckets
         normalize:
-          request_path: true          # to normalize http request path, disabled by default
-          response_status: true       # to normalize http response status code (2xx, 3xx, ...), disabled by default
+          request_path: true           # to normalize http request path, disabled by default
+          response_status: true        # to normalize http response status code (2xx, 3xx, ...), disabled by default
       healthcheck:
         startup:
           expose: true                 # to expose health check startup route, disabled by default
@@ -123,9 +123,9 @@ Notes:
 - the core HTTP server requests logging will be based on the [log](fxlog.md) module configuration
 - the core HTTP server requests tracing will be based on the [trace](fxtrace.md) module configuration
 - if `app.debug=true` (or env var `APP_DEBUG=true`):
-  - the dashboard will be automatically enabled
-  - all the debug endpoints will be automatically exposed
-  - error responses will not be obfuscated and stack trace will be added
+    - the dashboard will be automatically enabled
+    - all the debug endpoints will be automatically exposed
+    - error responses will not be obfuscated and stack trace will be added
 
 ## Usage
 
@@ -160,14 +160,15 @@ func init() {
 // RootDir is the application root directory.
 var RootDir string
 
-// Bootstrapper can be used to load modules, options, services and bootstraps your application.
+// Bootstrapper can be used to load modules, options, dependencies, routing and bootstraps your application.
 var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
-	// fxhttpserver module loading
+	// modules registration
 	fxhttpserver.FxHttpServerModule,
-	// routing
-	ProvideRouting(),
-	// services
-	ProvideServices(),
+	// dependencies registration
+	Register(),
+	// routing registration
+	Router(),
+
 )
 
 // Run starts the application, with a provided [context.Context].
@@ -184,6 +185,7 @@ func RunTest(tb testing.TB, options ...fx.Option) {
 	Bootstrapper.RunTestApp(tb, fx.Options(options...))
 }
 ```
+
 Notes:
 
 - the `Run()` function is used to start your application.
@@ -191,11 +193,11 @@ Notes:
 
 ### Dependency injection
 
-Yokai is built on top of [Fx](https://github.com/uber-go/fx), offering a simple yet powerful dependency injection system.
+Yokai is built on top of [Fx](https://github.com/uber-go/fx), offering a simple yet powerful `dependency injection system`.
 
 This means you don't have to worry about injecting dependencies to your structs, your just need to register their constructors, and Yokai will automatically autowire them at runtime.
 
-For example, if you create an `ExampleService` that has the [config](fxconfig.md) as dependency:
+For example, if you create an `ExampleService` that has the [*config.Config](fxconfig.md) as dependency:
 
 ```go title="internal/service/example.go"
 package service
@@ -240,11 +242,13 @@ func Register() fx.Option {
 }
 ```
 
-This will make the `ExampleService` available in Yokai's dependency injection system, with its dependencies autowired.
+This will make the `ExampleService` available in Yokai's dependency injection system, with its dependency on `*config.Config` autowired.
+
+The `ExampleService` will also be available for injection in any constructor depending on it.
 
 ## Dashboard
 
-The core dashboard is available on the port `8081` if `modules.core.server.dashboard=true`:
+If `modules.core.server.dashboard=true`, the core dashboard is available on the port `8081`:
 
 ![](../../assets/images/dash-core-light.png#only-light)
 ![](../../assets/images/dash-core-dark.png#only-dark)
@@ -256,7 +260,12 @@ From there, you can get:
 - access to the configured health check endpoints
 - access to the loaded modules information (when exposed)
 
-The core dashboard is made for development purposes, but since it's served on a dedicated port, you can safely decide to leave it enabled on production, not expose it to the public, and access it via [port forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) for example.
+The core dashboard is made for `development` purposes.
+
+But since it's served on a dedicated port, you can safely decide to
+leave it enabled on production, to not expose it to the public, and access it
+via [port forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/)
+for example.
 
 ## Testing
 
@@ -279,7 +288,7 @@ package internal_test
 
 import (
 	"testing"
-	
+
 	"github.com/foo/bar/internal/service"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/fx"
@@ -287,13 +296,13 @@ import (
 
 func TestExample(t *testing.T) {
 	var exampleService *service.ExampleService
-	
+
 	// run app in test mode and extract the ExampleService
 	internal.RunTest(t, fx.Populate(&exampleService))
-	
+
 	// assertion example
 	assert.Equal(t, "foo", exampleService.Foo())
 }
 ```
 
-See [Fx documentation](https://pkg.go.dev/go.uber.org/fx) for available options.
+See [Fx documentation](https://pkg.go.dev/go.uber.org/fx) for the available `fx.Option`.

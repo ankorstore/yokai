@@ -34,16 +34,16 @@ The fxcore module provides the foundation of your application:
 - a dependency injection system
 - a dedicated core http server
 - ready to use config, health check, logger and tracer and metrics components
-- a plugin system for the [Fx modules](https://github.com/ankorstore/yokai#fx-modules)
+- an extension system for Yokai built-in, [contrib](https://github.com/ankorstore/yokai-contrib) or your own modules
 
-The core http server runs automatically on a dedicated port (default `8081`), to serve:
+The `core http server` runs automatically on a dedicated port (default `8081`), to serve:
 
 - the dashboard: UI to get an overview of your application
 - the metrics endpoint: to expose all collected metrics from your application
 - the health check endpoints: to expose all configured health check probes of your application
 - the debug endpoints: to expose various information about your config, modules, build, etc.
 
-Whatever your type of application (httpserver, gRPC server, worker, etc.), all platform concerns are handled by this
+Whatever your type of application (httpserver, gRPC server, worker, etc.), all `platform concerns` are handled by this
 dedicated server:
 
 - to avoid to expose sensitive information (health checks, metrics, debug, etc) to your users
@@ -121,8 +121,8 @@ modules:
           namespace: foo               # core http server metrics namespace (empty by default)
         buckets: 0.1, 1, 10            # to override default request duration buckets
         normalize:
-          request_path: true          # to normalize http request path, disabled by default
-          response_status: true       # to normalize http response status code (2xx, 3xx, ...), disabled by default
+          request_path: true           # to normalize http request path, disabled by default
+          response_status: true        # to normalize http response status code (2xx, 3xx, ...), disabled by default
       healthcheck:
         startup:
           expose: true                 # to expose health check startup route, disabled by default
