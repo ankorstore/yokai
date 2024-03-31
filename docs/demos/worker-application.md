@@ -1,4 +1,5 @@
 ---
+title: Demos - Worker application
 icon: material/folder-eye-outline
 ---
 

@@ -1,4 +1,5 @@
 ---
+title: Modules - Core
 icon: material/cube-outline
 ---
 

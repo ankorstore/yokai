@@ -1,4 +1,5 @@
 ---
+title: Modules - HTTP Server
 icon: material/cube-outline
 ---
 
@@ -116,7 +117,7 @@ This module offers the possibility to easily register HTTP handlers, groups and 
 You can use the `AsMiddleware()` function to register global middlewares on your HTTP server:
 
 - any [Middleware](https://github.com/ankorstore/yokai/blob/main/fxhttpserver/registry.go) implementation
-- or any `echo.MiddlewareFunc`, for example [Echo built-in middlewares]([echo.MiddlewareFunc](https://echo.labstack.com/docs/category/middleware))
+- or any `echo.MiddlewareFunc`, for example [Echo built-in middlewares](https://echo.labstack.com/docs/category/middleware)
 
 For example, you can create a middleware:
 

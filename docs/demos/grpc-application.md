@@ -1,4 +1,5 @@
 ---
+title: Demos - gRPC application
 icon: material/folder-eye-outline
 ---
 

@@ -1,4 +1,5 @@
 ---
+title: Modules - Generate
 icon: material/cube-outline
 ---
 

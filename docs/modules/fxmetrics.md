@@ -1,4 +1,5 @@
 ---
+title: Modules - Metrics
 icon: material/cube-outline
 ---
 

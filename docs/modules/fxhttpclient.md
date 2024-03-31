@@ -1,4 +1,5 @@
 ---
+title: Modules - HTTP Client
 icon: material/cube-outline
 ---
 

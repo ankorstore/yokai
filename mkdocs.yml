@@ -73,14 +73,14 @@ nav:
       - "gRPC application": getting-started/grpc-application.md
       - "HTTP application": getting-started/http-application.md
       - "Worker application": getting-started/worker-application.md
-  - "Demos":
-      - "gRPC application": demos/grpc-application.md
-      - "HTTP application": demos/http-application.md
-      - "Worker application": demos/worker-application.md
   - "Tutorials":
       - "gRPC application": tutorials/grpc-application.md
       - "HTTP application": tutorials/http-application.md
       - "Worker application": tutorials/worker-application.md
+  - "Demos":
+      - "gRPC application": demos/grpc-application.md
+      - "HTTP application": demos/http-application.md
+      - "Worker application": demos/worker-application.md
   - "Modules":
       - "Core": modules/fxcore.md
       - "Config": modules/fxconfig.md

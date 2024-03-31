@@ -1,4 +1,5 @@
 ---
+title: Getting started - HTTP application
 icon: material/rocket-launch-outline
 ---
 

@@ -1,4 +1,5 @@
 ---
+title: Modules - gRPC Server
 icon: material/cube-outline
 ---
 

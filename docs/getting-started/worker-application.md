@@ -1,4 +1,5 @@
 ---
+title: Getting started - Worker application
 icon: material/rocket-launch-outline
 ---
 

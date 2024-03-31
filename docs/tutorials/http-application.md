@@ -1,4 +1,5 @@
 ---
+title: Tutorials - HTTP application
 icon: material/school-outline
 ---
 

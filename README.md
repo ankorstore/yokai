@@ -38,7 +38,7 @@ In other words, Yokai lets you focus on your application logic, while taking car
 
 ## Documentation
 
-Yokai's documentation is available online: [https://ankorstore.github.io/yokai](https://ankorstore.github.io/yokai).
+Yokai's `documentation` is available at [https://ankorstore.github.io/yokai](https://ankorstore.github.io/yokai).
 
 ## Overview
 

@@ -1,4 +1,5 @@
 ---
+title: Modules - Log
 icon: material/cube-outline
 ---
 
