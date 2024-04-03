@@ -9,7 +9,7 @@ icon: material/folder-eye-outline
 
 ## Overview
 
-This [worker demo application](https://github.com/ankorstore/yokai-showroom/tree/main/worker-demo) is a simple subscriber to [Pub/Sub](https://cloud.google.com/pubsub).
+This [worker demo application](https://github.com/ankorstore/yokai-showroom/tree/main/worker-demo) is a simple `worker` subscribing to [Pub/Sub](https://cloud.google.com/pubsub).
 
 It provides:
 

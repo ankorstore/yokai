@@ -9,7 +9,7 @@ icon: material/school-outline
 
 ## Overview
 
-In this tutorial, we will create an `HTTP REST` API to manage [gophers](https://go.dev/blog/gopher).
+In this tutorial, we will create an `HTTP API` (REST CRUD) to manage [gophers](https://go.dev/blog/gopher).
 
 You can find a complete implementation in the [HTTP demo application](../demos/http-application.md).
 

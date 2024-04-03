@@ -9,7 +9,7 @@ icon: material/folder-eye-outline
 
 ## Overview
 
-This [HTTP demo application](https://github.com/ankorstore/yokai-showroom/tree/main/http-demo) is a simple REST API (CRUD) to manage [gophers](https://go.dev/blog/gopher).
+This [HTTP demo application](https://github.com/ankorstore/yokai-showroom/tree/main/http-demo) is a simple `HTTP API` (REST CRUD) to manage [gophers](https://go.dev/blog/gopher).
 
 It provides:
 
