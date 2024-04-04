@@ -18,8 +18,8 @@ import (
 )
 
 const (
-	ModuleName  = "httpserver"
-	DefaultPort = 8080
+	ModuleName     = "httpserver"
+	DefaultAddress = ":8080"
 )
 
 // FxHttpServerModule is the [Fx] httpserver module.
@@ -95,13 +95,13 @@ func NewFxHttpServer(p FxHttpServerParam) (*echo.Echo, error) {
 	p.LifeCycle.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			if !p.Config.IsTestEnv() {
-				port := p.Config.GetInt("modules.http.server.port")
-				if port == 0 {
-					port = DefaultPort
+				address := p.Config.GetString("modules.http.server.address")
+				if address == "" {
+					address = DefaultAddress
 				}
 
 				//nolint:errcheck
-				go httpServer.Start(fmt.Sprintf(":%d", port))
+				go httpServer.Start(address)
 			}
 
 			return nil

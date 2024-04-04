@@ -9,7 +9,7 @@ import (
 
 // FxHttpServerModuleInfo is a module info collector for fxcore.
 type FxHttpServerModuleInfo struct {
-	Port         int
+	Address      string
 	Debug        bool
 	Logger       string
 	Binder       string
@@ -21,13 +21,13 @@ type FxHttpServerModuleInfo struct {
 
 // NewFxHttpServerModuleInfo returns a new [FxHttpServerModuleInfo].
 func NewFxHttpServerModuleInfo(httpServer *echo.Echo, cfg *config.Config) *FxHttpServerModuleInfo {
-	port := cfg.GetInt("modules.http.server.port")
-	if port == 0 {
-		port = DefaultPort
+	address := cfg.GetString("modules.http.server.address")
+	if address == "" {
+		address = DefaultAddress
 	}
 
 	return &FxHttpServerModuleInfo{
-		Port:         port,
+		Address:      address,
 		Debug:        httpServer.Debug,
 		Logger:       fmt.Sprintf("%T", httpServer.Logger),
 		Binder:       fmt.Sprintf("%T", httpServer.Binder),
@@ -46,7 +46,7 @@ func (i *FxHttpServerModuleInfo) Name() string {
 // Data return the data of the module info.
 func (i *FxHttpServerModuleInfo) Data() map[string]interface{} {
 	return map[string]interface{}{
-		"port":         i.Port,
+		"address":      i.Address,
 		"debug":        i.Debug,
 		"binder":       i.Binder,
 		"serializer":   i.Serializer,
