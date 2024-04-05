@@ -32,7 +32,7 @@ import (
 
 const (
 	ModuleName                      = "core"
-	DefaultPort                     = 8081
+	DefaultAddress                  = ":8081"
 	DefaultMetricsPath              = "/metrics"
 	DefaultHealthCheckStartupPath   = "/healthz"
 	DefaultHealthCheckLivenessPath  = "/livez"
@@ -135,13 +135,13 @@ func NewFxCore(p FxCoreParam) (*Core, error) {
 	// lifecycles
 	p.LifeCycle.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			port := p.Config.GetInt("modules.core.server.port")
-			if port == 0 {
-				port = DefaultPort
+			address := p.Config.GetString("modules.core.server.address")
+			if address == "" {
+				address = DefaultAddress
 			}
 
 			//nolint:errcheck
-			go coreServer.Start(fmt.Sprintf(":%d", port))
+			go coreServer.Start(address)
 
 			return nil
 		},
