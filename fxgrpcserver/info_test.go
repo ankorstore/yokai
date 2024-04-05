@@ -26,7 +26,7 @@ func TestNewFxGrpcServerModuleInfo(t *testing.T) {
 	assert.Equal(
 		t,
 		map[string]interface{}{
-			"port":     fxgrpcserver.DefaultPort,
+			"address":  fxgrpcserver.DefaultAddress,
 			"services": map[string]grpc.ServiceInfo{},
 		},
 		info.Data(),

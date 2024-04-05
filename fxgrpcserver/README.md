@@ -108,7 +108,7 @@ modules:
       type: stdout
   grpc:
     server:
-      port: 50051                   # 50051 by default
+      address: ":50051"             # gRPC server listener address (default :50051)
       log:
         metadata:                   # list of gRPC metadata to add to logs on top of x-request-id, empty by default
           x-foo: foo                # to log for example the metadata x-foo in the log field foo
