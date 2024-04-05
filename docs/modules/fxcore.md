@@ -46,7 +46,7 @@ When you use a Yokai `application template`, you have nothing to install, it's r
 modules:
   core:
     server:
-      port: 8081                       # core http server port (default 8081)
+      address: ":8081"                 # core http server listener address (default :8081)
       errors:              
         obfuscate: false               # to obfuscate error messages on the core http server responses
         stack: false                   # to add error stack trace to error response of the core http server
