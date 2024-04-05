@@ -48,7 +48,8 @@ func (f *DefaultLoggerFactory) Create(options ...LoggerOption) (*Logger, error) 
 		Timestamp().
 		Str(Service, appliedOpts.ServiceName).
 		Logger().
-		Level(appliedOpts.Level)
+		Level(appliedOpts.Level).
+		Hook(CallerInfoHook{})
 
 	once.Do(func() {
 		zerolog.DefaultContextLogger = &logger
