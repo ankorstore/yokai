@@ -13,7 +13,7 @@ icon: material/cube-outline
 
 ## Overview
 
-Yokai provides a [fxhttpclient](https://github.com/ankorstore/yokai/tree/main/fxhttpclient) module, providing a ready to use [Client](https://pkg.go.dev/net/http#Client) to your application.
+Yokai provides a [fxhttpclient](https://github.com/ankorstore/yokai/tree/main/fxhttpclient) module, offering a ready to use [Client](https://pkg.go.dev/net/http#Client) to your application.
 
 It wraps the [httpclient](https://github.com/ankorstore/yokai/tree/main/httpclient) module, based on [net/http](https://pkg.go.dev/net/http).
 

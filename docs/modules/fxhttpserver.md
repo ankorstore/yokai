@@ -13,7 +13,7 @@ icon: material/cube-outline
 
 ## Overview
 
-Yokai provides a [fxhttpserver](https://github.com/ankorstore/yokai/tree/main/fxhttpserver) module, providing an HTTP server to your application.
+Yokai provides a [fxhttpserver](https://github.com/ankorstore/yokai/tree/main/fxhttpserver) module, offering an HTTP server to your application.
 
 It wraps the [httpserver](https://github.com/ankorstore/yokai/tree/main/httpserver) module, based on [Echo](https://echo.labstack.com/).
 

@@ -13,7 +13,7 @@ icon: material/cube-outline
 
 ## Overview
 
-Yokai provides a [fxgrpcserver](https://github.com/ankorstore/yokai/tree/main/fxgrpcserver) module, providing an [gRPC](https://grpc.io/) server to your application.
+Yokai provides a [fxgrpcserver](https://github.com/ankorstore/yokai/tree/main/fxgrpcserver) module, offering an [gRPC](https://grpc.io/) server to your application.
 
 It wraps the [grpcserver](https://github.com/ankorstore/yokai/tree/main/grpcserver) module, based on [gRPC-Go](https://github.com/grpc/grpc-go).
 
