@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.3.0...fxhttpserver/v1.4.0) (2024-04-05)
+
+
+### Features
+
+* **fxhttpserver:** Added support for listener address ([#202](https://github.com/ankorstore/yokai/issues/202)) ([f3751b9](https://github.com/ankorstore/yokai/commit/f3751b9e7f373518e513d855a890aa4889b2c887))
+
 ## [1.3.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.2.0...fxhttpserver/v1.3.0) (2024-03-22)
 
 
