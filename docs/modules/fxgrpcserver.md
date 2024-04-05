@@ -13,7 +13,7 @@ icon: material/cube-outline
 
 ## Overview
 
-Yokai provides a [fxgrpcserver](https://github.com/ankorstore/yokai/tree/main/fxgrpcserver) module, providing an [gRPC](https://grpc.io/) server to your application.
+Yokai provides a [fxgrpcserver](https://github.com/ankorstore/yokai/tree/main/fxgrpcserver) module, offering an [gRPC](https://grpc.io/) server to your application.
 
 It wraps the [grpcserver](https://github.com/ankorstore/yokai/tree/main/grpcserver) module, based on [gRPC-Go](https://github.com/grpc/grpc-go).
 
@@ -57,7 +57,7 @@ var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 modules:
   grpc:
     server:
-      port: 50051                   # 50051 by default
+      address: ":50051"             # gRPC server listener address (default :50051)
       log:
         metadata:                   # list of gRPC metadata to add to logs on top of x-request-id, empty by default
           x-foo: foo                # to log for example the metadata x-foo in the log field foo
