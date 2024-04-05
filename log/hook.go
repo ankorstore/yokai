@@ -7,5 +7,5 @@ import (
 type CallerInfoHook struct{}
 
 func (h CallerInfoHook) Run(e *zerolog.Event, l zerolog.Level, msg string) {
-	e.Caller(3)
+	e.Caller(5)
 }
