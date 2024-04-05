@@ -26,7 +26,6 @@ import (
 
 const (
 	ModuleName         = "grpcserver"
-	DefaultPort        = 50051
 	DefaultAddress     = ":50051"
 	DefaultBufconnSize = 1024 * 1024
 )
@@ -147,7 +146,7 @@ func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 					}
 				}
 
-				p.Logger.Info().Msgf("grpc server starting on port %s", address)
+				p.Logger.Info().Msgf("grpc server starting on %s", address)
 
 				if err = grpcServer.Serve(lis); err != nil {
 					p.Logger.Error().Err(err).Msg("failed to serve grpc server")
