@@ -59,9 +59,13 @@ func NewFxLogger(p FxLogParam) (*log.Logger, error) {
 		}
 	}
 
-	return p.Factory.Create(
+	logger, err := p.Factory.Create(
 		log.WithServiceName(p.Config.AppName()),
 		log.WithLevel(level),
 		log.WithOutputWriter(outputWriter),
 	)
+
+	logger.Hook(CallerInfoHook{})
+
+	return logger, err
 }
