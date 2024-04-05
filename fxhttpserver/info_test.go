@@ -27,7 +27,7 @@ func TestNewFxHttpServerModuleInfo(t *testing.T) {
 	assert.Equal(
 		t,
 		map[string]interface{}{
-			"port":         fxhttpserver.DefaultPort,
+			"address":      fxhttpserver.DefaultAddress,
 			"debug":        true,
 			"binder":       "*echo.DefaultBinder",
 			"serializer":   "*echo.DefaultJSONSerializer",

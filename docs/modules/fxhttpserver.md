@@ -75,7 +75,7 @@ It is recommended to keep routing registration separated from dependencies regis
 modules:
   http:
     server:
-      port: 8080                  # http server port (default 8080)
+      address: ":8080"            # http server listener address (default :8080)
       errors:
         obfuscate: false          # to obfuscate error messages on the http server responses
         stack: false              # to add error stack trace to error response of the http server
