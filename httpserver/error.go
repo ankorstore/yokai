@@ -36,7 +36,11 @@ func JsonErrorHandler(obfuscate bool, stack bool) echo.HTTPErrorHandler {
 		var logRespFields map[string]interface{}
 
 		if stack {
-			errStack := errors.New(err).ErrorStack()
+			errStack := "n/a"
+			goError := errors.New(err)
+			if goError != nil {
+				errStack = goError.ErrorStack()
+			}
 
 			switch m := httpError.Message.(type) {
 			case error:
