@@ -171,17 +171,17 @@ func (e *EchoLogger) Panicj(j echologger.JSON) {
 
 // Print produces a log with no level.
 func (e *EchoLogger) Print(i ...interface{}) {
-	e.logger.WithLevel(zerolog.NoLevel).Str("level", "-").Msg(fmt.Sprint(i...))
+	e.logger.Trace().Msg(fmt.Sprint(i...))
 }
 
 // Printf produces a formatted log with no level.
 func (e *EchoLogger) Printf(format string, i ...interface{}) {
-	e.logger.WithLevel(zerolog.NoLevel).Str("level", "-").Msgf(format, i...)
+	e.logger.Trace().Msgf(format, i...)
 }
 
 // Printj produces a json log with no level.
 func (e *EchoLogger) Printj(j echologger.JSON) {
-	e.logJSON(e.logger.WithLevel(zerolog.NoLevel).Str("level", "-"), j)
+	e.logJSON(e.logger.Trace(), j)
 }
 
 func (e *EchoLogger) logJSON(event *zerolog.Event, j echologger.JSON) {
