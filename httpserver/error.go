@@ -37,9 +37,8 @@ func JsonErrorHandler(obfuscate bool, stack bool) echo.HTTPErrorHandler {
 
 		if stack {
 			errStack := "n/a"
-			goError := errors.New(err)
-			if goError != nil {
-				errStack = goError.ErrorStack()
+			if err != nil {
+				errStack = errors.New(err).ErrorStack()
 			}
 
 			switch m := httpError.Message.(type) {
