@@ -13,7 +13,7 @@ icon: material/cube-outline
 
 ## Overview
 
-Yokai provides a [fxhttpserver](https://github.com/ankorstore/yokai/tree/main/fxhttpserver) module, providing an HTTP server to your application.
+Yokai provides a [fxhttpserver](https://github.com/ankorstore/yokai/tree/main/fxhttpserver) module, offering an HTTP server to your application.
 
 It wraps the [httpserver](https://github.com/ankorstore/yokai/tree/main/httpserver) module, based on [Echo](https://echo.labstack.com/).
 
@@ -75,7 +75,7 @@ It is recommended to keep routing registration separated from dependencies regis
 modules:
   http:
     server:
-      port: 8080                  # http server port (default 8080)
+      address: ":8080"            # http server listener address (default :8080)
       errors:
         obfuscate: false          # to obfuscate error messages on the http server responses
         stack: false              # to add error stack trace to error response of the http server

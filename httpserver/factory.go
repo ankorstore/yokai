@@ -2,7 +2,6 @@ package httpserver
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 // HttpServerFactory is the interface for [echo.Echo] factories.
@@ -28,7 +27,6 @@ func NewDefaultHttpServerFactory() HttpServerFactory {
 //	var server, _ = httpserver.NewDefaultHttpServerFactory().Create(
 //		httpserver.WithDebug(false),                                  // debug disabled by default
 //		httpserver.WithBanner(false),                                 // banner disabled by default
-//		httpserver.WithRecovery(true),                                // panic recovery middleware enabled by default
 //		httpserver.WithLogger(log.New("default")),                    // echo default logger
 //		httpserver.WithBinder(&echo.DefaultBinder{}),                 // echo default binder
 //		httpserver.WithJsonSerializer(&echo.DefaultJSONSerializer{}), // echo default json serializer
@@ -55,10 +53,6 @@ func (f *DefaultHttpServerFactory) Create(options ...HttpServerOption) (*echo.Ec
 
 	if appliedOpts.Renderer != nil {
 		httpServer.Renderer = appliedOpts.Renderer
-	}
-
-	if appliedOpts.Recovery {
-		httpServer.Use(middleware.Recover())
 	}
 
 	return httpServer, nil

@@ -2,7 +2,6 @@ package fxgrpcserver
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"strconv"
 	"strings"
@@ -27,7 +26,7 @@ import (
 
 const (
 	ModuleName         = "grpcserver"
-	DefaultPort        = 50051
+	DefaultAddress     = ":50051"
 	DefaultBufconnSize = 1024 * 1024
 )
 
@@ -131,9 +130,9 @@ func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 	// lifecycles
 	p.LifeCycle.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			port := p.Config.GetInt("modules.grpc.server.port")
-			if port == 0 {
-				port = DefaultPort
+			address := p.Config.GetString("modules.grpc.server.address")
+			if address == "" {
+				address = DefaultAddress
 			}
 
 			go func() {
@@ -141,13 +140,13 @@ func NewFxGrpcServer(p FxGrpcServerParam) (*grpc.Server, error) {
 				if p.Config.IsTestEnv() {
 					lis = p.Listener
 				} else {
-					lis, err = net.Listen("tcp", fmt.Sprintf(":%d", port))
+					lis, err = net.Listen("tcp", address)
 					if err != nil {
-						p.Logger.Error().Err(err).Msgf("failed to listen on %d for grpc server", port)
+						p.Logger.Error().Err(err).Msgf("failed to listen on %s for grpc server", address)
 					}
 				}
 
-				p.Logger.Info().Msgf("grpc server starting on port %d", port)
+				p.Logger.Info().Msgf("grpc server starting on %s", address)
 
 				if err = grpcServer.Serve(lis); err != nil {
 					p.Logger.Error().Err(err).Msg("failed to serve grpc server")

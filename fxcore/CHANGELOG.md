@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.6.0...fxcore/v1.7.0) (2024-04-05)
+
+
+### Features
+
+* **fxcore:** Added support for listener address ([#206](https://github.com/ankorstore/yokai/issues/206)) ([9e092a9](https://github.com/ankorstore/yokai/commit/9e092a9206a0077f6c961058d3fec539b3c2c4ac))
+
 ## [1.6.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.5.0...fxcore/v1.6.0) (2024-03-22)
 
 
