@@ -12,11 +12,12 @@ require (
 	github.com/ankorstore/yokai/fxtrace v1.2.0
 	github.com/ankorstore/yokai/generate v1.1.0
 	github.com/ankorstore/yokai/healthcheck v1.1.0
-	github.com/ankorstore/yokai/httpserver v1.4.1
+	github.com/ankorstore/yokai/httpserver v1.5.0
 	github.com/ankorstore/yokai/log v1.2.0
-	github.com/ankorstore/yokai/trace v1.2.0
+	github.com/ankorstore/yokai/trace v1.3.0
 	github.com/arl/statsviz v0.6.0
 	github.com/labstack/echo/v4 v4.11.4
+	github.com/labstack/gommon v0.4.2
 	github.com/prometheus/client_golang v1.19.0
 	github.com/rs/zerolog v1.32.0
 	github.com/stretchr/testify v1.9.0
@@ -40,7 +41,6 @@ require (
 	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

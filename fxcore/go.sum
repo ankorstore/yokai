@@ -16,12 +16,12 @@ github.com/ankorstore/yokai/generate v1.1.0 h1:tu3S+uEYh+2qNo8Rf/WxWneDjh49YgDPz
 github.com/ankorstore/yokai/generate v1.1.0/go.mod h1:gqS/i20wnvCOhcXydYdiGcASzBaeuW7GK6YYg/kkuY4=
 github.com/ankorstore/yokai/healthcheck v1.1.0 h1:PXkEccym7iaVnQltpM5UFi0Xl0n+5rZDzlQju6HmGms=
 github.com/ankorstore/yokai/healthcheck v1.1.0/go.mod h1:IiYgjRa4G3OLZMwAuacuryZZAfDHsBH8PQoK4PgRdZ4=
-github.com/ankorstore/yokai/httpserver v1.4.1 h1:Zz25h6fYvRsJ+1TtnbJP2fO4Dt/tD3+Kgqs2QkpCJzw=
-github.com/ankorstore/yokai/httpserver v1.4.1/go.mod h1:AOCL4cK2bPKrtGFULvOvc8mKHAOw2bLW30CKJra2BB0=
+github.com/ankorstore/yokai/httpserver v1.5.0 h1:42nfCFCGWuBKbwU8Jhlf1/ofrezDes8HlCa0mhiVoI8=
+github.com/ankorstore/yokai/httpserver v1.5.0/go.mod h1:AOCL4cK2bPKrtGFULvOvc8mKHAOw2bLW30CKJra2BB0=
 github.com/ankorstore/yokai/log v1.2.0 h1:jiuDiC0dtqIGIOsFQslUHYoFJ1qjI+rOMa6dI1LBf2Y=
 github.com/ankorstore/yokai/log v1.2.0/go.mod h1:MVvUcms1AYGo0BT6l88B9KJdvtK6/qGKdgyKVXfbmyc=
-github.com/ankorstore/yokai/trace v1.2.0 h1:Jnl++IGNpDYumsZJXP3qjhMdvyHbejiajQwIlU604w0=
-github.com/ankorstore/yokai/trace v1.2.0/go.mod h1:m7EL2MRBilgCtrly5gA4F0jkGSXR2EbG6LsotbTJ4nA=
+github.com/ankorstore/yokai/trace v1.3.0 h1:0ji32oymIcxTmH5h6GRWLo5ypwBbWrZkXRf9rWF9070=
+github.com/ankorstore/yokai/trace v1.3.0/go.mod h1:m7EL2MRBilgCtrly5gA4F0jkGSXR2EbG6LsotbTJ4nA=
 github.com/arl/statsviz v0.6.0 h1:jbW1QJkEYQkufd//4NDYRSNBpwJNrdzPahF7ZmoGdyE=
 github.com/arl/statsviz v0.6.0/go.mod h1:0toboo+YGSUXDaS4g1D5TVS4dXs7S7YYT5J/qnW2h8s=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
