@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/ankorstore/yokai/compare/httpserver/v1.4.1...httpserver/v1.5.0) (2024-04-17)
+
+
+### Features
+
+* **httpserver:** Removed automatic panic recovery and enhanced error handler error stack printing ([#210](https://github.com/ankorstore/yokai/issues/210)) ([116b4fc](https://github.com/ankorstore/yokai/commit/116b4fc3c76bd5460cb1a4c5105d80f56989d1d7))
+
 ## [1.4.1](https://github.com/ankorstore/yokai/compare/httpserver/v1.4.0...httpserver/v1.4.1) (2024-03-22)
 
 
