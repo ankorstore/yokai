@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"net/http"
+	"runtime"
 
 	"github.com/ankorstore/yokai/log"
 	"github.com/go-errors/errors"
@@ -36,12 +37,12 @@ func JsonErrorHandler(obfuscate bool, stack bool) echo.HTTPErrorHandler {
 		var logRespFields map[string]interface{}
 
 		if stack {
+
 			errStack := "n/a"
 			if err != nil {
-				goErr := errors.New(err)
-				if goErr != nil {
-					errStack = goErr.ErrorStack()
-				}
+				stackTrace := make([]byte, 4<<10)
+				stackTraceLength := runtime.Stack(stackTrace, false)
+				errStack = string(stackTrace[:stackTraceLength])
 			}
 
 			switch m := httpError.Message.(type) {
