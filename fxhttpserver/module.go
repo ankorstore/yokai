@@ -12,6 +12,8 @@ import (
 	httpservermiddleware "github.com/ankorstore/yokai/httpserver/middleware"
 	"github.com/ankorstore/yokai/log"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	gommonlog "github.com/labstack/gommon/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/fx"
@@ -71,7 +73,6 @@ func NewFxHttpServer(p FxHttpServerParam) (*echo.Echo, error) {
 	httpServer, err := p.Factory.Create(
 		httpserver.WithDebug(appDebug),
 		httpserver.WithBanner(false),
-		httpserver.WithRecovery(true),
 		httpserver.WithLogger(echoLogger),
 		httpserver.WithRenderer(renderer),
 		httpserver.WithHttpErrorHandler(
@@ -180,6 +181,12 @@ func withDefaultMiddlewares(httpServer *echo.Echo, p FxHttpServerParam) *echo.Ec
 
 		httpServer.Use(httpservermiddleware.RequestMetricsMiddlewareWithConfig(metricsMiddlewareConfig))
 	}
+
+	// recovery middleware
+	httpServer.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		DisableErrorHandler: true,
+		LogLevel:            gommonlog.ERROR,
+	}))
 
 	return httpServer
 }
