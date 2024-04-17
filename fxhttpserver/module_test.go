@@ -69,6 +69,10 @@ var (
 
 		return c.JSON(http.StatusOK, "concrete")
 	}
+
+	panicHandler = func(c echo.Context) error {
+		panic("test panic")
+	}
 )
 
 //nolint:maintidx
@@ -698,6 +702,78 @@ func TestModuleWithEchoResources(t *testing.T) {
 	assert.Contains(t, rec.Body.String(), "concrete")
 	assert.Equal(t, "Origin", rec.Header().Get(echo.HeaderVary))              // CORS middleware
 	assert.Equal(t, "SAMEORIGIN", rec.Header().Get(echo.HeaderXFrameOptions)) // Secure middleware
+}
+
+func TestModuleWithPanicRecoveryAndDebug(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("APP_DEBUG", "true")
+
+	var httpServer *echo.Echo
+	var logBuffer logtest.TestLogBuffer
+	var traceExporter tracetest.TestTraceExporter
+	var metricsRegistry *prometheus.Registry
+
+	fxtest.New(
+		t,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxhttpserver.FxHttpServerModule,
+		fx.Provide(service.NewTestService),
+		fx.Options(
+			fxhttpserver.AsHandler("GET", "/panic", panicHandler),
+		),
+		fx.Populate(&httpServer, &logBuffer, &traceExporter, &metricsRegistry),
+	).RequireStart().RequireStop()
+
+	// [GET] /bar
+	req := httptest.NewRequest(http.MethodGet, "/panic", nil)
+	rec := httptest.NewRecorder()
+	httpServer.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusInternalServerError, rec.Code)
+	assert.Contains(t, rec.Body.String(), `"message": "test panic"`)
+	assert.Contains(t, rec.Body.String(), `"stack": "*errors.errorString test panic`)
+
+	logtest.AssertContainLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "error",
+		"service": "test",
+		"module":  "httpserver",
+		"message": "[PANIC RECOVER] test panic",
+	})
+
+	logtest.AssertContainLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "error",
+		"error":   "test panic",
+		"service": "test",
+		"module":  "httpserver",
+		"stack":   "*errors.errorString test panic",
+		"message": "error handler",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"GET /panic",
+		semconv.HTTPMethod(http.MethodGet),
+		semconv.HTTPRoute("/panic"),
+		semconv.HTTPStatusCode(http.StatusInternalServerError),
+	)
+
+	expectedMetric := `
+		# HELP http_server_requests_total Number of processed HTTP requests
+		# TYPE http_server_requests_total counter
+		http_server_requests_total{method="GET",path="/panic",status="5xx"} 1
+	`
+	err := testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"http_server_requests_total",
+	)
+	assert.NoError(t, err)
 }
 
 func TestModuleWithMetrics(t *testing.T) {
