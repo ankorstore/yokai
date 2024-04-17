@@ -9,7 +9,6 @@ import (
 type Options struct {
 	Debug            bool
 	Banner           bool
-	Recovery         bool
 	Logger           echo.Logger
 	Binder           echo.Binder
 	JsonSerializer   echo.JSONSerializer
@@ -22,7 +21,6 @@ func DefaultHttpServerOptions() Options {
 	return Options{
 		Debug:            false,
 		Banner:           false,
-		Recovery:         true,
 		Logger:           log.New("default"),
 		Binder:           &echo.DefaultBinder{},
 		JsonSerializer:   &echo.DefaultJSONSerializer{},
@@ -45,13 +43,6 @@ func WithDebug(d bool) HttpServerOption {
 func WithBanner(b bool) HttpServerOption {
 	return func(o *Options) {
 		o.Banner = b
-	}
-}
-
-// WithRecovery is used to activate the server automatic panic recovery.
-func WithRecovery(r bool) HttpServerOption {
-	return func(o *Options) {
-		o.Recovery = r
 	}
 }
 

@@ -171,17 +171,17 @@ func (e *EchoLogger) Panicj(j echologger.JSON) {
 
 // Print produces a log with no level.
 func (e *EchoLogger) Print(i ...interface{}) {
-	e.logger.WithLevel(zerolog.NoLevel).Str("level", "-").Msg(fmt.Sprint(i...))
+	e.logger.WithLevel(zerolog.NoLevel).Str("level", "---").Msg(fmt.Sprint(i...))
 }
 
 // Printf produces a formatted log with no level.
 func (e *EchoLogger) Printf(format string, i ...interface{}) {
-	e.logger.WithLevel(zerolog.NoLevel).Str("level", "-").Msgf(format, i...)
+	e.logger.WithLevel(zerolog.NoLevel).Str("level", "---").Msgf(format, i...)
 }
 
 // Printj produces a json log with no level.
 func (e *EchoLogger) Printj(j echologger.JSON) {
-	e.logJSON(e.logger.WithLevel(zerolog.NoLevel).Str("level", "-"), j)
+	e.logJSON(e.logger.WithLevel(zerolog.NoLevel).Str("level", "---"), j)
 }
 
 func (e *EchoLogger) logJSON(event *zerolog.Event, j echologger.JSON) {
@@ -192,29 +192,29 @@ func (e *EchoLogger) logJSON(event *zerolog.Event, j echologger.JSON) {
 	event.Msg("")
 }
 
-//nolint:exhaustive
 func convertZeroLevel(level zerolog.Level) echologger.Lvl {
 	switch level {
-	case zerolog.TraceLevel:
+	case zerolog.TraceLevel, zerolog.DebugLevel:
 		return echologger.DEBUG
-	case zerolog.DebugLevel:
-		return echologger.DEBUG
+	case zerolog.InfoLevel:
+		return echologger.INFO
 	case zerolog.WarnLevel:
 		return echologger.WARN
-	case zerolog.ErrorLevel:
+	case zerolog.ErrorLevel, zerolog.FatalLevel, zerolog.PanicLevel:
 		return echologger.ERROR
-	case zerolog.NoLevel:
+	case zerolog.NoLevel, zerolog.Disabled:
 		return echologger.OFF
 	default:
 		return echologger.INFO
 	}
 }
 
-//nolint:exhaustive
 func convertEchoLevel(level echologger.Lvl) zerolog.Level {
 	switch level {
 	case echologger.DEBUG:
 		return zerolog.DebugLevel
+	case echologger.INFO:
+		return zerolog.InfoLevel
 	case echologger.WARN:
 		return zerolog.WarnLevel
 	case echologger.ERROR:

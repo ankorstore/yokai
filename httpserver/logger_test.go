@@ -241,19 +241,19 @@ func TestPrintLogging(t *testing.T) {
 
 	echoLogger.Print("test regular message")
 	logtest.AssertHasLogRecord(t, buffer, map[string]interface{}{
-		"level":   "-",
+		"level":   "---",
 		"message": "test regular message",
 	})
 
 	echoLogger.Printf("test placeholder message: %s", "placeholder")
 	logtest.AssertHasLogRecord(t, buffer, map[string]interface{}{
-		"level":   "-",
+		"level":   "---",
 		"message": "test placeholder message: placeholder",
 	})
 
 	echoLogger.Printj(echologger.JSON{"message": "test json message"})
 	logtest.AssertHasLogRecord(t, buffer, map[string]interface{}{
-		"level":   "-",
+		"level":   "---",
 		"message": "test json message",
 	})
 }

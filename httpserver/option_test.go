@@ -27,15 +27,6 @@ func TestWithBanner(t *testing.T) {
 	assert.Equal(t, true, opt.Banner)
 }
 
-func TestWithRecovery(t *testing.T) {
-	t.Parallel()
-
-	opt := httpserver.DefaultHttpServerOptions()
-	httpserver.WithRecovery(false)(&opt)
-
-	assert.Equal(t, false, opt.Recovery)
-}
-
 func TestWithLogger(t *testing.T) {
 	t.Parallel()
 

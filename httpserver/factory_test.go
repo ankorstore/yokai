@@ -52,7 +52,6 @@ func TestCreate(t *testing.T) {
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithDebug(true),
 		httpserver.WithBanner(true),
-		httpserver.WithRecovery(true),
 		httpserver.WithLogger(echoLogger),
 		httpserver.WithBinder(binder),
 		httpserver.WithJsonSerializer(jsonSerializer),
@@ -2076,42 +2075,4 @@ func TestCreateWithRequestMetricsAndWithoutNormalization(t *testing.T) {
 		"namespace_subsystem_http_server_requests_total",
 	)
 	assert.NoError(t, err)
-}
-
-func TestCreateWithPanicRecovery(t *testing.T) {
-	t.Parallel()
-
-	logBuffer := logtest.NewDefaultTestLogBuffer()
-	logger, err := log.NewDefaultLoggerFactory().Create(
-		log.WithOutputWriter(logBuffer),
-	)
-	assert.NoError(t, err)
-
-	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
-		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithRecovery(true),
-	)
-	assert.NoError(t, err)
-	assert.IsType(t, &echo.Echo{}, httpServer)
-
-	httpServer.Use(middleware.RequestLoggerMiddleware())
-
-	httpServer.GET("/panic", func(c echo.Context) error {
-		panic("custom panic")
-	})
-
-	defer func() {
-		if r := recover(); r != nil {
-			t.Error("should have recovered by itself")
-		}
-	}()
-
-	for i := 0; i <= 5; i++ {
-		req := httptest.NewRequest(http.MethodGet, "/panic", nil)
-		rec := httptest.NewRecorder()
-		httpServer.ServeHTTP(rec, req)
-
-		assert.Equal(t, http.StatusInternalServerError, rec.Code)
-		assert.Contains(t, rec.Body.String(), `{"message":"Internal Server Error"}`)
-	}
 }
