@@ -3,6 +3,7 @@ package httpserver
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 )
 
 // HttpServerFactory is the interface for [echo.Echo] factories.
@@ -58,7 +59,11 @@ func (f *DefaultHttpServerFactory) Create(options ...HttpServerOption) (*echo.Ec
 	}
 
 	if appliedOpts.Recovery {
-		httpServer.Use(middleware.Recover())
+		httpServer.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+			DisableStackAll:     true,
+			DisableErrorHandler: true,
+			LogLevel:            log.ERROR,
+		}))
 	}
 
 	return httpServer, nil
