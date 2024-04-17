@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.4.0...fxhttpserver/v1.5.0) (2024-04-17)
+
+
+### Features
+
+* **fxhttpserver:** Updated panic recovery to prevent observability middlewares interruption ([#212](https://github.com/ankorstore/yokai/issues/212)) ([f518c5c](https://github.com/ankorstore/yokai/commit/f518c5cb129a39c3bbf283eb8d3a17ab6a133739))
+
 ## [1.4.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.3.0...fxhttpserver/v1.4.0) (2024-04-05)
 
 
