@@ -203,7 +203,13 @@ func convertZeroLevel(level zerolog.Level) echologger.Lvl {
 		return echologger.WARN
 	case zerolog.ErrorLevel:
 		return echologger.ERROR
+	case zerolog.FatalLevel:
+		return echologger.ERROR
+	case zerolog.PanicLevel:
+		return echologger.ERROR
 	case zerolog.NoLevel:
+		return echologger.OFF
+	case zerolog.Disabled:
 		return echologger.OFF
 	default:
 		return echologger.INFO

@@ -57,7 +57,6 @@ var server, _ = httpserver.NewDefaultHttpServerFactory().Create()
 var server, _ = httpserver.NewDefaultHttpServerFactory().Create(
 	httpserver.WithDebug(false),                                  // debug disabled by default
 	httpserver.WithBanner(false),                                 // banner disabled by default
-	httpserver.WithRecovery(true),                                // panic recovery middleware enabled by default
 	httpserver.WithLogger(log.New("default")),                    // echo default logger
 	httpserver.WithBinder(&echo.DefaultBinder{}),                 // echo default binder
 	httpserver.WithJsonSerializer(&echo.DefaultJSONSerializer{}), // echo default json serializer
