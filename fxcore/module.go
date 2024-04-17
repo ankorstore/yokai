@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/labstack/echo/v4"
-
 	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/fxconfig"
 	"github.com/ankorstore/yokai/fxgenerate"
@@ -23,7 +21,9 @@ import (
 	httpservermiddleware "github.com/ankorstore/yokai/httpserver/middleware"
 	"github.com/ankorstore/yokai/log"
 	"github.com/arl/statsviz"
+	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	gommonlog "github.com/labstack/gommon/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	oteltrace "go.opentelemetry.io/otel/trace"
@@ -109,7 +109,6 @@ func NewFxCore(p FxCoreParam) (*Core, error) {
 	coreServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithDebug(appDebug),
 		httpserver.WithBanner(false),
-		httpserver.WithRecovery(true),
 		httpserver.WithLogger(coreLogger),
 		httpserver.WithRenderer(NewDashboardRenderer(templatesFS, "templates/dashboard.html")),
 		httpserver.WithHttpErrorHandler(
@@ -215,6 +214,12 @@ func withMiddlewares(coreServer *echo.Echo, p FxCoreParam) *echo.Echo {
 
 		coreServer.Use(httpservermiddleware.RequestMetricsMiddlewareWithConfig(metricsMiddlewareConfig))
 	}
+
+	// recovery middleware
+	coreServer.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		DisableErrorHandler: true,
+		LogLevel:            gommonlog.ERROR,
+	}))
 
 	return coreServer
 }
