@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.7.0...fxcore/v1.8.0) (2024-04-17)
+
+
+### Features
+
+* **fxcore:** Updated panic recovery to prevent observability middlewares interruption ([#214](https://github.com/ankorstore/yokai/issues/214)) ([06f3ba8](https://github.com/ankorstore/yokai/commit/06f3ba847dd7efae99208e8703770dc12e8b25b3))
+
 ## [1.7.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.6.0...fxcore/v1.7.0) (2024-04-05)
 
 
