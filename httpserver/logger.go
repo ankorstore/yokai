@@ -192,35 +192,29 @@ func (e *EchoLogger) logJSON(event *zerolog.Event, j echologger.JSON) {
 	event.Msg("")
 }
 
-//nolint:exhaustive
 func convertZeroLevel(level zerolog.Level) echologger.Lvl {
 	switch level {
-	case zerolog.TraceLevel:
+	case zerolog.TraceLevel, zerolog.DebugLevel:
 		return echologger.DEBUG
-	case zerolog.DebugLevel:
-		return echologger.DEBUG
+	case zerolog.InfoLevel:
+		return echologger.INFO
 	case zerolog.WarnLevel:
 		return echologger.WARN
-	case zerolog.ErrorLevel:
+	case zerolog.ErrorLevel, zerolog.FatalLevel, zerolog.PanicLevel:
 		return echologger.ERROR
-	case zerolog.FatalLevel:
-		return echologger.ERROR
-	case zerolog.PanicLevel:
-		return echologger.ERROR
-	case zerolog.NoLevel:
-		return echologger.OFF
-	case zerolog.Disabled:
+	case zerolog.NoLevel, zerolog.Disabled:
 		return echologger.OFF
 	default:
 		return echologger.INFO
 	}
 }
 
-//nolint:exhaustive
 func convertEchoLevel(level echologger.Lvl) zerolog.Level {
 	switch level {
 	case echologger.DEBUG:
 		return zerolog.DebugLevel
+	case echologger.INFO:
+		return zerolog.InfoLevel
 	case echologger.WARN:
 		return zerolog.WarnLevel
 	case echologger.ERROR:
