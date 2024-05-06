@@ -31,6 +31,7 @@ func (o Operation) String() string {
 
 // FetchOperation returns an Operation for a given name.
 func FetchOperation(name string) Operation {
+	//nolint:exhaustive
 	switch o := Operation(strings.ToLower(name)); o {
 	case ConnectionBeginOperation,
 		ConnectionBeginTxOperation,

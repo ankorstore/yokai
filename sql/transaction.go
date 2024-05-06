@@ -5,12 +5,14 @@ import (
 	"database/sql/driver"
 )
 
+//nolint:containedctx
 type Transaction struct {
 	base          driver.Tx
 	context       context.Context
 	configuration *Configuration
 }
 
+//nolint:contextcheck
 func NewTransaction(base driver.Tx, ctx context.Context, configuration *Configuration) *Transaction {
 	if ctx == nil {
 		ctx = context.Background()

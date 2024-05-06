@@ -57,6 +57,12 @@ func TestCreate(t *testing.T) {
 			nil,
 			true,
 		},
+		{
+			sql.System("invalid"),
+			[]sql.Hook{},
+			nil,
+			true,
+		},
 	}
 
 	for _, test := range tests {

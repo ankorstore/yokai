@@ -5,6 +5,7 @@ import (
 	"database/sql/driver"
 )
 
+//nolint:containedctx
 type Statement struct {
 	base          driver.Stmt
 	context       context.Context
@@ -12,6 +13,7 @@ type Statement struct {
 	configuration *Configuration
 }
 
+//nolint:contextcheck
 func NewStatement(base driver.Stmt, ctx context.Context, query string, configuration *Configuration) *Statement {
 	if ctx == nil {
 		ctx = context.Background()
@@ -39,6 +41,7 @@ func (s *Statement) Exec(args []driver.Value) (driver.Result, error) {
 	s.applyBeforeHooks(event)
 
 	event.Start()
+	//nolint:staticcheck
 	res, err := s.base.Exec(args)
 	event.Stop()
 	if err != nil {
@@ -68,6 +71,7 @@ func (s *Statement) Query(args []driver.Value) (driver.Rows, error) {
 	s.applyBeforeHooks(event)
 
 	event.Start()
+	//nolint:staticcheck
 	rows, err := s.base.Query(args)
 	event.Stop()
 	if err != nil {

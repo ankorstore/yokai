@@ -21,6 +21,7 @@ func NewConnection(base driver.Conn, configuration *Configuration) *Connection {
 
 // Exec executes a query and returns a driver.Result.
 func (c *Connection) Exec(query string, args []driver.Value) (driver.Result, error) {
+	//nolint:staticcheck
 	engine, ok := c.base.(driver.Execer)
 	if !ok {
 		return nil, driver.ErrSkip
@@ -91,6 +92,7 @@ func (c *Connection) ExecContext(ctx context.Context, query string, args []drive
 
 // Query executes a query and returns a driver.Rows.
 func (c *Connection) Query(query string, args []driver.Value) (driver.Rows, error) {
+	//nolint:staticcheck
 	engine, ok := c.base.(driver.Queryer)
 	if !ok {
 		return nil, driver.ErrSkip
@@ -191,6 +193,7 @@ func (c *Connection) Begin() (driver.Tx, error) {
 	ctx := c.applyBeforeHooks(context.Background(), event)
 
 	event.Start()
+	//nolint:staticcheck
 	tx, err := c.base.Begin()
 	event.Stop()
 	if err != nil {
@@ -221,6 +224,7 @@ func (c *Connection) BeginTx(ctx context.Context, opts driver.TxOptions) (driver
 		return NewTransaction(tx, ctx, c.configuration), err
 	} else {
 		event.Start()
+		//nolint:staticcheck
 		tx, err := c.base.Begin()
 		event.Stop()
 		if err != nil {
@@ -265,7 +269,7 @@ func (c *Connection) ResetSession(ctx context.Context) error {
 
 	event := NewHookEvent(c.configuration.System(), ConnectionResetSessionOperation, "", nil)
 
-	ctx = c.applyBeforeHooks(context.Background(), event)
+	ctx = c.applyBeforeHooks(ctx, event)
 
 	event.Start()
 	err := engine.ResetSession(ctx)
@@ -277,7 +281,6 @@ func (c *Connection) ResetSession(ctx context.Context) error {
 	c.applyAfterHooks(ctx, event)
 
 	return err
-
 }
 
 // Close closes a connection.

@@ -19,6 +19,7 @@ func (d System) String() string {
 
 // FetchSystem returns a System for a given name.
 func FetchSystem(name string) System {
+	//nolint:exhaustive
 	switch d := System(strings.ToLower(name)); d {
 	case SqliteSystem,
 		MysqlSystem,

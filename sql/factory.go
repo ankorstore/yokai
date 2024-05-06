@@ -26,6 +26,8 @@ func (f *DefaultDriverFactory) Create(system System, hooks ...Hook) (*Driver, er
 		return NewDriver(&mysql.MySQLDriver{}, NewConfiguration(system, hooks...)), nil
 	case PostgresSystem:
 		return NewDriver(&pq.Driver{}, NewConfiguration(system, hooks...)), nil
+	case UnknownSystem:
+		return nil, fmt.Errorf("cannot create database driver for unknown system")
 	default:
 		return nil, fmt.Errorf("cannot create database driver for system %s", system.String())
 	}

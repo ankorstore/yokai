@@ -63,7 +63,7 @@ func TestRegisterAndPingContext(t *testing.T) {
 	tracetest.AssertHasNotTraceSpan(
 		t,
 		traceExporter,
-		fmt.Sprintf("SQL connection:ping"),
+		"SQL connection:ping",
 		semconv.DBSystemKey.String("sqlite"),
 	)
 
@@ -80,7 +80,7 @@ func TestRegisterAndPingContext(t *testing.T) {
 	tracetest.AssertHasTraceSpan(
 		t,
 		traceExporter,
-		fmt.Sprintf("SQL connection:close"),
+		"SQL connection:close",
 		semconv.DBSystemKey.String("sqlite"),
 	)
 }
@@ -136,7 +136,7 @@ func TestRegisterAndExecContext(t *testing.T) {
 	tracetest.AssertHasTraceSpan(
 		t,
 		traceExporter,
-		fmt.Sprintf("SQL connection:exec-context"),
+		"SQL connection:exec-context",
 		semconv.DBSystemKey.String("sqlite"),
 		attribute.String("db.statement", "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)"),
 	)
@@ -162,7 +162,7 @@ func TestRegisterAndExecContext(t *testing.T) {
 	tracetest.AssertHasTraceSpan(
 		t,
 		traceExporter,
-		fmt.Sprintf("SQL connection:exec-context"),
+		"SQL connection:exec-context",
 		semconv.DBSystemKey.String("sqlite"),
 		attribute.String("db.statement", "INSERT INTO foo (bar) VALUES ($1)"),
 		attribute.String("db.statement.arguments", "[{Name: Ordinal:1 Value:42}]"),
@@ -193,6 +193,7 @@ func TestRegisterAndQuery(t *testing.T) {
 	assert.NoError(t, rows.Err())
 
 	cols, err := rows.Columns()
+	assert.NoError(t, err)
 	assert.Equal(t, []string{"foo"}, cols)
 
 	for rows.Next() {
@@ -215,11 +216,9 @@ func TestRegisterAndQueryContext(t *testing.T) {
 	tracerProvider, traceExporter := createTestTraceTools(t)
 
 	db, err := basesql.Open(driver, ":memory:")
-	defer db.Close()
 	assert.NoError(t, err)
 
 	rows, err := db.QueryContext(createTestContext(logger, tracerProvider), "SELECT $1 AS foo", "bar")
-	defer rows.Close()
 	assert.NoError(t, err)
 	assert.NoError(t, rows.Err())
 
@@ -235,13 +234,14 @@ func TestRegisterAndQueryContext(t *testing.T) {
 	tracetest.AssertHasTraceSpan(
 		t,
 		traceExporter,
-		fmt.Sprintf("SQL connection:query-context"),
+		"SQL connection:query-context",
 		semconv.DBSystemKey.String("sqlite"),
 		attribute.String("db.statement", "SELECT $1 AS foo"),
 		attribute.String("db.statement.arguments", "[{Name: Ordinal:1 Value:bar}]"),
 	)
 
 	cols, err := rows.Columns()
+	assert.NoError(t, err)
 	assert.Equal(t, []string{"foo"}, cols)
 
 	for rows.Next() {
@@ -250,6 +250,12 @@ func TestRegisterAndQueryContext(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "bar", foo)
 	}
+
+	err = db.Close()
+	assert.NoError(t, err)
+
+	err = rows.Close()
+	assert.NoError(t, err)
 }
 
 func registerTestDriver(t *testing.T) string {
