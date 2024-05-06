@@ -4,11 +4,13 @@ import (
 	"database/sql/driver"
 )
 
+// Driver is a SQL driver.
 type Driver struct {
 	base          driver.Driver
 	configuration *Configuration
 }
 
+// NewDriver returns a new Driver.
 func NewDriver(base driver.Driver, configuration *Configuration) *Driver {
 	return &Driver{
 		base:          base,
@@ -16,10 +18,17 @@ func NewDriver(base driver.Driver, configuration *Configuration) *Driver {
 	}
 }
 
+// Base returns the base driver.Driver of the Driver.
+func (d *Driver) Base() driver.Driver {
+	return d.base
+}
+
+// Configuration returns the Configuration of the Driver.
 func (d *Driver) Configuration() *Configuration {
 	return d.configuration
 }
 
+// Open returns a new Connection.
 func (d *Driver) Open(dsn string) (driver.Conn, error) {
 	connection, err := d.base.Open(dsn)
 	if err != nil {
@@ -29,6 +38,7 @@ func (d *Driver) Open(dsn string) (driver.Conn, error) {
 	return NewConnection(connection, d.configuration), nil
 }
 
+// OpenConnector returns a new Connector.
 func (d *Driver) OpenConnector(dsn string) (driver.Connector, error) {
 	if driverContext, ok := d.base.(driver.DriverContext); ok {
 		connector, err := driverContext.OpenConnector(dsn)

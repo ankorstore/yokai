@@ -1,6 +1,6 @@
 package sql
 
-// Configuration is the SQL components (driver, connector, etc) configuration.
+// Configuration is the SQL components (driver, connector, connection, etc) configuration.
 type Configuration struct {
 	system System
 	hooks  []Hook
@@ -14,12 +14,12 @@ func NewConfiguration(system System, hooks ...Hook) *Configuration {
 	}
 }
 
-// System returns the Configuration system.
+// System returns the Configuration System.
 func (c *Configuration) System() System {
 	return c.system
 }
 
-// Hooks returns the Configuration list of hook.Hook.
+// Hooks returns the Configuration list of Hook.
 func (c *Configuration) Hooks() []Hook {
 	return c.hooks
 }

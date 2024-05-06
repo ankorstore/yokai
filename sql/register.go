@@ -1,7 +1,6 @@
 package sql
 
 import (
-	"database/sql"
 	"fmt"
 )
 
@@ -32,12 +31,10 @@ func Register(name string, hooks ...Hook) (string, error) {
 		return "", err
 	}
 
-	sql.Register(registrationName, driver)
-	if r := recover(); r != nil {
-		return "", fmt.Errorf("cannot register driver %s: %v", registrationName, r)
+	err = GlobalDriverRegistry.Add(registrationName, driver)
+	if err != nil {
+		return "", err
 	}
-
-	GlobalDriverRegistry.Add(registrationName, driver)
 
 	return registrationName, nil
 }

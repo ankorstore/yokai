@@ -5,11 +5,13 @@ import (
 	"database/sql/driver"
 )
 
+// Connection is a SQL driver connection.
 type Connection struct {
 	base          driver.Conn
 	configuration *Configuration
 }
 
+// NewConnection returns a new Connection.
 func NewConnection(base driver.Conn, configuration *Configuration) *Connection {
 	return &Connection{
 		base:          base,
@@ -17,6 +19,7 @@ func NewConnection(base driver.Conn, configuration *Configuration) *Connection {
 	}
 }
 
+// Exec executes a query and returns a driver.Result.
 func (c *Connection) Exec(query string, args []driver.Value) (driver.Result, error) {
 	engine, ok := c.base.(driver.Execer)
 	if !ok {
@@ -51,6 +54,7 @@ func (c *Connection) Exec(query string, args []driver.Value) (driver.Result, err
 	return res, err
 }
 
+// ExecContext executes a query for a context and returns a driver.Result.
 func (c *Connection) ExecContext(ctx context.Context, query string, args []driver.NamedValue) (driver.Result, error) {
 	engine, ok := c.base.(driver.ExecerContext)
 	if !ok {
@@ -85,6 +89,7 @@ func (c *Connection) ExecContext(ctx context.Context, query string, args []drive
 	return res, err
 }
 
+// Query executes a query and returns a driver.Rows.
 func (c *Connection) Query(query string, args []driver.Value) (driver.Rows, error) {
 	engine, ok := c.base.(driver.Queryer)
 	if !ok {
@@ -107,6 +112,7 @@ func (c *Connection) Query(query string, args []driver.Value) (driver.Rows, erro
 	return rows, err
 }
 
+// QueryContext executes a query for a context and returns a driver.Rows.
 func (c *Connection) QueryContext(ctx context.Context, query string, args []driver.NamedValue) (driver.Rows, error) {
 	engine, ok := c.base.(driver.QueryerContext)
 	if !ok {
@@ -129,6 +135,7 @@ func (c *Connection) QueryContext(ctx context.Context, query string, args []driv
 	return rows, err
 }
 
+// Prepare prepares a query and returns a driver.Stmt.
 func (c *Connection) Prepare(query string) (driver.Stmt, error) {
 	event := NewHookEvent(c.configuration.System(), ConnectionPrepareOperation, query, nil)
 
@@ -146,6 +153,7 @@ func (c *Connection) Prepare(query string) (driver.Stmt, error) {
 	return NewStatement(stmt, nil, query, c.configuration), err
 }
 
+// PrepareContext prepares a query for a context and returns a driver.Stmt.
 func (c *Connection) PrepareContext(ctx context.Context, query string) (driver.Stmt, error) {
 	event := NewHookEvent(c.configuration.System(), ConnectionPrepareContextOperation, query, nil)
 
@@ -176,6 +184,7 @@ func (c *Connection) PrepareContext(ctx context.Context, query string) (driver.S
 	}
 }
 
+// Begin starts a transaction and returns a driver.Tx.
 func (c *Connection) Begin() (driver.Tx, error) {
 	event := NewHookEvent(c.configuration.System(), ConnectionBeginOperation, "", nil)
 
@@ -193,6 +202,7 @@ func (c *Connection) Begin() (driver.Tx, error) {
 	return NewTransaction(tx, ctx, c.configuration), err
 }
 
+// BeginTx starts a transaction for a context and returns a driver.Tx.
 func (c *Connection) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx, error) {
 	event := NewHookEvent(c.configuration.System(), ConnectionBeginTxOperation, "", nil)
 
@@ -223,6 +233,7 @@ func (c *Connection) BeginTx(ctx context.Context, opts driver.TxOptions) (driver
 	}
 }
 
+// Ping pings a connection for context.
 func (c *Connection) Ping(ctx context.Context) error {
 	engine, ok := c.base.(driver.Pinger)
 	if !ok {
@@ -245,6 +256,7 @@ func (c *Connection) Ping(ctx context.Context) error {
 	return err
 }
 
+// ResetSession resets a connection session for context.
 func (c *Connection) ResetSession(ctx context.Context) error {
 	engine, ok := c.base.(driver.SessionResetter)
 	if !ok {
@@ -268,6 +280,7 @@ func (c *Connection) ResetSession(ctx context.Context) error {
 
 }
 
+// Close closes a connection.
 func (c *Connection) Close() error {
 	event := NewHookEvent(c.configuration.System(), ConnectionCloseOperation, "", nil)
 

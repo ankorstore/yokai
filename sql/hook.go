@@ -35,12 +35,12 @@ func NewHookEvent(system System, operation Operation, query string, arguments in
 	}
 }
 
-// System returns the HookEvent system.
+// System returns the HookEvent System.
 func (e *HookEvent) System() System {
 	return e.system
 }
 
-// Operation returns the HookEvent operation.
+// Operation returns the HookEvent Operation.
 func (e *HookEvent) Operation() Operation {
 	return e.operation
 }
@@ -105,7 +105,7 @@ func (e *HookEvent) Stop() *HookEvent {
 	return e
 }
 
-// Latency returns the HookEvent latency (duration).
+// Latency returns the HookEvent latency (duration between start and end times).
 func (e *HookEvent) Latency() (time.Duration, error) {
 	if e.startedAt.IsZero() {
 		return time.Duration(0), fmt.Errorf("event was not started")

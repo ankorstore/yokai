@@ -1,13 +1,14 @@
 package sql
 
 import (
+	"database/sql"
 	"fmt"
 	"sync"
 )
 
 type DriverRegistry interface {
 	Has(name string) bool
-	Add(name string, driver *Driver)
+	Add(name string, driver *Driver) error
 	Get(name string) (*Driver, error)
 }
 
@@ -22,15 +23,22 @@ func NewDefaultDriverRegistry() *DefaultDriverRegistry {
 	}
 }
 
-func (r *DefaultDriverRegistry) Add(name string, driver *Driver) {
+func (r *DefaultDriverRegistry) Add(name string, driver *Driver) error {
 	if r.Has(name) {
-		return
+		return nil
 	}
 
-	r.mutex.RLock()
-	defer r.mutex.RUnlock()
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 
 	r.drivers[name] = driver
+
+	sql.Register(name, driver)
+	if rec := recover(); rec != nil {
+		return fmt.Errorf("cannot register driver %s: %v", name, rec)
+	}
+
+	return nil
 }
 
 func (r *DefaultDriverRegistry) Has(name string) bool {

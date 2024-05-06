@@ -5,12 +5,14 @@ import (
 	"database/sql/driver"
 )
 
+// Connector is a SQL driver connector.
 type Connector struct {
 	dsn    string
 	base   driver.Connector
 	driver *Driver
 }
 
+// NewConnector returns a new Connector.
 func NewConnector(dsn string, base driver.Connector, driver *Driver) *Connector {
 	return &Connector{
 		dsn:    dsn,

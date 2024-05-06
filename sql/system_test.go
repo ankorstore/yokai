@@ -32,12 +32,12 @@ func TestSystemAsString(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		assert.Equal(t, tt.expected, tt.system.String())
+	for _, test := range tests {
+		assert.Equal(t, test.expected, test.system.String())
 	}
 }
 
-func TestFetchSystemFromDriver(t *testing.T) {
+func TestFetchSystem(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -70,7 +70,7 @@ func TestFetchSystemFromDriver(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		assert.Equal(t, tt.expected, sql.FetchSystem(tt.driver))
+	for _, test := range tests {
+		assert.Equal(t, test.expected, sql.FetchSystem(test.driver))
 	}
 }
