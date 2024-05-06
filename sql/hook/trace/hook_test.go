@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ankorstore/yokai/sql/hook"
+	"github.com/ankorstore/yokai/sql"
 	"github.com/ankorstore/yokai/sql/hook/trace"
+	"github.com/ankorstore/yokai/sql/sqltest"
 	yokaitrace "github.com/ankorstore/yokai/trace"
 	"github.com/ankorstore/yokai/trace/tracetest"
 	"github.com/stretchr/testify/assert"
@@ -27,7 +28,7 @@ func TestTraceHookWithDefaults(t *testing.T) {
 	h := trace.NewTraceHook()
 
 	ctx := yokaitrace.WithContext(context.Background(), tp)
-	event := hook.NewHookEvent("system", "operation", "query", "argument")
+	event := sqltest.NewTestHookEvent()
 
 	ctx = h.Before(ctx, event)
 
@@ -42,9 +43,9 @@ func TestTraceHookWithDefaults(t *testing.T) {
 	tracetest.AssertHasTraceSpan(
 		t,
 		exporter,
-		"operation",
-		semconv.DBSystemKey.String("system"),
-		semconv.DBStatementKey.String("query"),
+		fmt.Sprintf("SQL %s", event.Operation().String()),
+		semconv.DBSystemKey.String(event.System().String()),
+		semconv.DBStatementKey.String(event.Query()),
 		attribute.Int64("db.lastInsertId", int64(1)),
 		attribute.Int64("db.rowsAffected", int64(2)),
 	)
@@ -60,13 +61,13 @@ func TestTraceHookWithOptions(t *testing.T) {
 
 	h := trace.NewTraceHook(
 		trace.WithArguments(true),
-		trace.WithExcludedOperations("excludedOperation"),
+		trace.WithExcludedOperations(sql.ConnectionResetSessionOperation),
 	)
 
 	ctx := yokaitrace.WithContext(context.Background(), tp)
 
 	// regular event
-	event := hook.NewHookEvent("system", "regularOperation", "query", "argument")
+	event := sqltest.NewTestHookEvent()
 
 	ctx = h.Before(ctx, event)
 
@@ -81,16 +82,18 @@ func TestTraceHookWithOptions(t *testing.T) {
 	tracetest.AssertHasTraceSpan(
 		t,
 		exporter,
-		"regularOperation",
-		semconv.DBSystemKey.String("system"),
-		semconv.DBStatementKey.String("query"),
-		attribute.String("db.statement.arguments", fmt.Sprintf("%+v", "argument")),
+		fmt.Sprintf("SQL %s", event.Operation().String()),
+		semconv.DBSystemKey.String(event.System().String()),
+		semconv.DBStatementKey.String(event.Query()),
+		attribute.String("db.statement.arguments", fmt.Sprintf("%+v", event.Arguments())),
 		attribute.Int64("db.lastInsertId", int64(1)),
 		attribute.Int64("db.rowsAffected", int64(2)),
 	)
 
 	// excluded operation event
-	excludedOperationEvent := hook.NewHookEvent("system", "excludedOperation", "query", "argument")
+	exporter.Reset()
+
+	excludedOperationEvent := sqltest.NewTestHookEvent(sqltest.WithOperation(sql.ConnectionResetSessionOperation))
 
 	ctx = h.Before(ctx, excludedOperationEvent)
 
@@ -105,16 +108,18 @@ func TestTraceHookWithOptions(t *testing.T) {
 	tracetest.AssertHasNotTraceSpan(
 		t,
 		exporter,
-		"excludedOperation",
-		semconv.DBSystemKey.String("system"),
-		semconv.DBStatementKey.String("query"),
-		attribute.String("db.statement.arguments", fmt.Sprintf("%+v", "argument")),
+		fmt.Sprintf("SQL %s", event.Operation().String()),
+		semconv.DBSystemKey.String(event.System().String()),
+		semconv.DBStatementKey.String(event.Query()),
+		attribute.String("db.statement.arguments", fmt.Sprintf("%+v", event.Arguments())),
 		attribute.Int64("db.lastInsertId", int64(1)),
 		attribute.Int64("db.rowsAffected", int64(2)),
 	)
 
 	// error event
-	errorEvent := hook.NewHookEvent("system", "errorOperation", "query", "argument")
+	exporter.Reset()
+
+	errorEvent := sqltest.NewTestHookEvent()
 
 	ctx = h.Before(ctx, errorEvent)
 
@@ -130,15 +135,15 @@ func TestTraceHookWithOptions(t *testing.T) {
 	tracetest.AssertHasTraceSpan(
 		t,
 		exporter,
-		"errorOperation",
-		semconv.DBSystemKey.String("system"),
-		semconv.DBStatementKey.String("query"),
-		attribute.String("db.statement.arguments", fmt.Sprintf("%+v", "argument")),
+		fmt.Sprintf("SQL %s", event.Operation().String()),
+		semconv.DBSystemKey.String(event.System().String()),
+		semconv.DBStatementKey.String(event.Query()),
+		attribute.String("db.statement.arguments", fmt.Sprintf("%+v", event.Arguments())),
 		attribute.Int64("db.lastInsertId", int64(1)),
 		attribute.Int64("db.rowsAffected", int64(2)),
 	)
 
-	span, err := exporter.Span("errorOperation")
+	span, err := exporter.Span(fmt.Sprintf("SQL %s", event.Operation().String()))
 	assert.NoError(t, err)
 
 	assert.Equal(t, codes.Error, span.Status.Code)
@@ -163,7 +168,7 @@ func TestTraceHookAfterWithNonRecordingSpan(t *testing.T) {
 	h := trace.NewTraceHook()
 
 	ctx := yokaitrace.WithContext(context.Background(), tp)
-	event := hook.NewHookEvent("system", "operation", "query", "argument")
+	event := sqltest.NewTestHookEvent()
 
 	ctx = h.Before(ctx, event)
 
@@ -176,9 +181,9 @@ func TestTraceHookAfterWithNonRecordingSpan(t *testing.T) {
 	tracetest.AssertHasTraceSpan(
 		t,
 		exporter,
-		"operation",
-		semconv.DBSystemKey.String("system"),
-		semconv.DBStatementKey.String("query"),
+		fmt.Sprintf("SQL %s", event.Operation().String()),
+		semconv.DBSystemKey.String(event.System().String()),
+		semconv.DBStatementKey.String(event.Query()),
 		attribute.String("attribute.name", "value"),
 	)
 }

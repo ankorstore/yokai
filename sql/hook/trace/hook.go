@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ankorstore/yokai/sql/hook"
+	"github.com/ankorstore/yokai/sql"
 	"github.com/ankorstore/yokai/trace"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -32,19 +32,19 @@ func NewTraceHook(options ...TraceHookOption) *TraceHook {
 }
 
 // Before executes SQL tracing logic before SQL operations.
-func (h *TraceHook) Before(ctx context.Context, event *hook.HookEvent) context.Context {
-	if hook.Contains(h.options.ExcludedOperations, event.Operation()) {
+func (h *TraceHook) Before(ctx context.Context, event *sql.HookEvent) context.Context {
+	if sql.ContainsOperation(h.options.ExcludedOperations, event.Operation()) {
 		return ctx
 	}
 
 	attributes := []attribute.KeyValue{
-		semconv.DBSystemKey.String(event.System()),
+		semconv.DBSystemKey.String(event.System().String()),
 	}
 
-	if event.Query() != "" {
+	if query := event.Query(); query != "" {
 		attributes = append(
 			attributes,
-			semconv.DBStatementKey.String(event.Query()),
+			semconv.DBStatementKey.String(query),
 		)
 	}
 
@@ -57,7 +57,7 @@ func (h *TraceHook) Before(ctx context.Context, event *hook.HookEvent) context.C
 
 	ctx, _ = trace.CtxTracerProvider(ctx).Tracer("yokai-sql").Start(
 		ctx,
-		event.Operation(),
+		fmt.Sprintf("SQL %s", event.Operation().String()),
 		oteltrace.WithSpanKind(oteltrace.SpanKindClient),
 		oteltrace.WithAttributes(attributes...),
 	)
@@ -66,8 +66,8 @@ func (h *TraceHook) Before(ctx context.Context, event *hook.HookEvent) context.C
 }
 
 // After executes SQL tracing logic after SQL operations.
-func (h *TraceHook) After(ctx context.Context, event *hook.HookEvent) {
-	if hook.Contains(h.options.ExcludedOperations, event.Operation()) {
+func (h *TraceHook) After(ctx context.Context, event *sql.HookEvent) {
+	if sql.ContainsOperation(h.options.ExcludedOperations, event.Operation()) {
 		return
 	}
 

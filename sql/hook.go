@@ -1,4 +1,4 @@
-package hook
+package sql
 
 import (
 	"context"
@@ -14,19 +14,19 @@ type Hook interface {
 
 // HookEvent is representing an event provided to a database Hook.
 type HookEvent struct {
-	system       string
-	operation    string
+	system       System
+	operation    Operation
+	startedAt    time.Time
+	stoppedAt    time.Time
 	query        string
 	arguments    any
 	lastInsertId int64
 	rowsAffected int64
 	err          error
-	startedAt    time.Time
-	stoppedAt    time.Time
 }
 
 // NewHookEvent returns a new HookEvent.
-func NewHookEvent(system string, operation string, query string, arguments interface{}) *HookEvent {
+func NewHookEvent(system System, operation Operation, query string, arguments interface{}) *HookEvent {
 	return &HookEvent{
 		system:    system,
 		operation: operation,
@@ -36,12 +36,12 @@ func NewHookEvent(system string, operation string, query string, arguments inter
 }
 
 // System returns the HookEvent system.
-func (e *HookEvent) System() string {
+func (e *HookEvent) System() System {
 	return e.system
 }
 
 // Operation returns the HookEvent operation.
-func (e *HookEvent) Operation() string {
+func (e *HookEvent) Operation() Operation {
 	return e.operation
 }
 

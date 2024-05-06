@@ -3,6 +3,7 @@ package trace_test
 import (
 	"testing"
 
+	"github.com/ankorstore/yokai/sql"
 	"github.com/ankorstore/yokai/sql/hook/trace"
 	"github.com/stretchr/testify/assert"
 )
@@ -19,9 +20,9 @@ func TestWithArguments(t *testing.T) {
 func TestWithExcludedOperations(t *testing.T) {
 	t.Parallel()
 
-	exclusions := []string{
-		"foo",
-		"bar",
+	exclusions := []sql.Operation{
+		sql.ConnectionPingOperation,
+		sql.ConnectionResetSessionOperation,
 	}
 
 	opt := trace.DefaultTraceHookOptions()

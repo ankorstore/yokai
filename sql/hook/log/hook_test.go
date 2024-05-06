@@ -7,8 +7,9 @@ import (
 
 	yokailog "github.com/ankorstore/yokai/log"
 	"github.com/ankorstore/yokai/log/logtest"
-	"github.com/ankorstore/yokai/sql/hook"
+	"github.com/ankorstore/yokai/sql"
 	"github.com/ankorstore/yokai/sql/hook/log"
+	"github.com/ankorstore/yokai/sql/sqltest"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 )
@@ -26,7 +27,7 @@ func TestLogHookWithDefaults(t *testing.T) {
 	h := log.NewLogHook()
 
 	ctx := logger.WithContext(context.Background())
-	event := hook.NewHookEvent("system", "operation", "query", "argument")
+	event := sqltest.NewTestHookEvent()
 
 	newCtx := h.Before(ctx, event)
 	assert.Same(t, ctx, newCtx)
@@ -41,9 +42,9 @@ func TestLogHookWithDefaults(t *testing.T) {
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":        "debug",
-		"system":       "system",
-		"operation":    "operation",
-		"query":        "query",
+		"system":       event.System().String(),
+		"operation":    event.Operation().String(),
+		"query":        event.Query(),
 		"lastInsertId": "1",
 		"rowsAffected": "2",
 		"message":      "sql logger",
@@ -61,15 +62,15 @@ func TestLogHookWithOptions(t *testing.T) {
 	assert.NoError(t, err)
 
 	h := log.NewLogHook(
-		log.WithLevel("info"),
+		log.WithLevel(zerolog.InfoLevel),
 		log.WithArguments(true),
-		log.WithExcludedOperations("excludedOperation"),
+		log.WithExcludedOperations(sql.ConnectionResetSessionOperation),
 	)
 
 	ctx := logger.WithContext(context.Background())
 
 	// regular event
-	event := hook.NewHookEvent("system", "regularOperation", "query", "argument")
+	event := sqltest.NewTestHookEvent()
 
 	newCtx := h.Before(ctx, event)
 	assert.Same(t, ctx, newCtx)
@@ -84,17 +85,19 @@ func TestLogHookWithOptions(t *testing.T) {
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":        "info",
-		"system":       "system",
-		"operation":    "regularOperation",
-		"query":        "query",
-		"arguments":    "argument",
+		"system":       event.System().String(),
+		"operation":    event.Operation().String(),
+		"query":        event.Query(),
+		"arguments":    event.Arguments(),
 		"lastInsertId": "1",
 		"rowsAffected": "2",
 		"message":      "sql logger",
 	})
 
 	// excluded operation event
-	excludedOperationEvent := hook.NewHookEvent("system", "excludedOperation", "query", "argument")
+	logBuffer.Reset()
+
+	excludedOperationEvent := sqltest.NewTestHookEvent(sqltest.WithOperation(sql.ConnectionResetSessionOperation))
 
 	h.Before(ctx, excludedOperationEvent)
 
@@ -108,9 +111,9 @@ func TestLogHookWithOptions(t *testing.T) {
 
 	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
 		"level":        "info",
-		"system":       "system",
-		"operation":    "excludedOperation",
-		"query":        "query",
+		"system":       excludedOperationEvent.System().String(),
+		"operation":    excludedOperationEvent.Operation().String(),
+		"query":        sqltest.TestHookEventQuery,
 		"arguments":    "argument",
 		"lastInsertId": "1",
 		"rowsAffected": "2",
@@ -118,7 +121,9 @@ func TestLogHookWithOptions(t *testing.T) {
 	})
 
 	// error event
-	errorEvent := hook.NewHookEvent("system", "errorOperation", "query", "argument")
+	logBuffer.Reset()
+
+	errorEvent := sqltest.NewTestHookEvent()
 
 	h.Before(ctx, errorEvent)
 
@@ -134,10 +139,10 @@ func TestLogHookWithOptions(t *testing.T) {
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":        "error",
 		"error":        "test error",
-		"system":       "system",
-		"operation":    "errorOperation",
-		"query":        "query",
-		"arguments":    "argument",
+		"system":       errorEvent.System().String(),
+		"operation":    errorEvent.Operation().String(),
+		"query":        event.Query(),
+		"arguments":    event.Arguments(),
 		"lastInsertId": "1",
 		"rowsAffected": "2",
 		"message":      "sql logger",

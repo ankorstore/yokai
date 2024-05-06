@@ -1,7 +1,7 @@
 package log
 
 import (
-	"github.com/ankorstore/yokai/log"
+	"github.com/ankorstore/yokai/sql"
 	"github.com/rs/zerolog"
 )
 
@@ -9,7 +9,7 @@ import (
 type Options struct {
 	Level              zerolog.Level
 	Arguments          bool
-	ExcludedOperations []string
+	ExcludedOperations []sql.Operation
 }
 
 // DefaultLogHookOptions are the default options for LogHook.
@@ -17,7 +17,7 @@ func DefaultLogHookOptions() Options {
 	return Options{
 		Level:              zerolog.DebugLevel,
 		Arguments:          false,
-		ExcludedOperations: []string{},
+		ExcludedOperations: []sql.Operation{},
 	}
 }
 
@@ -25,9 +25,9 @@ func DefaultLogHookOptions() Options {
 type LogHookOption func(o *Options)
 
 // WithLevel is used to configure the SQL logging level.
-func WithLevel(level string) LogHookOption {
+func WithLevel(level zerolog.Level) LogHookOption {
 	return func(o *Options) {
-		o.Level = log.FetchLogLevel(level)
+		o.Level = level
 	}
 }
 
@@ -39,7 +39,7 @@ func WithArguments(arguments bool) LogHookOption {
 }
 
 // WithExcludedOperations is used to exclude a list of SQL operations from logging.
-func WithExcludedOperations(excludedOperations ...string) LogHookOption {
+func WithExcludedOperations(excludedOperations ...sql.Operation) LogHookOption {
 	return func(o *Options) {
 		o.ExcludedOperations = excludedOperations
 	}

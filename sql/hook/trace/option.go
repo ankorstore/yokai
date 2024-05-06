@@ -1,16 +1,18 @@
 package trace
 
+import "github.com/ankorstore/yokai/sql"
+
 // Options are the options for TraceHook.
 type Options struct {
 	Arguments          bool
-	ExcludedOperations []string
+	ExcludedOperations []sql.Operation
 }
 
 // DefaultTraceHookOptions are the default options for TraceHook.
 func DefaultTraceHookOptions() Options {
 	return Options{
 		Arguments:          false,
-		ExcludedOperations: []string{},
+		ExcludedOperations: []sql.Operation{},
 	}
 }
 
@@ -24,8 +26,8 @@ func WithArguments(arguments bool) TraceHookOption {
 	}
 }
 
-// WithExcludedOperations is used to exclude a list of SQL operations from tracing.
-func WithExcludedOperations(excludedOperations ...string) TraceHookOption {
+// WithExcludedOperations is used to exclude a list of database operations from tracing.
+func WithExcludedOperations(excludedOperations ...sql.Operation) TraceHookOption {
 	return func(o *Options) {
 		o.ExcludedOperations = excludedOperations
 	}

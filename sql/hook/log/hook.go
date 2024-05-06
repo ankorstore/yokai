@@ -6,7 +6,7 @@ import (
 	"errors"
 
 	"github.com/ankorstore/yokai/log"
-	"github.com/ankorstore/yokai/sql/hook"
+	"github.com/ankorstore/yokai/sql"
 )
 
 // LogHook is a hook.Hook implementation for SQL logging.
@@ -27,13 +27,13 @@ func NewLogHook(options ...LogHookOption) *LogHook {
 }
 
 // Before executes SQL logging logic before SQL operations.
-func (h *LogHook) Before(ctx context.Context, _ *hook.HookEvent) context.Context {
+func (h *LogHook) Before(ctx context.Context, _ *sql.HookEvent) context.Context {
 	return ctx
 }
 
 // After executes SQL logging logic after SQL operations.
-func (h *LogHook) After(ctx context.Context, event *hook.HookEvent) {
-	if hook.Contains(h.options.ExcludedOperations, event.Operation()) {
+func (h *LogHook) After(ctx context.Context, event *sql.HookEvent) {
+	if sql.ContainsOperation(h.options.ExcludedOperations, event.Operation()) {
 		return
 	}
 
@@ -47,8 +47,8 @@ func (h *LogHook) After(ctx context.Context, event *hook.HookEvent) {
 	}
 
 	loggerEvent.
-		Str("system", event.System()).
-		Str("operation", event.Operation()).
+		Str("system", event.System().String()).
+		Str("operation", event.Operation().String()).
 		Int64("lastInsertId", event.LastInsertId()).
 		Int64("rowsAffected", event.RowsAffected())
 

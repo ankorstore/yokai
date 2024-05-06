@@ -1,29 +1,30 @@
-package hook_test
+package sql_test
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/ankorstore/yokai/sql/hook"
+	"github.com/ankorstore/yokai/sql"
+	"github.com/ankorstore/yokai/sql/sqltest"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewHookEvent(t *testing.T) {
 	t.Parallel()
 
-	event := createTestEvent()
-	assert.IsType(t, &hook.HookEvent{}, event)
+	event := sqltest.NewTestHookEvent()
+	assert.IsType(t, &sql.HookEvent{}, event)
 
-	assert.Equal(t, "system", event.System())
-	assert.Equal(t, "operation", event.Operation())
-	assert.Equal(t, "query", event.Query())
-	assert.Equal(t, "argument", event.Arguments())
+	assert.Equal(t, sql.SqliteSystem, event.System())
+	assert.Equal(t, sql.ConnectionQueryOperation, event.Operation())
+	assert.Equal(t, sqltest.TestHookEventQuery, event.Query())
+	assert.Equal(t, sqltest.TestHookEventArgument, event.Arguments())
 }
 
 func TestHookEventLastInsertId(t *testing.T) {
 	t.Parallel()
 
-	event := createTestEvent()
+	event := sqltest.NewTestHookEvent()
 	event.SetLastInsertId(int64(1))
 
 	assert.Equal(t, int64(1), event.LastInsertId())
@@ -32,7 +33,7 @@ func TestHookEventLastInsertId(t *testing.T) {
 func TestHookEventRowsAffected(t *testing.T) {
 	t.Parallel()
 
-	event := createTestEvent()
+	event := sqltest.NewTestHookEvent()
 	event.SetRowsAffected(int64(1))
 
 	assert.Equal(t, int64(1), event.RowsAffected())
@@ -43,7 +44,7 @@ func TestHookEventError(t *testing.T) {
 
 	err := fmt.Errorf("test error")
 
-	event := createTestEvent()
+	event := sqltest.NewTestHookEvent()
 	event.SetError(err)
 
 	assert.Equal(t, err, event.Error())
@@ -52,7 +53,7 @@ func TestHookEventError(t *testing.T) {
 func TestHookEventLatency(t *testing.T) {
 	t.Parallel()
 
-	event := createTestEvent()
+	event := sqltest.NewTestHookEvent()
 
 	_, err := event.Latency()
 	assert.Error(t, err)
@@ -69,8 +70,4 @@ func TestHookEventLatency(t *testing.T) {
 	latency, err := event.Latency()
 	assert.NoError(t, err)
 	assert.GreaterOrEqual(t, latency.Nanoseconds(), int64(0))
-}
-
-func createTestEvent() *hook.HookEvent {
-	return hook.NewHookEvent("system", "operation", "query", "argument")
 }
