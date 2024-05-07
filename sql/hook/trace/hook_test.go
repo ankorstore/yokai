@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/ankorstore/yokai/sql"
+	"github.com/ankorstore/yokai/sql/hook/hooktest"
 	"github.com/ankorstore/yokai/sql/hook/trace"
-	"github.com/ankorstore/yokai/sql/sqltest"
 	yokaitrace "github.com/ankorstore/yokai/trace"
 	"github.com/ankorstore/yokai/trace/tracetest"
 	"github.com/stretchr/testify/assert"
@@ -28,7 +28,7 @@ func TestTraceHookWithDefaults(t *testing.T) {
 	h := trace.NewTraceHook()
 
 	ctx := yokaitrace.WithContext(context.Background(), tp)
-	event := sqltest.NewTestHookEvent()
+	event := hooktest.NewTestHookEvent()
 
 	ctx = h.Before(ctx, event)
 
@@ -67,7 +67,7 @@ func TestTraceHookWithOptions(t *testing.T) {
 	ctx := yokaitrace.WithContext(context.Background(), tp)
 
 	// regular event
-	event := sqltest.NewTestHookEvent()
+	event := hooktest.NewTestHookEvent()
 
 	ctx = h.Before(ctx, event)
 
@@ -93,7 +93,7 @@ func TestTraceHookWithOptions(t *testing.T) {
 	// excluded operation event
 	exporter.Reset()
 
-	excludedOperationEvent := sqltest.NewTestHookEvent(sqltest.WithOperation(sql.ConnectionResetSessionOperation))
+	excludedOperationEvent := hooktest.NewTestHookEvent(hooktest.WithOperation(sql.ConnectionResetSessionOperation))
 
 	ctx = h.Before(ctx, excludedOperationEvent)
 
@@ -119,7 +119,7 @@ func TestTraceHookWithOptions(t *testing.T) {
 	// error event
 	exporter.Reset()
 
-	errorEvent := sqltest.NewTestHookEvent()
+	errorEvent := hooktest.NewTestHookEvent()
 
 	ctx = h.Before(ctx, errorEvent)
 
@@ -168,7 +168,7 @@ func TestTraceHookAfterWithNonRecordingSpan(t *testing.T) {
 	h := trace.NewTraceHook()
 
 	ctx := yokaitrace.WithContext(context.Background(), tp)
-	event := sqltest.NewTestHookEvent()
+	event := hooktest.NewTestHookEvent()
 
 	ctx = h.Before(ctx, event)
 

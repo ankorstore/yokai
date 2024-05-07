@@ -5,7 +5,9 @@ import (
 	"database/sql/driver"
 )
 
-// Connector is a SQL driver connector.
+var _ driver.Connector = (*Connector)(nil)
+
+// Connector is a SQL driver connector wrapping a driver.Connector.
 type Connector struct {
 	dsn    string
 	base   driver.Connector

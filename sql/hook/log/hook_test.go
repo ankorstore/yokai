@@ -8,8 +8,8 @@ import (
 	yokailog "github.com/ankorstore/yokai/log"
 	"github.com/ankorstore/yokai/log/logtest"
 	"github.com/ankorstore/yokai/sql"
+	"github.com/ankorstore/yokai/sql/hook/hooktest"
 	"github.com/ankorstore/yokai/sql/hook/log"
-	"github.com/ankorstore/yokai/sql/sqltest"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 )
@@ -27,7 +27,7 @@ func TestLogHookWithDefaults(t *testing.T) {
 	h := log.NewLogHook()
 
 	ctx := logger.WithContext(context.Background())
-	event := sqltest.NewTestHookEvent()
+	event := hooktest.NewTestHookEvent()
 
 	newCtx := h.Before(ctx, event)
 	assert.Same(t, ctx, newCtx)
@@ -70,7 +70,7 @@ func TestLogHookWithOptions(t *testing.T) {
 	ctx := logger.WithContext(context.Background())
 
 	// regular event
-	event := sqltest.NewTestHookEvent()
+	event := hooktest.NewTestHookEvent()
 
 	newCtx := h.Before(ctx, event)
 	assert.Same(t, ctx, newCtx)
@@ -97,7 +97,7 @@ func TestLogHookWithOptions(t *testing.T) {
 	// excluded operation event
 	logBuffer.Reset()
 
-	excludedOperationEvent := sqltest.NewTestHookEvent(sqltest.WithOperation(sql.ConnectionResetSessionOperation))
+	excludedOperationEvent := hooktest.NewTestHookEvent(hooktest.WithOperation(sql.ConnectionResetSessionOperation))
 
 	h.Before(ctx, excludedOperationEvent)
 
@@ -123,7 +123,7 @@ func TestLogHookWithOptions(t *testing.T) {
 	// error event
 	logBuffer.Reset()
 
-	errorEvent := sqltest.NewTestHookEvent()
+	errorEvent := hooktest.NewTestHookEvent()
 
 	h.Before(ctx, errorEvent)
 

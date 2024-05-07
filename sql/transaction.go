@@ -5,6 +5,8 @@ import (
 	"database/sql/driver"
 )
 
+var _ driver.Tx = (*Transaction)(nil)
+
 //nolint:containedctx
 type Transaction struct {
 	base          driver.Tx

@@ -349,6 +349,7 @@ func TestRegisterAndBeginTxAndCommit(t *testing.T) {
 
 	// insert into table
 	result, err := tx.ExecContext(ctx, "INSERT INTO foo (bar) VALUES ($1)", 42)
+	assert.NoError(t, err)
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":        "debug",
@@ -467,6 +468,7 @@ func TestRegisterAndBeginTxAndRollback(t *testing.T) {
 
 	// insert into table
 	result, err := tx.ExecContext(ctx, "INSERT INTO foo (bar) VALUES ($1)", 42)
+	assert.NoError(t, err)
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":        "debug",

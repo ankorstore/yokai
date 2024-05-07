@@ -191,8 +191,8 @@ func TestContainsOperation(t *testing.T) {
 		operation  sql.Operation
 		want       bool
 	}{
+		// contains at beginning of list
 		{
-			// contains at beginning of list
 			operations: []sql.Operation{
 				sql.ConnectionPingOperation,
 				sql.ConnectionResetSessionOperation,
@@ -201,8 +201,8 @@ func TestContainsOperation(t *testing.T) {
 			operation: sql.ConnectionPingOperation,
 			want:      true,
 		},
+		// contains at end of list
 		{
-			// contains at end of list
 			operations: []sql.Operation{
 				sql.ConnectionPingOperation,
 				sql.ConnectionResetSessionOperation,
@@ -211,8 +211,8 @@ func TestContainsOperation(t *testing.T) {
 			operation: sql.ConnectionCloseOperation,
 			want:      true,
 		},
+		// contains in middle of list
 		{
-			// contains in middle of list
 			operations: []sql.Operation{
 				sql.ConnectionPingOperation,
 				sql.ConnectionResetSessionOperation,
@@ -221,16 +221,16 @@ func TestContainsOperation(t *testing.T) {
 			operation: sql.ConnectionResetSessionOperation,
 			want:      true,
 		},
+		// contains in single item list
 		{
-			// contains in single item list
 			operations: []sql.Operation{
 				sql.ConnectionPingOperation,
 			},
 			operation: sql.ConnectionPingOperation,
 			want:      true,
 		},
+		// not contains in list
 		{
-			// not contains in list
 			operations: []sql.Operation{
 				sql.ConnectionPingOperation,
 				sql.ConnectionResetSessionOperation,
@@ -239,8 +239,8 @@ func TestContainsOperation(t *testing.T) {
 			operation: sql.TransactionCommitOperation,
 			want:      false,
 		},
+		// not contains in empty list
 		{
-			// not contains in empty list
 			operations: []sql.Operation{},
 			operation:  sql.TransactionCommitOperation,
 			want:       false,

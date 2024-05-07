@@ -1,4 +1,4 @@
-package sqltest
+package hooktest
 
 import "github.com/ankorstore/yokai/sql"
 

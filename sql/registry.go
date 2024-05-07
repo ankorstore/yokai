@@ -23,22 +23,26 @@ func NewDefaultDriverRegistry() *DefaultDriverRegistry {
 	}
 }
 
-func (r *DefaultDriverRegistry) Add(name string, driver *Driver) error {
+func (r *DefaultDriverRegistry) Add(name string, driver *Driver) (err error) {
 	if r.Has(name) {
-		return nil
+		return err
 	}
 
 	r.mutex.Lock()
-	defer r.mutex.Unlock()
+
+	defer func() {
+		r.mutex.Unlock()
+
+		if rec := recover(); rec != nil {
+			err = fmt.Errorf("cannot add driver %s: %v", name, rec)
+		}
+	}()
 
 	r.drivers[name] = driver
 
 	sql.Register(name, driver)
-	if rec := recover(); rec != nil {
-		return fmt.Errorf("cannot register driver %s: %v", name, rec)
-	}
 
-	return nil
+	return err
 }
 
 func (r *DefaultDriverRegistry) Has(name string) bool {

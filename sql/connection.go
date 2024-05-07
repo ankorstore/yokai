@@ -5,7 +5,21 @@ import (
 	"database/sql/driver"
 )
 
-// Connection is a SQL driver connection.
+var _ driver.Conn = (*Connection)(nil)
+var _ driver.ExecerContext = (*Connection)(nil)
+var _ driver.QueryerContext = (*Connection)(nil)
+var _ driver.ConnPrepareContext = (*Connection)(nil)
+var _ driver.ConnBeginTx = (*Connection)(nil)
+var _ driver.Pinger = (*Connection)(nil)
+var _ driver.SessionResetter = (*Connection)(nil)
+
+//nolint:staticcheck
+var _ driver.Execer = (*Connection)(nil)
+
+//nolint:staticcheck
+var _ driver.Queryer = (*Connection)(nil)
+
+// Connection is a SQL driver connection wrapping a driver.Conn.
 type Connection struct {
 	base          driver.Conn
 	configuration *Configuration

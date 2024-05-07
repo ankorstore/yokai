@@ -4,7 +4,10 @@ import (
 	"database/sql/driver"
 )
 
-// Driver is a SQL driver.
+var _ driver.Driver = (*Driver)(nil)
+var _ driver.DriverContext = (*Driver)(nil)
+
+// Driver is a SQL driver wrapping a driver.Driver.
 type Driver struct {
 	base          driver.Driver
 	configuration *Configuration
@@ -40,8 +43,8 @@ func (d *Driver) Open(dsn string) (driver.Conn, error) {
 
 // OpenConnector returns a new Connector.
 func (d *Driver) OpenConnector(dsn string) (driver.Connector, error) {
-	if driverContext, ok := d.base.(driver.DriverContext); ok {
-		connector, err := driverContext.OpenConnector(dsn)
+	if engine, ok := d.base.(driver.DriverContext); ok {
+		connector, err := engine.OpenConnector(dsn)
 		if err != nil {
 			return nil, err
 		}

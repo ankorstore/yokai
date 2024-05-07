@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDefaultDriverFactory(t *testing.T) {
+func TestNewDefaultDriverFactory(t *testing.T) {
 	t.Parallel()
 
 	factory := sql.NewDefaultDriverFactory()

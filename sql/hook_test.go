@@ -5,26 +5,26 @@ import (
 	"testing"
 
 	"github.com/ankorstore/yokai/sql"
-	"github.com/ankorstore/yokai/sql/sqltest"
+	"github.com/ankorstore/yokai/sql/hook/hooktest"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewHookEvent(t *testing.T) {
 	t.Parallel()
 
-	event := sqltest.NewTestHookEvent()
+	event := hooktest.NewTestHookEvent()
 	assert.IsType(t, &sql.HookEvent{}, event)
 
 	assert.Equal(t, sql.SqliteSystem, event.System())
 	assert.Equal(t, sql.ConnectionQueryOperation, event.Operation())
-	assert.Equal(t, sqltest.TestHookEventQuery, event.Query())
-	assert.Equal(t, sqltest.TestHookEventArgument, event.Arguments())
+	assert.Equal(t, hooktest.TestHookEventQuery, event.Query())
+	assert.Equal(t, hooktest.TestHookEventArgument, event.Arguments())
 }
 
 func TestHookEventLastInsertId(t *testing.T) {
 	t.Parallel()
 
-	event := sqltest.NewTestHookEvent()
+	event := hooktest.NewTestHookEvent()
 	event.SetLastInsertId(int64(1))
 
 	assert.Equal(t, int64(1), event.LastInsertId())
@@ -33,7 +33,7 @@ func TestHookEventLastInsertId(t *testing.T) {
 func TestHookEventRowsAffected(t *testing.T) {
 	t.Parallel()
 
-	event := sqltest.NewTestHookEvent()
+	event := hooktest.NewTestHookEvent()
 	event.SetRowsAffected(int64(1))
 
 	assert.Equal(t, int64(1), event.RowsAffected())
@@ -44,7 +44,7 @@ func TestHookEventError(t *testing.T) {
 
 	err := fmt.Errorf("test error")
 
-	event := sqltest.NewTestHookEvent()
+	event := hooktest.NewTestHookEvent()
 	event.SetError(err)
 
 	assert.Equal(t, err, event.Error())
@@ -53,7 +53,7 @@ func TestHookEventError(t *testing.T) {
 func TestHookEventLatency(t *testing.T) {
 	t.Parallel()
 
-	event := sqltest.NewTestHookEvent()
+	event := hooktest.NewTestHookEvent()
 
 	_, err := event.Latency()
 	assert.Error(t, err)
