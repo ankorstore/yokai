@@ -5,9 +5,11 @@ import (
 	"database/sql/driver"
 )
 
-var _ driver.Stmt = (*Statement)(nil)
-var _ driver.StmtExecContext = (*Statement)(nil)
-var _ driver.StmtQueryContext = (*Statement)(nil)
+var (
+	_ driver.Stmt             = (*Statement)(nil)
+	_ driver.StmtExecContext  = (*Statement)(nil)
+	_ driver.StmtQueryContext = (*Statement)(nil)
+)
 
 //nolint:containedctx
 type Statement struct {

@@ -4,8 +4,10 @@ import (
 	"database/sql/driver"
 )
 
-var _ driver.Driver = (*Driver)(nil)
-var _ driver.DriverContext = (*Driver)(nil)
+var (
+	_ driver.Driver        = (*Driver)(nil)
+	_ driver.DriverContext = (*Driver)(nil)
+)
 
 // Driver is a SQL driver wrapping a driver.Driver.
 type Driver struct {

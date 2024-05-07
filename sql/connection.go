@@ -5,19 +5,21 @@ import (
 	"database/sql/driver"
 )
 
-var _ driver.Conn = (*Connection)(nil)
-var _ driver.ExecerContext = (*Connection)(nil)
-var _ driver.QueryerContext = (*Connection)(nil)
-var _ driver.ConnPrepareContext = (*Connection)(nil)
-var _ driver.ConnBeginTx = (*Connection)(nil)
-var _ driver.Pinger = (*Connection)(nil)
-var _ driver.SessionResetter = (*Connection)(nil)
+var (
+	_ driver.Conn               = (*Connection)(nil)
+	_ driver.ExecerContext      = (*Connection)(nil)
+	_ driver.QueryerContext     = (*Connection)(nil)
+	_ driver.ConnPrepareContext = (*Connection)(nil)
+	_ driver.ConnBeginTx        = (*Connection)(nil)
+	_ driver.Pinger             = (*Connection)(nil)
+	_ driver.SessionResetter    = (*Connection)(nil)
+)
 
 //nolint:staticcheck
-var _ driver.Execer = (*Connection)(nil)
-
-//nolint:staticcheck
-var _ driver.Queryer = (*Connection)(nil)
+var (
+	_ driver.Execer  = (*Connection)(nil)
+	_ driver.Queryer = (*Connection)(nil)
+)
 
 // Connection is a SQL driver connection wrapping a driver.Conn.
 type Connection struct {

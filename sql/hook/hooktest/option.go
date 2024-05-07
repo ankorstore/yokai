@@ -3,7 +3,7 @@ package hooktest
 import "github.com/ankorstore/yokai/sql"
 
 var (
-	TestHookEventQuery    = "SELECT * FROM example WHERE id = ?"
+	TestHookEventQuery    = "SELECT * FROM foo WHERE id = ?"
 	TestHookEventArgument = "42"
 )
 
