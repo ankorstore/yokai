@@ -71,8 +71,16 @@ func TestOperationAsString(t *testing.T) {
 			"statement:exec",
 		},
 		{
+			sql.StatementExecContextOperation,
+			"statement:exec-context",
+		},
+		{
 			sql.StatementQueryOperation,
 			"statement:query",
+		},
+		{
+			sql.StatementQueryContextOperation,
+			"statement:query-context",
 		},
 	}
 
@@ -145,8 +153,16 @@ func TestFetchOperation(t *testing.T) {
 			sql.StatementExecOperation,
 		},
 		{
+			"statement:exec-context",
+			sql.StatementExecContextOperation,
+		},
+		{
 			"statement:query",
 			sql.StatementQueryOperation,
+		},
+		{
+			"statement:query-context",
+			sql.StatementQueryContextOperation,
 		},
 		{
 			"",

@@ -21,7 +21,9 @@ const (
 	TransactionCommitOperation        Operation = "transaction:commit"
 	TransactionRollbackOperation      Operation = "transaction:rollback"
 	StatementExecOperation            Operation = "statement:exec"
+	StatementExecContextOperation     Operation = "statement:exec-context"
 	StatementQueryOperation           Operation = "statement:query"
+	StatementQueryContextOperation    Operation = "statement:query-context"
 )
 
 // String returns a string representation of the Operation.
@@ -47,7 +49,9 @@ func FetchOperation(name string) Operation {
 		TransactionCommitOperation,
 		TransactionRollbackOperation,
 		StatementExecOperation,
-		StatementQueryOperation:
+		StatementExecContextOperation,
+		StatementQueryOperation,
+		StatementQueryContextOperation:
 		return o
 	default:
 		return UnknownOperation

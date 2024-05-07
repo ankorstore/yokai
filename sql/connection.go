@@ -59,7 +59,8 @@ func (c *Connection) Exec(query string, args []driver.Value) (driver.Result, err
 func (c *Connection) ExecContext(ctx context.Context, query string, args []driver.NamedValue) (driver.Result, error) {
 	engine, ok := c.base.(driver.ExecerContext)
 	if !ok {
-		return nil, driver.ErrSkip
+		//nolint:contextcheck
+		return c.Exec(query, ConvertNamedValuesToValues(args))
 	}
 
 	event := NewHookEvent(c.configuration.System(), ConnectionExecContextOperation, query, args)
@@ -118,7 +119,8 @@ func (c *Connection) Query(query string, args []driver.Value) (driver.Rows, erro
 func (c *Connection) QueryContext(ctx context.Context, query string, args []driver.NamedValue) (driver.Rows, error) {
 	engine, ok := c.base.(driver.QueryerContext)
 	if !ok {
-		return nil, driver.ErrSkip
+		//nolint:contextcheck
+		return c.Query(query, ConvertNamedValuesToValues(args))
 	}
 
 	event := NewHookEvent(c.configuration.System(), ConnectionQueryContextOperation, query, args)
@@ -157,33 +159,26 @@ func (c *Connection) Prepare(query string) (driver.Stmt, error) {
 
 // PrepareContext prepares a query for a context and returns a driver.Stmt.
 func (c *Connection) PrepareContext(ctx context.Context, query string) (driver.Stmt, error) {
+	engine, ok := c.base.(driver.ConnPrepareContext)
+	if !ok {
+		//nolint:contextcheck
+		return c.Prepare(query)
+	}
+
 	event := NewHookEvent(c.configuration.System(), ConnectionPrepareContextOperation, query, nil)
 
 	ctx = c.applyBeforeHooks(ctx, event)
 
-	if engine, ok := c.base.(driver.ConnPrepareContext); ok {
-		event.Start()
-		stmt, err := engine.PrepareContext(ctx, query)
-		event.Stop()
-		if err != nil {
-			event.SetError(err)
-		}
-
-		c.applyAfterHooks(ctx, event)
-
-		return NewStatement(stmt, ctx, query, c.configuration), err
-	} else {
-		event.Start()
-		stmt, err := c.base.Prepare(query)
-		event.Stop()
-		if err != nil {
-			event.SetError(err)
-		}
-
-		c.applyAfterHooks(ctx, event)
-
-		return NewStatement(stmt, ctx, query, c.configuration), err
+	event.Start()
+	stmt, err := engine.PrepareContext(ctx, query)
+	event.Stop()
+	if err != nil {
+		event.SetError(err)
 	}
+
+	c.applyAfterHooks(ctx, event)
+
+	return NewStatement(stmt, ctx, query, c.configuration), err
 }
 
 // Begin starts a transaction and returns a driver.Tx.
@@ -207,34 +202,26 @@ func (c *Connection) Begin() (driver.Tx, error) {
 
 // BeginTx starts a transaction for a context and returns a driver.Tx.
 func (c *Connection) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx, error) {
+	engine, ok := c.base.(driver.ConnBeginTx)
+	if !ok {
+		//nolint:contextcheck
+		return c.Begin()
+	}
+
 	event := NewHookEvent(c.configuration.System(), ConnectionBeginTxOperation, "", nil)
 
 	ctx = c.applyBeforeHooks(ctx, event)
 
-	if engine, ok := c.base.(driver.ConnBeginTx); ok {
-		event.Start()
-		tx, err := engine.BeginTx(ctx, opts)
-		event.Stop()
-		if err != nil {
-			event.SetError(err)
-		}
-
-		c.applyAfterHooks(ctx, event)
-
-		return NewTransaction(tx, ctx, c.configuration), err
-	} else {
-		event.Start()
-		//nolint:staticcheck
-		tx, err := c.base.Begin()
-		event.Stop()
-		if err != nil {
-			event.SetError(err)
-		}
-
-		c.applyAfterHooks(ctx, event)
-
-		return NewTransaction(tx, ctx, c.configuration), err
+	event.Start()
+	tx, err := engine.BeginTx(ctx, opts)
+	event.Stop()
+	if err != nil {
+		event.SetError(err)
 	}
+
+	c.applyAfterHooks(ctx, event)
+
+	return NewTransaction(tx, ctx, c.configuration), err
 }
 
 // Ping pings a connection for context.
