@@ -37,6 +37,7 @@ func TestRegisterAndExecContext(t *testing.T) {
 	db, err := basesql.Open(driver, ":memory:")
 	assert.NoError(t, err)
 
+	// create table
 	_, err = db.ExecContext(
 		createTestContext(logger, tracerProvider),
 		"CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)",
@@ -61,6 +62,7 @@ func TestRegisterAndExecContext(t *testing.T) {
 		attribute.String("db.statement", "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)"),
 	)
 
+	// insert into table
 	result, err := db.ExecContext(
 		createTestContext(logger, tracerProvider),
 		"INSERT INTO foo (bar) VALUES ($1)",
@@ -160,9 +162,11 @@ func TestRegisterAndPrepareContextAndExecContext(t *testing.T) {
 
 	ctx := createTestContext(logger, tracerProvider)
 
+	// create table
 	_, err = db.ExecContext(ctx, "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)")
 	assert.NoError(t, err)
 
+	// prepare insert into table
 	stmt, err := db.PrepareContext(ctx, "INSERT INTO foo (bar) VALUES ($1)")
 	assert.NoError(t, err)
 
@@ -182,6 +186,7 @@ func TestRegisterAndPrepareContextAndExecContext(t *testing.T) {
 		attribute.String("db.statement", "INSERT INTO foo (bar) VALUES ($1)"),
 	)
 
+	// exec insert into table
 	result, err := stmt.ExecContext(ctx, 42)
 	assert.NoError(t, err)
 
@@ -304,6 +309,7 @@ func TestRegisterAndBeginTxAndCommit(t *testing.T) {
 
 	ctx := createTestContext(logger, tracerProvider)
 
+	// create table
 	_, err = db.ExecContext(ctx, "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)")
 	assert.NoError(t, err)
 
@@ -323,6 +329,7 @@ func TestRegisterAndBeginTxAndCommit(t *testing.T) {
 		attribute.String("db.statement", "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)"),
 	)
 
+	// begin transaction
 	tx, err := db.BeginTx(ctx, nil)
 	assert.NoError(t, err)
 
@@ -340,6 +347,7 @@ func TestRegisterAndBeginTxAndCommit(t *testing.T) {
 		semconv.DBSystemKey.String("sqlite"),
 	)
 
+	// insert into table
 	result, err := tx.ExecContext(ctx, "INSERT INTO foo (bar) VALUES ($1)", 42)
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
@@ -372,6 +380,7 @@ func TestRegisterAndBeginTxAndCommit(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, int64(1), rowsAffected)
 
+	// commit transaction
 	err = tx.Commit()
 	assert.NoError(t, err)
 
@@ -389,6 +398,7 @@ func TestRegisterAndBeginTxAndCommit(t *testing.T) {
 		semconv.DBSystemKey.String("sqlite"),
 	)
 
+	// check inserted row is present
 	rows, err := db.Query("SELECT count(*) FROM foo")
 	assert.NoError(t, err)
 	assert.NoError(t, rows.Err())
@@ -417,6 +427,7 @@ func TestRegisterAndBeginTxAndRollback(t *testing.T) {
 
 	ctx := createTestContext(logger, tracerProvider)
 
+	// create table
 	_, err = db.ExecContext(ctx, "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)")
 	assert.NoError(t, err)
 
@@ -436,6 +447,7 @@ func TestRegisterAndBeginTxAndRollback(t *testing.T) {
 		attribute.String("db.statement", "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)"),
 	)
 
+	// begin transaction
 	tx, err := db.BeginTx(ctx, nil)
 	assert.NoError(t, err)
 
@@ -453,6 +465,7 @@ func TestRegisterAndBeginTxAndRollback(t *testing.T) {
 		semconv.DBSystemKey.String("sqlite"),
 	)
 
+	// insert into table
 	result, err := tx.ExecContext(ctx, "INSERT INTO foo (bar) VALUES ($1)", 42)
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
@@ -485,6 +498,7 @@ func TestRegisterAndBeginTxAndRollback(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, int64(1), rowsAffected)
 
+	// rollback transaction
 	err = tx.Rollback()
 	assert.NoError(t, err)
 
@@ -502,6 +516,7 @@ func TestRegisterAndBeginTxAndRollback(t *testing.T) {
 		semconv.DBSystemKey.String("sqlite"),
 	)
 
+	// check inserted row is not present
 	rows, err := db.Query("SELECT count(*) FROM foo")
 	assert.NoError(t, err)
 	assert.NoError(t, rows.Err())
