@@ -44,6 +44,8 @@ func TestNewConnector(t *testing.T) {
 
 	assert.IsType(t, &sql.Connector{}, c)
 	assert.Nil(t, c.Driver())
+
+	connectorMock.AssertExpectations(t)
 }
 
 func TestConnect(t *testing.T) {
@@ -64,6 +66,9 @@ func TestConnect(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.IsType(t, &sql.Connection{}, conn)
+
+	driverMock.AssertExpectations(t)
+	connectorMock.AssertExpectations(t)
 }
 
 func TestConnectWithError(t *testing.T) {
@@ -79,4 +84,6 @@ func TestConnectWithError(t *testing.T) {
 	_, err := c.Connect(ctx)
 	assert.Error(t, err)
 	assert.Equal(t, "test error", err.Error())
+
+	connectorMock.AssertExpectations(t)
 }

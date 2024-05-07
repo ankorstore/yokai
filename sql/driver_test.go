@@ -46,6 +46,8 @@ func TestNewDriver(t *testing.T) {
 	assert.IsType(t, &sql.Driver{}, d)
 	assert.Equal(t, driverMock, d.Base())
 	assert.Equal(t, config, d.Configuration())
+
+	driverMock.AssertExpectations(t)
 }
 
 func TestOpenWithError(t *testing.T) {
@@ -61,6 +63,8 @@ func TestOpenWithError(t *testing.T) {
 	_, err := d.Open("test dsn")
 	assert.Error(t, err)
 	assert.Equal(t, "test error", err.Error())
+
+	driverMock.AssertExpectations(t)
 }
 
 func TestOpenConnector(t *testing.T) {
@@ -77,6 +81,8 @@ func TestOpenConnector(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.IsType(t, &sql.Connector{}, connector)
+
+	driverMock.AssertExpectations(t)
 }
 
 func TestOpenConnectorWithError(t *testing.T) {
@@ -92,4 +98,6 @@ func TestOpenConnectorWithError(t *testing.T) {
 	_, err := d.OpenConnector("test dsn")
 	assert.Error(t, err)
 	assert.Equal(t, "test error", err.Error())
+
+	driverMock.AssertExpectations(t)
 }
