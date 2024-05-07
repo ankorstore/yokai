@@ -29,86 +29,6 @@ func TestRegisterTwice(t *testing.T) {
 	assert.Equal(t, expectedDriverName, driverName2)
 }
 
-func TestRegisterAndPing(t *testing.T) {
-	driver := registerTestDriver(t)
-
-	db, err := basesql.Open(driver, ":memory:")
-	assert.NoError(t, err)
-
-	err = db.Ping()
-	assert.NoError(t, err)
-
-	err = db.Close()
-	assert.NoError(t, err)
-}
-
-func TestRegisterAndPingContext(t *testing.T) {
-	driver := registerTestDriver(t)
-	logger, logBuffer := createTestLogTools(t)
-	tracerProvider, traceExporter := createTestTraceTools(t)
-
-	db, err := basesql.Open(driver, ":memory:")
-	assert.NoError(t, err)
-
-	err = db.PingContext(createTestContext(logger, tracerProvider))
-	assert.NoError(t, err)
-
-	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
-		"level":     "debug",
-		"system":    "sqlite",
-		"operation": "connection:ping",
-		"message":   "sql logger",
-	})
-
-	tracetest.AssertHasNotTraceSpan(
-		t,
-		traceExporter,
-		"SQL connection:ping",
-		semconv.DBSystemKey.String("sqlite"),
-	)
-
-	err = db.Close()
-	assert.NoError(t, err)
-
-	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
-		"level":     "debug",
-		"system":    "sqlite",
-		"operation": "connection:close",
-		"message":   "sql logger",
-	})
-
-	tracetest.AssertHasTraceSpan(
-		t,
-		traceExporter,
-		"SQL connection:close",
-		semconv.DBSystemKey.String("sqlite"),
-	)
-}
-
-func TestRegisterAndExec(t *testing.T) {
-	driver := registerTestDriver(t)
-
-	db, err := basesql.Open(driver, ":memory:")
-	assert.NoError(t, err)
-
-	_, err = db.Exec("CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)")
-	assert.NoError(t, err)
-
-	results, err := db.Exec("INSERT INTO foo (bar) VALUES ($1),($2)", "42", "24")
-	assert.NoError(t, err)
-
-	lastInsertId, err := results.LastInsertId()
-	assert.NoError(t, err)
-	assert.Equal(t, int64(2), lastInsertId)
-
-	rowsAffected, err := results.RowsAffected()
-	assert.NoError(t, err)
-	assert.Equal(t, int64(2), rowsAffected)
-
-	err = db.Close()
-	assert.NoError(t, err)
-}
-
 func TestRegisterAndExecContext(t *testing.T) {
 	driver := registerTestDriver(t)
 	logger, logBuffer := createTestLogTools(t)
@@ -141,7 +61,7 @@ func TestRegisterAndExecContext(t *testing.T) {
 		attribute.String("db.statement", "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)"),
 	)
 
-	results, err := db.ExecContext(
+	result, err := db.ExecContext(
 		createTestContext(logger, tracerProvider),
 		"INSERT INTO foo (bar) VALUES ($1)",
 		42,
@@ -170,41 +90,13 @@ func TestRegisterAndExecContext(t *testing.T) {
 		attribute.Int64("db.rowsAffected", int64(1)),
 	)
 
-	lastInsertId, err := results.LastInsertId()
+	lastInsertId, err := result.LastInsertId()
 	assert.NoError(t, err)
 	assert.Equal(t, int64(1), lastInsertId)
 
-	rowsAffected, err := results.RowsAffected()
+	rowsAffected, err := result.RowsAffected()
 	assert.NoError(t, err)
 	assert.Equal(t, int64(1), rowsAffected)
-
-	err = db.Close()
-	assert.NoError(t, err)
-}
-
-func TestRegisterAndQuery(t *testing.T) {
-	driver := registerTestDriver(t)
-
-	db, err := basesql.Open(driver, ":memory:")
-	assert.NoError(t, err)
-
-	rows, err := db.Query("SELECT $1 AS foo", "bar")
-	assert.NoError(t, err)
-	assert.NoError(t, rows.Err())
-
-	cols, err := rows.Columns()
-	assert.NoError(t, err)
-	assert.Equal(t, []string{"foo"}, cols)
-
-	for rows.Next() {
-		var foo string
-		err = rows.Scan(&foo)
-		assert.NoError(t, err)
-		assert.Equal(t, "bar", foo)
-	}
-
-	err = rows.Close()
-	assert.NoError(t, err)
 
 	err = db.Close()
 	assert.NoError(t, err)
@@ -251,10 +143,409 @@ func TestRegisterAndQueryContext(t *testing.T) {
 		assert.Equal(t, "bar", foo)
 	}
 
-	err = db.Close()
+	err = rows.Close()
 	assert.NoError(t, err)
 
+	err = db.Close()
+	assert.NoError(t, err)
+}
+
+func TestRegisterAndPrepareContextAndExecContext(t *testing.T) {
+	driver := registerTestDriver(t)
+	logger, logBuffer := createTestLogTools(t)
+	tracerProvider, traceExporter := createTestTraceTools(t)
+
+	db, err := basesql.Open(driver, ":memory:")
+	assert.NoError(t, err)
+
+	ctx := createTestContext(logger, tracerProvider)
+
+	_, err = db.ExecContext(ctx, "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)")
+	assert.NoError(t, err)
+
+	stmt, err := db.PrepareContext(ctx, "INSERT INTO foo (bar) VALUES ($1)")
+	assert.NoError(t, err)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "debug",
+		"system":    "sqlite",
+		"operation": "connection:prepare-context",
+		"query":     "INSERT INTO foo (bar) VALUES ($1)",
+		"message":   "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:prepare-context",
+		semconv.DBSystemKey.String("sqlite"),
+		attribute.String("db.statement", "INSERT INTO foo (bar) VALUES ($1)"),
+	)
+
+	result, err := stmt.ExecContext(ctx, 42)
+	assert.NoError(t, err)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":        "debug",
+		"system":       "sqlite",
+		"operation":    "statement:exec-context",
+		"query":        "INSERT INTO foo (bar) VALUES ($1)",
+		"arguments":    "[map[Name: Ordinal:1 Value:42]]",
+		"lastInsertId": 1,
+		"rowsAffected": 1,
+		"message":      "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL statement:exec-context",
+		semconv.DBSystemKey.String("sqlite"),
+		attribute.String("db.statement", "INSERT INTO foo (bar) VALUES ($1)"),
+		attribute.String("db.statement.arguments", "[{Name: Ordinal:1 Value:42}]"),
+		attribute.Int64("db.lastInsertId", 1),
+		attribute.Int64("db.rowsAffected", 1),
+	)
+
+	lastInsertId, err := result.LastInsertId()
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), lastInsertId)
+
+	rowsAffected, err := result.RowsAffected()
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), rowsAffected)
+
+	err = stmt.Close()
+	assert.NoError(t, err)
+
+	err = db.Close()
+	assert.NoError(t, err)
+}
+
+func TestRegisterAndPrepareContextAndQueryContext(t *testing.T) {
+	driver := registerTestDriver(t)
+	logger, logBuffer := createTestLogTools(t)
+	tracerProvider, traceExporter := createTestTraceTools(t)
+
+	db, err := basesql.Open(driver, ":memory:")
+	assert.NoError(t, err)
+
+	ctx := createTestContext(logger, tracerProvider)
+
+	stmt, err := db.PrepareContext(ctx, "SELECT $1 AS foo")
+	assert.NoError(t, err)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "debug",
+		"system":    "sqlite",
+		"operation": "connection:prepare-context",
+		"query":     "SELECT $1 AS foo",
+		"message":   "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:prepare-context",
+		semconv.DBSystemKey.String("sqlite"),
+		attribute.String("db.statement", "SELECT $1 AS foo"),
+	)
+
+	rows, err := stmt.QueryContext(ctx, "bar")
+	assert.NoError(t, err)
+	assert.NoError(t, rows.Err())
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "debug",
+		"system":    "sqlite",
+		"operation": "statement:query-context",
+		"query":     "SELECT $1 AS foo",
+		"arguments": "[map[Name: Ordinal:1 Value:bar]]",
+		"message":   "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL statement:query-context",
+		semconv.DBSystemKey.String("sqlite"),
+		attribute.String("db.statement", "SELECT $1 AS foo"),
+		attribute.String("db.statement.arguments", "[{Name: Ordinal:1 Value:bar}]"),
+	)
+
+	cols, err := rows.Columns()
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"foo"}, cols)
+
+	for rows.Next() {
+		var foo string
+		err = rows.Scan(&foo)
+		assert.NoError(t, err)
+		assert.Equal(t, "bar", foo)
+	}
+
 	err = rows.Close()
+	assert.NoError(t, err)
+
+	err = stmt.Close()
+	assert.NoError(t, err)
+
+	err = db.Close()
+	assert.NoError(t, err)
+}
+
+func TestRegisterAndBeginTxAndCommit(t *testing.T) {
+	driver := registerTestDriver(t)
+	logger, logBuffer := createTestLogTools(t)
+	tracerProvider, traceExporter := createTestTraceTools(t)
+
+	db, err := basesql.Open(driver, ":memory:")
+	assert.NoError(t, err)
+
+	ctx := createTestContext(logger, tracerProvider)
+
+	_, err = db.ExecContext(ctx, "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)")
+	assert.NoError(t, err)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "debug",
+		"system":    "sqlite",
+		"operation": "connection:exec-context",
+		"query":     "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)",
+		"message":   "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:exec-context",
+		semconv.DBSystemKey.String("sqlite"),
+		attribute.String("db.statement", "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)"),
+	)
+
+	tx, err := db.BeginTx(ctx, nil)
+	assert.NoError(t, err)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "debug",
+		"system":    "sqlite",
+		"operation": "connection:begin-tx",
+		"message":   "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:begin-tx",
+		semconv.DBSystemKey.String("sqlite"),
+	)
+
+	result, err := tx.ExecContext(ctx, "INSERT INTO foo (bar) VALUES ($1)", 42)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":        "debug",
+		"system":       "sqlite",
+		"operation":    "connection:exec-context",
+		"query":        "INSERT INTO foo (bar) VALUES ($1)",
+		"arguments":    "[map[Name: Ordinal:1 Value:42]]",
+		"lastInsertId": 1,
+		"rowsAffected": 1,
+		"message":      "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:exec-context",
+		semconv.DBSystemKey.String("sqlite"),
+		attribute.String("db.statement", "INSERT INTO foo (bar) VALUES ($1)"),
+		attribute.String("db.statement.arguments", "[{Name: Ordinal:1 Value:42}]"),
+		attribute.Int64("db.lastInsertId", 1),
+		attribute.Int64("db.rowsAffected", 1),
+	)
+
+	lastInsertId, err := result.LastInsertId()
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), lastInsertId)
+
+	rowsAffected, err := result.RowsAffected()
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), rowsAffected)
+
+	err = tx.Commit()
+	assert.NoError(t, err)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "debug",
+		"system":    "sqlite",
+		"operation": "transaction:commit",
+		"message":   "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL transaction:commit",
+		semconv.DBSystemKey.String("sqlite"),
+	)
+
+	rows, err := db.Query("SELECT count(*) FROM foo")
+	assert.NoError(t, err)
+	assert.NoError(t, rows.Err())
+
+	for rows.Next() {
+		var count int
+		err = rows.Scan(&count)
+		assert.NoError(t, err)
+		assert.Equal(t, 1, count)
+	}
+
+	err = rows.Close()
+	assert.NoError(t, err)
+
+	err = db.Close()
+	assert.NoError(t, err)
+}
+
+func TestRegisterAndBeginTxAndRollback(t *testing.T) {
+	driver := registerTestDriver(t)
+	logger, logBuffer := createTestLogTools(t)
+	tracerProvider, traceExporter := createTestTraceTools(t)
+
+	db, err := basesql.Open(driver, ":memory:")
+	assert.NoError(t, err)
+
+	ctx := createTestContext(logger, tracerProvider)
+
+	_, err = db.ExecContext(ctx, "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)")
+	assert.NoError(t, err)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "debug",
+		"system":    "sqlite",
+		"operation": "connection:exec-context",
+		"query":     "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)",
+		"message":   "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:exec-context",
+		semconv.DBSystemKey.String("sqlite"),
+		attribute.String("db.statement", "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)"),
+	)
+
+	tx, err := db.BeginTx(ctx, nil)
+	assert.NoError(t, err)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "debug",
+		"system":    "sqlite",
+		"operation": "connection:begin-tx",
+		"message":   "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:begin-tx",
+		semconv.DBSystemKey.String("sqlite"),
+	)
+
+	result, err := tx.ExecContext(ctx, "INSERT INTO foo (bar) VALUES ($1)", 42)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":        "debug",
+		"system":       "sqlite",
+		"operation":    "connection:exec-context",
+		"query":        "INSERT INTO foo (bar) VALUES ($1)",
+		"arguments":    "[map[Name: Ordinal:1 Value:42]]",
+		"lastInsertId": 1,
+		"rowsAffected": 1,
+		"message":      "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:exec-context",
+		semconv.DBSystemKey.String("sqlite"),
+		attribute.String("db.statement", "INSERT INTO foo (bar) VALUES ($1)"),
+		attribute.String("db.statement.arguments", "[{Name: Ordinal:1 Value:42}]"),
+		attribute.Int64("db.lastInsertId", 1),
+		attribute.Int64("db.rowsAffected", 1),
+	)
+
+	lastInsertId, err := result.LastInsertId()
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), lastInsertId)
+
+	rowsAffected, err := result.RowsAffected()
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), rowsAffected)
+
+	err = tx.Rollback()
+	assert.NoError(t, err)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "debug",
+		"system":    "sqlite",
+		"operation": "transaction:rollback",
+		"message":   "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL transaction:rollback",
+		semconv.DBSystemKey.String("sqlite"),
+	)
+
+	rows, err := db.Query("SELECT count(*) FROM foo")
+	assert.NoError(t, err)
+	assert.NoError(t, rows.Err())
+
+	for rows.Next() {
+		var count int
+		err = rows.Scan(&count)
+		assert.NoError(t, err)
+		assert.Equal(t, 0, count)
+	}
+
+	err = rows.Close()
+	assert.NoError(t, err)
+
+	err = db.Close()
+	assert.NoError(t, err)
+}
+
+func TestRegisterAndPingContext(t *testing.T) {
+	driver := registerTestDriver(t)
+	logger, logBuffer := createTestLogTools(t)
+	tracerProvider, traceExporter := createTestTraceTools(t)
+
+	db, err := basesql.Open(driver, ":memory:")
+	assert.NoError(t, err)
+
+	err = db.PingContext(createTestContext(logger, tracerProvider))
+	assert.NoError(t, err)
+
+	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "debug",
+		"system":    "sqlite",
+		"operation": "connection:ping",
+		"message":   "sql logger",
+	})
+
+	tracetest.AssertHasNotTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:ping",
+		semconv.DBSystemKey.String("sqlite"),
+	)
+
+	err = db.Close()
 	assert.NoError(t, err)
 }
 
