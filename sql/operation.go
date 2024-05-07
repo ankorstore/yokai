@@ -18,12 +18,12 @@ const (
 	ConnectionPingOperation           Operation = "connection:ping"
 	ConnectionResetSessionOperation   Operation = "connection:reset-session"
 	ConnectionCloseOperation          Operation = "connection:close"
-	TransactionCommitOperation        Operation = "transaction:commit"
-	TransactionRollbackOperation      Operation = "transaction:rollback"
 	StatementExecOperation            Operation = "statement:exec"
 	StatementExecContextOperation     Operation = "statement:exec-context"
 	StatementQueryOperation           Operation = "statement:query"
 	StatementQueryContextOperation    Operation = "statement:query-context"
+	TransactionCommitOperation        Operation = "transaction:commit"
+	TransactionRollbackOperation      Operation = "transaction:rollback"
 )
 
 // String returns a string representation of the Operation.
@@ -46,12 +46,12 @@ func FetchOperation(name string) Operation {
 		ConnectionPingOperation,
 		ConnectionResetSessionOperation,
 		ConnectionCloseOperation,
-		TransactionCommitOperation,
-		TransactionRollbackOperation,
 		StatementExecOperation,
 		StatementExecContextOperation,
 		StatementQueryOperation,
-		StatementQueryContextOperation:
+		StatementQueryContextOperation,
+		TransactionCommitOperation,
+		TransactionRollbackOperation:
 		return o
 	default:
 		return UnknownOperation

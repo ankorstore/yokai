@@ -59,14 +59,6 @@ func TestOperationAsString(t *testing.T) {
 			"connection:close",
 		},
 		{
-			sql.TransactionCommitOperation,
-			"transaction:commit",
-		},
-		{
-			sql.TransactionRollbackOperation,
-			"transaction:rollback",
-		},
-		{
 			sql.StatementExecOperation,
 			"statement:exec",
 		},
@@ -81,6 +73,14 @@ func TestOperationAsString(t *testing.T) {
 		{
 			sql.StatementQueryContextOperation,
 			"statement:query-context",
+		},
+		{
+			sql.TransactionCommitOperation,
+			"transaction:commit",
+		},
+		{
+			sql.TransactionRollbackOperation,
+			"transaction:rollback",
 		},
 	}
 
@@ -141,14 +141,6 @@ func TestFetchOperation(t *testing.T) {
 			sql.ConnectionCloseOperation,
 		},
 		{
-			"transaction:commit",
-			sql.TransactionCommitOperation,
-		},
-		{
-			"transaction:rollback",
-			sql.TransactionRollbackOperation,
-		},
-		{
 			"statement:exec",
 			sql.StatementExecOperation,
 		},
@@ -163,6 +155,14 @@ func TestFetchOperation(t *testing.T) {
 		{
 			"statement:query-context",
 			sql.StatementQueryContextOperation,
+		},
+		{
+			"transaction:commit",
+			sql.TransactionCommitOperation,
+		},
+		{
+			"transaction:rollback",
+			sql.TransactionRollbackOperation,
 		},
 		{
 			"",

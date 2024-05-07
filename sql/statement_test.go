@@ -117,7 +117,7 @@ func (m *baseRowsMock) Next(dest []driver.Value) error {
 	return args.Error(0)
 }
 
-func TestExec(t *testing.T) {
+func TestStmtExec(t *testing.T) {
 	t.Parallel()
 
 	stmtMock := new(baseStmtMock)
@@ -137,7 +137,7 @@ func TestExec(t *testing.T) {
 	resultMock.AssertExpectations(t)
 }
 
-func TestExecError(t *testing.T) {
+func TestStmtExecError(t *testing.T) {
 	t.Parallel()
 
 	stmtMock := new(baseStmtMock)
@@ -155,7 +155,7 @@ func TestExecError(t *testing.T) {
 	resultMock.AssertExpectations(t)
 }
 
-func TestExecContextError(t *testing.T) {
+func TestStmtExecContextError(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
@@ -175,7 +175,7 @@ func TestExecContextError(t *testing.T) {
 	resultMock.AssertExpectations(t)
 }
 
-func TestQuery(t *testing.T) {
+func TestStmtQuery(t *testing.T) {
 	t.Parallel()
 
 	stmtMock := new(baseStmtMock)
@@ -193,7 +193,7 @@ func TestQuery(t *testing.T) {
 	rowsMock.AssertExpectations(t)
 }
 
-func TestQueryError(t *testing.T) {
+func TestStmtQueryError(t *testing.T) {
 	t.Parallel()
 
 	stmtMock := new(baseStmtMock)
@@ -211,7 +211,7 @@ func TestQueryError(t *testing.T) {
 	rowsMock.AssertExpectations(t)
 }
 
-func TestQueryContextError(t *testing.T) {
+func TestStmtQueryContextError(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()

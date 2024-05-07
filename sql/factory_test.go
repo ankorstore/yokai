@@ -22,7 +22,7 @@ func TestNewDefaultDriverFactory(t *testing.T) {
 	assert.Implements(t, (*sql.DriverFactory)(nil), factory)
 }
 
-func TestCreate(t *testing.T) {
+func TestDefaultDriverFactoryCreate(t *testing.T) {
 	t.Parallel()
 
 	factory := sql.NewDefaultDriverFactory()

@@ -25,7 +25,7 @@ func (m *baseTxMock) Rollback() error {
 	return args.Error(0)
 }
 
-func TestCommitError(t *testing.T) {
+func TestTxCommitError(t *testing.T) {
 	t.Parallel()
 
 	txMock := new(baseTxMock)
@@ -41,7 +41,7 @@ func TestCommitError(t *testing.T) {
 	txMock.AssertExpectations(t)
 }
 
-func TestRollbackError(t *testing.T) {
+func TestTxRollbackError(t *testing.T) {
 	t.Parallel()
 
 	txMock := new(baseTxMock)

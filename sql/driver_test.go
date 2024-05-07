@@ -50,7 +50,7 @@ func TestNewDriver(t *testing.T) {
 	driverMock.AssertExpectations(t)
 }
 
-func TestOpenWithError(t *testing.T) {
+func TestDriverOpenWithError(t *testing.T) {
 	t.Parallel()
 
 	driverMock := new(baseDriverMock)
@@ -67,7 +67,7 @@ func TestOpenWithError(t *testing.T) {
 	driverMock.AssertExpectations(t)
 }
 
-func TestOpenConnector(t *testing.T) {
+func TestDriverOpenConnector(t *testing.T) {
 	t.Parallel()
 
 	driverMock := new(baseDriverMock)
@@ -85,7 +85,7 @@ func TestOpenConnector(t *testing.T) {
 	driverMock.AssertExpectations(t)
 }
 
-func TestOpenConnectorWithError(t *testing.T) {
+func TestDriverOpenConnectorWithError(t *testing.T) {
 	t.Parallel()
 
 	driverMock := new(baseDriverMock)

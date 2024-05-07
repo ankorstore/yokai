@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestConfiguration(t *testing.T) {
+func TestNewConfiguration(t *testing.T) {
 	t.Parallel()
 
 	hooks := []sql.Hook{
