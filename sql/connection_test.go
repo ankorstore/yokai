@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/ankorstore/yokai/sql"
+	"github.com/ankorstore/yokai/sql/hook/hooktest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -66,8 +67,8 @@ func (m *baseConnMock) Close() error {
 func TestConnExec(t *testing.T) {
 	t.Parallel()
 
-	query := "DELETE * FROM foo WHERE id = ?"
-	arguments := []driver.Value{42}
+	query := hooktest.TestHookEventQuery
+	arguments := []driver.Value{hooktest.TestHookEventArgument}
 
 	resultMock := new(baseResultMock)
 	resultMock.On("LastInsertId").Return(int64(0), nil)
@@ -96,8 +97,8 @@ func TestConnExec(t *testing.T) {
 func TestConnExecError(t *testing.T) {
 	t.Parallel()
 
-	query := "DELETE * FROM foo WHERE id = ?"
-	arguments := []driver.Value{42}
+	query := hooktest.TestHookEventQuery
+	arguments := []driver.Value{hooktest.TestHookEventArgument}
 
 	connMock := new(baseConnMock)
 	connMock.On("Exec", query, arguments).Return(nil, fmt.Errorf("test error"))
@@ -114,8 +115,8 @@ func TestConnExecError(t *testing.T) {
 func TestConnQuery(t *testing.T) {
 	t.Parallel()
 
-	query := "SELECT * FROM foo WHERE id = ?"
-	arguments := []driver.Value{42}
+	query := hooktest.TestHookEventQuery
+	arguments := []driver.Value{hooktest.TestHookEventArgument}
 
 	rowsMock := new(baseRowsMock)
 	connMock := new(baseConnMock)
@@ -133,8 +134,8 @@ func TestConnQuery(t *testing.T) {
 func TestConnQueryError(t *testing.T) {
 	t.Parallel()
 
-	query := "SELECT * FROM foo WHERE id = ?"
-	arguments := []driver.Value{42}
+	query := hooktest.TestHookEventQuery
+	arguments := []driver.Value{hooktest.TestHookEventArgument}
 
 	connMock := new(baseConnMock)
 	connMock.On("Query", query, arguments).Return(nil, fmt.Errorf("test error"))
@@ -169,7 +170,7 @@ func TestConnPrepare(t *testing.T) {
 func TestConnPrepareError(t *testing.T) {
 	t.Parallel()
 
-	query := "SELECT * FROM foo WHERE id = ?"
+	query := hooktest.TestHookEventQuery
 
 	connMock := new(baseConnMock)
 	connMock.On("Prepare", query).Return(nil, fmt.Errorf("test error"))
