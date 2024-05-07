@@ -6,23 +6,27 @@ import (
 	"sync"
 )
 
+// DriverRegistry is the interface for Driver registries.
 type DriverRegistry interface {
 	Has(name string) bool
 	Add(name string, driver *Driver) error
 	Get(name string) (*Driver, error)
 }
 
+// DefaultDriverRegistry is the default DriverRegistry implementation.
 type DefaultDriverRegistry struct {
 	drivers map[string]*Driver
 	mutex   sync.RWMutex
 }
 
+// NewDefaultDriverRegistry returns a new DefaultDriverRegistry.
 func NewDefaultDriverRegistry() *DefaultDriverRegistry {
 	return &DefaultDriverRegistry{
 		drivers: make(map[string]*Driver),
 	}
 }
 
+// Add adds and register a given Driver for a name.
 func (r *DefaultDriverRegistry) Add(name string, driver *Driver) (err error) {
 	if r.Has(name) {
 		return err
@@ -45,6 +49,7 @@ func (r *DefaultDriverRegistry) Add(name string, driver *Driver) (err error) {
 	return err
 }
 
+// Has returns true is a driver is already registered for a given name.
 func (r *DefaultDriverRegistry) Has(name string) bool {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
@@ -54,6 +59,7 @@ func (r *DefaultDriverRegistry) Has(name string) bool {
 	return ok
 }
 
+// Get returns a registered driver for a given name.
 func (r *DefaultDriverRegistry) Get(name string) (*Driver, error) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()

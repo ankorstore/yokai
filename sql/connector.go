@@ -23,6 +23,7 @@ func NewConnector(dsn string, base driver.Connector, driver *Driver) *Connector 
 	}
 }
 
+// Connect returns a new driver.Conn.
 func (c *Connector) Connect(ctx context.Context) (driver.Conn, error) {
 	if c.base == nil {
 		return c.driver.Open(c.dsn)
@@ -36,6 +37,7 @@ func (c *Connector) Connect(ctx context.Context) (driver.Conn, error) {
 	return NewConnection(conn, c.driver.Configuration()), nil
 }
 
+// Driver returns the Driver of the Connector.
 func (c *Connector) Driver() driver.Driver {
 	return c.driver
 }

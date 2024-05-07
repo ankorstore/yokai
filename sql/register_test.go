@@ -20,15 +20,6 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.20.0"
 )
 
-func TestRegisterTwice(t *testing.T) {
-	driverName1 := registerTestDriver(t)
-	driverName2 := registerTestDriver(t)
-
-	expectedDriverName := fmt.Sprintf("%s-sqlite", sql.DriverRegistrationPrefix)
-	assert.Equal(t, expectedDriverName, driverName1)
-	assert.Equal(t, expectedDriverName, driverName2)
-}
-
 func TestRegisterAndExecContext(t *testing.T) {
 	driver := registerTestDriver(t)
 	logger, logBuffer := createTestLogTools(t)
@@ -564,6 +555,23 @@ func TestRegisterAndPingContext(t *testing.T) {
 
 	err = db.Close()
 	assert.NoError(t, err)
+}
+
+func TestRegisterTwice(t *testing.T) {
+	driverName1 := registerTestDriver(t)
+	driverName2 := registerTestDriver(t)
+
+	expectedDriverName := fmt.Sprintf("%s-sqlite", sql.DriverRegistrationPrefix)
+	assert.Equal(t, expectedDriverName, driverName1)
+	assert.Equal(t, expectedDriverName, driverName2)
+}
+
+func TestRegisterWithUnsupportedDriver(t *testing.T) {
+	driver, err := sql.Register("invalid")
+
+	assert.Equal(t, "", driver)
+	assert.Error(t, err)
+	assert.Equal(t, "unsupported database system for driver invalid", err.Error())
 }
 
 func registerTestDriver(t *testing.T) string {

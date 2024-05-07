@@ -6,14 +6,17 @@ import (
 
 const DriverRegistrationPrefix = "yokai"
 
-var GlobalDriverRegistry DriverRegistry
-var GlobalDriverFactory DriverFactory
+var (
+	GlobalDriverRegistry DriverRegistry
+	GlobalDriverFactory  DriverFactory
+)
 
 func init() {
 	GlobalDriverRegistry = NewDefaultDriverRegistry()
 	GlobalDriverFactory = NewDefaultDriverFactory()
 }
 
+// Register registers a new Driver for a given name and an optional list of Hook.
 func Register(name string, hooks ...Hook) (string, error) {
 	registrationName := fmt.Sprintf("%s-%s", DriverRegistrationPrefix, name)
 

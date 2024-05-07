@@ -7,6 +7,8 @@ import (
 
 var _ driver.Tx = (*Transaction)(nil)
 
+// Transaction is a SQL driver transaction wrapping a driver.Tx.
+//
 //nolint:containedctx
 type Transaction struct {
 	base          driver.Tx
@@ -14,6 +16,8 @@ type Transaction struct {
 	configuration *Configuration
 }
 
+// NewTransaction returns a new Transaction.
+//
 //nolint:contextcheck
 func NewTransaction(base driver.Tx, ctx context.Context, configuration *Configuration) *Transaction {
 	if ctx == nil {
@@ -27,6 +31,7 @@ func NewTransaction(base driver.Tx, ctx context.Context, configuration *Configur
 	}
 }
 
+// Commit commits the Transaction.
 func (t *Transaction) Commit() error {
 	event := NewHookEvent(t.configuration.System(), TransactionCommitOperation, "", nil)
 
@@ -44,6 +49,7 @@ func (t *Transaction) Commit() error {
 	return err
 }
 
+// Rollback rollbacks the Transaction.
 func (t *Transaction) Rollback() error {
 	event := NewHookEvent(t.configuration.System(), TransactionRollbackOperation, "", nil)
 

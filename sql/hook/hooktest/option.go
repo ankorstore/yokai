@@ -7,7 +7,7 @@ var (
 	TestHookEventArgument = "42"
 )
 
-// Options are the options for TraceHook.
+// Options are the options for NewTestHookEvent.
 type Options struct {
 	System    sql.System
 	Operation sql.Operation
@@ -15,7 +15,7 @@ type Options struct {
 	Arguments any
 }
 
-// DefaultTestHookEventOptions are the default options for TraceHook.
+// DefaultTestHookEventOptions are the default options for NewTestHookEvent.
 func DefaultTestHookEventOptions() Options {
 	return Options{
 		System:    sql.SqliteSystem,
@@ -25,28 +25,31 @@ func DefaultTestHookEventOptions() Options {
 	}
 }
 
-// TestHookEventOption are the functional options for TraceHook.
+// TestHookEventOption are the functional options for NewTestHookEvent.
 type TestHookEventOption func(o *Options)
 
-// WithSystem is used to set the .
+// WithSystem is used to set the sql.System of the test sql.HookEvent.
 func WithSystem(system sql.System) TestHookEventOption {
 	return func(o *Options) {
 		o.System = system
 	}
 }
 
+// WithOperation is used to set the sql.Operation of the test sql.HookEvent.
 func WithOperation(operation sql.Operation) TestHookEventOption {
 	return func(o *Options) {
 		o.Operation = operation
 	}
 }
 
+// WithQuery is used to set the query of the test sql.HookEvent.
 func WithQuery(query string) TestHookEventOption {
 	return func(o *Options) {
 		o.Query = query
 	}
 }
 
+// WithArguments is used to set the arguments of the test sql.HookEvent.
 func WithArguments(arguments any) TestHookEventOption {
 	return func(o *Options) {
 		o.Arguments = arguments

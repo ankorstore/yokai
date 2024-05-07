@@ -58,9 +58,10 @@ func FetchOperation(name string) Operation {
 	}
 }
 
-func ContainsOperation(operations []Operation, operation Operation) bool {
-	for _, operationsItem := range operations {
-		if operationsItem == operation {
+// ContainsOperation returns true if a given Operation item is contained id a list of Operation.
+func ContainsOperation(list []Operation, item Operation) bool {
+	for _, listItem := range list {
+		if listItem == item {
 			return true
 		}
 	}

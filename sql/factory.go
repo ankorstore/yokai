@@ -8,16 +8,20 @@ import (
 	"github.com/mattn/go-sqlite3"
 )
 
+// DriverFactory is the interface for Driver factories.
 type DriverFactory interface {
 	Create(system System, hooks ...Hook) (*Driver, error)
 }
 
+// DefaultDriverFactory is the default DriverFactory implementation.
 type DefaultDriverFactory struct{}
 
+// NewDefaultDriverFactory returns a new DefaultDriverFactory.
 func NewDefaultDriverFactory() *DefaultDriverFactory {
 	return &DefaultDriverFactory{}
 }
 
+// Create creates a new Driver, for a provided System and an optional list of Hook.
 func (f *DefaultDriverFactory) Create(system System, hooks ...Hook) (*Driver, error) {
 	switch system {
 	case SqliteSystem:

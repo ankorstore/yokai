@@ -11,6 +11,8 @@ var (
 	_ driver.StmtQueryContext = (*Statement)(nil)
 )
 
+// Statement is a SQL driver statement wrapping a driver.Stmt.
+//
 //nolint:containedctx
 type Statement struct {
 	base          driver.Stmt
@@ -19,6 +21,8 @@ type Statement struct {
 	configuration *Configuration
 }
 
+// NewStatement returns a new Statement.
+//
 //nolint:contextcheck
 func NewStatement(base driver.Stmt, ctx context.Context, query string, configuration *Configuration) *Statement {
 	if ctx == nil {
@@ -33,14 +37,17 @@ func NewStatement(base driver.Stmt, ctx context.Context, query string, configura
 	}
 }
 
+// Close closes the Statement.
 func (s *Statement) Close() error {
 	return s.base.Close()
 }
 
+// NumInput returns the number of inputs of the Statement.
 func (s *Statement) NumInput() int {
 	return s.base.NumInput()
 }
 
+// Exec executes a statement and returns a driver.Result.
 func (s *Statement) Exec(args []driver.Value) (driver.Result, error) {
 	event := NewHookEvent(s.configuration.System(), StatementExecOperation, s.query, args)
 
@@ -71,6 +78,7 @@ func (s *Statement) Exec(args []driver.Value) (driver.Result, error) {
 	return res, err
 }
 
+// ExecContext executes a statement for a context and returns a driver.Result.
 func (s *Statement) ExecContext(ctx context.Context, args []driver.NamedValue) (driver.Result, error) {
 	s.context = ctx
 
@@ -108,6 +116,7 @@ func (s *Statement) ExecContext(ctx context.Context, args []driver.NamedValue) (
 	return res, err
 }
 
+// Query executes a statement and returns a driver.Rows.
 func (s *Statement) Query(args []driver.Value) (driver.Rows, error) {
 	event := NewHookEvent(s.configuration.System(), StatementQueryOperation, s.query, args)
 
@@ -126,6 +135,7 @@ func (s *Statement) Query(args []driver.Value) (driver.Rows, error) {
 	return rows, err
 }
 
+// QueryContext executes a statement for a context and returns a driver.Rows.
 func (s *Statement) QueryContext(ctx context.Context, args []driver.NamedValue) (driver.Rows, error) {
 	s.context = ctx
 
