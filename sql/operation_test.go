@@ -89,6 +89,66 @@ func TestOperationAsString(t *testing.T) {
 	}
 }
 
+func TestFetchOperations(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		operations []string
+		expected   []sql.Operation
+	}{
+		// list multiple items
+		{
+			[]string{
+				"connection:begin",
+				"connection:exec",
+				"connection:close",
+			},
+			[]sql.Operation{
+				sql.ConnectionBeginOperation,
+				sql.ConnectionExecOperation,
+				sql.ConnectionCloseOperation,
+			},
+		},
+		// list multiple items with invalid
+		{
+			[]string{
+				"connection:begin",
+				"invalid",
+				"connection:close",
+			},
+			[]sql.Operation{
+				sql.ConnectionBeginOperation,
+				sql.ConnectionCloseOperation,
+			},
+		},
+		// list single item
+		{
+			[]string{
+				"connection:begin",
+			},
+			[]sql.Operation{
+				sql.ConnectionBeginOperation,
+			},
+		},
+		// list single invalid item
+		{
+			[]string{
+				"invalid",
+			},
+			[]sql.Operation(nil),
+		},
+		// empty list
+		{
+			[]string{},
+			[]sql.Operation(nil),
+		},
+	}
+
+	for _, test := range tests {
+		assert.Equal(t, test.expected, sql.FetchOperations(test.operations))
+	}
+}
+
 func TestFetchOperation(t *testing.T) {
 	t.Parallel()
 
