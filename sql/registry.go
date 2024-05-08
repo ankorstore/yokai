@@ -29,7 +29,7 @@ func NewDefaultDriverRegistry() *DefaultDriverRegistry {
 // Add adds and register a given Driver for a name.
 func (r *DefaultDriverRegistry) Add(name string, driver *Driver) (err error) {
 	if r.Has(name) {
-		return err
+		return nil
 	}
 
 	r.mutex.Lock()

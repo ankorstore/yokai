@@ -49,11 +49,23 @@ func TestFetchSystem(t *testing.T) {
 			sql.SqliteSystem,
 		},
 		{
+			"SQLite",
+			sql.SqliteSystem,
+		},
+		{
 			"mysql",
 			sql.MysqlSystem,
 		},
 		{
+			"MySQL",
+			sql.MysqlSystem,
+		},
+		{
 			"postgres",
+			sql.PostgresSystem,
+		},
+		{
+			"Postgres",
 			sql.PostgresSystem,
 		},
 		{

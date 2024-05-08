@@ -8,8 +8,8 @@ import (
 func ConvertNamedValuesToValues(namedValues []driver.NamedValue) []driver.Value {
 	values := make([]driver.Value, len(namedValues))
 
-	for name, value := range namedValues {
-		values[name] = value.Value
+	for k, v := range namedValues {
+		values[k] = v.Value
 	}
 
 	return values
