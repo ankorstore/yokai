@@ -16,11 +16,7 @@ import (
 func TestDefaults(t *testing.T) {
 	t.Parallel()
 
-	driver, err := sql.Register("sqlite")
-	assert.NoError(t, err)
-
-	db, err := basesql.Open(driver, ":memory:")
-	assert.NoError(t, err)
+	db := createTestDB(t)
 
 	probe := healthcheck.NewSQLProbe(db)
 
@@ -30,11 +26,7 @@ func TestDefaults(t *testing.T) {
 func TestSetName(t *testing.T) {
 	t.Parallel()
 
-	driver, err := sql.Register("sqlite")
-	assert.NoError(t, err)
-
-	db, err := basesql.Open(driver, ":memory:")
-	assert.NoError(t, err)
+	db := createTestDB(t)
 
 	probe := healthcheck.NewSQLProbe(db)
 
@@ -46,11 +38,7 @@ func TestSetName(t *testing.T) {
 func TestCheckSuccess(t *testing.T) {
 	t.Parallel()
 
-	driver, err := sql.Register("sqlite")
-	assert.NoError(t, err)
-
-	db, err := basesql.Open(driver, ":memory:")
-	assert.NoError(t, err)
+	db := createTestDB(t)
 
 	probe := healthcheck.NewSQLProbe(db)
 
@@ -69,11 +57,7 @@ func TestCheckFailure(t *testing.T) {
 	)
 	assert.NoError(t, err)
 
-	driver, err := sql.Register("sqlite")
-	assert.NoError(t, err)
-
-	db, err := basesql.Open(driver, ":memory:")
-	assert.NoError(t, err)
+	db := createTestDB(t)
 
 	probe := healthcheck.NewSQLProbe(db)
 
@@ -89,4 +73,16 @@ func TestCheckFailure(t *testing.T) {
 		"error":   "sql: database is closed",
 		"message": "database ping error",
 	})
+}
+
+func createTestDB(t *testing.T) *basesql.DB {
+	t.Helper()
+
+	driver, err := sql.Register("sqlite")
+	assert.NoError(t, err)
+
+	db, err := basesql.Open(driver, ":memory:")
+	assert.NoError(t, err)
+
+	return db
 }
