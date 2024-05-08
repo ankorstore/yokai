@@ -29,6 +29,7 @@ jobs:
         - "httpserver"
         - "log"
         - "orm"
+        - "sql"
         - "trace"
         - "worker"
         - "fxcore"

@@ -41,6 +41,11 @@
       "component": "orm",
       "tag-separator": "/"
     },
+    "sql": {
+      "release-type": "go",
+      "component": "sql",
+      "tag-separator": "/"
+    },
     "trace": {
       "release-type": "go",
       "component": "trace",
