@@ -31,6 +31,21 @@ func (o Operation) String() string {
 	return string(o)
 }
 
+// FetchOperations returns a list of Operation for a given list of names.
+func FetchOperations(names []string) []Operation {
+	var operations []Operation
+
+	for _, name := range names {
+		operation := FetchOperation(name)
+
+		if operation != UnknownOperation {
+			operations = append(operations, operation)
+		}
+	}
+
+	return operations
+}
+
 // FetchOperation returns an Operation for a given name.
 func FetchOperation(name string) Operation {
 	//nolint:exhaustive
