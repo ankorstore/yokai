@@ -8,11 +8,15 @@ import (
 	"github.com/pressly/goose/v3"
 )
 
+// Migrator is a database migrator based on [Goose].
+//
+// [Fx]: https://github.com/pressly/goose
 type Migrator struct {
 	db     *sql.DB
 	logger *log.Logger
 }
 
+// NewMigrator returns a new Migrator instance.
 func NewMigrator(db *sql.DB, logger *log.Logger) *Migrator {
 	return &Migrator{
 		db:     db,
@@ -20,7 +24,8 @@ func NewMigrator(db *sql.DB, logger *log.Logger) *Migrator {
 	}
 }
 
-func (m *Migrator) Migrate(ctx context.Context, dialect string, dir string, command string, args ...string) error {
+// Run executes a database migration command.
+func (m *Migrator) Run(ctx context.Context, dialect string, dir string, command string, args ...string) error {
 	m.logger.Info().
 		Str("dir", dir).
 		Str("command", command).

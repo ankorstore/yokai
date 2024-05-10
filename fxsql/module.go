@@ -41,40 +41,40 @@ func NewFxSQLDatabase(p FxSQLDatabaseParam) (*sql.DB, error) {
 	driverHooks := p.Hooks
 
 	// trace hook
-	if p.Config.GetBool("modules.database.trace.enabled") {
+	if p.Config.GetBool("modules.sql.trace.enabled") {
 		driverHooks = append(
 			driverHooks,
 			yokaisqltrace.NewTraceHook(
-				yokaisqltrace.WithArguments(p.Config.GetBool("modules.database.trace.arguments")),
+				yokaisqltrace.WithArguments(p.Config.GetBool("modules.sql.trace.arguments")),
 				yokaisqltrace.WithExcludedOperations(
-					yokaisql.FetchOperations(p.Config.GetStringSlice("modules.database.trace.exclude"))...,
+					yokaisql.FetchOperations(p.Config.GetStringSlice("modules.sql.trace.exclude"))...,
 				),
 			),
 		)
 	}
 
 	// log hook
-	if p.Config.GetBool("modules.database.log.enabled") {
+	if p.Config.GetBool("modules.sql.log.enabled") {
 		driverHooks = append(
 			driverHooks,
 			yokaisqllog.NewLogHook(
-				yokaisqllog.WithLevel(log.FetchLogLevel(p.Config.GetString("modules.database.log.level"))),
-				yokaisqllog.WithArguments(p.Config.GetBool("modules.database.log.arguments")),
+				yokaisqllog.WithLevel(log.FetchLogLevel(p.Config.GetString("modules.sql.log.level"))),
+				yokaisqllog.WithArguments(p.Config.GetBool("modules.sql.log.arguments")),
 				yokaisqllog.WithExcludedOperations(
-					yokaisql.FetchOperations(p.Config.GetStringSlice("modules.database.log.exclude"))...,
+					yokaisql.FetchOperations(p.Config.GetStringSlice("modules.sql.log.exclude"))...,
 				),
 			),
 		)
 	}
 
 	// driver registration
-	driverName, err := yokaisql.Register(p.Config.GetString("modules.database.driver"), driverHooks...)
+	driverName, err := yokaisql.Register(p.Config.GetString("modules.sql.driver"), driverHooks...)
 	if err != nil {
 		return nil, err
 	}
 
 	// database preparation
-	db, err := sql.Open(driverName, p.Config.GetString("modules.database.dsn"))
+	db, err := sql.Open(driverName, p.Config.GetString("modules.sql.dsn"))
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func NewFxSQLDatabase(p FxSQLDatabaseParam) (*sql.DB, error) {
 	// lifecycles
 	p.LifeCycle.Append(fx.Hook{
 		OnStop: func(_ context.Context) error {
-			if yokaisql.FetchSystem(p.Config.GetString("modules.database.driver")) != yokaisql.SqliteSystem {
+			if yokaisql.FetchSystem(p.Config.GetString("modules.sql.driver")) != yokaisql.SqliteSystem {
 				return db.Close()
 			}
 
@@ -105,32 +105,32 @@ func NewFxSQLMigrator(p FxSQLMigratorParam) *Migrator {
 	return NewMigrator(p.Db, p.Logger)
 }
 
-// RunFxSQLMigration runs database migrations.
+// RunFxSQLMigration runs database migrations with a context.
 func RunFxSQLMigration(command string, args ...string) fx.Option {
 	return fx.Invoke(
 		func(ctx context.Context, migrator *Migrator, config *config.Config) error {
-			return migrator.Migrate(
+			return migrator.Run(
 				ctx,
-				config.GetString("modules.database.driver"),
-				config.GetString("modules.database.migrations"),
+				config.GetString("modules.sql.driver"),
+				config.GetString("modules.sql.migrations"),
 				command,
 				args...,
 			)
-
 		},
 	)
 }
 
-// RunFxSQLMigrationAndShutdown runs database migrations and shutdown.
+// RunFxSQLMigrationAndShutdown runs database migrations with a context and shutdown.
 func RunFxSQLMigrationAndShutdown(command string, args ...string) fx.Option {
 	return fx.Invoke(
 		func(ctx context.Context, migrator *Migrator, config *config.Config, shutdown fx.Shutdowner) error {
+			//nolint:errcheck
 			defer shutdown.Shutdown()
 
-			return migrator.Migrate(
+			return migrator.Run(
 				ctx,
-				config.GetString("modules.database.driver"),
-				config.GetString("modules.database.migrations"),
+				config.GetString("modules.sql.driver"),
+				config.GetString("modules.sql.migrations"),
 				command,
 				args...,
 			)
