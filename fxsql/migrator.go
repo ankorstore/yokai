@@ -21,20 +21,16 @@ func NewMigrator(db *sql.DB, logger *log.Logger) *Migrator {
 }
 
 func (m *Migrator) Migrate(ctx context.Context, dialect string, dir string, command string, args ...string) error {
-	// logger
-	logger := m.logger.
-		With().
+	m.logger.Info().
 		Str("dir", dir).
 		Str("command", command).
 		Strs("args", args).
-		Logger()
-
-	logger.Info().Msg("starting database migration")
+		Msg("starting database migration")
 
 	// set dialect
 	err := goose.SetDialect(dialect)
 	if err != nil {
-		logger.Error().Err(err).Msg("database migration dialect error")
+		m.logger.Error().Err(err).Msg("database dialect error")
 
 		return err
 	}
@@ -42,12 +38,12 @@ func (m *Migrator) Migrate(ctx context.Context, dialect string, dir string, comm
 	// apply migration
 	err = goose.RunContext(ctx, command, m.db, dir, args...)
 	if err != nil {
-		logger.Error().Err(err).Msg("database migration error")
+		m.logger.Error().Err(err).Msg("database migration error")
 
 		return err
 	}
 
-	logger.Info().Msg("database migration success")
+	m.logger.Info().Msg("database migration success")
 
 	return nil
 }
