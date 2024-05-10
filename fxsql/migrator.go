@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/log"
 	"github.com/pressly/goose/v3"
 )
@@ -12,24 +11,28 @@ import (
 type Migrator struct {
 	db     *sql.DB
 	logger *log.Logger
-	config *config.Config
 }
 
-func NewMigrator(db *sql.DB, logger *log.Logger, config *config.Config) *Migrator {
+func NewMigrator(db *sql.DB, logger *log.Logger) *Migrator {
 	return &Migrator{
 		db:     db,
 		logger: logger,
-		config: config,
 	}
 }
 
 func (m *Migrator) Migrate(ctx context.Context, dialect string, dir string, command string, args ...string) error {
 	// logger
-	logger := m.logger.With().Str("command", command).Str("dir", dir).Logger()
+	logger := m.logger.
+		With().
+		Str("dir", dir).
+		Str("command", command).
+		Strs("args", args).
+		Logger()
+
 	logger.Info().Msg("starting database migration")
 
 	// set dialect
-	err := goose.SetDialect(m.config.GetString("modules.database.driver"))
+	err := goose.SetDialect(dialect)
 	if err != nil {
 		logger.Error().Err(err).Msg("database migration dialect error")
 
@@ -37,7 +40,7 @@ func (m *Migrator) Migrate(ctx context.Context, dialect string, dir string, comm
 	}
 
 	// apply migration
-	err = goose.RunContext(ctx, command, m.db, m.config.GetString("modules.database.migrations"), args...)
+	err = goose.RunContext(ctx, command, m.db, dir, args...)
 	if err != nil {
 		logger.Error().Err(err).Msg("database migration error")
 

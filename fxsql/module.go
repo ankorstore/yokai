@@ -97,12 +97,11 @@ type FxSQLMigratorParam struct {
 	fx.In
 	Db     *sql.DB
 	Logger *log.Logger
-	Config *config.Config
 }
 
 // NewFxSQLMigrator returns a Migrator instance.
 func NewFxSQLMigrator(p FxSQLMigratorParam) *Migrator {
-	return NewMigrator(p.Db, p.Logger, p.Config)
+	return NewMigrator(p.Db, p.Logger)
 }
 
 // RunFxSQLMigration runs database migrations.
