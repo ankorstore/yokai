@@ -112,7 +112,6 @@ func TestModule(t *testing.T) {
 
 	// SQL exec
 	res, err := db.ExecContext(ctx, "DELETE FROM foo WHERE bar = ?", "test seed value")
-	logBuffer.Dump()
 	assert.NoError(t, err)
 
 	// SQL exec result assertion
@@ -288,5 +287,4 @@ func TestModuleErrorWithInvalidSeed(t *testing.T) {
 	// SQL close
 	err = db.Close()
 	assert.NoError(t, err)
-
 }
