@@ -9,7 +9,6 @@ import (
 	yokaisql "github.com/ankorstore/yokai/sql"
 	yokaisqllog "github.com/ankorstore/yokai/sql/hook/log"
 	yokaisqltrace "github.com/ankorstore/yokai/sql/hook/trace"
-	"github.com/pressly/goose/v3"
 	"go.uber.org/fx"
 )
 
@@ -35,7 +34,7 @@ type FxSQLDatabaseParam struct {
 	Hooks     []yokaisql.Hook `group:"sql-hooks"`
 }
 
-// NewFxSQLDatabase returns a *sql.DB instance.
+// NewFxSQLDatabase returns a sql.DB instance.
 func NewFxSQLDatabase(p FxSQLDatabaseParam) (*sql.DB, error) {
 	// custom hooks
 	driverHooks := p.Hooks
@@ -93,40 +92,48 @@ func NewFxSQLDatabase(p FxSQLDatabaseParam) (*sql.DB, error) {
 	return db, nil
 }
 
-// RunFxSQLDatabaseMigration runs database migrations.
-func RunFxSQLDatabaseMigration(command string, shutdown bool) fx.Option {
+// FxSQLMigratorParam allows injection of the required dependencies in [NewFxSQLMigrator].
+type FxSQLMigratorParam struct {
+	fx.In
+	Db     *sql.DB
+	Logger *log.Logger
+	Config *config.Config
+}
+
+// NewFxSQLMigrator returns a Migrator instance.
+func NewFxSQLMigrator(p FxSQLMigratorParam) *Migrator {
+	return NewMigrator(p.Db, p.Logger, p.Config)
+}
+
+// RunFxSQLMigration runs database migrations.
+func RunFxSQLMigration(command string, args ...string) fx.Option {
 	return fx.Invoke(
-		func(ctx context.Context, db *sql.DB, cfg *config.Config, lgr *log.Logger, sd fx.Shutdowner) error {
-			// source dir
-			dir := cfg.GetString("modules.database.migrations")
+		func(ctx context.Context, migrator *Migrator, config *config.Config) error {
+			return migrator.Migrate(
+				ctx,
+				config.GetString("modules.database.driver"),
+				config.GetString("modules.database.migrations"),
+				command,
+				args...,
+			)
 
-			logger := lgr.With().Str("command", command).Str("dir", dir).Logger()
-			logger.Info().Msg("starting database migration")
+		},
+	)
+}
 
-			// set dialect
-			err := goose.SetDialect(cfg.GetString("modules.database.driver"))
-			if err != nil {
-				logger.Error().Err(err).Msg("database migration dialect error")
+// RunFxSQLMigrationAndShutdown runs database migrations and shutdown.
+func RunFxSQLMigrationAndShutdown(command string, args ...string) fx.Option {
+	return fx.Invoke(
+		func(ctx context.Context, migrator *Migrator, config *config.Config, shutdown fx.Shutdowner) error {
+			defer shutdown.Shutdown()
 
-				return err
-			}
-
-			// apply migration
-			err = goose.RunContext(ctx, command, db, cfg.GetString("modules.database.migrations"))
-			if err != nil {
-				logger.Error().Err(err).Msg("database migration error")
-
-				return err
-			}
-
-			logger.Info().Msg("database migration success")
-
-			// shutdown
-			if shutdown {
-				return sd.Shutdown()
-			}
-
-			return nil
+			return migrator.Migrate(
+				ctx,
+				config.GetString("modules.database.driver"),
+				config.GetString("modules.database.migrations"),
+				command,
+				args...,
+			)
 		},
 	)
 }
