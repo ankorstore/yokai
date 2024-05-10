@@ -23,6 +23,7 @@ var FxSQLModule = fx.Module(
 	fx.Provide(
 		NewFxSQLDatabase,
 		NewFxSQLMigrator,
+		NewFxSQLSeeder,
 	),
 )
 
@@ -105,6 +106,19 @@ func NewFxSQLMigrator(p FxSQLMigratorParam) *Migrator {
 	return NewMigrator(p.Db, p.Logger)
 }
 
+// FxSQLSeederParam allows injection of the required dependencies in [NewFxSQLSeeder].
+type FxSQLSeederParam struct {
+	fx.In
+	Db     *sql.DB
+	Logger *log.Logger
+	Seeds  []Seed `group:"sql-seeds"`
+}
+
+// NewFxSQLSeeder returns a Seeder instance.
+func NewFxSQLSeeder(p FxSQLSeederParam) *Seeder {
+	return NewSeeder(p.Db, p.Logger, p.Seeds...)
+}
+
 // RunFxSQLMigration runs database migrations with a context.
 func RunFxSQLMigration(command string, args ...string) fx.Option {
 	return fx.Invoke(
@@ -134,6 +148,15 @@ func RunFxSQLMigrationAndShutdown(command string, args ...string) fx.Option {
 				command,
 				args...,
 			)
+		},
+	)
+}
+
+// RunFxSQLSeeds runs database seeds with a context.
+func RunFxSQLSeeds(names ...string) fx.Option {
+	return fx.Invoke(
+		func(ctx context.Context, seeder *Seeder) error {
+			return seeder.Run(ctx, names...)
 		},
 	)
 }

@@ -15,3 +15,14 @@ func AsSQLHook(constructor any) fx.Option {
 		),
 	)
 }
+
+// AsSQLSeed registers a [Seed] into Fx.
+func AsSQLSeed(constructor any) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			constructor,
+			fx.As(new(Seed)),
+			fx.ResultTags(`group:"sql-seeds"`),
+		),
+	)
+}

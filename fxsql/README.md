@@ -17,6 +17,7 @@
   * [Configuration](#configuration)
   * [Migrations](#migrations)
   * [Hooks](#hooks)
+  * [Seeds](#seeds)
   * [Testing](#testing)
 <!-- TOC -->
 
@@ -31,8 +32,9 @@ go get github.com/ankorstore/yokai/fxsql
 This module provides a `*sql.DB` to your Fx application with:
 
 - automatic SQL requests logging and tracing
-- possibility to define and apply SQL migrations (based on [Goose](https://github.com/pressly/goose))
-- possibility to register custom SQL hooks
+- possibility to define and apply database migrations (based on [Goose](https://github.com/pressly/goose))
+- possibility to register database hooks
+- possibility to register and execute database seeds
 
 ## Documentation
 
@@ -203,7 +205,7 @@ If you want to automatically shut down your Fx application after the migrations,
 
 ### Hooks
 
-This module provides the possibility to register several [Hook](https://github.com/ankorstore/yokai/blob/main/sql/hook.go) implementations to `extend the logic around the SQL operations`.
+This module provides the possibility to register several [Hook](https://github.com/ankorstore/yokai/blob/main/sql/hook.go) implementations to `extend` the logic around the SQL operations.
 
 This is done via the `AsSQLHook()` function:
 
@@ -241,7 +243,7 @@ func (h *ExampleHook) After(ctx context.Context, event *sql.HookEvent) {
 // usage
 func main() {
 	fx.New(
-		fxconfig.FxConfigModule, // load the module dependencies
+		fxconfig.FxConfigModule,         // load the module dependencies
 		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fxsql.FxSQLModule,               // load the module
@@ -250,7 +252,69 @@ func main() {
 }
 ```
 
-The dependencies of your hooks will be autowired.
+You can inject dependencies in your hooks constructors, they will be autowired.
+
+### Seeds
+
+This module provides the possibility to register several [Seed](seeder.go) implementations to `seed` the database.
+
+Their execution is made within the scope of a database `transaction`:
+
+- if the seed does not return an error, the transaction will be `committed`
+- if the seed returns an error, the transaction will be `rolled back`
+
+This is done via:
+
+- the `AsSQLSeed()` function to register seeds
+- the `RunFxSQLSeeds()` function to execute seeds
+
+```go
+package main
+
+import (
+	"context"
+	"database/sql"
+
+	"github.com/ankorstore/yokai/fxconfig"
+	"github.com/ankorstore/yokai/fxlog"
+	"github.com/ankorstore/yokai/fxsql"
+	"github.com/ankorstore/yokai/fxtrace"
+	"go.uber.org/fx"
+)
+
+// example SQL seed
+type ExampleSeed struct{}
+
+func NewExampleSeed() *ExampleSeed {
+	return &ExampleSeed{}
+}
+
+func (s *ExampleSeed) Name() string {
+	return "example-seed"
+}
+
+func (s *ExampleSeed) Run(ctx context.Context, tx *sql.Tx) error {
+  _, err := tx.ExecContext(ctx, "INSERT INTO foo (bar) VALUES (?)", "baz")
+
+  return err
+}
+
+// usage
+func main() {
+	fx.New(
+		fxconfig.FxConfigModule,          // load the module dependencies
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxsql.FxSQLModule,                // load the module
+		fxsql.AsSQLHook(NewExampleSeed),  // register the ExampleSeed
+		fxsql.RunFxSQLSeeds(),            // run all registered seeds
+	).Run()
+}
+```
+
+You can also call for example `RunFxSQLSeeds("example-seed", "other-seed")` to run specific seeds, in provided order.
+
+You can inject dependencies in your seeds constructors, they will be autowired.
 
 ### Testing
 

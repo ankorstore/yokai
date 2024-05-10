@@ -23,3 +23,6 @@ modules:
       arguments: true
       exclude:
         - "connection:ping"
+config:
+  hook_name: "test hook"
+  seed_value: "test seed value"

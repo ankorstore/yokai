@@ -9,6 +9,7 @@ import (
 	"github.com/ankorstore/yokai/fxlog"
 	"github.com/ankorstore/yokai/fxsql"
 	"github.com/ankorstore/yokai/fxsql/testdata/hook"
+	"github.com/ankorstore/yokai/fxsql/testdata/seed"
 	"github.com/ankorstore/yokai/fxtrace"
 	"github.com/ankorstore/yokai/log/logtest"
 	"github.com/ankorstore/yokai/trace"
@@ -21,7 +22,7 @@ import (
 	"go.uber.org/fx/fxtest"
 )
 
-func TestModuleWithObservabilityAndCustomHook(t *testing.T) {
+func TestModule(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("SQL_DRIVER", "sqlite")
 	t.Setenv("SQL_DSN", ":memory:")
@@ -39,8 +40,10 @@ func TestModuleWithObservabilityAndCustomHook(t *testing.T) {
 		fx.Provide(func() context.Context {
 			return context.Background()
 		}),
-		// provide custom hook
-		fxsql.AsSQLHook(hook.NewDummyHook),
+		// provide test hook
+		fxsql.AsSQLHook(hook.NewTestHook),
+		// provide test seeder
+		fxsql.AsSQLSeed(seed.NewValidSeed),
 		// load module and dependencies
 		fxconfig.FxConfigModule,
 		fxlog.FxLogModule,
@@ -48,23 +51,82 @@ func TestModuleWithObservabilityAndCustomHook(t *testing.T) {
 		fxsql.FxSQLModule,
 		// apply migrations
 		fxsql.RunFxSQLMigration("up"),
+		// apply valid seed
+		fxsql.RunFxSQLSeeds(),
 		// populate test components
 		fx.Populate(&ctx, &db, &logBuffer, &tracerProvider, &traceExporter),
 	).RequireStart().RequireStop()
 
 	ctx = trace.WithContext(ctx, tracerProvider)
 
-	// SQL exec query
-	_, err := db.ExecContext(ctx, "INSERT INTO foo (bar) VALUES (?)", "test")
+	// SQL query
+	rows, err := db.QueryContext(ctx, "SELECT bar FROM foo LIMIT 1")
 	assert.NoError(t, err)
+	assert.NoError(t, rows.Err())
+
+	// SQL query observability assertion
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "debug",
+		"system":    "sqlite",
+		"operation": "connection:query-context",
+		"query":     "SELECT bar FROM foo LIMIT 1",
+		"message":   "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:query-context",
+		semconv.DBSystemKey.String("sqlite"),
+		attribute.String("db.statement", "SELECT bar FROM foo LIMIT 1"),
+	)
+
+	// SQL query result assertion
+	for rows.Next() {
+		var bar string
+		err = rows.Scan(&bar)
+		assert.NoError(t, err)
+		assert.Equal(t, "test seed value", bar)
+	}
+
+	// SQL hook assertions
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "info",
+		"message": "test hook before connection:exec-context",
+	})
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "info",
+		"message": "test hook after connection:exec-context",
+	})
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "info",
+		"message": "test hook before connection:query-context",
+	})
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "info",
+		"message": "test hook after connection:query-context",
+	})
+
+	// SQL exec
+	res, err := db.ExecContext(ctx, "DELETE FROM foo WHERE bar = ?", "test seed value")
+	logBuffer.Dump()
+	assert.NoError(t, err)
+
+	// SQL exec result assertion
+	rowsAffected, err := res.RowsAffected()
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), rowsAffected)
 
 	// SQL exec observability assertion
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "debug",
 		"system":    "sqlite",
 		"operation": "connection:exec-context",
-		"query":     "INSERT INTO foo (bar) VALUES (?)",
-		"arguments": "[map[Name: Ordinal:1 Value:test]]",
+		"query":     "DELETE FROM foo WHERE bar = ?",
+		"arguments": "[map[Name: Ordinal:1 Value:test seed value]]",
 		"message":   "sql logger",
 	})
 
@@ -73,26 +135,15 @@ func TestModuleWithObservabilityAndCustomHook(t *testing.T) {
 		traceExporter,
 		"SQL connection:exec-context",
 		semconv.DBSystemKey.String("sqlite"),
-		attribute.String("db.statement", "INSERT INTO foo (bar) VALUES (?)"),
-		attribute.String("db.statement.arguments", "[{Name: Ordinal:1 Value:test}]"),
+		attribute.String("db.statement", "DELETE FROM foo WHERE bar = ?"),
+		attribute.String("db.statement.arguments", "[{Name: Ordinal:1 Value:test seed value}]"),
 	)
-
-	// SQL custom hook assertions
-	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
-		"level":   "info",
-		"message": "DummyHook: before connection:exec-context",
-	})
-
-	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
-		"level":   "info",
-		"message": "DummyHook: after connection:exec-context",
-	})
 
 	// SQL ping
 	err = db.PingContext(ctx)
 	assert.NoError(t, err)
 
-	// SQL ping observability assertion (excluded)
+	// SQL ping observability assertion (should be excluded)
 	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
 		"level":     "debug",
 		"system":    "sqlite",
@@ -155,7 +206,7 @@ func TestModuleErrorWithInvalidDriver(t *testing.T) {
 		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fxsql.FxSQLModule,
-		// apply migrations and shutdown
+		// apply migrations
 		fxsql.RunFxSQLMigration("up"),
 	)
 
@@ -182,11 +233,60 @@ func TestModuleErrorWithInvalidDsn(t *testing.T) {
 		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fxsql.FxSQLModule,
-		// apply migrations and shutdown
+		// apply migrations
 		fxsql.RunFxSQLMigration("up"),
 	)
 
 	err := app.Start(ctx)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid DSN: missing the slash separating the database name")
+}
+
+func TestModuleErrorWithInvalidSeed(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("SQL_DRIVER", "sqlite")
+	t.Setenv("SQL_DSN", ":memory:")
+
+	ctx := context.Background()
+
+	var db *sql.DB
+
+	fxtest.New(
+		t,
+		fx.NopLogger,
+		// provide context
+		fx.Provide(func() context.Context {
+			return ctx
+		}),
+		// provide test seeders
+		fxsql.AsSQLSeed(seed.NewValidSeed),
+		fxsql.AsSQLSeed(seed.NewInvalidSeed),
+		// load module and dependencies
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxsql.FxSQLModule,
+		// apply migrations
+		fxsql.RunFxSQLMigration("up"),
+		// apply invalid seed
+		fxsql.RunFxSQLSeeds("valid", "invalid"),
+		// populate test components
+		fx.Populate(&db),
+	).RequireStart().RequireStop()
+
+	// SQL query
+	row := db.QueryRow("SELECT COUNT(*) FROM foo")
+	assert.NoError(t, row.Err())
+
+	var count int
+	err := row.Scan(&count)
+	assert.NoError(t, err)
+
+	// must be 1 (from valid seed, since invalid seed should have been roll backed)
+	assert.Equal(t, 1, count)
+
+	// SQL close
+	err = db.Close()
+	assert.NoError(t, err)
+
 }
