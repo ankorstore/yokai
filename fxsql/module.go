@@ -22,6 +22,7 @@ var FxSQLModule = fx.Module(
 	ModuleName,
 	fx.Provide(
 		NewFxSQLDatabase,
+		NewFxSQLMigrator,
 	),
 )
 
