@@ -150,7 +150,7 @@ For example, `db/migrations/00001_create_foo_table.sql`:
 ```sql
 -- +goose Up
 CREATE TABLE foo (
-    id   INTEGER NOT NULL PRIMARY KEY,
+    id  INTEGER NOT NULL PRIMARY KEY,
     bar VARCHAR(255)
 );
 
