@@ -96,9 +96,9 @@ app:
   debug: false
 modules:
   sql:
-    driver: mysql                                               # database driver
-    dsn: "user:password@tcp(localhost:3306)/db?parseTime=true"  # database DSN
-    migrations: db/migrations                                   # migrations path
+    driver: mysql                                               # database driver (empty by default)
+    dsn: "user:password@tcp(localhost:3306)/db?parseTime=true"  # database DSN (empty by default)
+    migrations: db/migrations                                   # migrations path (empty by default)
     log:
       enabled: true             # to enable SQL queries logging (disabled by default)
       level: debug              # to configure SQL queries logs level (debug by default)
