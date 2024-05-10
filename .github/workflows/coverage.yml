@@ -43,6 +43,7 @@ jobs:
         - "fxlog"
         - "fxmetrics"
         - "fxorm"
+        - "fxsql"
         - "fxtrace"
         - "fxworker"
     steps:

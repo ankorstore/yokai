@@ -111,6 +111,11 @@
       "component": "fxorm",
       "tag-separator": "/"
     },
+    "fxsql": {
+      "release-type": "go",
+      "component": "fxsql",
+      "tag-separator": "/"
+    },
     "fxtrace": {
       "release-type": "go",
       "component": "fxtrace",
