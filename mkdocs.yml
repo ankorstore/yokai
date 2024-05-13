@@ -93,5 +93,6 @@ nav:
       - "Log": modules/fxlog.md
       - "Metrics": modules/fxmetrics.md
       - "ORM": modules/fxorm.md
+      - "SQL": modules/fxsql.md
       - "Trace": modules/fxtrace.md
       - "Worker": modules/fxworker.md
