@@ -16,8 +16,8 @@
   * [Loading](#loading)
   * [Configuration](#configuration)
   * [Migrations](#migrations)
-  * [Hooks](#hooks)
   * [Seeds](#seeds)
+  * [Hooks](#hooks)
   * [Testing](#testing)
 <!-- TOC -->
 
@@ -203,6 +203,65 @@ Available migration commands:
 
 If you want to automatically shut down your Fx application after the migrations, you can use `RunFxSQLMigrationAndShutdown`.
 
+### Seeds
+
+This module provides the possibility to register several [Seed](seeder.go) implementations to `seed` the database.
+
+This is done via:
+
+- the `AsSQLSeed()` function to register seeds
+- the `RunFxSQLSeeds()` function to execute seeds
+
+```go
+package main
+
+import (
+	"context"
+	"database/sql"
+
+	"github.com/ankorstore/yokai/fxconfig"
+	"github.com/ankorstore/yokai/fxlog"
+	"github.com/ankorstore/yokai/fxsql"
+	"github.com/ankorstore/yokai/fxtrace"
+	"go.uber.org/fx"
+)
+
+// example SQL seed
+type ExampleSeed struct{}
+
+func NewExampleSeed() *ExampleSeed {
+	return &ExampleSeed{}
+}
+
+func (s *ExampleSeed) Name() string {
+	return "example-seed"
+}
+
+func (s *ExampleSeed) Run(ctx context.Context, db *sql.DB) error {
+  _, err := db.ExecContext(ctx, "INSERT INTO foo (bar) VALUES (?)", "baz")
+
+  return err
+}
+
+// usage
+func main() {
+	fx.New(
+		fxconfig.FxConfigModule,          // load the module dependencies
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxsql.FxSQLModule,                // load the module
+		fxsql.AsSQLHook(NewExampleSeed),  // register the ExampleSeed
+		fxsql.RunFxSQLSeeds(),            // run all registered seeds
+	).Run()
+}
+```
+
+You can also use `AsSQLSeeds()` to register several seeds at once.
+
+You can also call for example `RunFxSQLSeeds("example-seed", "other-seed")` to run specific seeds, in provided order.
+
+The dependencies of your seeds constructors will be autowired.
+
 ### Hooks
 
 This module provides the possibility to register several [Hook](https://github.com/ankorstore/yokai/blob/main/sql/hook.go) implementations to `extend` the logic around the SQL operations.
@@ -254,66 +313,7 @@ func main() {
 
 You can also use `AsSQLHooks()` to register several hooks at once.
 
-The dependencies in your hooks constructors will be autowired.
-
-### Seeds
-
-This module provides the possibility to register several [Seed](seeder.go) implementations to `seed` the database.
-
-This is done via:
-
-- the `AsSQLSeed()` function to register seeds
-- the `RunFxSQLSeeds()` function to execute seeds
-
-```go
-package main
-
-import (
-	"context"
-	"database/sql"
-
-	"github.com/ankorstore/yokai/fxconfig"
-	"github.com/ankorstore/yokai/fxlog"
-	"github.com/ankorstore/yokai/fxsql"
-	"github.com/ankorstore/yokai/fxtrace"
-	"go.uber.org/fx"
-)
-
-// example SQL seed
-type ExampleSeed struct{}
-
-func NewExampleSeed() *ExampleSeed {
-	return &ExampleSeed{}
-}
-
-func (s *ExampleSeed) Name() string {
-	return "example-seed"
-}
-
-func (s *ExampleSeed) Run(ctx context.Context, tx *sql.Tx) error {
-  _, err := tx.ExecContext(ctx, "INSERT INTO foo (bar) VALUES (?)", "baz")
-
-  return err
-}
-
-// usage
-func main() {
-	fx.New(
-		fxconfig.FxConfigModule,          // load the module dependencies
-		fxlog.FxLogModule,
-		fxtrace.FxTraceModule,
-		fxsql.FxSQLModule,                // load the module
-		fxsql.AsSQLHook(NewExampleSeed),  // register the ExampleSeed
-		fxsql.RunFxSQLSeeds(),            // run all registered seeds
-	).Run()
-}
-```
-
-You can also use `AsSQLSeeds()` to register several seeds at once.
-
-You can also call for example `RunFxSQLSeeds("example-seed", "other-seed")` to run specific seeds, in provided order.
-
-The dependencies in your seeds constructors will be autowired.
+The dependencies of your hooks constructors will be autowired.
 
 ### Testing
 

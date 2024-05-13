@@ -113,7 +113,6 @@ import (
 	"database/sql"
 
 	yokaisql "github.com/ankorstore/yokai/sql"
-	"github.com/ankorstore/yokai/sql/hook/log"
 	"github.com/ankorstore/yokai/sql/hook/trace"
 	"github.com/rs/zerolog"
 )
@@ -145,8 +144,6 @@ import (
 	"database/sql"
 
 	yokaisql "github.com/ankorstore/yokai/sql"
-	"github.com/ankorstore/yokai/sql/hook/log"
-	"github.com/ankorstore/yokai/sql/hook/trace"
 	"github.com/rs/zerolog"
 )
 

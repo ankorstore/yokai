@@ -103,7 +103,7 @@ Yokai dependency injection system.
 
 To access it, you just need to inject it where needed, for example in a repository to manage your `ExampleModel`:
 
-```go title="internal/respository/example.go"
+```go title="internal/repository/example.go"
 package repository
 
 import (
@@ -324,7 +324,7 @@ func Register() fx.Option {
 
 ## Logging
 
-You can enable the SQL queries automatic logging with `modules.orm.log.enable=true`:
+You can enable the SQL queries automatic logging with `modules.orm.log.enabled=true`:
 
 ```yaml title="configs/config.yaml"
 modules:
@@ -355,7 +355,7 @@ DBG latency="54.32µs" sqlQuery="SELECT * FROM `examples` WHERE `examples`.`id` 
 
 ## Tracing
 
-You can enable the SQL queries automatic tracing with `modules.orm.trace.enable=true`:
+You can enable the SQL queries automatic tracing with `modules.orm.trace.enabled=true`:
 
 ```yaml title="configs/config.yaml"
 modules:
