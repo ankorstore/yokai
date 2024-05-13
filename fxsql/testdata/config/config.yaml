@@ -1,0 +1,28 @@
+app:
+  name: test
+  version: 0.1.0
+modules:
+  log:
+    level: debug
+    output: test
+  trace:
+    processor:
+      type: test
+  sql:
+    driver: ${SQL_DRIVER}
+    dsn: ${SQL_DSN}
+    migrations: testdata/migrations
+    log:
+      enabled: true
+      level: debug
+      arguments: true
+      exclude:
+        - "connection:ping"
+    trace:
+      enabled: true
+      arguments: true
+      exclude:
+        - "connection:ping"
+config:
+  hook_name: "test hook"
+  seed_value: "test seed value"
