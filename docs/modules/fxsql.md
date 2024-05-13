@@ -267,13 +267,13 @@ var migrateCmd = &cobra.Command{
         fxcore.
             NewBootstrapper().
             WithContext(cmd.Context()).
-                WithOptions(
-                    fx.NopLogger,
-                    // modules
-                    fxsql.FxSQLModule,
-                    // migrate and shutdown
-                    fxsql.RunFxSQLMigrationAndShutdown(args[0], args[1:]...),
-                ).
+            WithOptions(
+                fx.NopLogger,
+                // modules
+                fxsql.FxSQLModule,
+                // migrate and shutdown
+                fxsql.RunFxSQLMigrationAndShutdown(args[0], args[1:]...),
+            ).
             RunApp()
     },
 }
@@ -571,6 +571,7 @@ import (
 
     "github.com/ankorstore/yokai/fxsql"
     "github.com/foo/bar/internal"
+    "github.com/foo/bar/internal/repository"
     "go.uber.org/fx"
 )
 
