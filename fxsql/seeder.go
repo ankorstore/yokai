@@ -3,7 +3,6 @@ package fxsql
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/ankorstore/yokai/log"
 )
@@ -11,7 +10,7 @@ import (
 // Seed is the interface to implement to provide seeds.
 type Seed interface {
 	Name() string
-	Run(ctx context.Context, tx *sql.Tx) error
+	Run(ctx context.Context, db *sql.DB) error
 }
 
 // Seeder is a database seeder.
@@ -47,27 +46,14 @@ func (m *Seeder) Run(ctx context.Context, names ...string) error {
 	}
 
 	for _, seedToExecute := range seedsToExecute {
-		tx, err := m.db.BeginTx(ctx, nil)
-		if err != nil {
-			return fmt.Errorf("cannot begin transaction for seed %s: %w", seedToExecute.Name(), err)
-		}
-
-		seedErr := seedToExecute.Run(ctx, tx)
+		seedErr := seedToExecute.Run(ctx, m.db)
 		if seedErr != nil {
-			err = tx.Rollback()
-			if err != nil {
-				return fmt.Errorf("cannot rollback transaction for seed %s: %w", seedToExecute.Name(), err)
-			}
+			m.logger.Error().Err(seedErr).Str("seed", seedToExecute.Name()).Msg("seed error")
 
-			m.logger.Error().Err(seedErr).Str("seed", seedToExecute.Name()).Msg("rollback")
-		} else {
-			err = tx.Commit()
-			if err != nil {
-				return fmt.Errorf("cannot commit transaction for seed %s: %w", seedToExecute.Name(), err)
-			}
-
-			m.logger.Info().Str("seed", seedToExecute.Name()).Msg("commit")
+			return seedErr
 		}
+
+		m.logger.Info().Str("seed", seedToExecute.Name()).Msg("seed success")
 	}
 
 	return nil

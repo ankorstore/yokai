@@ -43,7 +43,7 @@ func TestModule(t *testing.T) {
 		// provide test hook
 		fxsql.AsSQLHook(hook.NewTestHook),
 		// provide test seeder
-		fxsql.AsSQLSeed(seed.NewValidSeed),
+		fxsql.AsSQLSeed(seed.NewTestSeed),
 		// load module and dependencies
 		fxconfig.FxConfigModule,
 		fxlog.FxLogModule,
@@ -88,6 +88,13 @@ func TestModule(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "test seed value", bar)
 	}
+
+	// SQL seed assertions
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":   "info",
+		"seed":    "test",
+		"message": "seed success",
+	})
 
 	// SQL hook assertions
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
@@ -257,9 +264,8 @@ func TestModuleErrorWithInvalidSeed(t *testing.T) {
 		fx.Provide(func() context.Context {
 			return ctx
 		}),
-		// provide test seeders
-		fxsql.AsSQLSeed(seed.NewValidSeed),
-		fxsql.AsSQLSeed(seed.NewInvalidSeed),
+		// provide test seed
+		fxsql.AsSQLSeed(seed.NewTestSeed),
 		// load module and dependencies
 		fxconfig.FxConfigModule,
 		fxlog.FxLogModule,
@@ -268,7 +274,7 @@ func TestModuleErrorWithInvalidSeed(t *testing.T) {
 		// apply migrations
 		fxsql.RunFxSQLMigration("up"),
 		// apply invalid seed
-		fxsql.RunFxSQLSeeds("valid", "invalid"),
+		fxsql.RunFxSQLSeeds("test"),
 		// populate test components
 		fx.Populate(&db),
 	).RequireStart().RequireStop()

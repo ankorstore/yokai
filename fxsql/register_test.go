@@ -18,10 +18,26 @@ func TestAsSQLHook(t *testing.T) {
 	assert.Equal(t, "fx.provideOption", fmt.Sprintf("%T", result))
 }
 
+func TestAsSQLHooks(t *testing.T) {
+	t.Parallel()
+
+	result := fxsql.AsSQLHooks(hook.NewTestHook)
+
+	assert.Equal(t, "fx.optionGroup", fmt.Sprintf("%T", result))
+}
+
 func TestAsSQLSeed(t *testing.T) {
 	t.Parallel()
 
-	result := fxsql.AsSQLSeed(seed.NewValidSeed)
+	result := fxsql.AsSQLSeed(seed.NewTestSeed)
 
 	assert.Equal(t, "fx.provideOption", fmt.Sprintf("%T", result))
+}
+
+func TestAsSQLSeeds(t *testing.T) {
+	t.Parallel()
+
+	result := fxsql.AsSQLSeeds(seed.NewTestSeed)
+
+	assert.Equal(t, "fx.optionGroup", fmt.Sprintf("%T", result))
 }

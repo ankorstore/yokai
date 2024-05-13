@@ -252,16 +252,13 @@ func main() {
 }
 ```
 
-You can inject dependencies in your hooks constructors, they will be autowired.
+You can also use `AsSQLHooks()` to register several hooks at once.
+
+The dependencies in your hooks constructors will be autowired.
 
 ### Seeds
 
 This module provides the possibility to register several [Seed](seeder.go) implementations to `seed` the database.
-
-Their execution is made within the scope of a database `transaction`:
-
-- if the seed does not return an error, the transaction will be `committed`
-- if the seed returns an error, the transaction will be `rolled back`
 
 This is done via:
 
@@ -312,9 +309,11 @@ func main() {
 }
 ```
 
+You can also use `AsSQLSeeds()` to register several seeds at once.
+
 You can also call for example `RunFxSQLSeeds("example-seed", "other-seed")` to run specific seeds, in provided order.
 
-You can inject dependencies in your seeds constructors, they will be autowired.
+The dependencies in your seeds constructors will be autowired.
 
 ### Testing
 
