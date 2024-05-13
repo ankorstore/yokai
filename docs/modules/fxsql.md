@@ -169,10 +169,10 @@ modules:
 
 And create them following [Goose SQL migrations](https://github.com/pressly/goose?tab=readme-ov-file#sql-migrations) conventions:
 
-```sql title="00001_create_foo_table.sql"
+```sql title="db/migrations/00001_create_foo_table.sql"
 -- +goose Up
 CREATE TABLE foo (
-	id   INTEGER NOT NULL PRIMARY KEY,
+	id  INTEGER NOT NULL PRIMARY KEY,
 	bar VARCHAR(255)
 );
 
@@ -284,7 +284,7 @@ You can then execute this command when needed by running for example `app migrat
 
 ## Seeds
 
-This module provides the possibility to `seed` your database with content, useful for testing.
+This module provides the possibility to `seed` your database, useful for testing.
 
 ### Seeds creation
 
@@ -358,13 +358,14 @@ The dependencies of your seeds constructors will be autowired.
 
 Once your seeds are registered, you can execute them via `RunFxSQLSeeds()`:
 
-```go title="internal/service/example_test.go"
-package service_test
+```go title="internal/example_test.go"
+package internal_test
 
 import (
     "testing"
 
     "github.com/ankorstore/yokai/fxsql"
+    "github.com/foo/bar/internal"
     "go.uber.org/fx"
 )
 
@@ -392,7 +393,7 @@ This module provides the [Hook](https://github.com/ankorstore/yokai/blob/main/sq
 For example:
 
 ```go title="db/hooks/example.go"
-package seeds
+package hooks
 
 import (
     "context"
@@ -510,7 +511,7 @@ DBG system:"mysql" operation:"connection:exec-context" latency="54.32µs" query=
 If needed, you can log the SQL queries arguments with `modules.sql.log.arguments=true`:
 
 ```
-DBG system:"mysql"  operation:"connection:exec-context" latency="54.32µs" query="INSERT INTO foo (bar) VALUES (?)" arguments=[map[Name: Ordinal:1 Value:baz]] lastInsertId=0 rowsAffected=0
+DBG system:"mysql" operation:"connection:exec-context" latency="54.32µs" query="INSERT INTO foo (bar) VALUES (?)" arguments=[map[Name: Ordinal:1 Value:baz]] lastInsertId=0 rowsAffected=0
 ```
 
 ## Tracing
@@ -555,25 +556,25 @@ This module provide support for the `sqlite` databases, making your tests portab
 
 ```yaml title="configs/config.test.yaml"
 modules:
-  orm:
+  sql:
     driver: sqlite   # use sqlite driver
     dsn: ":memory:"  # in memory
 ```
 
 You can then retrieve your components using the `sql.DB`, and make actual database operations:
 
-```go title="internal/service/example_test.go"
-package service_test
+```go title="internal/example_test.go"
+package internal_test
 
 import (
     "testing"
 
     "github.com/ankorstore/yokai/fxsql"
-    "github.com/foo/bar/internal/repository"
+    "github.com/foo/bar/internal"
     "go.uber.org/fx"
 )
 
-func TestFooRepository(t *testing.T) {
+func TestExample(t *testing.T) {
     var fooRepository repository.FooRepository
 
     internal.RunTest(
