@@ -10,7 +10,7 @@ import (
 
 // Migrator is a database migrator based on [Goose].
 //
-// [Fx]: https://github.com/pressly/goose
+// [Goose]: https://github.com/pressly/goose
 type Migrator struct {
 	db     *sql.DB
 	logger *log.Logger

@@ -3,14 +3,18 @@ package fxsql
 import (
 	"context"
 	"database/sql"
+	"sync"
 
 	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/log"
 	yokaisql "github.com/ankorstore/yokai/sql"
 	yokaisqllog "github.com/ankorstore/yokai/sql/hook/log"
 	yokaisqltrace "github.com/ankorstore/yokai/sql/hook/trace"
+	"github.com/pressly/goose/v3"
 	"go.uber.org/fx"
 )
+
+var once sync.Once
 
 // ModuleName is the module name.
 const ModuleName = "sql"
@@ -103,6 +107,11 @@ type FxSQLMigratorParam struct {
 
 // NewFxSQLMigrator returns a Migrator instance.
 func NewFxSQLMigrator(p FxSQLMigratorParam) *Migrator {
+	// set migrator logger (once)
+	once.Do(func() {
+		goose.SetLogger(NewMigratorLogger(p.Logger))
+	})
+
 	return NewMigrator(p.Db, p.Logger)
 }
 
