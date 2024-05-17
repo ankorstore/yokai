@@ -28,6 +28,7 @@ func (l *MigratorLogger) Printf(format string, v ...interface{}) {
 	l.logger.Info().Msgf(format, v...)
 
 	if l.stdout {
+		//nolint:forbidigo
 		fmt.Printf(format, v...)
 	}
 }
@@ -37,6 +38,7 @@ func (l *MigratorLogger) Fatalf(format string, v ...interface{}) {
 	l.logger.WithLevel(zerolog.FatalLevel).Msgf(format, v...)
 
 	if l.stdout {
+		//nolint:forbidigo
 		fmt.Printf("[FATAL] "+format, v...)
 	}
 }
