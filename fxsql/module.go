@@ -3,14 +3,18 @@ package fxsql
 import (
 	"context"
 	"database/sql"
+	"sync"
 
 	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/log"
 	yokaisql "github.com/ankorstore/yokai/sql"
 	yokaisqllog "github.com/ankorstore/yokai/sql/hook/log"
 	yokaisqltrace "github.com/ankorstore/yokai/sql/hook/trace"
+	"github.com/pressly/goose/v3"
 	"go.uber.org/fx"
 )
+
+var once sync.Once
 
 // ModuleName is the module name.
 const ModuleName = "sql"
@@ -98,11 +102,18 @@ func NewFxSQLDatabase(p FxSQLDatabaseParam) (*sql.DB, error) {
 type FxSQLMigratorParam struct {
 	fx.In
 	Db     *sql.DB
+	Config *config.Config
 	Logger *log.Logger
 }
 
 // NewFxSQLMigrator returns a Migrator instance.
 func NewFxSQLMigrator(p FxSQLMigratorParam) *Migrator {
+	// set once migrator the logger
+	once.Do(func() {
+		goose.SetLogger(NewMigratorLogger(p.Logger, p.Config.GetBool("modules.sql.migrations.stdout")))
+	})
+
+	// migrator
 	return NewMigrator(p.Db, p.Logger)
 }
 
@@ -126,7 +137,7 @@ func RunFxSQLMigration(command string, args ...string) fx.Option {
 			return migrator.Run(
 				ctx,
 				config.GetString("modules.sql.driver"),
-				config.GetString("modules.sql.migrations"),
+				config.GetString("modules.sql.migrations.path"),
 				command,
 				args...,
 			)
@@ -144,7 +155,7 @@ func RunFxSQLMigrationAndShutdown(command string, args ...string) fx.Option {
 			return migrator.Run(
 				ctx,
 				config.GetString("modules.sql.driver"),
-				config.GetString("modules.sql.migrations"),
+				config.GetString("modules.sql.migrations.path"),
 				command,
 				args...,
 			)

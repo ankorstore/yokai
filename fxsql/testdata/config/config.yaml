@@ -11,7 +11,9 @@ modules:
   sql:
     driver: ${SQL_DRIVER}
     dsn: ${SQL_DSN}
-    migrations: testdata/migrations
+    migrations:
+      path: testdata/migrations
+      stdout: false
     log:
       enabled: true
       level: debug

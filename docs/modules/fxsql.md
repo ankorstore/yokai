@@ -64,18 +64,20 @@ modules:
   sql:
     driver: mysql                                               # database driver
     dsn: "user:password@tcp(localhost:3306)/db?parseTime=true"  # database DSN
-    migrations: db/migrations                                   # migrations path
+    migrations:
+      path: db/migrations  # migrations path (empty by default)
+      stdout: true         # to print in stdout the migration logs (disabled by default)
     log:
-      enabled: true    # to enable SQL queries logging (disabled by default)
-      level: debug     # to configure SQL queries logs level (debug by default)
-      arguments: true  # to add SQL queries arguments to logs (disabled by default)
-      exclude:         # to exclude SQL operations from logging (empty by default)
+      enabled: true        # to enable SQL queries logging (disabled by default)
+      level: debug         # to configure SQL queries logs level (debug by default)
+      arguments: true      # to add SQL queries arguments to logs (disabled by default)
+      exclude:             # to exclude SQL operations from logging (empty by default)
         - "connection:ping"
         - "connection:reset-session"
     trace:
-      enabled: true    # to enable SQL queries tracing (disabled by default)
-      arguments: true  # to add SQL queries arguments to trace spans (disabled by default)
-      exclude:         # to exclude SQL operations from tracing (empty by default)
+      enabled: true        # to enable SQL queries tracing (disabled by default)
+      arguments: true      # to add SQL queries arguments to trace spans (disabled by default)
+      exclude:             # to exclude SQL operations from tracing (empty by default)
         - "connection:ping"
         - "connection:reset-session"
 ```
