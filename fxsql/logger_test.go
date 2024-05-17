@@ -35,7 +35,7 @@ func TestMigratorLoggerFatalf(t *testing.T) {
 	migratorLogger.Fatalf("test %s %d", "foo", 42)
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
-		"level":   "error",
+		"level":   "fatal",
 		"message": "test foo 42",
 	})
 }
@@ -49,5 +49,5 @@ func createTestMigratorLogger(t *testing.T, buffer logtest.TestLogBuffer) *fxsql
 	)
 	assert.NoError(t, err)
 
-	return fxsql.NewMigratorLogger(logger)
+	return fxsql.NewMigratorLogger(logger, true)
 }

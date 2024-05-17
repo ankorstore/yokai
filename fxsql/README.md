@@ -98,7 +98,9 @@ modules:
   sql:
     driver: mysql                                               # database driver (empty by default)
     dsn: "user:password@tcp(localhost:3306)/db?parseTime=true"  # database DSN (empty by default)
-    migrations: db/migrations                                   # migrations path (empty by default)
+    migrations: 
+      path: db/migrations       # migrations path (empty by default)
+      stdout: true              # to print in stdout the migration logs (disabled by default)
     log:
       enabled: true             # to enable SQL queries logging (disabled by default)
       level: debug              # to configure SQL queries logs level (debug by default)

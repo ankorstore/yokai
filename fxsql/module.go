@@ -102,16 +102,18 @@ func NewFxSQLDatabase(p FxSQLDatabaseParam) (*sql.DB, error) {
 type FxSQLMigratorParam struct {
 	fx.In
 	Db     *sql.DB
+	Config *config.Config
 	Logger *log.Logger
 }
 
 // NewFxSQLMigrator returns a Migrator instance.
 func NewFxSQLMigrator(p FxSQLMigratorParam) *Migrator {
-	// set migrator logger (once)
+	// set once migrator the logger
 	once.Do(func() {
-		goose.SetLogger(NewMigratorLogger(p.Logger))
+		goose.SetLogger(NewMigratorLogger(p.Logger, p.Config.GetBool("modules.sql.migrations.stdout")))
 	})
 
+	// migrator
 	return NewMigrator(p.Db, p.Logger)
 }
 
@@ -135,7 +137,7 @@ func RunFxSQLMigration(command string, args ...string) fx.Option {
 			return migrator.Run(
 				ctx,
 				config.GetString("modules.sql.driver"),
-				config.GetString("modules.sql.migrations"),
+				config.GetString("modules.sql.migrations.path"),
 				command,
 				args...,
 			)
@@ -153,7 +155,7 @@ func RunFxSQLMigrationAndShutdown(command string, args ...string) fx.Option {
 			return migrator.Run(
 				ctx,
 				config.GetString("modules.sql.driver"),
-				config.GetString("modules.sql.migrations"),
+				config.GetString("modules.sql.migrations.path"),
 				command,
 				args...,
 			)
