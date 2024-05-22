@@ -24,17 +24,17 @@ This demo application is following the [recommended project layout](https://go.d
 - `cmd/`: entry points
 - `configs/`: configuration files
 - `db/`:
-  - `migrations/`: database migrations
-  - `seeds/`: database seeds
+	- `migrations/`: database migrations
+	- `seeds/`: database seeds
 - `internal/`:
-  - `handler/`: HTTP handlers
-  - `middleware/`: HTTP middlewares
-  - `model/`: models
-  - `repository/`: models repositories
-  - `service/`: services
-  - `bootstrap.go`: bootstrap
-  - `register.go`: dependencies registration
-  - `router.go`: routing registration
+	- `handler/`: HTTP handlers
+	- `middleware/`: HTTP middlewares
+	- `model/`: models
+	- `repository/`: models repositories
+	- `service/`: services
+	- `bootstrap.go`: bootstrap
+	- `register.go`: dependencies registration
+	- `router.go`: routing registration
 - `templates/`: HTML templates
 
 ### Makefile
