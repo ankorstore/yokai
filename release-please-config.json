@@ -1,5 +1,5 @@
 {
-  "last-release-sha": "534d6292807a9cb9ac68bd97bc3d9bc50bc30211",
+  "bootstrap-sha": "8e765d97474871ee7d5f05dd5f112fb89aec4ee7",
   "separate-pull-requests": true,
   "packages": {
     "config": {
