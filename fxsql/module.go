@@ -87,7 +87,7 @@ func NewFxSQLDatabase(p FxSQLDatabaseParam) (*sql.DB, error) {
 	// lifecycles
 	p.LifeCycle.Append(fx.Hook{
 		OnStop: func(_ context.Context) error {
-			if yokaisql.FetchSystem(p.Config.GetString("modules.sql.driver")) != yokaisql.SqliteSystem {
+			if !p.Config.IsTestEnv() {
 				return db.Close()
 			}
 

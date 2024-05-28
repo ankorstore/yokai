@@ -1,0 +1,10 @@
+modules:
+  log:
+    level: debug
+    output: test
+  trace:
+    processor:
+      type: test
+config:
+  hook_name: "test hook"
+  seed_value: "test seed value"
