@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/fxorm/v1.1.0...fxorm/v1.2.0) (2024-05-28)
+
+
+### Features
+
+* **fxorm:** Prevent connection auto close on test mode ([#233](https://github.com/ankorstore/yokai/issues/233)) ([5bf56fe](https://github.com/ankorstore/yokai/commit/5bf56fe8bca4523f93d16138179468ad778c3dc0))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/fxorm/v1.0.0...fxorm/v1.1.0) (2024-03-14)
 
 
