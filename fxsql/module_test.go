@@ -23,6 +23,7 @@ import (
 )
 
 func TestModule(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("SQL_DRIVER", "sqlite")
 	t.Setenv("SQL_DSN", ":memory:")
@@ -170,6 +171,7 @@ func TestModule(t *testing.T) {
 }
 
 func TestModuleWithMigrationShutdown(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("SQL_DRIVER", "sqlite")
 	t.Setenv("SQL_DSN", ":memory:")
@@ -196,6 +198,7 @@ func TestModuleWithMigrationShutdown(t *testing.T) {
 }
 
 func TestModuleErrorWithInvalidDriver(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("SQL_DRIVER", "invalid")
 
@@ -222,6 +225,7 @@ func TestModuleErrorWithInvalidDriver(t *testing.T) {
 }
 
 func TestModuleErrorWithInvalidDsn(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("SQL_DRIVER", "mysql")
 	t.Setenv("SQL_DSN", "invalid")
@@ -249,6 +253,7 @@ func TestModuleErrorWithInvalidDsn(t *testing.T) {
 }
 
 func TestModuleErrorWithInvalidSeed(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("SQL_DRIVER", "sqlite")
 	t.Setenv("SQL_DSN", ":memory:")

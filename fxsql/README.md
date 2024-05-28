@@ -114,6 +114,16 @@ modules:
         - "connection:ping"
 ```
 
+For security reasons, you should avoid to hardcode DSN sensible parts (like the password) in your config files, you can use the [env vars placeholders](https://github.com/ankorstore/yokai/tree/main/fxconfig#configuration-env-var-placeholders) instead:
+
+```yaml
+# ./configs/config.yaml
+modules:
+  sql:
+    driver: mysql
+    dsn: "${MYSQL_USER}:${MYSQL_PASSWORD}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DATABASE}?parseTime=True"
+```
+
 Available SQL operations:
 
 - `connection:begin`
