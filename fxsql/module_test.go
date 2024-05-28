@@ -171,7 +171,6 @@ func TestModule(t *testing.T) {
 }
 
 func TestModuleWithMigrationShutdown(t *testing.T) {
-	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("SQL_DRIVER", "sqlite")
 	t.Setenv("SQL_DSN", ":memory:")
