@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/fxsql/v1.1.0...fxsql/v1.2.0) (2024-05-28)
+
+
+### Features
+
+* **fxsql:** Prevent database connection close on tests ([#250](https://github.com/ankorstore/yokai/issues/250)) ([1618d8b](https://github.com/ankorstore/yokai/commit/1618d8b623f6debf77ec07fcad875c08ea0bfe20))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/fxsql/v1.0.0...fxsql/v1.1.0) (2024-05-17)
 
 
