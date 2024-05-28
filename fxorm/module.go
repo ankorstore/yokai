@@ -36,24 +36,6 @@ type FxOrmParam struct {
 	TracerProvider trace.TracerProvider
 }
 
-// RunFxOrmAutoMigrate performs auto migrations for a provided list of models.
-func RunFxOrmAutoMigrate(models ...any) fx.Option {
-	return fx.Invoke(func(logger *log.Logger, db *gorm.DB) error {
-		logger.Info().Msg("starting ORM auto migration")
-
-		err := db.AutoMigrate(models...)
-		if err != nil {
-			logger.Error().Err(err).Msg("error during ORM auto migration")
-
-			return err
-		}
-
-		logger.Info().Msg("ORM auto migration success")
-
-		return nil
-	})
-}
-
 // NewFxOrm returns a [gorm.DB].
 func NewFxOrm(p FxOrmParam) (*gorm.DB, error) {
 	ormConfig := gorm.Config{
@@ -80,18 +62,17 @@ func NewFxOrm(p FxOrmParam) (*gorm.DB, error) {
 
 	driver := orm.FetchDriver(p.Config.GetString("modules.orm.driver"))
 
-	db, err := p.Factory.Create(
+	gormDB, err := p.Factory.Create(
 		orm.WithDsn(p.Config.GetString("modules.orm.dsn")),
 		orm.WithDriver(driver),
 		orm.WithConfig(ormConfig),
 	)
-
 	if err != nil {
 		return nil, err
 	}
 
 	if p.Config.GetBool("modules.orm.trace.enabled") {
-		err = db.Use(plugin.NewOrmTracerPlugin(p.TracerProvider, p.Config.GetBool("modules.orm.trace.values")))
+		err = gormDB.Use(plugin.NewOrmTracerPlugin(p.TracerProvider, p.Config.GetBool("modules.orm.trace.values")))
 		if err != nil {
 			return nil, err
 		}
@@ -99,18 +80,36 @@ func NewFxOrm(p FxOrmParam) (*gorm.DB, error) {
 
 	p.LifeCycle.Append(fx.Hook{
 		OnStop: func(ctx context.Context) error {
-			if driver != orm.Sqlite {
-				ormDb, err := db.DB()
+			if !p.Config.IsTestEnv() {
+				db, err := gormDB.DB()
 				if err != nil {
 					return err
 				}
 
-				return ormDb.Close()
+				return db.Close()
 			}
 
 			return nil
 		},
 	})
 
-	return db, nil
+	return gormDB, nil
+}
+
+// RunFxOrmAutoMigrate performs auto migrations for a provided list of models.
+func RunFxOrmAutoMigrate(models ...any) fx.Option {
+	return fx.Invoke(func(logger *log.Logger, gormDB *gorm.DB) error {
+		logger.Info().Msg("starting ORM auto migration")
+
+		err := gormDB.AutoMigrate(models...)
+		if err != nil {
+			logger.Error().Err(err).Msg("error during ORM auto migration")
+
+			return err
+		}
+
+		logger.Info().Msg("ORM auto migration success")
+
+		return nil
+	})
 }
