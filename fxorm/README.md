@@ -59,12 +59,12 @@ type Model struct {
 
 func main() {
 	fx.New(
-		fxconfig.FxConfigModule,      // load the module dependencies
+		fxconfig.FxConfigModule,          // load the module dependencies
 		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
-		fxorm.FxOrmModule,            // load the module
-		fx.Invoke(func(db *gorm.DB) { // invoke the orm
-			db.Create(&Model{Name: "some name"})
+		fxorm.FxOrmModule,                // load the module
+		fx.Invoke(func(gormDB *gorm.DB) { // invoke the orm
+			gormDB.Create(&Model{Name: "some name"})
 		}),
 	).Run()
 }
@@ -91,7 +91,7 @@ app:
 modules:
   orm:
     driver: mysql                                               # driver to use
-    dsn: "user:pass@tcp(dbhost:3306)/dbname?parseTime=True"     # database DSN to connect to
+    dsn: "user:password@tcp(localhost:3306)/db?parseTime=True"  # database DSN to use
     config:
       dry_run: false                                            # disabled by default
       skip_default_transaction: false                           # disabled by default
@@ -113,7 +113,17 @@ modules:
       values: true   # by adding or not clear SQL queries parameters values in trace spans, disabled by default
 ```
 
-See [GORM Config](https://github.com/go-gorm/gorm/blob/master/gorm.go) for more details about the configuration.
+See [GORM Config](https://github.com/go-gorm/gorm/blob/master/gorm.go) for more details about the `modules.orm.config` configuration keys.
+
+For security reasons, you should avoid to hardcode DSN sensible parts (like the password) in your config files, you can use the [env vars placeholders](https://github.com/ankorstore/yokai/tree/main/fxconfig#configuration-env-var-placeholders) instead:
+
+```yaml
+# ./configs/config.yaml
+modules:
+  orm:
+    driver: mysql
+    dsn: "${MYSQL_USER}:${MYSQL_PASSWORD}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DATABASE}?parseTime=True"
+```
 
 ### Auto migrations
 
@@ -143,8 +153,8 @@ func main() {
 		fxtrace.FxTraceModule,
 		fxorm.FxOrmModule,                   // load the module
 		fxorm.RunFxOrmAutoMigrate(&Model{}), // run auto migration for Model
-		fx.Invoke(func(db *gorm.DB) { // invoke the orm
-			db.Create(&Model{Name: "some name"})
+		fx.Invoke(func(gormDB *gorm.DB) {        // invoke the orm
+			gormDB.Create(&Model{Name: "some name"})
 		}),
 	).Run()
 }
@@ -163,17 +173,11 @@ You can disable it in the configuration:
 
 ```yaml
 # ./configs/config.yaml
-app:
-  name: app
-  env: dev
-  version: 0.1.0
-  debug: false
+
 modules:
   orm:
-    driver: mysql                                               # driver to use
-    dsn: user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=True"   # database DSN to connect to
     config:
-      skip_default_transaction: true                            # disable default transaction
+      skip_default_transaction: true # disable default transaction
 ```
 
 #### Cache Prepared Statement
@@ -182,17 +186,10 @@ To create a prepared statement when executing any SQL (and cache them to speed u
 
 ```yaml
 # ./configs/config.yaml
-app:
-  name: app
-  env: dev
-  version: 0.1.0
-  debug: false
 modules:
   orm:
-    driver: mysql                                               # driver to use
-    dsn: user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=True"   # database DSN to connect to
     config:
-      prepare_stmt: true                                        # enable prepared statements
+      prepare_stmt: true # enable prepared statements
 ```
 
 ### Override

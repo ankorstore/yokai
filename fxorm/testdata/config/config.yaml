@@ -1,12 +1,6 @@
 app:
   name: test
 modules:
-  log:
-    level: debug
-    output: test
-  trace:
-    processor:
-      type: test
   orm:
     driver: ${ORM_DRIVER}
     dsn: ${ORM_DSN}

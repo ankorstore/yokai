@@ -39,6 +39,7 @@ func (c *fakeT) FailNow() {
 }
 
 func TestModuleWithSqliteAndWithLogEnabledWithValuesAndWithTracesEnabledWithValues(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("ORM_DRIVER", "sqlite")
 	t.Setenv("ORM_DSN", ":memory:")
@@ -50,6 +51,7 @@ func TestModuleWithSqliteAndWithLogEnabledWithValuesAndWithTracesEnabledWithValu
 
 	ctx := context.Background()
 
+	var gormDB *gorm.DB
 	var repository *model.TestModelRepository
 	var logBuffer logtest.TestLogBuffer
 	var traceExporter tracetest.TestTraceExporter
@@ -68,7 +70,7 @@ func TestModuleWithSqliteAndWithLogEnabledWithValuesAndWithTracesEnabledWithValu
 				Name: "test",
 			})
 		}),
-		fx.Populate(&repository, &logBuffer, &traceExporter),
+		fx.Populate(&gormDB, &repository, &logBuffer, &traceExporter),
 	).RequireStart().RequireStop()
 
 	// assert on DB insertion
@@ -102,9 +104,17 @@ func TestModuleWithSqliteAndWithLogEnabledWithValuesAndWithTracesEnabledWithValu
 		semconv.DBSystemKey.String("sqlite"),
 		semconv.DBStatementKey.String("INSERT INTO `test_models` (`name`) VALUES (\"test\")"),
 	)
+
+	// close
+	db, err := gormDB.DB()
+	assert.NoError(t, err)
+
+	err = db.Close()
+	assert.NoError(t, err)
 }
 
 func TestModuleWithSqliteAndWithLogEnabledWithoutValuesAndWithTracesEnabledWithoutValues(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("ORM_DRIVER", "sqlite")
 	t.Setenv("ORM_DSN", ":memory:")
@@ -116,6 +126,7 @@ func TestModuleWithSqliteAndWithLogEnabledWithoutValuesAndWithTracesEnabledWitho
 
 	ctx := context.Background()
 
+	var gormDB *gorm.DB
 	var repository *model.TestModelRepository
 	var logBuffer logtest.TestLogBuffer
 	var traceExporter tracetest.TestTraceExporter
@@ -134,7 +145,7 @@ func TestModuleWithSqliteAndWithLogEnabledWithoutValuesAndWithTracesEnabledWitho
 				Name: "test",
 			})
 		}),
-		fx.Populate(&repository, &logBuffer, &traceExporter),
+		fx.Populate(&gormDB, &repository, &logBuffer, &traceExporter),
 	).RequireStart().RequireStop()
 
 	// assert on DB insertion
@@ -168,9 +179,17 @@ func TestModuleWithSqliteAndWithLogEnabledWithoutValuesAndWithTracesEnabledWitho
 		semconv.DBSystemKey.String("sqlite"),
 		semconv.DBStatementKey.String("INSERT INTO `test_models` (`name`) VALUES (\"?\")"),
 	)
+
+	// close
+	db, err := gormDB.DB()
+	assert.NoError(t, err)
+
+	err = db.Close()
+	assert.NoError(t, err)
 }
 
 func TestModuleWithSqliteAndWithLogDisabledAndWithTracesDisabled(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("ORM_DRIVER", "sqlite")
 	t.Setenv("ORM_DSN", ":memory:")
@@ -179,6 +198,7 @@ func TestModuleWithSqliteAndWithLogDisabledAndWithTracesDisabled(t *testing.T) {
 
 	ctx := context.Background()
 
+	var gormDB *gorm.DB
 	var repository *model.TestModelRepository
 	var logBuffer logtest.TestLogBuffer
 	var traceExporter tracetest.TestTraceExporter
@@ -197,7 +217,7 @@ func TestModuleWithSqliteAndWithLogDisabledAndWithTracesDisabled(t *testing.T) {
 				Name: "test",
 			})
 		}),
-		fx.Populate(&repository, &logBuffer, &traceExporter),
+		fx.Populate(&gormDB, &repository, &logBuffer, &traceExporter),
 	).RequireStart().RequireStop()
 
 	// assert on DB insertion
@@ -226,9 +246,17 @@ func TestModuleWithSqliteAndWithLogDisabledAndWithTracesDisabled(t *testing.T) {
 
 	// assert on SQL traces
 	assert.False(t, traceExporter.HasSpan("orm.Create"))
+
+	// close
+	db, err := gormDB.DB()
+	assert.NoError(t, err)
+
+	err = db.Close()
+	assert.NoError(t, err)
 }
 
 func TestModuleWithAutoMigrationError(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("ORM_DRIVER", "sqlite")
 	t.Setenv("ORM_DSN", ":memory:")
@@ -253,7 +281,7 @@ func TestModuleWithAutoMigrationError(t *testing.T) {
 func TestModuleDecoration(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 
-	var db *gorm.DB
+	var gormDB *gorm.DB
 
 	fxtest.New(
 		t,
@@ -262,8 +290,15 @@ func TestModuleDecoration(t *testing.T) {
 		fxtrace.FxTraceModule,
 		fxorm.FxOrmModule,
 		fx.Decorate(factory.NewTestOrmFactory),
-		fx.Populate(&db),
+		fx.Populate(&gormDB),
 	).RequireStart().RequireStop()
 
-	assert.True(t, db.DryRun)
+	assert.True(t, gormDB.DryRun)
+
+	// close
+	db, err := gormDB.DB()
+	assert.NoError(t, err)
+
+	err = db.Close()
+	assert.NoError(t, err)
 }
