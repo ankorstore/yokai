@@ -1,5 +1,4 @@
 {
-  "last-release-sha": "318257f266eb68cf54911797b0dfefcab1670ae5",
   "separate-pull-requests": true,
   "packages": {
     "config": {
