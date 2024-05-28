@@ -194,6 +194,9 @@ func TestModuleWithMigrationShutdown(t *testing.T) {
 
 	err := app.Start(ctx)
 	assert.NoError(t, err)
+
+	err = app.Stop(ctx)
+	assert.NoError(t, err)
 }
 
 func TestModuleErrorWithInvalidDriver(t *testing.T) {
