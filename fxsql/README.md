@@ -341,4 +341,6 @@ modules:
     dsn: ":memory:"
 ```
 
+In `test` mode, the module won't automatically close the database connection on shutdown, to allow database manipulation after the `RunTest()` execution.
+
 You can find tests examples in this module own [tests](module_test.go).
