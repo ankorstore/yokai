@@ -57,7 +57,7 @@ You can also provide to the ORM the database`dsn`, some `config`, and configure 
 modules:
   orm:
     driver: mysql                                               # driver to use
-    dsn: "user:pass@tcp(dbhost:3306)/dbname?parseTime=True"     # database DSN to connect to
+    dsn: "user:password@tcp(localhost:3306)/db?parseTime=True"  # database DSN to use
     config:
       dry_run: false                                            # disabled by default
       skip_default_transaction: false                           # disabled by default
@@ -79,7 +79,17 @@ modules:
       values: true   # by adding or not clear SQL queries parameters values in trace spans, disabled by default
 ```
 
-See [GORM Config](https://github.com/go-gorm/gorm/blob/master/gorm.go) for more details about the ORM configuration.
+See [GORM Config](https://github.com/go-gorm/gorm/blob/master/gorm.go) for more details about the `modules.orm.config` configuration keys.
+
+For security reasons, you should avoid to hardcode DSN sensible parts (like the password) in your config files, you can use the [env vars placeholders](https://ankorstore.github.io/yokai/modules/fxconfig/#env-var-placeholders) instead:
+
+```yaml
+# ./configs/config.yaml
+modules:
+  orm:
+    driver: mysql
+    dsn: "${MYSQL_USER}:${MYSQL_PASSWORD}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DATABASE}?parseTime=True"
+```
 
 ## Usage
 
@@ -276,10 +286,8 @@ You can disable it in the configuration:
 ```yaml title="configs/config.yaml"
 modules:
   orm:
-    driver: mysql                                               # driver to use
-    dsn: user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=True"   # database DSN to connect to
     config:
-      skip_default_transaction: true                            # disable default transaction
+      skip_default_transaction: true # disable default transaction
 ```
 
 ### Cache Prepared Statement
@@ -289,10 +297,8 @@ To create a prepared statement when executing any SQL (and cache them to speed u
 ```yaml title="configs/config.yaml"
 modules:
   orm:
-    driver: mysql                                               # driver to use
-    dsn: user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=True"   # database DSN to connect to
     config:
-      prepare_stmt: true                                        # enable prepared statements
+      prepare_stmt: true # enable prepared statements
 ```
 
 ## Health Check
@@ -405,16 +411,19 @@ package repository_test
 
 import (
 	"testing"
-	
+
 	"github.com/foo/bar/internal/model"
 	"github.com/foo/bar/internal/repository"
+	"github.com/stretchr/testify/assert"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 )
 
 func TestExampleRepository(t *testing.T) {
+	var gormDB *gorm.DB
 	var exampleRepository repository.ExampleRepository
 
-	internal.RunTest(t, fx.Populate(&exampleRepository))
+	internal.RunTest(t, fx.Populate(&gormDB, &exampleRepository))
 
 	// prepare your test data in the sqlite database
 	exampleRepository.Create(
@@ -423,7 +432,16 @@ func TestExampleRepository(t *testing.T) {
 			Name: "test",
 		},
 	)
-	
-	// ...
+
+	// some tests ...
+
+	// close DB
+	db, err := gormDB.DB()
+	assert.NoError(t, err)
+
+	err = db.Close()
+	assert.NoError(t, err)
 }
 ```
+
+In `test` mode, the module won't automatically close the database connection on shutdown, to allow database manipulation after the `RunTest()` execution.
