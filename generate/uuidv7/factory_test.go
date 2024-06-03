@@ -22,22 +22,22 @@ func TestCreate(t *testing.T) {
 
 	generator := uuidv7.NewDefaultUuidV7GeneratorFactory().Create()
 
-	value1, err := generator.Generate()
+	uuid1, err := generator.Generate()
 	assert.NoError(t, err)
 
-	value2, err := generator.Generate()
+	uuid2, err := generator.Generate()
 	assert.NoError(t, err)
 
-	assert.NotEqual(t, value1, value2)
+	assert.NotEqual(t, uuid1, uuid2)
 
-	parsedValue1, err := googleuuid.Parse(value1)
+	parsedValue1, err := googleuuid.Parse(uuid1.String())
 	assert.NoError(t, err)
 
-	parsedValue2, err := googleuuid.Parse(value2)
+	parsedValue2, err := googleuuid.Parse(uuid2.String())
 	assert.NoError(t, err)
 
 	assert.NotEqual(t, parsedValue1.String(), parsedValue2.String())
 
-	assert.Equal(t, value1, parsedValue1.String())
-	assert.Equal(t, value2, parsedValue2.String())
+	assert.Equal(t, uuid1.String(), parsedValue1.String())
+	assert.Equal(t, uuid2.String(), parsedValue2.String())
 }

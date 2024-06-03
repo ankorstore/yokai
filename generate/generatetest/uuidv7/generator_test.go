@@ -8,10 +8,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	uuid1 = "018fdd7d-1576-7a21-900e-1399637bd1a1"
+	uuid2 = "018fdd7d-1576-76ff-944b-39bd474b0ea9"
+	uuid3 = "018fdd7d-1576-7b53-a364-7b96dcc158c9"
+)
+
 func TestNewTestUuidV7Generator(t *testing.T) {
 	t.Parallel()
 
-	generator := uuidv7test.NewTestUuidV7Generator("random")
+	generator := uuidv7test.NewTestUuidV7Generator(uuid1)
 
 	assert.IsType(t, &uuidv7test.TestUuidV7Generator{}, generator)
 	assert.Implements(t, (*uuidv7.UuidV7Generator)(nil), generator)
@@ -20,7 +26,7 @@ func TestNewTestUuidV7Generator(t *testing.T) {
 func TestGenerate(t *testing.T) {
 	t.Parallel()
 
-	generator := uuidv7test.NewTestUuidV7Generator("test")
+	generator := uuidv7test.NewTestUuidV7Generator(uuid2)
 
 	value1, err := generator.Generate()
 	assert.NoError(t, err)
@@ -28,10 +34,11 @@ func TestGenerate(t *testing.T) {
 	value2, err := generator.Generate()
 	assert.NoError(t, err)
 
-	assert.Equal(t, "test", value1)
-	assert.Equal(t, "test", value2)
+	assert.Equal(t, uuid2, value1.String())
+	assert.Equal(t, uuid2, value2.String())
 
-	generator.SetValue("other test")
+	err = generator.SetValue(uuid3)
+	assert.NoError(t, err)
 
 	value1, err = generator.Generate()
 	assert.NoError(t, err)
@@ -39,6 +46,6 @@ func TestGenerate(t *testing.T) {
 	value2, err = generator.Generate()
 	assert.NoError(t, err)
 
-	assert.Equal(t, "other test", value1)
-	assert.Equal(t, "other test", value2)
+	assert.Equal(t, uuid3, value1.String())
+	assert.Equal(t, uuid3, value2.String())
 }

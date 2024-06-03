@@ -1,5 +1,7 @@
 package uuid
 
+import googleuuid "github.com/google/uuid"
+
 // TestUuidV7Generator is a [UuidV7Generator] implementation allowing deterministic generations (for testing).
 type TestUuidV7Generator struct {
 	value string
@@ -15,13 +17,18 @@ func NewTestUuidV7Generator(value string) *TestUuidV7Generator {
 }
 
 // SetValue sets the value to use for deterministic generations.
-func (g *TestUuidV7Generator) SetValue(value string) *TestUuidV7Generator {
+func (g *TestUuidV7Generator) SetValue(value string) error {
+	err := googleuuid.Validate(value)
+	if err != nil {
+		return err
+	}
+
 	g.value = value
 
-	return g
+	return nil
 }
 
 // Generate returns the configured deterministic value.
-func (g *TestUuidV7Generator) Generate() (string, error) {
-	return g.value, nil
+func (g *TestUuidV7Generator) Generate() (googleuuid.UUID, error) {
+	return googleuuid.Parse(g.value)
 }
