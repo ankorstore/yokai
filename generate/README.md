@@ -28,7 +28,7 @@ go get github.com/ankorstore/yokai/generate
 
 This module provides an [UuidGenerator](uuid/generator.go) interface, allowing to generate UUIDs.
 
-The `DefaultUuidGenerator` is based on [Google UUID](https://github.com/google/uuid).
+The `DefaultUuidGenerator` implementing it is based on [Google UUID](https://github.com/google/uuid).
 
 ```go
 package main
@@ -76,7 +76,7 @@ func main() {
 
 This module provides an [UuidV7Generator](uuidv7/generator.go) interface, allowing to generate UUIDs V7.
 
-The `DefaultUuidV7Generator` is based on [Google UUID](https://github.com/google/uuid).
+The `DefaultUuidV7Generator` implementing it  is based on [Google UUID](https://github.com/google/uuid).
 
 ```go
 package main
@@ -96,7 +96,8 @@ func main() {
 
 	// test UUID generator (with deterministic value for testing)
 	testGenerator := uuidv7test.NewTestUuidV7Generator("test")
-	fmt.Printf("uuid: %s", testGenerator.Generate()) // uuid: test
+    uuid, _ = testGenerator.Generate()
+	fmt.Printf("uuid: %s", uuid) // uuid: test
 }
 ```
 
