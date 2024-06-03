@@ -14,10 +14,8 @@ func NewTestStaticUuidV7GeneratorFactory() uuidv7.UuidV7GeneratorFactory {
 }
 
 func (f *TestStaticUuidV7GeneratorFactory) Create() uuidv7.UuidV7Generator {
-	generator, err := uuidtest.NewTestUuidV7Generator(TestUUIDV7)
-	if err != nil {
-		return nil
-	}
+	//nolint:errcheck
+	generator, _ := uuidtest.NewTestUuidV7Generator(TestUUIDV7)
 
 	return generator
 }
