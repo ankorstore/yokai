@@ -9,7 +9,7 @@ type UuidGeneratorFactory interface {
 type DefaultUuidGeneratorFactory struct{}
 
 // NewDefaultUuidGeneratorFactory returns a [DefaultUuidGeneratorFactory], implementing [UuidGeneratorFactory].
-func NewDefaultUuidGeneratorFactory() UuidGeneratorFactory {
+func NewDefaultUuidGeneratorFactory() *DefaultUuidGeneratorFactory {
 	return &DefaultUuidGeneratorFactory{}
 }
 

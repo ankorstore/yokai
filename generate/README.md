@@ -9,11 +9,11 @@
 > Generation module based on [Google UUID](https://github.com/google/uuid).
 
 <!-- TOC -->
-
-* [Installation](#installation)
-* [Documentation](#documentation)
-	* [UUID](#uuid)
-
+* [Generate Module](#generate-module)
+  * [Installation](#installation)
+  * [Documentation](#documentation)
+    * [UUID](#uuid)
+    * [UUID V7](#uuid-v7)
 <!-- TOC -->
 
 ## Installation
@@ -69,5 +69,55 @@ func main() {
 	// default UUID generator factory
 	generator := uuid.NewDefaultUuidGeneratorFactory().Create()
 	fmt.Printf("uuid: %s", generator.Generate()) // uuid: dcb5d8b3-4517-4957-a42c-604d11758561
+}
+```
+
+### UUID V7
+
+This module provides an [UuidV7Generator](uuidv7/generator.go) interface, allowing to generate UUIDs V7.
+
+The `DefaultUuidV7Generator` is based on [Google UUID](https://github.com/google/uuid).
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/ankorstore/yokai/generate/uuidv7"
+	uuidv7test "github.com/ankorstore/yokai/generate/generatetest/uuidv7"
+)
+
+func main() {
+	// default UUID V7 generator
+	generator := uuidv7.NewDefaultUuidV7Generator()
+	uuid, _ := generator.Generate()
+	fmt.Printf("uuid: %s", uuid) // uuid: 018fdd68-1b41-7eb0-afad-57f45297c7c1
+
+	// test UUID generator (with deterministic value for testing)
+	testGenerator := uuidv7test.NewTestUuidV7Generator("test")
+	fmt.Printf("uuid: %s", testGenerator.Generate()) // uuid: test
+}
+```
+
+The module also provides a [UuidV7GeneratorFactory](uuidv7/factory.go) interface, to create
+the [UuidV7Generator](uuidv7/generator.go) instances.
+
+The `DefaultUuidV7GeneratorFactory` generates `DefaultUuidV7Generator` instances.
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/ankorstore/yokai/generate/uuidv7"
+)
+
+func main() {
+	// default UUID generator factory
+	generator := uuidv7.NewDefaultUuidV7GeneratorFactory().Create()
+	uuid, _ := generator.Generate()
+	fmt.Printf("uuid: %s", uuid) // uuid: 018fdd68-1b41-7eb0-afad-57f45297c7c1
 }
 ```
