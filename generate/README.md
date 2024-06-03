@@ -9,11 +9,10 @@
 > Generation module based on [Google UUID](https://github.com/google/uuid).
 
 <!-- TOC -->
-* [Generate Module](#generate-module)
-  * [Installation](#installation)
-  * [Documentation](#documentation)
-    * [UUID](#uuid)
-    * [UUID V7](#uuid-v7)
+* [Installation](#installation)
+* [Documentation](#documentation)
+  * [UUID V4](#uuid-v4)
+  * [UUID V7](#uuid-v7)
 <!-- TOC -->
 
 ## Installation
@@ -24,9 +23,9 @@ go get github.com/ankorstore/yokai/generate
 
 ## Documentation
 
-### UUID
+### UUID V4
 
-This module provides an [UuidGenerator](uuid/generator.go) interface, allowing to generate UUIDs.
+This module provides an [UuidGenerator](uuid/generator.go) interface, allowing to generate UUIDs V4.
 
 The `DefaultUuidGenerator` implementing it is based on [Google UUID](https://github.com/google/uuid).
 
