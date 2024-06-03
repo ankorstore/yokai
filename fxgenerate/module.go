@@ -39,7 +39,7 @@ func NewFxUuidGenerator(p FxUuidGeneratorParam) uuid.UuidGenerator {
 	return p.Factory.Create()
 }
 
-// FxUuidV7GeneratorParam allows injection of the required dependencies in [NewFxUuidGenerator].
+// FxUuidV7GeneratorParam allows injection of the required dependencies in [NewFxUuidV7Generator].
 type FxUuidV7GeneratorParam struct {
 	fx.In
 	Factory uuidv7.UuidV7GeneratorFactory
