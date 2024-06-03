@@ -94,8 +94,8 @@ func main() {
 	uuid, _ := generator.Generate()
 	fmt.Printf("uuid: %s", uuid.String()) // uuid: 018fdd68-1b41-7eb0-afad-57f45297c7c1
 
-	// test UUID generator (with deterministic value for testing)
-	testGenerator := uuidv7test.NewTestUuidV7Generator("018fdd7d-1576-7a21-900e-1399637bd1a1")
+	// test UUID generator (with deterministic value for testing, requires valid UUID v7)
+	testGenerator, _ := uuidv7test.NewTestUuidV7Generator("018fdd7d-1576-7a21-900e-1399637bd1a1")
     uuid, _ = testGenerator.Generate()
 	fmt.Printf("uuid: %s", uuid.String()) // uuid: 018fdd7d-1576-7a21-900e-1399637bd1a1
 }

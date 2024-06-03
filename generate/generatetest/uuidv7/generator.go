@@ -10,10 +10,15 @@ type TestUuidV7Generator struct {
 // NewTestUuidV7Generator returns a [TestUuidGenerator], implementing [UuidGenerator].
 //
 // It accepts a value that will be used for deterministic generation results.
-func NewTestUuidV7Generator(value string) *TestUuidV7Generator {
+func NewTestUuidV7Generator(value string) (*TestUuidV7Generator, error) {
+	err := googleuuid.Validate(value)
+	if err != nil {
+		return nil, err
+	}
+
 	return &TestUuidV7Generator{
 		value: value,
-	}
+	}, nil
 }
 
 // SetValue sets the value to use for deterministic generations.

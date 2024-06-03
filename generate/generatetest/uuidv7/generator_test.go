@@ -17,16 +17,18 @@ const (
 func TestNewTestUuidV7Generator(t *testing.T) {
 	t.Parallel()
 
-	generator := uuidv7test.NewTestUuidV7Generator(uuid1)
+	generator, err := uuidv7test.NewTestUuidV7Generator(uuid1)
+	assert.NoError(t, err)
 
 	assert.IsType(t, &uuidv7test.TestUuidV7Generator{}, generator)
 	assert.Implements(t, (*uuidv7.UuidV7Generator)(nil), generator)
 }
 
-func TestGenerate(t *testing.T) {
+func TestGenerateSuccess(t *testing.T) {
 	t.Parallel()
 
-	generator := uuidv7test.NewTestUuidV7Generator(uuid2)
+	generator, err := uuidv7test.NewTestUuidV7Generator(uuid2)
+	assert.NoError(t, err)
 
 	value1, err := generator.Generate()
 	assert.NoError(t, err)
@@ -48,4 +50,19 @@ func TestGenerate(t *testing.T) {
 
 	assert.Equal(t, uuid3, value1.String())
 	assert.Equal(t, uuid3, value2.String())
+}
+
+func TestGenerateFailure(t *testing.T) {
+	t.Parallel()
+
+	_, err := uuidv7test.NewTestUuidV7Generator("invalid")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid UUID length: 7")
+
+	generator, err := uuidv7test.NewTestUuidV7Generator(uuid1)
+	assert.NoError(t, err)
+
+	err = generator.SetValue("invalid")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid UUID length: 7")
 }
