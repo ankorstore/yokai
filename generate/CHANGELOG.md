@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/generate/v1.1.0...generate/v1.2.0) (2024-06-03)
+
+
+### Features
+
+* **generate:** Added UUID V7 generator ([#260](https://github.com/ankorstore/yokai/issues/260)) ([a3a7ebe](https://github.com/ankorstore/yokai/commit/a3a7ebe01476c7b8294be3422cd71a99ceb34cd5))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/generate/v1.0.0...generate/v1.1.0) (2024-03-13)
 
 
