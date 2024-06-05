@@ -171,3 +171,15 @@ func RunFxSQLSeeds(names ...string) fx.Option {
 		},
 	)
 }
+
+// RunFxSQLSeedsAndShutdown runs database seeds with a context and shutodwn.
+func RunFxSQLSeedsAndShutdown(names ...string) fx.Option {
+	return fx.Invoke(
+		func(ctx context.Context, seeder *Seeder, shutdown fx.Shutdowner) error {
+			//nolint:errcheck
+			defer shutdown.Shutdown()
+
+			return seeder.Run(ctx, names...)
+		},
+	)
+}

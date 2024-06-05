@@ -301,3 +301,32 @@ func TestModuleErrorWithInvalidSeed(t *testing.T) {
 	err = db.Close()
 	assert.NoError(t, err)
 }
+
+func TestModuleWithSeedsShutdown(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("SQL_DRIVER", "sqlite")
+	t.Setenv("SQL_DSN", ":memory:")
+
+	ctx := context.Background()
+
+	app := fx.New(
+		fx.NopLogger,
+		// provide context
+		fx.Provide(func() context.Context {
+			return ctx
+		}),
+		// load module and dependencies
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxsql.FxSQLModule,
+		// apply valid seed
+		fxsql.RunFxSQLSeedsAndShutdown(),
+	)
+
+	err := app.Start(ctx)
+	assert.NoError(t, err)
+
+	err = app.Stop(ctx)
+	assert.NoError(t, err)
+}
