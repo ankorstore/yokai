@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/fxsql/v1.2.0...fxsql/v1.3.0) (2024-06-05)
+
+
+### Features
+
+* **fxsql:** Added RunFxSQLSeedsAndShutdown ([#264](https://github.com/ankorstore/yokai/issues/264)) ([49ec0fd](https://github.com/ankorstore/yokai/commit/49ec0fd12dfbb01eb67d9e7343b7789967c13d40))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/fxsql/v1.1.0...fxsql/v1.2.0) (2024-05-28)
 
 
