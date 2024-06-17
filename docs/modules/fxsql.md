@@ -173,7 +173,7 @@ And create them following [Goose SQL migrations](https://github.com/pressly/goos
 
 ```sql title="db/migrations/00001_create_foo_table.sql"
 -- +goose Up
-CREATE TABLE foo (
+CREATE TABLE IF NOT EXISTS foo (
 	id  INTEGER NOT NULL PRIMARY KEY,
 	bar VARCHAR(255)
 );
