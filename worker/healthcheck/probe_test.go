@@ -14,10 +14,23 @@ import (
 func TestWorkerProbe(t *testing.T) {
 	t.Parallel()
 
-	t.Run("empty pool", func(t *testing.T) {
+	t.Run("custom name", func(t *testing.T) {
 		t.Parallel()
 
-		pool := worker.NewWorkerPool()
+		probe := healthcheck.NewWorkerProbe(&worker.WorkerPool{})
+
+		probe.SetName("foo")
+
+		assert.Equal(t, "foo", probe.Name())
+	})
+
+	t.Run("check empty pool", func(t *testing.T) {
+		t.Parallel()
+
+		pool, err := worker.NewDefaultWorkerPoolFactory().Create(
+			worker.WithWorker(workers.NewClassicWorker()),
+		)
+		assert.NoError(t, err)
 
 		probe := healthcheck.NewWorkerProbe(pool)
 
@@ -27,7 +40,7 @@ func TestWorkerProbe(t *testing.T) {
 		assert.Empty(t, res.Message)
 	})
 
-	t.Run("success pool", func(t *testing.T) {
+	t.Run("check success pool", func(t *testing.T) {
 		t.Parallel()
 
 		pool, err := worker.NewDefaultWorkerPoolFactory().Create(
@@ -48,7 +61,7 @@ func TestWorkerProbe(t *testing.T) {
 		assert.Equal(t, "ClassicWorker: success", res.Message)
 	})
 
-	t.Run("error pool", func(t *testing.T) {
+	t.Run("check error pool", func(t *testing.T) {
 		t.Parallel()
 
 		pool, err := worker.NewDefaultWorkerPoolFactory().Create(
