@@ -164,6 +164,32 @@ You can get, in real time, the status of your workers executions on the [core](f
 ![](../../assets/images/dash-workers-light.png#only-light)
 ![](../../assets/images/dash-workers-dark.png#only-dark)
 
+## Health Check
+
+This module provides a ready to use [WorkerProbe](https://github.com/ankorstore/yokai/blob/main/worker/healthcheck/probe.go), to be used by the [health check](fxhealthcheck.md) module.
+
+It will ensure that the worker pool executions are all in healthy status.
+
+You just need to register it:
+
+```go title="internal/register.go"
+package internal
+
+import (
+	"github.com/ankorstore/yokai/fxhealthcheck"
+	"github.com/ankorstore/yokai/worker/healthcheck"
+	"go.uber.org/fx"
+)
+
+func Register() fx.Option {
+	return fx.Options(
+		// register the WorkerProbe probe for startup, liveness and readiness checks
+		fxhealthcheck.AsCheckerProbe(healthcheck.NewWorkerProbe),
+		// ...
+	)
+}
+```
+
 ## Logging
 
 To get logs correlation in your workers, you need to retrieve the logger from the context with `log.CtxLogger()`:
