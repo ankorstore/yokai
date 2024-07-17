@@ -16,6 +16,7 @@
   * [Logging](#logging)
   * [Tracing](#tracing)
   * [Metrics](#metrics)
+  * [Healthcheck](#healthcheck)
 <!-- TOC -->
 
 ## Installation
@@ -135,10 +136,10 @@ import (
 func main() {
 	// create the pool
 	pool, _ := worker.NewDefaultWorkerPoolFactory().Create(
-		worker.WithGlobalDeferredStartThreshold(1),                                              // will defer all workers start of 1 second
-		worker.WithGlobalMaxExecutionsAttempts(2),                                               // will run 2 times max failing workers
-		worker.WithWorker(workers.NewClassicWorker(), worker.WithDeferredStartThreshold(3)),     // registers the ClassicWorker, with a deferred start of 3 second
-		worker.WithWorker(workers.NewCancellableWorker(), worker.WithMaxExecutionsAttempts(4)),  // registers the CancellableWorker, with 4 runs max
+		worker.WithGlobalDeferredStartThreshold(1),                                             // will defer all workers start of 1 second
+		worker.WithGlobalMaxExecutionsAttempts(2),                                              // will run 2 times max failing workers
+		worker.WithWorker(workers.NewClassicWorker(), worker.WithDeferredStartThreshold(3)),    // registers the ClassicWorker, with a deferred start of 3 second
+		worker.WithWorker(workers.NewCancellableWorker(), worker.WithMaxExecutionsAttempts(4)), // registers the CancellableWorker, with 4 runs max
 	)
 
 	// start the pool
@@ -298,3 +299,38 @@ func main() {
 	pool.Start(context.Background())
 }
 ```
+
+### Healthcheck
+
+This module provides an [WorkerProbe](healthcheck/probe.go), compatible with
+the [healthcheck module](https://github.com/ankorstore/yokai/tree/main/healthcheck):
+
+```go
+package main
+
+import (
+	"context"
+
+	yokaihc "github.com/ankorstore/yokai/healthcheck"
+	"github.com/ankorstore/yokai/worker"
+	"github.com/ankorstore/yokai/worker/healthcheck"
+)
+
+func main() {
+	// create the pool
+	pool, _ := worker.NewDefaultWorkerPoolFactory().Create()
+
+	// create the checker with the worker probe
+	checker, _ := yokaihc.NewDefaultCheckerFactory().Create(
+		yokaihc.WithProbe(healthcheck.NewWorkerProbe(pool)),
+	)
+
+	// start the pool
+	pool.Start(context.Background())
+
+	// run the checker
+	res, _ := checker.Check(context.Background(), yokaihc.Readiness)
+}
+```
+
+This probe is successful if all the executions statuses of the [WorkerPool](pool.go) are healthy.
