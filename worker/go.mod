@@ -3,10 +3,11 @@ module github.com/ankorstore/yokai/worker
 go 1.20
 
 require (
-	github.com/ankorstore/yokai/generate v1.1.0
+	github.com/ankorstore/yokai/generate v1.2.0
+	github.com/ankorstore/yokai/healthcheck v1.1.0
 	github.com/ankorstore/yokai/log v1.2.0
-	github.com/ankorstore/yokai/trace v1.2.0
-	github.com/prometheus/client_golang v1.19.0
+	github.com/ankorstore/yokai/trace v1.3.0
+	github.com/prometheus/client_golang v1.19.1
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/otel v1.24.0
 	go.opentelemetry.io/otel/sdk v1.24.0
