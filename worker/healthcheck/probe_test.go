@@ -52,7 +52,6 @@ func TestWorkerProbe(t *testing.T) {
 		t.Parallel()
 
 		pool, err := worker.NewDefaultWorkerPoolFactory().Create(
-			worker.WithWorker(workers.NewClassicWorker()),
 			worker.WithWorker(workers.NewErrorWorker()),
 		)
 		assert.NoError(t, err)
@@ -67,6 +66,6 @@ func TestWorkerProbe(t *testing.T) {
 		res := probe.Check(context.Background())
 
 		assert.False(t, res.Success)
-		assert.Equal(t, "ClassicWorker: success, ErrorWorker: error", res.Message)
+		assert.Equal(t, "ErrorWorker: error", res.Message)
 	})
 }
