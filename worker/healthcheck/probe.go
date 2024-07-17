@@ -40,7 +40,7 @@ func (p *WorkerProbe) SetName(name string) *WorkerProbe {
 	return p
 }
 
-// Check returns a successful [healthcheck.CheckerProbeResult] if the worker pool executions are all in running status.
+// Check returns a successful [healthcheck.CheckerProbeResult] if the worker pool executions are all in healthy status.
 func (p *WorkerProbe) Check(ctx context.Context) *healthcheck.CheckerProbeResult {
 	success := true
 	messages := []string{}

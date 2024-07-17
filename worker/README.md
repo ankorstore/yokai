@@ -333,4 +333,4 @@ func main() {
 }
 ```
 
-This probe is successful if all the executions status of the [WorkerPool](pool.go) are not in `error`.
+This probe is successful if all the executions statuses of the [WorkerPool](pool.go) are healthy.
