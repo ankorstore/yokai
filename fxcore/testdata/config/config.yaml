@@ -1,5 +1,6 @@
 app:
   name: core-app
+  description: core app description
   env: dev
   version: 0.1.0
   debug: false

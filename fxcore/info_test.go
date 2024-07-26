@@ -33,10 +33,11 @@ func TestNewFxCoreModuleInfo(t *testing.T) {
 		t,
 		map[string]interface{}{
 			"app": map[string]interface{}{
-				"name":    "core-app",
-				"env":     "test",
-				"debug":   true,
-				"version": "0.1.0",
+				"name":        "core-app",
+				"description": "core app description",
+				"env":         "test",
+				"debug":       true,
+				"version":     "0.1.0",
 			},
 			"log": map[string]interface{}{
 				"level":  "debug",

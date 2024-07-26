@@ -47,6 +47,7 @@ type FxModuleInfo interface {
 // FxCoreModuleInfo is a module info collector for the core.
 type FxCoreModuleInfo struct {
 	AppName        string
+	AppDescription string
 	AppEnv         string
 	AppDebug       bool
 	AppVersion     string
@@ -90,6 +91,7 @@ func NewFxCoreModuleInfo(p FxCoreModuleInfoParam) *FxCoreModuleInfo {
 
 	return &FxCoreModuleInfo{
 		AppName:        p.Config.AppName(),
+		AppDescription: p.Config.AppDescription(),
 		AppEnv:         p.Config.AppEnv(),
 		AppDebug:       p.Config.AppDebug(),
 		AppVersion:     p.Config.AppVersion(),
@@ -110,10 +112,11 @@ func (i *FxCoreModuleInfo) Name() string {
 func (i *FxCoreModuleInfo) Data() map[string]interface{} {
 	return map[string]interface{}{
 		"app": map[string]interface{}{
-			"name":    i.AppName,
-			"env":     i.AppEnv,
-			"debug":   i.AppDebug,
-			"version": i.AppVersion,
+			"name":        i.AppName,
+			"description": i.AppDescription,
+			"env":         i.AppEnv,
+			"debug":       i.AppDebug,
+			"version":     i.AppVersion,
 		},
 		"log": map[string]interface{}{
 			"level":  i.LogLevel,
