@@ -18,6 +18,9 @@
                 <div class="container-fluid">
                     <a class="navbar-brand icon-link icon-link-hover fw-bold" href="/" style="--bs-icon-link-transform: scale(1.2);">
                         <i class="bi bi-terminal"></i>&nbsp;{{ .overviewInfo.AppName }}
+                        {{ if and .overviewAppDescriptionExpose .overviewInfo.AppDescription }}
+                            &nbsp;/&nbsp;<span class="d-inline-block text-truncate text-secondary" style="max-width: 350px;">{{ .overviewInfo.AppDescription }}</span>
+                        {{ end }}
                     </a>
                     <span>
                         <a class="btn btn-sm btn-outline-secondary" role="button" href="https://ankorstore.github.io/yokai/" target="_blank">
@@ -154,19 +157,25 @@
                                         </p>
                                         <table class="table table-borderless table-sm">
                                             <tbody>
-                                                {{ if or .overviewAppEnvExpose }}
+                                                {{ if and .overviewAppDescriptionExpose .overviewInfo.AppDescription }}
+                                                <tr>
+                                                    <td class="w-25">Description</td>
+                                                    <td><code>{{ .overviewInfo.AppDescription }}</code></td>
+                                                </tr>
+                                                {{ end }}
+                                                {{ if .overviewAppEnvExpose }}
                                                     <tr>
                                                         <td class="w-25">Env</td>
                                                         <td><code>{{ .overviewInfo.AppEnv }}</code></td>
                                                     </tr>
                                                 {{ end }}
-                                                {{ if or .overviewAppDebugExpose }}
+                                                {{ if .overviewAppDebugExpose }}
                                                     <tr>
                                                         <td class="w-25">Debug</td>
                                                         <td><code>{{ .overviewInfo.AppDebug }}</code></td>
                                                     </tr>
                                                 {{ end }}
-                                                {{ if or .overviewAppVersionExpose }}
+                                                {{ if .overviewAppVersionExpose }}
                                                     <tr>
                                                         <td class="w-25">Version</td>
                                                         <td><code>{{ .overviewInfo.AppVersion }}</code></td>

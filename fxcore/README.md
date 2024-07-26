@@ -70,6 +70,7 @@ Configuration reference:
 # ./configs/config.yaml
 app:
   name: app
+  description: app description
   env: dev
   version: 0.1.0
   debug: true

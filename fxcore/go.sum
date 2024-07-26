@@ -1,9 +1,9 @@
-github.com/ankorstore/yokai/config v1.3.0 h1:si2h4mESPN5pj14CBMT/VGFgFn0voKEVylr8hQeIgEk=
-github.com/ankorstore/yokai/config v1.3.0/go.mod h1:OV2QiL2dyNLCxhcGO+GcSa8Wm20+00H03VBHm9SPVuE=
-github.com/ankorstore/yokai/fxconfig v1.1.0 h1:QgRDrZPpSy4wlnzNN37sWniRRAszerBb6WpvMa3hTB0=
-github.com/ankorstore/yokai/fxconfig v1.1.0/go.mod h1:dU8W3eJtioegWEB7X5C+B40Ud+M+vRa5d2UdbAJr9Os=
-github.com/ankorstore/yokai/fxgenerate v1.1.0 h1:kNEAsZJt7DgwVpG9+/M7p8610BdKHWkX/MYdBLuSIGU=
-github.com/ankorstore/yokai/fxgenerate v1.1.0/go.mod h1:trC9VZEaVjTXuO9GWbqVPGKFkKULDZpLoxdTyTmmpYU=
+github.com/ankorstore/yokai/config v1.4.0 h1:O3ZuTGud388Gq55bQwrfs/vdjYSZZvj0VUL6yZp4rcg=
+github.com/ankorstore/yokai/config v1.4.0/go.mod h1:OV2QiL2dyNLCxhcGO+GcSa8Wm20+00H03VBHm9SPVuE=
+github.com/ankorstore/yokai/fxconfig v1.2.0 h1:ezuyPD9xfw4b7fe4IgeF0cZQKs3f3n7QOS0hdLBjsc0=
+github.com/ankorstore/yokai/fxconfig v1.2.0/go.mod h1:6sUUNd11awsM5BqiTW4BTCk+JdOIDrYETwWGpxoM+kg=
+github.com/ankorstore/yokai/fxgenerate v1.2.0 h1:Fnw0DauFbuFwpKNVliKlZbvLC1Xg9Af0lxQCRkbvfLo=
+github.com/ankorstore/yokai/fxgenerate v1.2.0/go.mod h1:cTn+S3Wk3rql/KRVtOXn4kQyMAYpi5n1rcXisWR9uks=
 github.com/ankorstore/yokai/fxhealthcheck v1.1.0 h1:E/ADes6EC49kPwQlOel5BUyWNv45R21GtCa2WmSmZCQ=
 github.com/ankorstore/yokai/fxhealthcheck v1.1.0/go.mod h1:j8ki4ZHL/G5zaD3GwVX3j5/xFyuQNNvsZPnoSG7E/AY=
 github.com/ankorstore/yokai/fxlog v1.1.0 h1:vLI8Qd9KfCzAH9IvzGJTvFYmlE1jtMnjvA4z/vxJpYg=
@@ -12,8 +12,8 @@ github.com/ankorstore/yokai/fxmetrics v1.2.0 h1:B4vwfOxsUeFXC5rn0bDHsFnOhEFhRq9a
 github.com/ankorstore/yokai/fxmetrics v1.2.0/go.mod h1:WBr76IIdlSZIpBsjKSdXCAJBWF0HCp46bwFX8bt0tFk=
 github.com/ankorstore/yokai/fxtrace v1.2.0 h1:SXlWbjKSsb2wVH+hXSE9OD2VwyqkznwwW+kiQcNvEAU=
 github.com/ankorstore/yokai/fxtrace v1.2.0/go.mod h1:ch72eVTlIedETOApK7SXk2NEWpn3yYeM018dNRccocg=
-github.com/ankorstore/yokai/generate v1.1.0 h1:tu3S+uEYh+2qNo8Rf/WxWneDjh49YgDPzSnJfF8JkXA=
-github.com/ankorstore/yokai/generate v1.1.0/go.mod h1:gqS/i20wnvCOhcXydYdiGcASzBaeuW7GK6YYg/kkuY4=
+github.com/ankorstore/yokai/generate v1.2.0 h1:37siukjPGSS2kRnCnPhiuiF373+0tgwp0teXHnMsBhA=
+github.com/ankorstore/yokai/generate v1.2.0/go.mod h1:gqS/i20wnvCOhcXydYdiGcASzBaeuW7GK6YYg/kkuY4=
 github.com/ankorstore/yokai/healthcheck v1.1.0 h1:PXkEccym7iaVnQltpM5UFi0Xl0n+5rZDzlQju6HmGms=
 github.com/ankorstore/yokai/healthcheck v1.1.0/go.mod h1:IiYgjRa4G3OLZMwAuacuryZZAfDHsBH8PQoK4PgRdZ4=
 github.com/ankorstore/yokai/httpserver v1.5.0 h1:42nfCFCGWuBKbwU8Jhlf1/ofrezDes8HlCa0mhiVoI8=
@@ -141,8 +141,8 @@ go.opentelemetry.io/proto/otlp v1.1.0 h1:2Di21piLrCqJ3U3eXGCTPHE9R8Nh+0uglSnOyxi
 go.opentelemetry.io/proto/otlp v1.1.0/go.mod h1:GpBHCBWiqvVLDqmHZsoMM3C5ySeKTC7ej/RNTae6MdY=
 go.uber.org/dig v1.17.1 h1:Tga8Lz8PcYNsWsyHMZ1Vm0OQOUaJNDyvPImgbAu9YSc=
 go.uber.org/dig v1.17.1/go.mod h1:Us0rSJiThwCv2GteUN0Q7OKvU7n5J4dxZ9JKUXozFdE=
-go.uber.org/fx v1.21.0 h1:qqD6k7PyFHONffW5speYx403ywanuASqU4Rqdpc22XY=
-go.uber.org/fx v1.21.0/go.mod h1:HT2M7d7RHo+ebKGh9NRcrsrHHfpZ60nW3QRubMRfv48=
+go.uber.org/fx v1.22.0 h1:pApUK7yL0OUHMd8vkunWSlLxZVFFk70jR2nKde8X2NM=
+go.uber.org/fx v1.22.0/go.mod h1:HT2M7d7RHo+ebKGh9NRcrsrHHfpZ60nW3QRubMRfv48=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=
 go.uber.org/multierr v1.11.0/go.mod h1:20+QtiLqy0Nd6FdQB9TLXag12DsQkrbs3htMFfDN80Y=

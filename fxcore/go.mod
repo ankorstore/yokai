@@ -3,14 +3,14 @@ module github.com/ankorstore/yokai/fxcore
 go 1.20
 
 require (
-	github.com/ankorstore/yokai/config v1.3.0
-	github.com/ankorstore/yokai/fxconfig v1.1.0
-	github.com/ankorstore/yokai/fxgenerate v1.1.0
+	github.com/ankorstore/yokai/config v1.4.0
+	github.com/ankorstore/yokai/fxconfig v1.2.0
+	github.com/ankorstore/yokai/fxgenerate v1.2.0
 	github.com/ankorstore/yokai/fxhealthcheck v1.1.0
 	github.com/ankorstore/yokai/fxlog v1.1.0
 	github.com/ankorstore/yokai/fxmetrics v1.2.0
 	github.com/ankorstore/yokai/fxtrace v1.2.0
-	github.com/ankorstore/yokai/generate v1.1.0
+	github.com/ankorstore/yokai/generate v1.2.0
 	github.com/ankorstore/yokai/healthcheck v1.1.0
 	github.com/ankorstore/yokai/httpserver v1.5.0
 	github.com/ankorstore/yokai/log v1.2.0
@@ -23,7 +23,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/otel v1.24.0
 	go.opentelemetry.io/otel/trace v1.24.0
-	go.uber.org/fx v1.21.0
+	go.uber.org/fx v1.22.0
 )
 
 require (
