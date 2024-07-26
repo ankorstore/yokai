@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/fxconfig/v1.1.0...fxconfig/v1.2.0) (2024-07-26)
+
+
+### Features
+
+* **fxconfig:** Added app description support ([#272](https://github.com/ankorstore/yokai/issues/272)) ([717870b](https://github.com/ankorstore/yokai/commit/717870bbed10a36793277e556c24fc94d75b89a5))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/fxconfig/v1.0.0...fxconfig/v1.1.0) (2024-03-14)
 
 
