@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.8.0...fxcore/v1.9.0) (2024-07-26)
+
+
+### Features
+
+* **fxcore:** Added app description ([#274](https://github.com/ankorstore/yokai/issues/274)) ([3d4fd98](https://github.com/ankorstore/yokai/commit/3d4fd984fa919a564e574f71d1f8c9d9b8afeacb))
+
 ## [1.8.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.7.0...fxcore/v1.8.0) (2024-04-17)
 
 
