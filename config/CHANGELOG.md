@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/ankorstore/yokai/compare/config/v1.3.0...config/v1.4.0) (2024-07-26)
+
+
+### Features
+
+* **config:** Added app description config key ([#270](https://github.com/ankorstore/yokai/issues/270)) ([e540857](https://github.com/ankorstore/yokai/commit/e54085755430b171277c038719611a667b284c85))
+
 ## [1.3.0](https://github.com/ankorstore/yokai/compare/config/v1.2.0...config/v1.3.0) (2024-03-13)
 
 
