@@ -53,6 +53,7 @@ modules:
       dashboard:
         enabled: true                  # to enable the core dashboard
         overview:      
+          app_description: true        # to display the app description on the dashboard overview
           app_env: true                # to display the app env on the dashboard overview
           app_debug: true              # to display the app debug on the dashboard overview
           app_version: true            # to display the app version on the dashboard overview

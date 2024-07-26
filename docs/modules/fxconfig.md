@@ -41,6 +41,7 @@ For the following examples, we will be considering those configuration files:
 ```yaml title="configs/config.yaml"
 app:
   name: app
+  description: app description
   env: dev
   version: 0.1.0
   debug: false
@@ -93,10 +94,11 @@ func NewExampleService(config *config.Config) *ExampleService {
 
 func (s *ExampleService) PrintConfig() {
 	// helpers
-	fmt.Printf("name: %s", s.config.AppName())       // name: app
-	fmt.Printf("env: %s", s.config.AppEnv())         // env: dev
-	fmt.Printf("version: %s", s.config.AppVersion()) // version: 0.1.0
-	fmt.Printf("debug: %v", s.config.AppDebug())     // debug: false
+	fmt.Printf("name: %s", s.config.AppName())               // name: app
+	fmt.Printf("description: %s", s.config.AppDescription()) // description: app description
+	fmt.Printf("env: %s", s.config.AppEnv())                 // env: dev
+	fmt.Printf("version: %s", s.config.AppVersion())         // version: 0.1.0
+	fmt.Printf("debug: %v", s.config.AppDebug())             // debug: false
 
 	// others
 	fmt.Printf("string_value: %s", s.config.GetString("config.values.string_value")) // string_value: default
@@ -118,10 +120,11 @@ If you run your application in `test` mode:
 // helpers
 fmt.Printf("var: %s", s.config.GetEnvVar("APP_ENV")) // var: test
 
-fmt.Printf("name: %s", s.config.AppName())           // name: app
-fmt.Printf("env: %s", s.config.AppEnv())             // env: test
-fmt.Printf("version: %s", s.config.AppVersion())     // version: 0.1.0
-fmt.Printf("debug: %v", s.config.AppDebug())         // debug: true
+fmt.Printf("name: %s", s.config.AppName())               // name: app
+fmt.Printf("description: %s", s.config.AppDescription()) // description: app description
+fmt.Printf("env: %s", s.config.AppEnv())                 // env: test
+fmt.Printf("version: %s", s.config.AppVersion())         // version: 0.1.0
+fmt.Printf("debug: %v", s.config.AppDebug())             // debug: true
 
 // others
 fmt.Printf("string_value: %s", s.config.GetString("config.values.string_value")) // string_value: test
