@@ -3,7 +3,7 @@ module github.com/ankorstore/yokai/fxconfig
 go 1.20
 
 require (
-	github.com/ankorstore/yokai/config v1.3.0
+	github.com/ankorstore/yokai/config v1.4.0
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/fx v1.21.0
 )
