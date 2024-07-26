@@ -1,5 +1,5 @@
-github.com/ankorstore/yokai/config v1.3.0 h1:si2h4mESPN5pj14CBMT/VGFgFn0voKEVylr8hQeIgEk=
-github.com/ankorstore/yokai/config v1.3.0/go.mod h1:OV2QiL2dyNLCxhcGO+GcSa8Wm20+00H03VBHm9SPVuE=
+github.com/ankorstore/yokai/config v1.4.0 h1:O3ZuTGud388Gq55bQwrfs/vdjYSZZvj0VUL6yZp4rcg=
+github.com/ankorstore/yokai/config v1.4.0/go.mod h1:OV2QiL2dyNLCxhcGO+GcSa8Wm20+00H03VBHm9SPVuE=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=

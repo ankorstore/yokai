@@ -24,6 +24,7 @@ func TestModule(t *testing.T) {
 	).RequireStart().RequireStop()
 
 	assert.Equal(t, "default-app", cfg.AppName())
+	assert.Equal(t, "default-description", cfg.AppDescription())
 	assert.Equal(t, config.AppEnvDev, cfg.AppEnv())
 	assert.True(t, cfg.IsDevEnv())
 	assert.False(t, cfg.IsTestEnv())
@@ -52,6 +53,7 @@ func TestModuleWithTestEnv(t *testing.T) {
 	).RequireStart().RequireStop()
 
 	assert.Equal(t, "test-app", cfg.AppName())
+	assert.Equal(t, "test-description", cfg.AppDescription())
 	assert.Equal(t, config.AppEnvTest, cfg.AppEnv())
 	assert.False(t, cfg.IsDevEnv())
 	assert.True(t, cfg.IsTestEnv())
@@ -80,6 +82,7 @@ func TestModuleWithCustomEnv(t *testing.T) {
 	).RequireStart().RequireStop()
 
 	assert.Equal(t, "custom-app", cfg.AppName())
+	assert.Equal(t, "custom-description", cfg.AppDescription())
 	assert.Equal(t, "custom", cfg.AppEnv())
 	assert.False(t, cfg.IsDevEnv())
 	assert.False(t, cfg.IsTestEnv())
