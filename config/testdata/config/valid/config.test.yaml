@@ -1,5 +1,6 @@
 app:
   name: test-app
+  description: test-description
   env: test
   debug: true
 config:

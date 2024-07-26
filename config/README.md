@@ -51,6 +51,7 @@ For the following examples, we will be considering those configuration files:
 # ./configs/config.yaml
 app:
   name: app
+  description: app description
   env: dev
   version: 0.1.0
   debug: false
@@ -109,10 +110,11 @@ func main() {
 	cfg, _ := config.NewDefaultConfigFactory().Create()
 
 	// helpers
-	fmt.Printf("name: %s", cfg.AppName())       // name: app
-	fmt.Printf("env: %s", cfg.AppEnv())         // env: dev
-	fmt.Printf("version: %s", cfg.AppVersion()) // version: 0.1.0
-	fmt.Printf("debug: %v", cfg.AppDebug())     // debug: false
+	fmt.Printf("name: %s", cfg.AppName())                // name: app
+	fmt.Printf("description: %s", cfg.AppDescription())  // description: app description
+	fmt.Printf("env: %s", cfg.AppEnv())                  // env: dev
+	fmt.Printf("version: %s", cfg.AppVersion())          // version: 0.1.0
+	fmt.Printf("debug: %v", cfg.AppDebug())              // debug: false
 
 	// others
 	fmt.Printf("string_value: %s", cfg.GetString("config.values.string_value")) // string_value: default
@@ -146,11 +148,12 @@ func main() {
 	cfg, _ := config.NewDefaultConfigFactory().Create()
 
 	// helpers
-	fmt.Printf("var: %s", cfg.GetEnvVar("APP_ENV")) // var: test
-	fmt.Printf("name: %s", cfg.AppName())           // name: app
-	fmt.Printf("env: %s", cfg.AppEnv())             // env: test
-	fmt.Printf("version: %s", cfg.AppVersion())     // version: 0.1.0
-	fmt.Printf("debug: %v", cfg.AppDebug())         // debug: true
+	fmt.Printf("var: %s", cfg.GetEnvVar("APP_ENV"))      // var: test
+	fmt.Printf("name: %s", cfg.AppName())                // name: app
+	fmt.Printf("description: %s", cfg.AppDescription())  // description: app description
+	fmt.Printf("env: %s", cfg.AppEnv())                  // env: test
+	fmt.Printf("version: %s", cfg.AppVersion())          // version: 0.1.0
+	fmt.Printf("debug: %v", cfg.AppDebug())              // debug: true
 
 	// others
 	fmt.Printf("string_value: %s", cfg.GetString("config.values.string_value")) // string_value: test
