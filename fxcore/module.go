@@ -238,6 +238,7 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 	}
 
 	// dashboard overview expositions
+	overviewAppDescriptionExpose := p.Config.GetBool("modules.core.server.dashboard.overview.app_description")
 	overviewAppEnvExpose := p.Config.GetBool("modules.core.server.dashboard.overview.app_env")
 	overviewAppDebugExpose := p.Config.GetBool("modules.core.server.dashboard.overview.app_debug")
 	overviewAppVersionExpose := p.Config.GetBool("modules.core.server.dashboard.overview.app_version")
@@ -457,6 +458,7 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 
 			return c.Render(http.StatusOK, "dashboard.html", map[string]interface{}{
 				"overviewInfo":                 overviewInfo,
+				"overviewAppDescriptionExpose": overviewAppDescriptionExpose,
 				"overviewAppEnvExpose":         overviewAppEnvExpose,
 				"overviewAppDebugExpose":       overviewAppDebugExpose,
 				"overviewAppVersionExpose":     overviewAppVersionExpose,
