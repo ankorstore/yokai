@@ -32,6 +32,11 @@ func (c *Config) AppName() string {
 	return c.GetString("app.name")
 }
 
+// AppDescription returns the configured application description (from config field app.description or env var APP_DESCRIPTION).
+func (c *Config) AppDescription() string {
+	return c.GetString("app.description")
+}
+
 // AppEnv returns the configured application environment (from config field app.env or env var APP_ENV).
 func (c *Config) AppEnv() string {
 	return c.GetString("app.env")

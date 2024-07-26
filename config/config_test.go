@@ -41,6 +41,31 @@ func TestAppNameOverrideFromCustomEnvConfig(t *testing.T) {
 	assert.Equal(t, "custom-app", cfg.AppName())
 }
 
+func TestAppDescriptionFromDefaultConfig(t *testing.T) {
+	cfg, err := createTestConfig()
+
+	assert.Nil(t, err)
+	assert.Equal(t, "default-description", cfg.AppDescription())
+}
+
+func TestAppDescriptionOverrideFromTestEnvConfig(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
+
+	cfg, err := createTestConfig()
+
+	assert.NoError(t, err)
+	assert.Equal(t, "test-description", cfg.AppDescription())
+}
+
+func TestAppDescriptionOverrideFromCustomEnvConfig(t *testing.T) {
+	t.Setenv("APP_ENV", "custom")
+
+	cfg, err := createTestConfig()
+
+	assert.NoError(t, err)
+	assert.Equal(t, "custom-description", cfg.AppDescription())
+}
+
 func TestAppNameOverrideFromInvalidEnvConfig(t *testing.T) {
 	t.Setenv("APP_ENV", "invalid")
 
