@@ -24,7 +24,7 @@ To create your `github.com/foo/bar` repository, you can use the [HTTP applicatio
 It provides:
 
 - a ready to extend [Yokai](https://github.com/ankorstore/yokai) application, with the [HTTP server](../modules/fxhttpserver.md) module installed
-- a ready to use [dev environment](https://github.com/ankorstore/yokai-http-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/cosmtrek/air) (for live reloading)
+- a ready to use [dev environment](https://github.com/ankorstore/yokai-http-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/air-verse/air) (for live reloading)
 - a ready to use [Dockerfile](https://github.com/ankorstore/yokai-http-template/blob/main/Dockerfile) for production
 - some examples of [handler](https://github.com/ankorstore/yokai-http-template/blob/main/internal/handler/example.go) and [test](https://github.com/ankorstore/yokai-http-template/blob/main/internal/handler/example_test.go) to get started
 
@@ -72,7 +72,7 @@ When you use the template, an example endpoint is provided on [http://localhost:
 Welcome to http-app.
 ```
 
-To ease development, [Air](https://github.com/cosmtrek/air) is watching any changes you perform on `Go code` or `config files` to perform hot reload.
+To ease development, [Air](https://github.com/air-verse/air) is watching any changes you perform on `Go code` or `config files` to perform hot reload.
 
 Let's rename your application to `gopher-api` by updating `app.name` in the configuration:
 
