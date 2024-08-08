@@ -12,7 +12,7 @@ icon: material/rocket-launch-outline
 The [gRPC application template](https://github.com/ankorstore/yokai-grpc-template) provides:
 
 - a ready to extend [Yokai](https://github.com/ankorstore/yokai) application, with the [gRPC server](../modules/fxgrpcserver.md) module installed
-- a ready to use [dev environment](https://github.com/ankorstore/yokai-grpc-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/cosmtrek/air) (for live reloading)
+- a ready to use [dev environment](https://github.com/ankorstore/yokai-grpc-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/air-verse/air) (for live reloading)
 - a ready to use [Dockerfile](https://github.com/ankorstore/yokai-grpc-template/blob/main/Dockerfile) for production
 - some examples of [service](https://github.com/ankorstore/yokai-grpc-template/blob/main/internal/service/example.go) and [test](https://github.com/ankorstore/yokai-grpc-template/blob/main/internal/service/example_test.go) to get started
 

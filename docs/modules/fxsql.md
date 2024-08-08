@@ -66,7 +66,7 @@ modules:
     dsn: "user:password@tcp(localhost:3306)/db?parseTime=true"  # database DSN
     migrations:
       path: db/migrations  # migrations path (empty by default)
-      stdout: true         # to print in stdout the migration logs (disabled by default)
+      stdout: true         # to print in stdout the migration execution logs (disabled by default)
     log:
       enabled: true        # to enable SQL queries logging (disabled by default)
       level: debug         # to configure SQL queries logs level (debug by default)
@@ -166,7 +166,9 @@ You can configure where to find your migration files:
 ```yaml title="configs/config.yaml"
 modules:
   sql:
-    migrations: db/migrations
+  migrations:
+    path: db/migrations  # migrations path
+    stdout: true         # to print in stdout the migration execution logs
 ```
 
 And create them following [Goose SQL migrations](https://github.com/pressly/goose?tab=readme-ov-file#sql-migrations) conventions:
@@ -562,6 +564,8 @@ modules:
     driver: sqlite   # use sqlite driver
     dsn: ":memory:"  # in memory
 ```
+
+The [fxgomysqlserver](https://github.com/ankorstore/yokai-contrib/tree/main/fxgomysqlserver) Yokai contrib module is also available if you want to run an embed MySQL server for your tests.
 
 You can then retrieve your components using the `sql.DB`, and make actual database operations:
 

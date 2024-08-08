@@ -12,7 +12,7 @@ icon: material/rocket-launch-outline
 The [worker application template](https://github.com/ankorstore/yokai-worker-template) provides:
 
 - a ready to extend [Yokai](https://github.com/ankorstore/yokai) application, with the [worker](../modules/fxworker.md) module installed
-- a ready to use [dev environment](https://github.com/ankorstore/yokai-worker-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/cosmtrek/air) (for live reloading)
+- a ready to use [dev environment](https://github.com/ankorstore/yokai-worker-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/air-verse/air) (for live reloading)
 - a ready to use [Dockerfile](https://github.com/ankorstore/yokai-worker-template/blob/main/Dockerfile) for production
 - some examples of [worker](https://github.com/ankorstore/yokai-worker-template/blob/main/internal/worker/example.go) and [test](https://github.com/ankorstore/yokai-worker-template/blob/main/internal/worker/example_test.go) to get started
 
