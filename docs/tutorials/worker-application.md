@@ -26,7 +26,7 @@ the [worker application template](../getting-started/worker-application.md).
 It provides:
 
 - a ready to extend [Yokai](https://github.com/ankorstore/yokai) application, with the [worker](../modules/fxworker.md) module installed
-- a ready to use [dev environment](https://github.com/ankorstore/yokai-worker-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/cosmtrek/air) (for live reloading)
+- a ready to use [dev environment](https://github.com/ankorstore/yokai-worker-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/air-verse/air) (for live reloading)
 - a ready to use [Dockerfile](https://github.com/ankorstore/yokai-worker-template/blob/main/Dockerfile) for production
 - some examples of [worker](https://github.com/ankorstore/yokai-worker-template/blob/main/internal/worker/example.go) and [test](https://github.com/ankorstore/yokai-worker-template/blob/main/internal/worker/example_test.go) to get started
 
@@ -81,7 +81,7 @@ You can run `make logs` to see it in action:
 INF running module=worker service=worker-app worker=example-worker workerExecutionID=346775a2-6be5-43c3-907f-100a986cb2dc
 ```
 
-To ease development, [Air](https://github.com/cosmtrek/air) is watching any changes you perform on `Go code`
+To ease development, [Air](https://github.com/air-verse/air) is watching any changes you perform on `Go code`
 or `config files` to perform hot reload.
 
 Let's change:
