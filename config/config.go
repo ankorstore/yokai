@@ -7,24 +7,21 @@ import (
 )
 
 const (
-	AppEnvProd = "prod" // prod environment
-	AppEnvDev  = "dev"  // dev environment
-	AppEnvTest = "test" // test environment
-
+	AppEnvProd        = "prod"    // prod environment
+	AppEnvDev         = "dev"     // dev environment
+	AppEnvTest        = "test"    // test environment
 	DefaultAppName    = "app"     // default application name
 	DefaultAppVersion = "unknown" // default application version
 )
 
-// Config allows to access the application configuration, and inherits of all [Viper] features.
-//
-// [Viper]: https://github.com/spf13/viper
+// Config is an enhanced [Viper] wrapper.
 type Config struct {
 	*viper.Viper
 }
 
-// GetEnvVar returns the value of an env var.
-func (c *Config) GetEnvVar(envVar string) string {
-	return os.Getenv(envVar)
+// NewConfig returns a new [Config] instance.
+func NewConfig(v *viper.Viper) *Config {
+	return &Config{v}
 }
 
 // AppName returns the configured application name (from config field app.name or env var APP_NAME).
@@ -52,17 +49,22 @@ func (c *Config) AppDebug() bool {
 	return c.GetBool("app.debug")
 }
 
-// IsProdEnv returns if the application is running in prod mode.
+// IsProdEnv returns true if the application is running in prod mode.
 func (c *Config) IsProdEnv() bool {
 	return c.AppEnv() == AppEnvProd
 }
 
-// IsDevEnv returns if the application is running in dev mode.
+// IsDevEnv returns true if the application is running in dev mode.
 func (c *Config) IsDevEnv() bool {
 	return c.AppEnv() == AppEnvDev
 }
 
-// IsTestEnv returns if the application is running in test mode.
+// IsTestEnv returns true if the application is running in test mode.
 func (c *Config) IsTestEnv() bool {
 	return c.AppEnv() == AppEnvTest
+}
+
+// EnvVar returns the value of an env var.
+func (c *Config) EnvVar(name string) string {
+	return os.Getenv(name)
 }

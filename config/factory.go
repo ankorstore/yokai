@@ -17,8 +17,8 @@ type ConfigFactory interface {
 // DefaultConfigFactory is the default [ConfigFactory] implementation.
 type DefaultConfigFactory struct{}
 
-// NewDefaultConfigFactory returns a [DefaultConfigFactory], implementing [ConfigFactory].
-func NewDefaultConfigFactory() ConfigFactory {
+// NewDefaultConfigFactory returns a new [DefaultConfigFactory] instance.
+func NewDefaultConfigFactory() *DefaultConfigFactory {
 	return &DefaultConfigFactory{}
 }
 
@@ -30,42 +30,50 @@ func NewDefaultConfigFactory() ConfigFactory {
 // is equivalent to:
 //
 //	var cfg, _ = config.NewDefaultConfigFactory().Create(
-//		config.WithFileName("config"),          // config files base name
-//		config.WithFilePaths(".", "./configs"), // config files lookup paths
+//		config.WithFileName("config"),                      // config files base name
+//		config.WithFilePaths(".", "./config", "./configs"), // config files lookup paths
 //	)
 func (f *DefaultConfigFactory) Create(options ...ConfigOption) (*Config, error) {
+	// options
 	appliedOptions := DefaultConfigOptions()
 	for _, opt := range options {
 		opt(&appliedOptions)
 	}
 
+	// viper
 	v := viper.New()
-
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
 	v.SetConfigName(appliedOptions.FileName)
+
 	for _, path := range appliedOptions.FilePaths {
 		v.AddConfigPath(path)
 	}
 
-	f.setDefaults(v)
+	// defaults
+	v.SetDefault("app.name", DefaultAppName)
+	v.SetDefault("app.version", DefaultAppVersion)
+	v.SetDefault("app.debug", false)
 
+	// load
 	if err := v.ReadInConfig(); err != nil {
-		return nil, err
+		if !errors.As(err, &viper.ConfigFileNotFoundError{}) {
+			return nil, err
+		}
 	}
 
+	// env overrides
 	appEnv := os.Getenv("APP_ENV")
 	if appEnv != "" {
 		v.SetConfigName(fmt.Sprintf("%s.%s", appliedOptions.FileName, appEnv))
 		if err := v.MergeInConfig(); err != nil {
-			if errors.As(err, &viper.ConfigFileNotFoundError{}) {
-				return nil, fmt.Errorf("could not load config file for env %s: %w", appEnv, err)
-			} else {
+			if !errors.As(err, &viper.ConfigFileNotFoundError{}) {
 				return nil, fmt.Errorf("could not merge config for env %s: %w", appEnv, err)
 			}
 		}
 	}
 
+	// env vars placeholders
 	for _, key := range v.AllKeys() {
 		val := v.GetString(key)
 		if strings.Contains(val, "${") {
@@ -73,11 +81,5 @@ func (f *DefaultConfigFactory) Create(options ...ConfigOption) (*Config, error) 
 		}
 	}
 
-	return &Config{v}, nil
-}
-
-func (f *DefaultConfigFactory) setDefaults(v *viper.Viper) {
-	v.SetDefault("app.name", DefaultAppName)
-	v.SetDefault("app.version", DefaultAppVersion)
-	v.SetDefault("app.debug", false)
+	return NewConfig(v), nil
 }

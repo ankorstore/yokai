@@ -2,7 +2,7 @@ app:
   name: default-app
   description: default-description
   env: dev
-  version: 0.1.0
+  version: default-version
   debug: false
 config:
   values:
