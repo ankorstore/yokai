@@ -96,6 +96,40 @@ func TestModuleWithCustomEnv(t *testing.T) {
 	assert.Equal(t, "foo-bar-baz", cfg.GetString("config.substitution"))
 }
 
+func TestModuleWithOtherConfigPath(t *testing.T) {
+	var cfg *config.Config
+
+	fxtest.New(
+		t,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxconfig.AsConfigPath("testdata/other"),
+		fx.Populate(&cfg),
+	).RequireStart().RequireStop()
+
+	assert.Equal(t, "other-app", cfg.AppName())
+	assert.Equal(t, "dev", cfg.AppEnv())
+	assert.Equal(t, "bar", cfg.GetString("config.foo"))
+}
+
+func TestModuleWithTestEnvAndOtherConfigPath(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
+
+	var cfg *config.Config
+
+	fxtest.New(
+		t,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxconfig.AsConfigPath("testdata/other"),
+		fx.Populate(&cfg),
+	).RequireStart().RequireStop()
+
+	assert.Equal(t, "other-app", cfg.AppName())
+	assert.Equal(t, "test", cfg.AppEnv())
+	assert.Equal(t, "test", cfg.GetString("config.foo"))
+}
+
 func TestModuleDecoration(t *testing.T) {
 	var cfg *config.Config
 

@@ -1,0 +1,5 @@
+app:
+  name: other-app
+  env: dev
+config:
+  foo: bar

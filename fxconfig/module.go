@@ -24,17 +24,16 @@ var FxConfigModule = fx.Module(
 // FxConfigParam allows injection of the required dependencies in [NewFxConfig].
 type FxConfigParam struct {
 	fx.In
-	Factory config.ConfigFactory
+	Factory     config.ConfigFactory
+	ConfigPaths []string `group:"config-paths"`
 }
 
 // NewFxConfig returns a [config.Config].
 func NewFxConfig(p FxConfigParam) (*config.Config, error) {
+	configFilePaths := append([]string{os.Getenv("APP_CONFIG_PATH")}, p.ConfigPaths...)
+
 	return p.Factory.Create(
 		config.WithFileName("config"),
-		config.WithFilePaths(
-			".",
-			"./configs",
-			os.Getenv("APP_CONFIG_PATH"),
-		),
+		config.WithFilePaths(configFilePaths...),
 	)
 }
