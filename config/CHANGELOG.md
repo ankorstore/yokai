@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/ankorstore/yokai/compare/config/v1.4.0...config/v1.5.0) (2024-09-25)
+
+
+### Features
+
+* **config:** Added config default path ([#280](https://github.com/ankorstore/yokai/issues/280)) ([2de70d2](https://github.com/ankorstore/yokai/commit/2de70d2aaed23f9bf867e4806c2c84fdf1b77736))
+
 ## [1.4.0](https://github.com/ankorstore/yokai/compare/config/v1.3.0...config/v1.4.0) (2024-07-26)
 
 
