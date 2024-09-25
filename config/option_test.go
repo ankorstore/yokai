@@ -7,6 +7,41 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestDefaultConfigOptions(t *testing.T) {
+	opts := config.DefaultConfigOptions()
+
+	assert.Equal(t, "config", opts.FileName)
+	assert.Equal(
+		t,
+		[]string{
+			".",
+			"./config",
+			"./configs",
+		},
+		opts.FilePaths,
+	)
+}
+
+func TestDefaultConfigOptionsWithKO(t *testing.T) {
+	t.Setenv("KO_DATA_PATH", "/var/run/ko")
+
+	opts := config.DefaultConfigOptions()
+
+	assert.Equal(t, "config", opts.FileName)
+	assert.Equal(
+		t,
+		[]string{
+			".",
+			"./config",
+			"./configs",
+			"/var/run/ko",
+			"/var/run/ko/config",
+			"/var/run/ko/configs",
+		},
+		opts.FilePaths,
+	)
+}
+
 func TestWithFileName(t *testing.T) {
 	option := config.WithFileName("test")
 
@@ -23,20 +58,4 @@ func TestWithFilePaths(t *testing.T) {
 	option(opts)
 
 	assert.Equal(t, []string{"path1", "path2"}, opts.FilePaths)
-}
-
-func TestDefaultConfigOptions(t *testing.T) {
-	opts := config.DefaultConfigOptions()
-
-	assert.Equal(t, "config", opts.FileName)
-	assert.Equal(t, []string{".", "./configs"}, opts.FilePaths)
-}
-
-func TestDefaultConfigOptions_KoBuild(t *testing.T) {
-	t.Setenv("KO_DATA_PATH", "/var/run/ko")
-
-	opts := config.DefaultConfigOptions()
-
-	assert.Equal(t, "config", opts.FileName)
-	assert.Equal(t, []string{".", "./configs", "/var/run/ko", "/var/run/ko/configs"}, opts.FilePaths)
 }

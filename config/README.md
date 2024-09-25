@@ -9,16 +9,14 @@
 > Configuration module based on [Viper](https://github.com/spf13/viper).
 
 <!-- TOC -->
-
 * [Installation](#installation)
 * [Documentation](#documentation)
-	* [Configuration files](#configuration-files)
-	* [Configuration usage](#configuration-usage)
-		* [Configuration access](#configuration-access)
-		* [Configuration dynamic env overrides](#configuration-dynamic-env-overrides)
-		* [Configuration env var placeholders](#configuration-env-var-placeholders)
-		* [Configuration env var substitution](#configuration-env-var-substitution)
-
+  * [Configuration files](#configuration-files)
+  * [Configuration usage](#configuration-usage)
+    * [Configuration access](#configuration-access)
+    * [Configuration dynamic env overrides](#configuration-dynamic-env-overrides)
+    * [Configuration env var placeholders](#configuration-env-var-placeholders)
+    * [Configuration env var substitution](#configuration-env-var-substitution)
 <!-- TOC -->
 
 ## Installation
@@ -33,7 +31,7 @@ go get github.com/ankorstore/yokai/config
 
 By default, the module expects configuration files:
 
-- to be present in `.` (root) or `./configs` directories of your project
+- to be present in `.` (root), `./config` or `./configs` directories of your project
 - to be named `config.{format}` (ex: `config.yaml`, `config.json`, etc.)
 - to offer env overrides files named `config.{env}.{format}` based on the env var `APP_ENV` (ex: `config.test.yaml` if
   env var `APP_ENV=test`)
@@ -86,8 +84,8 @@ var cfg, _ = config.NewDefaultConfigFactory().Create()
 
 // equivalent to:
 var cfg, _ = config.NewDefaultConfigFactory().Create(
-	config.WithFileName("config"),          // config files base name
-	config.WithFilePaths(".", "./configs"), // config files lookup paths
+	config.WithFileName("config"),                      // config files base name
+	config.WithFilePaths(".", "./config", "./configs"), // config files lookup paths
 )
 ```
 

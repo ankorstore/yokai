@@ -17,13 +17,19 @@ func DefaultConfigOptions() Options {
 		FileName: "config",
 		FilePaths: []string{
 			".",
+			"./config",
 			"./configs",
 		},
 	}
 
-	// check if the OCI image has been build using ko and use KO_DATA_PATH as config root
+	// KO embeddings, see https://ko.build/features/static-assets/
 	if val, ok := os.LookupEnv("KO_DATA_PATH"); ok {
-		opts.FilePaths = append(opts.FilePaths, val, path.Join(val, "configs"))
+		opts.FilePaths = append(
+			opts.FilePaths,
+			val,
+			path.Join(val, "config"),
+			path.Join(val, "configs"),
+		)
 	}
 
 	return opts
@@ -42,6 +48,6 @@ func WithFileName(n string) ConfigOption {
 // WithFilePaths is used to specify the list of file paths to lookup config files to load.
 func WithFilePaths(p ...string) ConfigOption {
 	return func(o *Options) {
-		o.FilePaths = p
+		o.FilePaths = append(o.FilePaths, p...)
 	}
 }
