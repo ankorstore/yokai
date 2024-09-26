@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/fxconfig/v1.2.0...fxconfig/v1.3.0) (2024-09-26)
+
+
+### Features
+
+* **fxconfig:** Added possibility to provide additional config files lookup paths ([#282](https://github.com/ankorstore/yokai/issues/282)) ([32699ae](https://github.com/ankorstore/yokai/commit/32699aed75f46ba535d65580359fca536d4044e3))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/fxconfig/v1.1.0...fxconfig/v1.2.0) (2024-07-26)
 
 
