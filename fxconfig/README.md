@@ -54,7 +54,7 @@ func main() {
 
 The module expects configuration files to be present:
 - in `.` (project root)
-- or in the`./configs` directory
+- or in the`./config` or `./configs` directories
 - or any directory referenced in the `APP_CONFIG_PATH` env var
 
 Check the [configuration files documentation](https://github.com/ankorstore/yokai/tree/main/config#configuration-files) for more details.
