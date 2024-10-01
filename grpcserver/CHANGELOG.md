@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/grpcserver/v1.1.0...grpcserver/v1.2.0) (2024-10-01)
+
+
+### Features
+
+* **grpcserver:** Added bufconn connection factory ([#284](https://github.com/ankorstore/yokai/issues/284)) ([98065c6](https://github.com/ankorstore/yokai/commit/98065c6b5ce05d2bacf72355704fb012e2bd4068))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/grpcserver/v1.0.0...grpcserver/v1.1.0) (2024-03-14)
 
 
