@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"net"
 	"testing"
 
 	"github.com/ankorstore/yokai/generate/generatetest/uuid"
@@ -753,9 +752,6 @@ func TestBidiWithExclusionAndError(t *testing.T) {
 func prepareTestServiceGrpcServerAndClient(t *testing.T, logger *log.Logger, exclusions []string, metadata map[string]string, withTestInterceptors bool) (proto.ServiceClient, func()) {
 	t.Helper()
 
-	// context preparation
-	ctx := logger.WithContext(context.Background())
-
 	// bufconn listener preparation
 	lis := grpcservertest.NewBufconnListener(1024 * 1024)
 
@@ -809,12 +805,7 @@ func prepareTestServiceGrpcServerAndClient(t *testing.T, logger *log.Logger, exc
 	}()
 
 	// gRPC client preparation
-	conn, err := grpc.DialContext(
-		ctx,
-		"",
-		grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
-			return lis.Dial()
-		}),
+	conn, err := grpcservertest.NewDefaultTestBufconnConnectionFactory(lis).Create(
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	assert.NoError(t, err)

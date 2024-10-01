@@ -11,6 +11,6 @@ import (
 func TestNewBufconnListener(t *testing.T) {
 	t.Parallel()
 
-	conn := grpcservertest.NewBufconnListener(1024)
-	assert.IsType(t, &bufconn.Listener{}, conn)
+	lis := grpcservertest.NewBufconnListener(1024)
+	assert.IsType(t, &bufconn.Listener{}, lis)
 }

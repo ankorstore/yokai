@@ -2,7 +2,6 @@ package grpcserver_test
 
 import (
 	"context"
-	"net"
 	"testing"
 
 	"github.com/ankorstore/yokai/generate/generatetest/uuid"
@@ -156,9 +155,6 @@ func TestWatch(t *testing.T) {
 func prepareHealthCheckServiceGrpcServerAndClient(t *testing.T, checker *healthcheck.Checker, logger *log.Logger) (grpc_health_v1.HealthClient, func()) {
 	t.Helper()
 
-	// context preparation
-	ctx := logger.WithContext(context.Background())
-
 	// bufconn listener preparation
 	lis := grpcservertest.NewBufconnListener(1024 * 1024)
 
@@ -181,12 +177,7 @@ func prepareHealthCheckServiceGrpcServerAndClient(t *testing.T, checker *healthc
 	}()
 
 	// gRPC client preparation
-	conn, err := grpc.DialContext(
-		ctx,
-		"",
-		grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
-			return lis.Dial()
-		}),
+	conn, err := grpcservertest.NewDefaultTestBufconnConnectionFactory(lis).Create(
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	assert.NoError(t, err)
