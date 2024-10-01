@@ -37,9 +37,13 @@ var FxGrpcServerModule = fx.Module(
 	ModuleName,
 	fx.Provide(
 		grpcserver.NewDefaultGrpcServerFactory,
-		NewFxGrpcBufconnListener,
+		NewFxGrpcTestBufconnListener,
 		NewFxGrpcServerRegistry,
 		NewFxGrpcServer,
+		fx.Annotate(
+			NewFxGrpcDefaultTestBufconnConnectionFactory,
+			fx.As(new(grpcservertest.TestBufconnConnectionFactory)),
+		),
 		fx.Annotate(
 			NewFxGrpcServerModuleInfo,
 			fx.As(new(interface{})),
@@ -48,20 +52,31 @@ var FxGrpcServerModule = fx.Module(
 	),
 )
 
-// FxGrpcBufconnListenerParam allows injection of the required dependencies in [NewFxGrpcBufconnListener].
-type FxGrpcBufconnListenerParam struct {
+// FxGrpcTestBufconnListenerParam allows injection of the required dependencies in [NewFxGrpcTestBufconnListener].
+type FxGrpcTestBufconnListenerParam struct {
 	fx.In
 	Config *config.Config
 }
 
-// NewFxGrpcBufconnListener returns a new [bufconn.Listener].
-func NewFxGrpcBufconnListener(p FxGrpcBufconnListenerParam) *bufconn.Listener {
+// NewFxGrpcTestBufconnListener returns a new [bufconn.Listener].
+func NewFxGrpcTestBufconnListener(p FxGrpcTestBufconnListenerParam) *bufconn.Listener {
 	size := p.Config.GetInt("modules.grpc.server.test.bufconn.size")
 	if size == 0 {
 		size = DefaultBufconnSize
 	}
 
 	return grpcservertest.NewBufconnListener(size)
+}
+
+// FxGrpcTestBufconnConnectionFactoryParam allows injection of the required dependencies in [NewFxGrpcDefaultTestBufconnConnectionFactory].
+type FxGrpcTestBufconnConnectionFactoryParam struct {
+	fx.In
+	Listener *bufconn.Listener
+}
+
+// NewFxGrpcDefaultTestBufconnConnectionFactory returns a new [grpcservertest.DefaultTestBufconnConnectionFactory].
+func NewFxGrpcDefaultTestBufconnConnectionFactory(p FxGrpcTestBufconnConnectionFactoryParam) *grpcservertest.DefaultTestBufconnConnectionFactory {
+	return grpcservertest.NewDefaultTestBufconnConnectionFactory(p.Listener)
 }
 
 // FxGrpcServerParam allows injection of the required dependencies in [NewFxGrpcBufconnListener].

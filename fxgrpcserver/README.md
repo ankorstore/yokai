@@ -411,6 +411,6 @@ func main() {
 
 This module provides a `*bufconn.Listener` that will automatically be used by the gRPC server in `test` mode.
 
-You can then use this listener on your gRPC clients to provide `functional` tests for your gRPC services.
+You can create connections for your gRPC clients, using this listener, with the [TestBufconnConnectionFactory](https://github.com/ankorstore/yokai/blob/main/grpcserver/grpcservertest/factory.go).
 
 You can find tests examples in this [module own tests](module_test.go).
