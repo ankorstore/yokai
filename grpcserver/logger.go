@@ -106,7 +106,7 @@ func (i *GrpcLoggerInterceptor) UnaryInterceptor() grpc.UnaryServerInterceptor {
 					Err(err).
 					Str("grpcType", "unary").
 					Str("grpcMethod", info.FullMethod).
-					Int32("grpcCode", int32(errStatus.Code())).
+					Uint32("grpcCode", uint32(errStatus.Code())).
 					Str("grpcStatus", errStatus.Code().String()).
 					Str("grpcDuration", time.Since(now).String())
 
@@ -124,7 +124,7 @@ func (i *GrpcLoggerInterceptor) UnaryInterceptor() grpc.UnaryServerInterceptor {
 					Info().
 					Str("grpcType", "unary").
 					Str("grpcMethod", info.FullMethod).
-					Int32("grpcCode", int32(codes.OK)).
+					Uint32("grpcCode", uint32(codes.OK)).
 					Str("grpcStatus", codes.OK.String()).
 					Str("grpcDuration", time.Since(now).String())
 
@@ -144,7 +144,7 @@ func (i *GrpcLoggerInterceptor) UnaryInterceptor() grpc.UnaryServerInterceptor {
 				Err(err).
 				Str("grpcType", "unary").
 				Str("grpcMethod", info.FullMethod).
-				Int32("grpcCode", int32(errStatus.Code())).
+				Uint32("grpcCode", uint32(errStatus.Code())).
 				Str("grpcStatus", errStatus.Code().String()).
 				Str("grpcDuration", time.Since(now).String())
 
@@ -226,7 +226,7 @@ func (i *GrpcLoggerInterceptor) StreamInterceptor() grpc.StreamServerInterceptor
 					Err(err).
 					Str("grpcType", "server-streaming").
 					Str("grpcMethod", info.FullMethod).
-					Int32("grpcCode", int32(errStatus.Code())).
+					Uint32("grpcCode", uint32(errStatus.Code())).
 					Str("grpcStatus", errStatus.Code().String()).
 					Str("grpcDuration", time.Since(now).String())
 
@@ -244,7 +244,7 @@ func (i *GrpcLoggerInterceptor) StreamInterceptor() grpc.StreamServerInterceptor
 					Info().
 					Str("grpcType", "server-streaming").
 					Str("grpcMethod", info.FullMethod).
-					Int32("grpcCode", int32(codes.OK)).
+					Uint32("grpcCode", uint32(codes.OK)).
 					Str("grpcStatus", codes.OK.String()).
 					Str("grpcDuration", time.Since(now).String())
 
@@ -264,7 +264,7 @@ func (i *GrpcLoggerInterceptor) StreamInterceptor() grpc.StreamServerInterceptor
 				Err(err).
 				Str("grpcType", "server-streaming").
 				Str("grpcMethod", info.FullMethod).
-				Int32("grpcCode", int32(errStatus.Code())).
+				Uint32("grpcCode", uint32(errStatus.Code())).
 				Str("grpcStatus", errStatus.Code().String()).
 				Str("grpcDuration", time.Since(now).String())
 

@@ -2,7 +2,6 @@ package grpcserver_test
 
 import (
 	"context"
-	"net"
 	"testing"
 
 	"github.com/ankorstore/yokai/generate/generatetest/uuid"
@@ -98,12 +97,7 @@ func TestCreate(t *testing.T) {
 	ctx = metadata.AppendToOutgoingContext(ctx, "x-request-id", testRequestId)
 
 	// gRPC client preparation
-	conn, err := grpc.DialContext(
-		ctx,
-		"",
-		grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
-			return lis.Dial()
-		}),
+	conn, err := grpcservertest.NewDefaultTestBufconnConnectionFactory(lis).Create(
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	assert.NoError(t, err)
