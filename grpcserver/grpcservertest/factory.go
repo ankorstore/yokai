@@ -9,6 +9,10 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 )
 
+var (
+	_ TestBufconnConnectionFactory = (*DefaultTestBufconnConnectionFactory)(nil)
+)
+
 type TestBufconnConnectionFactory interface {
 	Create(opts ...grpc.DialOption) (*grpc.ClientConn, error)
 }
