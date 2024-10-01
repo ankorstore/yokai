@@ -412,6 +412,6 @@ grpc_server_handling_seconds_count{grpc_method="Unary",grpc_service="test.Servic
 
 This module provides a `*bufconn.Listener` that will automatically be used by the gRPC server in `test` mode.
 
-You can then use this listener with your gRPC clients to provide `functional` tests for your gRPC services.
+You can create connections for your gRPC clients, using this listener, with the [TestBufconnConnectionFactory](https://github.com/ankorstore/yokai/blob/main/grpcserver/grpcservertest/factory.go).
 
 You can find tests examples in the [gRPC server module tests](https://github.com/ankorstore/yokai/blob/main/fxgrpcserver/module_test.go).
