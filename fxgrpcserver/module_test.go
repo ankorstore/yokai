@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net"
 	"strings"
 	"testing"
 
@@ -21,6 +20,7 @@ import (
 	"github.com/ankorstore/yokai/fxlog"
 	"github.com/ankorstore/yokai/fxmetrics"
 	"github.com/ankorstore/yokai/fxtrace"
+	"github.com/ankorstore/yokai/grpcserver/grpcservertest"
 	"github.com/ankorstore/yokai/healthcheck"
 	"github.com/ankorstore/yokai/log/logtest"
 	"github.com/ankorstore/yokai/trace/tracetest"
@@ -33,7 +33,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/test/bufconn"
 )
 
 var (
@@ -52,7 +51,7 @@ func TestModule(t *testing.T) {
 	t.Setenv("APP_ENV", "test")
 
 	var grpcServer *grpc.Server
-	var lis *bufconn.Listener
+	var connFactory grpcservertest.TestBufconnConnectionFactory
 	var logBuffer logtest.TestLogBuffer
 	var traceExporter tracetest.TestTraceExporter
 	var metricsRegistry *prometheus.Registry
@@ -73,20 +72,20 @@ func TestModule(t *testing.T) {
 			fxgrpcserver.AsGrpcServerStreamInterceptor(interceptor.NewStreamInterceptor),
 			fxgrpcserver.AsGrpcServerService(service.NewTestServiceServer, &proto.Service_ServiceDesc),
 		),
-		fx.Populate(&grpcServer, &lis, &logBuffer, &traceExporter, &metricsRegistry),
+		fx.Populate(&grpcServer, &connFactory, &logBuffer, &traceExporter, &metricsRegistry),
 	).RequireStart().RequireStop()
 
 	defer func() {
-		err := lis.Close()
-		assert.NoError(t, err)
-
 		grpcServer.GracefulStop()
 	}()
 
-	// client preparation
-	conn, err := prepareGrpcClientTestConnection(lis)
+	// conn preparation
+	conn, err := connFactory.Create(
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
 	assert.NoError(t, err)
 
+	// client preparation
 	client := proto.NewServiceClient(conn)
 
 	// context preparation
@@ -328,7 +327,7 @@ func TestModuleHealthCheck(t *testing.T) {
 	t.Setenv("APP_ENV", "test")
 
 	var grpcServer *grpc.Server
-	var lis *bufconn.Listener
+	var connFactory grpcservertest.TestBufconnConnectionFactory
 	var logBuffer logtest.TestLogBuffer
 	var traceExporter tracetest.TestTraceExporter
 	var metricsRegistry *prometheus.Registry
@@ -347,20 +346,20 @@ func TestModuleHealthCheck(t *testing.T) {
 			fxhealthcheck.AsCheckerProbe(probes.NewSuccessProbe),
 			fxhealthcheck.AsCheckerProbe(probes.NewFailureProbe, healthcheck.Liveness, healthcheck.Readiness),
 		),
-		fx.Populate(&grpcServer, &lis, &logBuffer, &traceExporter, &metricsRegistry),
+		fx.Populate(&grpcServer, &connFactory, &logBuffer, &traceExporter, &metricsRegistry),
 	).RequireStart().RequireStop()
 
 	defer func() {
-		err := lis.Close()
-		assert.NoError(t, err)
-
 		grpcServer.GracefulStop()
 	}()
 
-	// client preparation
-	conn, err := prepareGrpcClientTestConnection(lis)
+	// conn preparation
+	conn, err := connFactory.Create(
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
 	assert.NoError(t, err)
 
+	// client preparation
 	client := grpc_health_v1.NewHealthClient(conn)
 
 	// context preparation
@@ -467,15 +466,4 @@ func TestModuleDecoration(t *testing.T) {
 	assert.Len(t, info, 1)
 	assert.Contains(t, fmt.Sprintf("%+v", info), "grpc.health.v1.Health")
 	assert.NotContains(t, fmt.Sprintf("%+v", info), "grpc.reflection.v1alpha.ServerReflection")
-}
-
-func prepareGrpcClientTestConnection(lis *bufconn.Listener) (*grpc.ClientConn, error) {
-	return grpc.DialContext(
-		context.Background(),
-		"",
-		grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
-			return lis.Dial()
-		}),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
 }
