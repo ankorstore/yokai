@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/fxgrpcserver/v1.2.0...fxgrpcserver/v1.3.0) (2024-10-01)
+
+
+### Features
+
+* **fxgrpcserver:** Added test helpers for creating gRPC client connections ([#286](https://github.com/ankorstore/yokai/issues/286)) ([f42b559](https://github.com/ankorstore/yokai/commit/f42b559a49baad3f1fb3e2c20e43ead44de1bff3))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/fxgrpcserver/v1.1.0...fxgrpcserver/v1.2.0) (2024-04-05)
 
 
