@@ -19,6 +19,7 @@
   * [Foundations](#foundations)
   * [Extensions](#extensions)
 * [Getting started](#getting-started)
+* [Showroom](#showroom)
 * [Contributing](#contributing)
 <!-- TOC -->
 
@@ -77,6 +78,14 @@ Yokai provides ready to use `application templates` to start your projects:
 - for [gRPC applications](https://ankorstore.github.io/yokai/getting-started/grpc-application)
 - for [HTTP applications](https://ankorstore.github.io/yokai/getting-started/http-application)
 - for [worker applications](https://ankorstore.github.io/yokai/getting-started/worker-application)
+
+## Showroom
+
+Yokai provides a [showroom repository with demo applications](https://github.com/ankorstore/yokai-showroom), ready to run, to see it in action:
+
+- [gRPC demo application](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo)
+- [HTTP demo application](https://github.com/ankorstore/yokai-showroom/tree/main/http-demo)
+- [worker demo application](https://github.com/ankorstore/yokai-showroom/tree/main/worker-demo)
 
 ## Contributing
 
