@@ -82,7 +82,7 @@ Yokai provides ready to use `application templates` to start your projects:
 
 ## Showroom
 
-Yokai provides a [showroom repository with demo applications](https://github.com/ankorstore/yokai-showroom), ready to run, to see it in action:
+Yokai provides a [showroom repository](https://github.com/ankorstore/yokai-showroom) with `demo applications`, ready to run, to see it in action:
 
 - [gRPC demo application](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo)
 - [HTTP demo application](https://github.com/ankorstore/yokai-showroom/tree/main/http-demo)
