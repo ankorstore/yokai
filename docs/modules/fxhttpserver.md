@@ -250,6 +250,12 @@ func Router() fx.Option {
 }
 ```
 
+Notes:
+
+- you can specify several valid HTTP methods (comma separated) while registering a handler, for example `fxhttpserver.AsHandler("GET,POST", ...)`
+- you can use the shortcut `*` to register a handler for all valid HTTP methods, for example `fxhttpserver.AsHandler("*", ...)`
+- the valid HTTP methods are `CONNECT`, `DELETE`, `GET`, `HEAD`, `OPTIONS`, `PATCH`, `POST`, `PUT`, `TRACE`, `PROPFIND` and `REPORT`
+
 ### Handlers groups registration
 
 You can use the `AsHandlersGroup()` function to register handlers groups and their middlewares on your HTTP
@@ -332,6 +338,12 @@ func Router() fx.Option {
 	)
 }
 ```
+
+Notes:
+
+- you can specify several valid HTTP methods (comma separated) while registering a handler in a group, for example `fxhttpserver.NewHandlerRegistration("GET,POST", ...)`
+- you can use the shortcut `*` to register a handler for all valid HTTP methods, for example `fxhttpserver.NewHandlerRegistration("*", ...)`
+- the valid HTTP methods are `CONNECT`, `DELETE`, `GET`, `HEAD`, `OPTIONS`, `PATCH`, `POST`, `PUT`, `TRACE`, `PROPFIND` and `REPORT`
 
 ## WebSocket
 
