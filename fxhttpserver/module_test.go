@@ -16,6 +16,7 @@ import (
 	"github.com/ankorstore/yokai/fxhttpserver/testdata/service"
 	"github.com/ankorstore/yokai/fxlog"
 	"github.com/ankorstore/yokai/fxmetrics"
+	"github.com/ankorstore/yokai/fxmetrics/testdata/spy"
 	"github.com/ankorstore/yokai/fxtrace"
 	"github.com/ankorstore/yokai/httpserver"
 	"github.com/ankorstore/yokai/log"
@@ -1142,6 +1143,33 @@ func TestModuleWithTemplates(t *testing.T) {
 		semconv.HTTPRoute("/template"),
 		semconv.HTTPStatusCode(http.StatusOK),
 	)
+}
+
+func TestModuleWithInvalidMethods(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("APP_DEBUG", "true")
+
+	var httpServer *echo.Echo
+
+	spyTB := spy.NewSpyTB()
+
+	fxtest.New(
+		spyTB,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxhttpserver.FxHttpServerModule,
+		fx.Options(
+			fxhttpserver.AsHandler("invalid", "/concrete", concreteHandler),
+		),
+		fx.Populate(&httpServer),
+	).RequireStart().RequireStop()
+
+	assert.NotZero(t, spyTB.Failures())
+	assert.Contains(t, spyTB.Errors().String(), `failed to register http server resources: invalid HTTP method "INVALID"`)
 }
 
 func TestModuleDecoration(t *testing.T) {

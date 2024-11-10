@@ -91,7 +91,7 @@ func NewFxHttpServer(p FxHttpServerParam) (*echo.Echo, error) {
 	// groups, handlers & middlewares registrations
 	httpServer, err = withRegisteredResources(httpServer, p)
 	if err != nil {
-		return nil, fmt.Errorf("failed to register http server resources: %w", err)
+		return httpServer, fmt.Errorf("failed to register http server resources: %w", err)
 	}
 
 	// lifecycles
