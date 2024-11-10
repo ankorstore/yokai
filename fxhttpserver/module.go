@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/generate/uuid"
@@ -86,11 +85,14 @@ func NewFxHttpServer(p FxHttpServerParam) (*echo.Echo, error) {
 		return nil, fmt.Errorf("failed to create http server: %w", err)
 	}
 
-	// middlewares
+	// middlewares registrations
 	httpServer = withDefaultMiddlewares(httpServer, p)
 
 	// groups, handlers & middlewares registrations
-	httpServer = withRegisteredResources(httpServer, p)
+	httpServer, err = withRegisteredResources(httpServer, p)
+	if err != nil {
+		return httpServer, fmt.Errorf("failed to register http server resources: %w", err)
+	}
 
 	// lifecycles
 	p.LifeCycle.Append(fx.Hook{
@@ -191,7 +193,8 @@ func withDefaultMiddlewares(httpServer *echo.Echo, p FxHttpServerParam) *echo.Ec
 	return httpServer
 }
 
-func withRegisteredResources(httpServer *echo.Echo, p FxHttpServerParam) *echo.Echo {
+//nolint:cyclop
+func withRegisteredResources(httpServer *echo.Echo, p FxHttpServerParam) (*echo.Echo, error) {
 	// register handler groups
 	resolvedHandlersGroups, err := p.Registry.ResolveHandlersGroups()
 	if err != nil {
@@ -202,13 +205,21 @@ func withRegisteredResources(httpServer *echo.Echo, p FxHttpServerParam) *echo.E
 		group := httpServer.Group(g.Prefix(), g.Middlewares()...)
 
 		for _, h := range g.Handlers() {
-			group.Add(
-				strings.ToUpper(h.Method()),
-				h.Path(),
-				h.Handler(),
-				h.Middlewares()...,
-			)
-			httpServer.Logger.Debugf("registering handler in group for [%s] %s%s", h.Method(), g.Prefix(), h.Path())
+			methods, err := ExtractMethods(h.Method())
+			if err != nil {
+				return httpServer, err
+			}
+
+			for _, method := range methods {
+				group.Add(
+					method,
+					h.Path(),
+					h.Handler(),
+					h.Middlewares()...,
+				)
+
+				httpServer.Logger.Debugf("registering handler in group for [%s] %s%s", method, g.Prefix(), h.Path())
+			}
 		}
 
 		httpServer.Logger.Debugf("registered handlers group for prefix %s", g.Prefix())
@@ -239,15 +250,22 @@ func withRegisteredResources(httpServer *echo.Echo, p FxHttpServerParam) *echo.E
 	}
 
 	for _, h := range resolvedHandlers {
-		httpServer.Add(
-			strings.ToUpper(h.Method()),
-			h.Path(),
-			h.Handler(),
-			h.Middlewares()...,
-		)
+		methods, err := ExtractMethods(h.Method())
+		if err != nil {
+			return httpServer, err
+		}
 
-		httpServer.Logger.Debugf("registered handler for [%s] %s", h.Method(), h.Path())
+		for _, method := range methods {
+			httpServer.Add(
+				method,
+				h.Path(),
+				h.Handler(),
+				h.Middlewares()...,
+			)
+
+			httpServer.Logger.Debugf("registered handler for [%s] %s", h.Method(), h.Path())
+		}
 	}
 
-	return httpServer
+	return httpServer, nil
 }

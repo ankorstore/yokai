@@ -16,6 +16,7 @@ import (
 	"github.com/ankorstore/yokai/fxhttpserver/testdata/service"
 	"github.com/ankorstore/yokai/fxlog"
 	"github.com/ankorstore/yokai/fxmetrics"
+	"github.com/ankorstore/yokai/fxmetrics/testdata/spy"
 	"github.com/ankorstore/yokai/fxtrace"
 	"github.com/ankorstore/yokai/httpserver"
 	"github.com/ankorstore/yokai/log"
@@ -96,12 +97,12 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 		fx.Options(
 			fxhttpserver.AsMiddleware(middleware.NewTestGlobalMiddleware, fxhttpserver.GlobalUse),
 			fxhttpserver.AsHandler("GET", "/bar", handler.NewTestBarHandler, middleware.NewTestHandlerMiddleware),
-			fxhttpserver.AsHandler("GET", "/baz", handler.NewTestBazHandler, middleware.NewTestHandlerMiddleware),
+			fxhttpserver.AsHandler("GET,POST", "/baz", handler.NewTestBazHandler, middleware.NewTestHandlerMiddleware),
 			fxhttpserver.AsHandlersGroup(
 				"/foo",
 				[]*fxhttpserver.HandlerRegistration{
 					fxhttpserver.NewHandlerRegistration("GET", "/bar", handler.NewTestBarHandler, middleware.NewTestHandlerMiddleware),
-					fxhttpserver.NewHandlerRegistration("GET", "/baz", handler.NewTestBazHandler, middleware.NewTestHandlerMiddleware),
+					fxhttpserver.NewHandlerRegistration("GET,POST", "/baz", handler.NewTestBazHandler, middleware.NewTestHandlerMiddleware),
 				},
 				middleware.NewTestGroupMiddleware,
 			),
@@ -254,6 +255,81 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 		traceExporter,
 		"GET /baz",
 		semconv.HTTPMethod(http.MethodGet),
+		semconv.HTTPRoute("/baz"),
+		semconv.HTTPStatusCode(http.StatusOK),
+		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
+	)
+
+	// [POST] /baz
+	req = httptest.NewRequest(http.MethodPost, "/baz", nil)
+	req.Header.Add("x-request-id", testRequestId)
+	req.Header.Add("traceparent", testTraceParent)
+	req.Header.Add("x-foo", "foo")
+	req.Header.Add("x-bar", "bar")
+	rec = httptest.NewRecorder()
+	httpServer.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Contains(t, rec.Body.String(), "baz: test")
+	assert.Equal(t, "true", rec.Header().Get("global-middleware"))
+	assert.Equal(t, "", rec.Header().Get("group-middleware"))
+	assert.Equal(t, "true", rec.Header().Get("handler-middleware"))
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "info",
+		"service":   "test",
+		"module":    "httpserver",
+		"requestID": testRequestId,
+		"traceID":   testTraceId,
+		"foo":       "foo",
+		"bar":       "bar",
+		"message":   "GLOBAL middleware for app: test",
+	})
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "info",
+		"service":   "test",
+		"module":    "httpserver",
+		"requestID": testRequestId,
+		"traceID":   testTraceId,
+		"foo":       "foo",
+		"bar":       "bar",
+		"message":   "HANDLER middleware for app: test",
+	})
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "info",
+		"service":   "test",
+		"module":    "httpserver",
+		"requestID": testRequestId,
+		"traceID":   testTraceId,
+		"foo":       "foo",
+		"bar":       "bar",
+		"message":   "in baz handler",
+	})
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "info",
+		"service":   "test",
+		"module":    "httpserver",
+		"method":    "POST",
+		"uri":       "/baz",
+		"status":    200,
+		"requestID": testRequestId,
+		"traceID":   testTraceId,
+		"foo":       "foo",
+		"bar":       "bar",
+		"message":   "request logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"baz span",
+		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
+	)
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"POST /baz",
+		semconv.HTTPMethod(http.MethodPost),
 		semconv.HTTPRoute("/baz"),
 		semconv.HTTPStatusCode(http.StatusOK),
 		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
@@ -431,6 +507,92 @@ func TestModuleWithAutowiredResources(t *testing.T) {
 		),
 	)
 
+	// [POST] /foo/baz
+	req = httptest.NewRequest(http.MethodPost, "/foo/baz", nil)
+	req.Header.Add("x-request-id", testRequestId)
+	req.Header.Add("traceparent", testTraceParent)
+	req.Header.Add("x-foo", "foo")
+	req.Header.Add("x-bar", "bar")
+	rec = httptest.NewRecorder()
+	httpServer.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Contains(t, rec.Body.String(), "baz: test")
+	assert.Equal(t, "true", rec.Header().Get("global-middleware"))
+	assert.Equal(t, "true", rec.Header().Get("group-middleware"))
+	assert.Equal(t, "true", rec.Header().Get("handler-middleware"))
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "info",
+		"service":   "test",
+		"module":    "httpserver",
+		"requestID": testRequestId,
+		"traceID":   testTraceId,
+		"foo":       "foo",
+		"bar":       "bar",
+		"message":   "GLOBAL middleware for app: test",
+	})
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "info",
+		"service":   "test",
+		"module":    "httpserver",
+		"requestID": testRequestId,
+		"traceID":   testTraceId,
+		"foo":       "foo",
+		"bar":       "bar",
+		"message":   "GROUP middleware for app: test",
+	})
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "info",
+		"service":   "test",
+		"module":    "httpserver",
+		"requestID": testRequestId,
+		"traceID":   testTraceId,
+		"foo":       "foo",
+		"bar":       "bar",
+		"message":   "HANDLER middleware for app: test",
+	})
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "info",
+		"service":   "test",
+		"module":    "httpserver",
+		"requestID": testRequestId,
+		"traceID":   testTraceId,
+		"foo":       "foo",
+		"bar":       "bar",
+		"message":   "in baz handler",
+	})
+	logtest.AssertHasNotLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "info",
+		"service":   "test",
+		"module":    "httpserver",
+		"method":    "POST",
+		"uri":       "/foo/baz",
+		"status":    200,
+		"requestID": testRequestId,
+		"traceID":   testTraceId,
+		"foo":       "foo",
+		"bar":       "bar",
+		"message":   "request logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"baz span",
+		attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
+	)
+	assert.False(
+		t,
+		traceExporter.HasSpan(
+			"POST /foo/baz",
+			semconv.HTTPMethod(http.MethodPost),
+			semconv.HTTPRoute("/foo/baz"),
+			semconv.HTTPStatusCode(http.StatusOK),
+			attribute.String(httpserver.TraceSpanAttributeHttpRequestId, testRequestId),
+		),
+	)
+
 	// [GET] /invalid
 	req = httptest.NewRequest(http.MethodGet, "/invalid", nil)
 	req.Header.Add("x-request-id", testRequestId)
@@ -482,11 +644,11 @@ func TestModuleWithConcreteResources(t *testing.T) {
 		fx.Provide(service.NewTestService),
 		fx.Options(
 			fxhttpserver.AsMiddleware(concreteGlobalMiddleware, fxhttpserver.GlobalUse),
-			fxhttpserver.AsHandler("GET", "/concrete", concreteHandler, concreteHandlerMiddleware),
+			fxhttpserver.AsHandler("*", "/concrete", concreteHandler, concreteHandlerMiddleware),
 			fxhttpserver.AsHandlersGroup(
 				"/group",
 				[]*fxhttpserver.HandlerRegistration{
-					fxhttpserver.NewHandlerRegistration("GET", "/concrete", concreteHandler, concreteHandlerMiddleware),
+					fxhttpserver.NewHandlerRegistration("*", "/concrete", concreteHandler, concreteHandlerMiddleware),
 				},
 				concreteGroupMiddleware,
 			),
@@ -981,6 +1143,66 @@ func TestModuleWithTemplates(t *testing.T) {
 		semconv.HTTPRoute("/template"),
 		semconv.HTTPStatusCode(http.StatusOK),
 	)
+}
+
+func TestModuleWithInvalidHandlerMethods(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("APP_DEBUG", "true")
+
+	var httpServer *echo.Echo
+
+	spyTB := spy.NewSpyTB()
+
+	fxtest.New(
+		spyTB,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxhttpserver.FxHttpServerModule,
+		fx.Options(
+			fxhttpserver.AsHandler("invalid", "/concrete", concreteHandler),
+		),
+		fx.Populate(&httpServer),
+	).RequireStart().RequireStop()
+
+	assert.NotZero(t, spyTB.Failures())
+	assert.Contains(t, spyTB.Errors().String(), `failed to register http server resources: invalid HTTP method "INVALID"`)
+}
+
+func TestModuleWithInvalidHandlersGroupMethods(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("APP_DEBUG", "true")
+
+	var httpServer *echo.Echo
+
+	spyTB := spy.NewSpyTB()
+
+	fxtest.New(
+		spyTB,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxhttpserver.FxHttpServerModule,
+		fx.Options(
+			fxhttpserver.AsHandlersGroup(
+				"/group",
+				[]*fxhttpserver.HandlerRegistration{
+					fxhttpserver.NewHandlerRegistration("invalid", "/concrete", concreteHandler, concreteHandlerMiddleware),
+				},
+				concreteGroupMiddleware,
+			),
+		),
+		fx.Populate(&httpServer),
+	).RequireStart().RequireStop()
+
+	assert.NotZero(t, spyTB.Failures())
+	assert.Contains(t, spyTB.Errors().String(), `failed to register http server resources: invalid HTTP method "INVALID"`)
 }
 
 func TestModuleDecoration(t *testing.T) {
