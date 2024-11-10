@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.5.0...fxhttpserver/v1.6.0) (2024-11-10)
+
+
+### Features
+
+* **fxhttpserver:** Added possibility to specify several HTTP methods during handlers registration ([#294](https://github.com/ankorstore/yokai/issues/294)) ([aacfa05](https://github.com/ankorstore/yokai/commit/aacfa051da449fa404be1a5464b9099856af932a))
+
 ## [1.5.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.4.0...fxhttpserver/v1.5.0) (2024-04-17)
 
 
