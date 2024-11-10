@@ -1145,7 +1145,7 @@ func TestModuleWithTemplates(t *testing.T) {
 	)
 }
 
-func TestModuleWithInvalidMethods(t *testing.T) {
+func TestModuleWithInvalidHandlerMethods(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("APP_DEBUG", "true")
 
@@ -1164,6 +1164,39 @@ func TestModuleWithInvalidMethods(t *testing.T) {
 		fxhttpserver.FxHttpServerModule,
 		fx.Options(
 			fxhttpserver.AsHandler("invalid", "/concrete", concreteHandler),
+		),
+		fx.Populate(&httpServer),
+	).RequireStart().RequireStop()
+
+	assert.NotZero(t, spyTB.Failures())
+	assert.Contains(t, spyTB.Errors().String(), `failed to register http server resources: invalid HTTP method "INVALID"`)
+}
+
+func TestModuleWithInvalidHandlersGroupMethods(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("APP_DEBUG", "true")
+
+	var httpServer *echo.Echo
+
+	spyTB := spy.NewSpyTB()
+
+	fxtest.New(
+		spyTB,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxhttpserver.FxHttpServerModule,
+		fx.Options(
+			fxhttpserver.AsHandlersGroup(
+				"/group",
+				[]*fxhttpserver.HandlerRegistration{
+					fxhttpserver.NewHandlerRegistration("invalid", "/concrete", concreteHandler, concreteHandlerMiddleware),
+				},
+				concreteGroupMiddleware,
+			),
 		),
 		fx.Populate(&httpServer),
 	).RequireStart().RequireStop()
