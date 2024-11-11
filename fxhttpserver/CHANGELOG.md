@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.6.0...fxhttpserver/v1.6.1) (2024-11-11)
+
+
+### Bug Fixes
+
+* **fxhttpserver:** Fixed handlers registration logs ([#298](https://github.com/ankorstore/yokai/issues/298)) ([e55d438](https://github.com/ankorstore/yokai/commit/e55d438b5cb88152b69d9cbf816ae9ab7665ebc7))
+
 ## [1.6.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.5.0...fxhttpserver/v1.6.0) (2024-11-10)
 
 
