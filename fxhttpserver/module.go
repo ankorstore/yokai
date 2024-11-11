@@ -263,7 +263,7 @@ func withRegisteredResources(httpServer *echo.Echo, p FxHttpServerParam) (*echo.
 				h.Middlewares()...,
 			)
 
-			httpServer.Logger.Debugf("registered handler for [%s] %s", h.Method(), h.Path())
+			httpServer.Logger.Debugf("registered handler for [%s] %s", method, h.Path())
 		}
 	}
 
