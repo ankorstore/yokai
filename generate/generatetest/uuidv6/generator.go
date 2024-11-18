@@ -1,28 +1,28 @@
-package uuidv7
+package uuidv6
 
 import googleuuid "github.com/google/uuid"
 
-// TestUuidV7Generator is a [UuidV7Generator] implementation allowing deterministic generations (for testing).
-type TestUuidV7Generator struct {
+// TestUuidV6Generator is a [UuidV6Generator] implementation allowing deterministic generations (for testing).
+type TestUuidV6Generator struct {
 	value string
 }
 
-// NewTestUuidV7Generator returns a [TestUuidGenerator], implementing [UuidGenerator].
+// NewTestUuidV6Generator returns a [TestUuidGenerator], implementing [UuidGenerator].
 //
 // It accepts a value that will be used for deterministic generation results.
-func NewTestUuidV7Generator(value string) (*TestUuidV7Generator, error) {
+func NewTestUuidV6Generator(value string) (*TestUuidV6Generator, error) {
 	err := googleuuid.Validate(value)
 	if err != nil {
 		return nil, err
 	}
 
-	return &TestUuidV7Generator{
+	return &TestUuidV6Generator{
 		value: value,
 	}, nil
 }
 
 // SetValue sets the value to use for deterministic generations.
-func (g *TestUuidV7Generator) SetValue(value string) error {
+func (g *TestUuidV6Generator) SetValue(value string) error {
 	err := googleuuid.Validate(value)
 	if err != nil {
 		return err
@@ -34,6 +34,6 @@ func (g *TestUuidV7Generator) SetValue(value string) error {
 }
 
 // Generate returns the configured deterministic value.
-func (g *TestUuidV7Generator) Generate() (googleuuid.UUID, error) {
+func (g *TestUuidV6Generator) Generate() (googleuuid.UUID, error) {
 	return googleuuid.Parse(g.value)
 }

@@ -1,33 +1,33 @@
-package uuidv7_test
+package uuidv6_test
 
 import (
 	"testing"
 
-	uuidv7test "github.com/ankorstore/yokai/generate/generatetest/uuidv7"
-	"github.com/ankorstore/yokai/generate/uuidv7"
+	uuidv6test "github.com/ankorstore/yokai/generate/generatetest/uuidv6"
+	"github.com/ankorstore/yokai/generate/uuidv6"
 	"github.com/stretchr/testify/assert"
 )
 
 const (
-	uuid1 = "018fdd7d-1576-7a21-900e-1399637bd1a1"
-	uuid2 = "018fdd7d-1576-76ff-944b-39bd474b0ea9"
-	uuid3 = "018fdd7d-1576-7b53-a364-7b96dcc158c9"
+	uuid1 = "1efa59f2-d438-6ec0-9d52-4da3ad16f2c6"
+	uuid2 = "1efa59f2-d438-6ec1-8b52-6844309a22de"
+	uuid3 = "1efa59f2-d438-6ec2-abd0-e36a967ab868"
 )
 
-func TestNewTestUuidV7Generator(t *testing.T) {
+func TestNewTestUuidV6Generator(t *testing.T) {
 	t.Parallel()
 
-	generator, err := uuidv7test.NewTestUuidV7Generator(uuid1)
+	generator, err := uuidv6test.NewTestUuidV6Generator(uuid1)
 	assert.NoError(t, err)
 
-	assert.IsType(t, &uuidv7test.TestUuidV7Generator{}, generator)
-	assert.Implements(t, (*uuidv7.UuidV7Generator)(nil), generator)
+	assert.IsType(t, &uuidv6test.TestUuidV6Generator{}, generator)
+	assert.Implements(t, (*uuidv6.UuidV6Generator)(nil), generator)
 }
 
 func TestGenerateSuccess(t *testing.T) {
 	t.Parallel()
 
-	generator, err := uuidv7test.NewTestUuidV7Generator(uuid2)
+	generator, err := uuidv6test.NewTestUuidV6Generator(uuid2)
 	assert.NoError(t, err)
 
 	value1, err := generator.Generate()
@@ -55,11 +55,11 @@ func TestGenerateSuccess(t *testing.T) {
 func TestGenerateFailure(t *testing.T) {
 	t.Parallel()
 
-	_, err := uuidv7test.NewTestUuidV7Generator("invalid")
+	_, err := uuidv6test.NewTestUuidV6Generator("invalid")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid UUID length: 7")
 
-	generator, err := uuidv7test.NewTestUuidV7Generator(uuid1)
+	generator, err := uuidv6test.NewTestUuidV6Generator(uuid1)
 	assert.NoError(t, err)
 
 	err = generator.SetValue("invalid")
