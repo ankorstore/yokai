@@ -16,9 +16,12 @@
     * [UUID V4](#uuid-v4)
       * [Usage](#usage)
       * [Testing](#testing)
-    * [UUID V7](#uuid-v7)
+    * [UUID V6](#uuid-v6)
       * [Usage](#usage-1)
       * [Testing](#testing-1)
+    * [UUID V7](#uuid-v7)
+      * [Usage](#usage-2)
+      * [Testing](#testing-2)
   * [Override](#override)
 <!-- TOC -->
 
@@ -108,9 +111,78 @@ func main() {
 				fx.ResultTags(`name:"generate-test-uuid-value"`),
 			),
 		),
-		fx.Decorate(fxtestuuid.NewFxTestUuidGeneratorFactory), // override the module with the TestUuidGeneratorFactory
+		fx.Decorate(fxtestuuid.NewFxTestUuidGeneratorFactory), // override the module with the test factory
 		fx.Invoke(func(generator uuid.UuidGenerator) {         // invoke the generator
 			fmt.Printf("uuid: %s", generator.Generate())       // uuid: some deterministic value
+		}),
+	).Run()
+}
+```
+
+#### UUID V6
+
+##### Usage
+
+This module provides a [UuidV6Generator](https://github.com/ankorstore/yokai/blob/main/generate/uuidv6/generator.go), made available into the Fx container.
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/ankorstore/yokai/generate/uuidv6"
+	"github.com/ankorstore/yokai/fxgenerate"
+	"go.uber.org/fx"
+)
+
+func main() {
+	fx.New(
+		fxgenerate.FxGenerateModule,                        // load the module
+		fx.Invoke(func(generator uuidv6.UuidV7Generator) {
+			uuid, _ := generator.Generate()                 // invoke the uuid v6 generator
+			fmt.Printf("uuid: %s", uuid.String())           // uuid: 1efa5a47-e5d0-6667-9d00-49bf4f758c68
+		}),
+	).Run()
+}
+```
+
+##### Testing
+
+This module provides the possibility to make your [UuidV6Generator](https://github.com/ankorstore/yokai/blob/main/generate/uuidv6/generator.go) generate deterministic values, for testing purposes.
+
+You need to:
+
+- first provide into the Fx container the deterministic value to be used for generation, annotated with `name:"generate-test-uuid-v6-value"`
+- then decorate into the Fx container the `UuidV6GeneratorFactory` with the provided [TestUuidGeneratorV6Factory](fxgeneratetest/uuidv6/factory.go)
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/ankorstore/yokai/fxgenerate"
+	fxtestuuidv6 "github.com/ankorstore/yokai/fxgenerate/fxgeneratetest/uuidv6"
+	"github.com/ankorstore/yokai/generate/uuidv6"
+	"go.uber.org/fx"
+)
+
+func main() {
+	fx.New(
+		fxgenerate.FxGenerateModule, // load the module
+		fx.Provide(                  // provide and annotate the deterministic value
+			fx.Annotate(
+				func() string {
+					return "1efa5a47-e5d0-6663-99da-f6e8045dd166"
+				},
+				fx.ResultTags(`name:"generate-test-uuid-v6-value"`),
+			),
+		),
+		fx.Decorate(fxtestuuidv6.NewFxTestUuidV6GeneratorFactory), // override the module with the test factory
+		fx.Invoke(func(generator uuidv6.UuidV6Generator) {         // invoke the generator
+			uuid, _ := generator.Generate()
+			fmt.Printf("uuid: %s", uuid.String())                  // uuid: 1efa5a47-e5d0-6663-99da-f6e8045dd166
 		}),
 	).Run()
 }
@@ -176,8 +248,8 @@ func main() {
 				fx.ResultTags(`name:"generate-test-uuid-v7-value"`),
 			),
 		),
-		fx.Decorate(fxtestuuidv7.NewFxTestUuidV7GeneratorFactory), // override the module with the TestUuidGeneratorFactory
-		fx.Invoke(func(generator uuidv7.UuidV7Generator) {            // invoke the generator
+		fx.Decorate(fxtestuuidv7.NewFxTestUuidV7GeneratorFactory), // override the module with the test factory
+		fx.Invoke(func(generator uuidv7.UuidV7Generator) {         // invoke the generator
 			uuid, _ := generator.Generate()
 			fmt.Printf("uuid: %s", uuid.String())                  // uuid: 018fdd68-1b41-7eb0-afad-57f45297c7c1
 		}),
