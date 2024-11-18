@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/fxgenerate/v1.2.0...fxgenerate/v1.3.0) (2024-11-18)
+
+
+### Features
+
+* **fxgenerate:** Added UUIDv6 generation ([#303](https://github.com/ankorstore/yokai/issues/303)) ([ddbe283](https://github.com/ankorstore/yokai/commit/ddbe2833a88a81d48b5f0d0e1ce527108c070f99))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/fxgenerate/v1.1.0...fxgenerate/v1.2.0) (2024-06-03)
 
 
