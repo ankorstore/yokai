@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/generate/v1.2.0...generate/v1.3.0) (2024-11-18)
+
+
+### Features
+
+* **generate:** Added UUIDv6 generation ([#301](https://github.com/ankorstore/yokai/issues/301)) ([d78a0ed](https://github.com/ankorstore/yokai/commit/d78a0ed27c8932296bf9b944b915e74574551e2e))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/generate/v1.1.0...generate/v1.2.0) (2024-06-03)
 
 
