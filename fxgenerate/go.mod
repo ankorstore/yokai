@@ -3,7 +3,7 @@ module github.com/ankorstore/yokai/fxgenerate
 go 1.20
 
 require (
-	github.com/ankorstore/yokai/generate v1.2.0
+	github.com/ankorstore/yokai/generate v1.3.0
 	github.com/google/uuid v1.6.0
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/fx v1.22.0
