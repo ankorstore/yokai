@@ -20,11 +20,14 @@ var FXValidatorModule = fx.Module(
 
 type ProvideValidatorParams struct {
 	fx.In
-	Config           *config.Config
-	AliasDefinitions []AliasDefinition `group:"validator-aliases"`
+	Config                      *config.Config
+	AliasDefinitions            []AliasDefinition            `group:"validator-aliases"`
+	ValidationDefinitions       []ValidationDefinition       `group:"validator-validations"`
+	StructValidationDefinitions []StructValidationDefinition `group:"validator-struct-validations"`
+	CustomTypeDefinitions       []CustomTypeDefinition       `group:"validator-custom-types"`
 }
 
-func ProvideValidator(p ProvideValidatorParams) *validator.Validate {
+func ProvideValidator(p ProvideValidatorParams) (*validator.Validate, error) {
 	opts := []validator.Option{
 		validator.WithRequiredStructEnabled(),
 	}
@@ -35,7 +38,7 @@ func ProvideValidator(p ProvideValidatorParams) *validator.Validate {
 
 	validate := validator.New(opts...)
 
-	// tag name
+	// tag name configuration
 	tagName := p.Config.GetString("modules.validator.tag_name")
 	if tagName == "" {
 		tagName = TagName
@@ -43,10 +46,28 @@ func ProvideValidator(p ProvideValidatorParams) *validator.Validate {
 
 	validate.SetTagName(tagName)
 
-	// aliases
+	// aliases registration
 	for _, def := range p.AliasDefinitions {
 		validate.RegisterAlias(def.Alias(), def.Tags())
 	}
 
-	return validate
+	// var or struct field level validations registration
+	for _, def := range p.ValidationDefinitions {
+		err := validate.RegisterValidationCtx(def.Tag(), def.Fn(), def.CallEvenIfNull())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// struct level validations registration
+	for _, def := range p.StructValidationDefinitions {
+		validate.RegisterStructValidationCtx(def.Fn(), def.Types()...)
+	}
+
+	// custom types registration
+	for _, def := range p.CustomTypeDefinitions {
+		validate.RegisterCustomTypeFunc(def.Fn(), def.Types()...)
+	}
+
+	return validate, nil
 }
