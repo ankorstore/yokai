@@ -31,7 +31,7 @@ func AsValidation(tag string, fn validator.FuncCtx, callEvenIfNull bool) fx.Opti
 func AsStructValidation(fn validator.StructLevelFuncCtx, types ...any) fx.Option {
 	return fx.Supply(
 		fx.Annotate(
-			NewStructValidationDefinition(fn, types),
+			NewStructValidationDefinition(fn, types...),
 			fx.As(new(StructValidationDefinition)),
 			fx.ResultTags(`group:"validator-struct-validations"`),
 		),
@@ -42,7 +42,7 @@ func AsStructValidation(fn validator.StructLevelFuncCtx, types ...any) fx.Option
 func AsCustomType(fn validator.CustomTypeFunc, types ...any) fx.Option {
 	return fx.Supply(
 		fx.Annotate(
-			NewCustomTypeDefinition(fn, types),
+			NewCustomTypeDefinition(fn, types...),
 			fx.As(new(CustomTypeDefinition)),
 			fx.ResultTags(`group:"validator-custom-types"`),
 		),

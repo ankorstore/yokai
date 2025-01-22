@@ -1,0 +1,31 @@
+name: "fxvalidator-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "fxvalidator/**.go"
+            - "fxvalidator/go.mod"
+            - "fxvalidator/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "fxvalidator/**.go"
+            - "fxvalidator/go.mod"
+            - "fxvalidator/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "fxvalidator"

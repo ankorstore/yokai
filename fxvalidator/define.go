@@ -80,7 +80,7 @@ type structValidationDefinition struct {
 }
 
 // NewStructValidationDefinition returns a new StructValidationDefinition.
-func NewStructValidationDefinition(fn validator.StructLevelFuncCtx, types []any) StructValidationDefinition {
+func NewStructValidationDefinition(fn validator.StructLevelFuncCtx, types ...any) StructValidationDefinition {
 	return &structValidationDefinition{
 		fn:    fn,
 		types: types,
@@ -109,7 +109,7 @@ type customTypeDefinition struct {
 }
 
 // NewCustomTypeDefinition returns a new CustomTypeDefinition.
-func NewCustomTypeDefinition(fn validator.CustomTypeFunc, types []any) CustomTypeDefinition {
+func NewCustomTypeDefinition(fn validator.CustomTypeFunc, types ...any) CustomTypeDefinition {
 	return &customTypeDefinition{
 		fn:    fn,
 		types: types,

@@ -45,6 +45,7 @@ jobs:
         - "fxorm"
         - "fxsql"
         - "fxtrace"
+        - "fxvalidator"
         - "fxworker"
     steps:
       - name: Checkout

@@ -18,11 +18,19 @@ import (
 type TestStruct struct {
 	Name     string `validate:"required"`
 	Email    string `validate:"required,email"`
-	Business string `validate:"oneof=brand retailer"`
+	Language string `validate:"oneof=french english"`
+}
+
+type OtherTestStruct struct {
+	Value string `validate:"required,alpha"`
 }
 
 type TestStructWithPrivate struct {
 	private string `validate:"required,alpha"`
+}
+
+type TestStructWithCustomTag struct {
+	Value string `custom-tag:"required,alpha"`
 }
 
 type TestType struct {
@@ -33,6 +41,7 @@ type TestStructWithTestType struct {
 	TestType TestType `validate:"required"`
 }
 
+//nolint:maintidx,cyclop,gocognit
 func TestModule(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 
@@ -57,16 +66,16 @@ func TestModule(t *testing.T) {
 		validate := runTest(t)
 
 		err := validate.Struct(TestStruct{
-			Name:     "retailer",
-			Email:    "retailer@example.com",
-			Business: "retailer",
+			Name:     "name",
+			Email:    "name@example.com",
+			Language: "french",
 		})
 		assert.NoError(t, err)
 
 		err = validate.StructCtx(context.Background(), TestStruct{
-			Name:     "retailer",
-			Email:    "retailer@example.com",
-			Business: "retailer",
+			Name:     "name",
+			Email:    "name@example.com",
+			Language: "english",
 		})
 		assert.NoError(t, err)
 	})
@@ -77,7 +86,7 @@ func TestModule(t *testing.T) {
 		err := validate.Struct(TestStruct{
 			Name:     "",
 			Email:    "invalid",
-			Business: "invalid",
+			Language: "invalid",
 		})
 		assert.Error(t, err)
 
@@ -95,14 +104,14 @@ func TestModule(t *testing.T) {
 			}
 
 			if vErr.StructField() == "Business" {
-				assert.Equal(t, "Key: 'TestStruct.Business' Error:Field validation for 'Business' failed on the 'oneof' tag", vErr.Error())
+				assert.Equal(t, "Key: 'TestStruct.Language' Error:Field validation for 'Language' failed on the 'oneof' tag", vErr.Error())
 			}
 		}
 
 		err = validate.StructCtx(context.Background(), TestStruct{
 			Name:     "",
 			Email:    "invalid",
-			Business: "invalid",
+			Language: "french",
 		})
 		assert.Error(t, err)
 
@@ -119,9 +128,20 @@ func TestModule(t *testing.T) {
 			}
 
 			if vErr.StructField() == "Business" {
-				assert.Equal(t, "Key: 'TestStruct.Business' Error:Field validation for 'Business' failed on the 'oneof' tag", vErr.Error())
+				assert.Equal(t, "Key: 'TestStruct.Language' Error:Field validation for 'Language' failed on the 'oneof' tag", vErr.Error())
 			}
 		}
+	})
+
+	t.Run("test validation success with custom tag", func(t *testing.T) {
+		t.Setenv("TAG_NAME", "custom-tag")
+
+		validate := runTest(t)
+
+		err := validate.Struct(TestStructWithCustomTag{
+			Value: "foo",
+		})
+		assert.NoError(t, err)
 	})
 
 	t.Run("test validation success with private fields", func(t *testing.T) {
@@ -130,12 +150,12 @@ func TestModule(t *testing.T) {
 		validate := runTest(t)
 
 		err := validate.Struct(TestStructWithPrivate{
-			private: "abc",
+			private: "foo",
 		})
 		assert.NoError(t, err)
 
 		err = validate.StructCtx(context.Background(), TestStructWithPrivate{
-			private: "abc",
+			private: "bar",
 		})
 		assert.NoError(t, err)
 	})
@@ -176,51 +196,51 @@ func TestModule(t *testing.T) {
 	})
 
 	t.Run("test validation success with custom alias", func(t *testing.T) {
-		validate := runTest(t, fxvalidator.AsAlias("test-alias", "required,alpha,max=10"))
+		validate := runTest(t, fxvalidator.AsAlias("custom-alias", "required,alpha,max=10"))
 
-		err := validate.Var("abcdefghi", "test-alias")
+		err := validate.Var("abcdefghi", "custom-alias")
 		assert.NoError(t, err)
 
-		err = validate.VarCtx(context.Background(), "abcdefghi", "test-alias")
+		err = validate.VarCtx(context.Background(), "abcdefghi", "custom-alias")
 		assert.NoError(t, err)
 	})
 
 	t.Run("test validation error with custom alias", func(t *testing.T) {
-		validate := runTest(t, fxvalidator.AsAlias("test-alias", "required,alpha,max=10"))
+		validate := runTest(t, fxvalidator.AsAlias("custom-alias", "required,alpha,max=10"))
 
-		err := validate.Var("invalid-1234", "test-alias")
+		err := validate.Var("invalid-1234", "custom-alias")
 		assert.Error(t, err)
 
 		var validationError validator.ValidationErrors
 		ok := errors.As(err, &validationError)
 		assert.True(t, ok)
-		assert.Contains(t, validationError.Error(), "failed on the 'test-alias' tag")
+		assert.Contains(t, validationError.Error(), "failed on the 'custom-alias' tag")
 
-		err = validate.VarCtx(context.Background(), "invalid-1234", "test-alias")
+		err = validate.VarCtx(context.Background(), "invalid-1234", "custom-alias")
 		assert.Error(t, err)
 
 		ok = errors.As(err, &validationError)
 		assert.True(t, ok)
-		assert.Contains(t, validationError.Error(), "failed on the 'test-alias' tag")
+		assert.Contains(t, validationError.Error(), "failed on the 'custom-alias' tag")
 	})
 
 	t.Run("test validation success with custom validation", func(t *testing.T) {
 		fn := func(ctx context.Context, fl validator.FieldLevel) bool {
-			return fl.Field().String() == "expected"
+			return fl.Field().String() == "foo"
 		}
 
 		validate := runTest(t, fxvalidator.AsValidation("test-custom", fn, true))
 
-		err := validate.Var("expected", "test-custom")
+		err := validate.Var("foo", "test-custom")
 		assert.NoError(t, err)
 
-		err = validate.VarCtx(context.Background(), "expected", "test-custom")
+		err = validate.VarCtx(context.Background(), "foo", "test-custom")
 		assert.NoError(t, err)
 	})
 
 	t.Run("test validation error with custom validation", func(t *testing.T) {
 		fn := func(ctx context.Context, fl validator.FieldLevel) bool {
-			return fl.Field().String() == "expected"
+			return fl.Field().String() == "bar"
 		}
 
 		validate := runTest(t, fxvalidator.AsValidation("test-custom", fn, true))
@@ -243,49 +263,75 @@ func TestModule(t *testing.T) {
 
 	t.Run("test validation success with custom struct validation", func(t *testing.T) {
 		fn := func(ctx context.Context, sl validator.StructLevel) {
-			st, ok := sl.Current().Interface().(TestStruct)
-
+			ts, ok := sl.Current().Interface().(TestStruct)
 			if ok {
-				if st.Business == "retailer" && !strings.Contains(st.Email, "retailer") {
-					sl.ReportError(st.Email, "Email", "Email", "invalid", "invalid retailer email")
+				if ts.Language == "french" && !strings.Contains(ts.Email, "@example.fr") {
+					sl.ReportError(ts.Email, "Email", "Email", "invalid-email", "invalid email")
+				}
+			}
+
+			ots, ok := sl.Current().Interface().(OtherTestStruct)
+			if ok {
+				if ots.Value != "baz" {
+					sl.ReportError(ots.Value, "Value", "Value", "unexpected-value", "unexpected value")
 				}
 			}
 		}
 
-		validate := runTest(t, fxvalidator.AsStructValidation(fn, TestStruct{}))
+		validate := runTest(t, fxvalidator.AsStructValidation(fn, TestStruct{}, OtherTestStruct{}))
 
 		err := validate.StructCtx(context.Background(), TestStruct{
-			Name:     "retailer",
-			Email:    "retailer@example.com",
-			Business: "retailer",
+			Name:     "name",
+			Email:    "name@example.fr",
+			Language: "french",
+		})
+		assert.NoError(t, err)
+
+		err = validate.StructCtx(context.Background(), OtherTestStruct{
+			Value: "baz",
 		})
 		assert.NoError(t, err)
 	})
 
 	t.Run("test validation error with custom struct validation", func(t *testing.T) {
 		fn := func(ctx context.Context, sl validator.StructLevel) {
-			st, ok := sl.Current().Interface().(TestStruct)
-
+			ts, ok := sl.Current().Interface().(TestStruct)
 			if ok {
-				if st.Business == "retailer" && !strings.Contains(st.Email, "retailer") {
-					sl.ReportError(st.Email, "Email", "Email", "invalid-retailer-email", "invalid retailer email")
+				if ts.Language == "french" && !strings.Contains(ts.Email, "@example.fr") {
+					sl.ReportError(ts.Email, "Email", "Email", "invalid-email", "invalid email")
+				}
+			}
+
+			ots, ok := sl.Current().Interface().(OtherTestStruct)
+			if ok {
+				if ots.Value != "expected" {
+					sl.ReportError(ots.Value, "Value", "Value", "unexpected-value", "unexpected value")
 				}
 			}
 		}
 
-		validate := runTest(t, fxvalidator.AsStructValidation(fn, TestStruct{}))
+		validate := runTest(t, fxvalidator.AsStructValidation(fn, TestStruct{}, OtherTestStruct{}))
 
 		err := validate.StructCtx(context.Background(), TestStruct{
-			Name:     "retailer",
-			Email:    "invalid@example.com",
-			Business: "retailer",
+			Name:     "name",
+			Email:    "name@example.com",
+			Language: "french",
 		})
 		assert.Error(t, err)
 
 		var validationError validator.ValidationErrors
 		ok := errors.As(err, &validationError)
 		assert.True(t, ok)
-		assert.Contains(t, validationError.Error(), "failed on the 'invalid-retailer-email' tag")
+		assert.Contains(t, validationError.Error(), "failed on the 'invalid-email' tag")
+
+		err = validate.StructCtx(context.Background(), OtherTestStruct{
+			Value: "invalid",
+		})
+		assert.Error(t, err)
+
+		ok = errors.As(err, &validationError)
+		assert.True(t, ok)
+		assert.Contains(t, validationError.Error(), "failed on the 'unexpected-value' tag")
 	})
 
 	t.Run("test validation success with custom type", func(t *testing.T) {
