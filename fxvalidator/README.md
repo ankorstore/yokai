@@ -84,8 +84,8 @@ app:
   debug: false
 modules:
   validator:
-  	tag_name: validate    # struct tag to define validation rules, default = validate
-  	private_fields: false # to enable validation on private fields, disabled by default
+    tag_name: validate    # struct tag to define validation rules, default = validate
+    private_fields: false # to enable validation on private fields, disabled by default
 ```
 
 
