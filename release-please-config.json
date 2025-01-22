@@ -122,6 +122,11 @@
       "component": "fxtrace",
       "tag-separator": "/"
     },
+    "fxvalidator": {
+      "release-type": "go",
+      "component": "fxvalidator",
+      "tag-separator": "/"
+    },
     "fxworker": {
       "release-type": "go",
       "component": "fxworker",

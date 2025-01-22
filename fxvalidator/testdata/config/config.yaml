@@ -1,0 +1,7 @@
+app:
+  name: test
+modules:
+  validator:
+    private_fields: ${PRIVATE_FIELDS}
+    tag_name: ${TAG_NAME}
+
