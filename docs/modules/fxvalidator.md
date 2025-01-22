@@ -1,5 +1,5 @@
 ---
-title: Modules - Log
+title: Modules - Validator
 icon: material/cube-outline
 ---
 
