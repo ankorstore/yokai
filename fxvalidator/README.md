@@ -88,7 +88,6 @@ modules:
     private_fields: false # to enable validation on private fields, disabled by default
 ```
 
-
 ### Customization
 
 #### Custom aliases
@@ -191,7 +190,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/ankorstore/yokai/fxconfig"
 	"github.com/ankorstore/yokai/fxvalidator"
@@ -246,10 +244,8 @@ This module provides the possibility to register custom type functions with `AsC
 package main
 
 import (
-	"context"
 	"fmt"
 	"reflect"
-	"strings"
 
 	"github.com/ankorstore/yokai/fxconfig"
 	"github.com/ankorstore/yokai/fxvalidator"
