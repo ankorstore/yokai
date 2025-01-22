@@ -166,6 +166,7 @@ package internal
 
 import (
 	"github.com/ankorstore/yokai/fxvalidator"
+	"github.com/go-playground/validator/v10"
 	"go.uber.org/fx"
 )
 
@@ -228,6 +229,7 @@ package internal
 import (
 	"github.com/ankorstore/yokai/fxvalidator"
 	"github.com/foo/bar/internal/service"
+	"github.com/go-playground/validator/v10"
 	"go.uber.org/fx"
 )
 
