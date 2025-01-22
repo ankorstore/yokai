@@ -204,7 +204,7 @@ type FooBar struct {
 	Bar string
 }
 
-var	fn = func(ctx context.Context, sl validator.StructLevel) {
+var fn = func(ctx context.Context, sl validator.StructLevel) {
 	fb, ok := sl.Current().Interface().(FooBar)
 	if ok {
 		if fb.Foo != "foo" {
