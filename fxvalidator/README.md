@@ -10,12 +10,16 @@
 
 <!-- TOC -->
 * [Installation](#installation)
+* [Features](#features)
 * [Documentation](#documentation)
-	* [Dependencies](#dependencies)
-	* [Loading](#loading)
-	* [Configuration](#configuration)
-	* [Override](#override)
-	* [Testing](#testing)
+  * [Dependencies](#dependencies)
+  * [Loading](#loading)
+  * [Configuration](#configuration)
+  * [Customization](#customization)
+    * [Custom aliases](#custom-aliases)
+    * [Custom validations](#custom-validations)
+    * [Custom struct validations](#custom-struct-validations)
+    * [Custom types](#custom-types)
 <!-- TOC -->
 
 ## Installation

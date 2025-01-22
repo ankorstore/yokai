@@ -6,7 +6,7 @@ require (
 	github.com/ankorstore/yokai/config v1.5.0
 	github.com/ankorstore/yokai/fxconfig v1.3.0
 	github.com/go-playground/validator/v10 v10.24.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	go.uber.org/fx v1.23.0
 )
 

@@ -11,6 +11,9 @@ const (
 	TagName    = "validate"
 )
 
+// FXValidatorModule is the [Fx] validator module.
+//
+// [Fx]: https://github.com/uber-go/fx
 var FXValidatorModule = fx.Module(
 	ModuleName,
 	fx.Provide(
@@ -18,6 +21,7 @@ var FXValidatorModule = fx.Module(
 	),
 )
 
+// ProvideValidatorParams allows injection of the required dependencies in [ProvideValidator].
 type ProvideValidatorParams struct {
 	fx.In
 	Config                      *config.Config
@@ -27,6 +31,7 @@ type ProvideValidatorParams struct {
 	CustomTypeDefinitions       []CustomTypeDefinition       `group:"validator-custom-types"`
 }
 
+// ProvideValidator provides a new *validator.Validate instance.
 func ProvideValidator(p ProvideValidatorParams) (*validator.Validate, error) {
 	opts := []validator.Option{
 		validator.WithRequiredStructEnabled(),
