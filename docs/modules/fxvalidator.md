@@ -90,7 +90,7 @@ func (s *ExampleService) DoSomething() error {
 	}
 	
 	err := s.validate.Struct(es)
-	if valErrs, ok := err.(*validator.ValidationErrors); ok {
+	if valErrs, ok := err.(validator.ValidationErrors); ok {
 		fmt.Println(valErrs)
 	}
 	
