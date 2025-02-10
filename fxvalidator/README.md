@@ -63,7 +63,7 @@ func main() {
 		fxvalidator.FXValidatorModule,                 // load the module
 		fx.Invoke(func(validate *validator.Validate) { // invoke the validator
 			err := validate.Var("foo", "alpha")
-			if valErrs, ok := err.(*validator.ValidationErrors); ok {
+			if valErrs, ok := err.(validator.ValidationErrors); ok {
 				fmt.Println(valErrs)
 			}
 		}),
@@ -114,13 +114,13 @@ func main() {
 		fx.Invoke(func(validate *validator.Validate) {           // invoke the validator
 			// validation success
 			err := validate.Var("foo", "foobar")
-			if valErrs, ok := err.(*validator.ValidationErrors); ok {
+			if valErrs, ok := err.(validator.ValidationErrors); ok {
 				fmt.Println(valErrs)
 			}
 			
 			// validation error
 			err = validate.Var("invalid", "foobar")
-			if valErrs, ok := err.(*validator.ValidationErrors); ok {
+			if valErrs, ok := err.(validator.ValidationErrors); ok {
 				fmt.Println(valErrs)
 			}
 		}),
@@ -160,19 +160,19 @@ func main() {
 		fx.Invoke(func(validate *validator.Validate) {   // invoke the validator
 			// validation success
 			err := validate.Var("Foo", "foobar-ci")
-			if valErrs, ok := err.(*validator.ValidationErrors); ok {
+			if valErrs, ok := err.(validator.ValidationErrors); ok {
 				fmt.Println(valErrs)
 			}
 			
 			// validation success
 			err = validate.Var("baR", "foobar-ci")
-			if valErrs, ok := err.(*validator.ValidationErrors); ok {
+			if valErrs, ok := err.(validator.ValidationErrors); ok {
 				fmt.Println(valErrs)
 			}
 			
 			// validation error
 			err = validate.Var("invalid", "foobar-ci")
-			if valErrs, ok := err.(*validator.ValidationErrors); ok {
+			if valErrs, ok := err.(validator.ValidationErrors); ok {
 				fmt.Println(valErrs)
 			}
 		}),
@@ -222,13 +222,13 @@ func main() {
 		fx.Invoke(func(validate *validator.Validate) {   // invoke the validator
 			// validation success
 			err := validate.Struct(FooBar{Foo: "foo", Bar: "bar"})
-			if valErrs, ok := err.(*validator.ValidationErrors); ok {
+			if valErrs, ok := err.(validator.ValidationErrors); ok {
 				fmt.Println(valErrs)
 			}
 			
 			// validation error
 			err = validate.Struct(FooBar{Foo: "invalid", Bar: "bar"})
-			if valErrs, ok := err.(*validator.ValidationErrors); ok {
+			if valErrs, ok := err.(validator.ValidationErrors); ok {
 				fmt.Println(valErrs)
 			}
 		}),
@@ -294,13 +294,13 @@ func main() {
 		fx.Invoke(func(validate *validator.Validate) { // invoke the validator
 			// validation success
 			err := validate.Struct(FooBar{Foo: Foo{Value: "foo"}, Bar: Bar{Value: "bar"}})
-			if valErrs, ok := err.(*validator.ValidationErrors); ok {
+			if valErrs, ok := err.(validator.ValidationErrors); ok {
 				fmt.Println(valErrs)
 			}
 
 			// validation error
 			err = validate.Struct(FooBar{Foo: Foo{Value: "invalid"}, Bar: Bar{Value: ""}})
-			if valErrs, ok := err.(*validator.ValidationErrors); ok {
+			if valErrs, ok := err.(validator.ValidationErrors); ok {
 				fmt.Println(valErrs)
 			}
 		}),
