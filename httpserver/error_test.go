@@ -25,7 +25,7 @@ func TestErrorHandling(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(false, false)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(false, false).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		return fmt.Errorf("custom error")
@@ -57,7 +57,7 @@ func TestErrorHandlingWithObfuscate(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(true, false)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(true, false).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		return fmt.Errorf("custom error")
@@ -89,7 +89,7 @@ func TestErrorHandlingWithStack(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(false, true)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(false, true).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		return fmt.Errorf("custom error")
@@ -123,7 +123,7 @@ func TestErrorHandlingWithObfuscateAndStack(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(true, true)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(true, true).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		return fmt.Errorf("custom error")
@@ -157,7 +157,7 @@ func TestErrorHandlingWithHeadRequest(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(false, false)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(false, false).Handle()
 
 	httpServer.HEAD("/test", func(c echo.Context) error {
 		return fmt.Errorf("custom error")
@@ -189,7 +189,7 @@ func TestErrorHandlingWithAlreadyCommittedResponse(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(false, false)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(false, false).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		err := fmt.Errorf("custom error")
@@ -224,7 +224,7 @@ func TestErrorHandlingWithHttpError(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(false, false)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(false, false).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "bad request error")
@@ -256,7 +256,7 @@ func TestErrorHandlingWithWrappedError(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(false, false)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(false, false).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("wrapped error"))
@@ -288,7 +288,7 @@ func TestErrorHandlingWithWrappedErrorWithStack(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(false, true)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(false, true).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("wrapped error"))
@@ -322,7 +322,7 @@ func TestErrorHandlingWithWrappedErrorWithObfuscateAndStack(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(true, true)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(true, true).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("wrapped error"))
@@ -356,7 +356,7 @@ func TestErrorHandlingWithHttpErrorWithStack(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(false, true)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(false, true).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "bad request error")
@@ -390,7 +390,7 @@ func TestErrorHandlingWithHttpErrorWithObfuscateAndStack(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(true, true)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(true, true).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "bad request error")
@@ -424,7 +424,7 @@ func TestErrorHandlingWithInternalHttpError(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(false, false)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(false, false).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		internalError := echo.NewHTTPError(http.StatusInternalServerError, "internal error")
@@ -462,7 +462,7 @@ func TestErrorHandlingWithInternalHttpErrorWithStack(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(false, true)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(false, true).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		internalError := echo.NewHTTPError(http.StatusInternalServerError, "internal error")
@@ -502,7 +502,7 @@ func TestErrorHandlingWithInternalHttpErrorWithObfuscateAndStack(t *testing.T) {
 
 	httpServer := echo.New()
 	httpServer.Logger = httpserver.NewEchoLogger(logger)
-	httpServer.HTTPErrorHandler = httpserver.JsonErrorHandler(true, true)
+	httpServer.HTTPErrorHandler = httpserver.NewJsonErrorHandler(true, true).Handle()
 
 	httpServer.GET("/test", func(c echo.Context) error {
 		internalError := echo.NewHTTPError(http.StatusInternalServerError, "internal error")

@@ -89,7 +89,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOn2xx(t *testing.T) {
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -155,7 +155,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOn4xx(t *testing.T) {
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -221,7 +221,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOn5xx(t *testing.T) {
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -287,7 +287,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOn2xx(t *testing.
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -357,7 +357,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOn4xx(t *testing.
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -427,7 +427,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOn5xx(t *testing.
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -489,7 +489,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnHttpError2xx(t *testin
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -556,7 +556,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnHttpError4xx(t *testin
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -623,7 +623,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnHttpError5xx(t *testin
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -690,7 +690,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnHttpError5xxWithStack(
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, true)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, true).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -759,7 +759,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnHttpError5xxWithObfusc
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(true, true)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(true, true).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -828,7 +828,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnComplexHttpError2xx(t 
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -895,7 +895,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnComplexHttpError4xx(t 
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -962,7 +962,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnComplexHttpError5xx(t 
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1029,7 +1029,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnComplexHttpError5xxWit
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, true)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, true).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1098,7 +1098,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnComplexHttpError5xxWit
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(true, true)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(true, true).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1167,7 +1167,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnHttpError2xx(t 
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1238,7 +1238,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnHttpError4xx(t 
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1309,7 +1309,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnHttpError5xx(t 
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1380,7 +1380,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnComplexHttpErro
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1451,7 +1451,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnComplexHttpErro
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1522,7 +1522,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnComplexHttpErro
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1593,7 +1593,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnGenericError(t *testin
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1659,7 +1659,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnGenericError(t 
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, false)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, false).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1729,7 +1729,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnGenericErrorWithStack(
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, true)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, true).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1797,7 +1797,7 @@ func TestCreateWithRequestLoggerAndTracerAndErrorHandlerOnGenericErrorWithObfusc
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(true, true)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(true, true).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1865,7 +1865,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnGenericErrorWit
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(false, true)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(false, true).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)
@@ -1937,7 +1937,7 @@ func TestCreateWithLeveledRequestLoggerAndTracerAndErrorHandlerOnGenericErrorWit
 
 	httpServer, err := httpserver.NewDefaultHttpServerFactory().Create(
 		httpserver.WithLogger(httpserver.NewEchoLogger(logger)),
-		httpserver.WithHttpErrorHandler(httpserver.JsonErrorHandler(true, true)),
+		httpserver.WithHttpErrorHandler(httpserver.NewJsonErrorHandler(true, true).Handle()),
 	)
 	assert.NoError(t, err)
 	assert.IsType(t, &echo.Echo{}, httpServer)

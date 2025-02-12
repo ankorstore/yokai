@@ -38,7 +38,7 @@ linters:
     - importas
     - ineffassign
     - interfacebloat
-    - logrlint
+    - loggercheck
     - maintidx
     - makezero
     - misspell
