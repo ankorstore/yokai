@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/ankorstore/yokai/compare/httpserver/v1.5.0...httpserver/v1.6.0) (2025-02-12)
+
+
+### Features
+
+* **httpserver:** Updated error handler ([#312](https://github.com/ankorstore/yokai/issues/312)) ([dbc4b44](https://github.com/ankorstore/yokai/commit/dbc4b44e986ae50b3065505e95f7346e46b2a283))
+
 ## [1.5.0](https://github.com/ankorstore/yokai/compare/httpserver/v1.4.1...httpserver/v1.5.0) (2024-04-17)
 
 
