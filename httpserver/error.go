@@ -8,9 +8,23 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// JsonErrorHandler is an [echo.HTTPErrorHandler] that outputs errors in JSON format.
+// JsonErrorHandler provides a [echo.HTTPErrorHandler] that outputs errors in JSON format.
 // It can also be configured to obfuscate error message (to avoid to leak sensitive details), and to add the error stack to the response.
-func JsonErrorHandler(obfuscate bool, stack bool) echo.HTTPErrorHandler {
+type JsonErrorHandler struct {
+	obfuscate bool
+	stack     bool
+}
+
+// NewJsonErrorHandler returns a new JsonErrorHandler instance.
+func NewJsonErrorHandler(obfuscate bool, stack bool) *JsonErrorHandler {
+	return &JsonErrorHandler{
+		obfuscate: obfuscate,
+		stack:     stack,
+	}
+}
+
+// Handle handles errors.
+func (h *JsonErrorHandler) Handle() echo.HTTPErrorHandler {
 	return func(err error, c echo.Context) {
 		logger := log.CtxLogger(c.Request().Context())
 
@@ -35,7 +49,7 @@ func JsonErrorHandler(obfuscate bool, stack bool) echo.HTTPErrorHandler {
 
 		var logRespFields map[string]interface{}
 
-		if stack {
+		if h.stack {
 			errStack := "n/a"
 			if err != nil {
 				errStack = errors.New(err).ErrorStack()
@@ -70,7 +84,7 @@ func JsonErrorHandler(obfuscate bool, stack bool) echo.HTTPErrorHandler {
 
 		httpRespFields := logRespFields
 
-		if obfuscate {
+		if h.obfuscate {
 			httpRespFields["message"] = http.StatusText(httpError.Code)
 		}
 
