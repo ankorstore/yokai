@@ -51,7 +51,6 @@ linters:
     - promlinter
     - reassign
     - staticcheck
-    - tenv
     - thelper
     - tparallel
     - typecheck
@@ -59,4 +58,5 @@ linters:
     - unparam
     - unused
     - usestdlibvars
+    - usetesting
     - whitespace

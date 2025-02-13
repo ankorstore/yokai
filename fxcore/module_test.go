@@ -980,7 +980,6 @@ func TestModuleDashboard(t *testing.T) {
 	assert.Contains(t, rec.Body.String(), `data-bs-theme="light"`)
 }
 
-//nolint:bodyclose
 func TestModuleDashboardTheme(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("MODULES_ENABLED", "true")
