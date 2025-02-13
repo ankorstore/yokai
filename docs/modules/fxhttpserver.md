@@ -58,7 +58,6 @@ Then create, if not existing, the `internal/router.go` file for your registratio
 package internal
 
 import (
-	"github.com/ankorstore/yokai/fxhttpserver"
 	"go.uber.org/fx"
 )
 
@@ -129,7 +128,6 @@ import (
 	"github.com/ankorstore/yokai/httpserver"
 	"github.com/ankorstore/yokai/log"
 	"github.com/labstack/echo/v4"
-	"go.uber.org/fx"
 )
 
 type ExampleMiddleware struct {
@@ -200,7 +198,6 @@ import (
 	"github.com/ankorstore/yokai/log"
 	"github.com/ankorstore/yokai/trace"
 	"github.com/labstack/echo/v4"
-	"go.uber.org/fx"
 )
 
 type ExampleHandler struct {
@@ -279,7 +276,6 @@ import (
 	"github.com/ankorstore/yokai/log"
 	"github.com/ankorstore/yokai/trace"
 	"github.com/labstack/echo/v4"
-	"go.uber.org/fx"
 )
 
 type OtherHandler struct {
@@ -361,10 +357,7 @@ import (
 	"net/http"
 
 	"github.com/ankorstore/yokai/config"
-	"github.com/ankorstore/yokai/httpserver"
-	"github.com/ankorstore/yokai/log"
 	"github.com/labstack/echo/v4"
-	"go.uber.org/fx"
 )
 
 type ExampleErrorHandler struct {
