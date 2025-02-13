@@ -345,6 +345,69 @@ Notes:
 - you can use the shortcut `*` to register a handler for all valid HTTP methods, for example `fxhttpserver.NewHandlerRegistration("*", ...)`
 - the valid HTTP methods are `CONNECT`, `DELETE`, `GET`, `HEAD`, `OPTIONS`, `PATCH`, `POST`, `PUT`, `TRACE`, `PROPFIND` and `REPORT`
 
+### Error handler registration
+
+You can use the `AsErrorHandler()` function to register a custom error handler on your HTTP server.
+
+It can be any [ErrorHandler](https://github.com/ankorstore/yokai/blob/main/fxhttpserver/registry.go) implementation.
+
+For example, you can create an error handler:
+
+```go title="internal/errorhandler/example.go"
+package errorhandler
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/ankorstore/yokai/config"
+	"github.com/ankorstore/yokai/httpserver"
+	"github.com/ankorstore/yokai/log"
+	"github.com/labstack/echo/v4"
+	"go.uber.org/fx"
+)
+
+type ExampleErrorHandler struct {
+	config *config.Config
+}
+
+func NewExampleErrorHandler(config *config.Config) *ExampleErrorHandler {
+	return &ExampleErrorHandler{
+		config: config,
+	}
+}
+
+func (h *ExampleErrorHandler) Handle() echo.HTTPErrorHandler {
+	return func(err error, c echo.Context) {
+		if c.Response().Committed {
+			return
+		}
+
+		c.String(http.StatusInternalServerError, fmt.Sprintf("error handled in example error handler of %s: %s", h.config.AppName(), err))
+	}
+}
+```
+
+You can then register your error handler:
+
+```go title="internal/router.go"
+package internal
+
+import (
+	"github.com/ankorstore/yokai/fxhttpserver"
+	"github.com/foo/bar/internal/errorhandler"
+	"go.uber.org/fx"
+)
+
+func Router() fx.Option {
+	return fx.Options(
+		// registers the ExampleErrorHandler as error handler
+		fxhttpserver.AsErrorHandler(errorhandler.NewExampleErrorHandler),
+		// ...
+	)
+}
+```
+
 ## WebSocket
 
 This module supports the `WebSocket` protocol, see the [Echo documentation](https://echo.labstack.com/docs/cookbook/websocket) for more information.
