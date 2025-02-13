@@ -1,9 +1,11 @@
 package fxhttpserver_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/ankorstore/yokai/fxhttpserver"
+	"github.com/ankorstore/yokai/fxhttpserver/testdata/errorhandler"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -121,4 +123,12 @@ func TestHandlersGroupRegistration(t *testing.T) {
 			assert.Equal(t, tt.middlewares, hgr.Middlewares())
 		})
 	}
+}
+
+func TestErrorHandlerRegistration(t *testing.T) {
+	t.Parallel()
+
+	result := fxhttpserver.AsErrorHandler(errorhandler.NewTestErrorHandler)
+
+	assert.Equal(t, "fx.provideOption", fmt.Sprintf("%T", result))
 }

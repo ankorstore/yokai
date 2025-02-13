@@ -1,6 +1,7 @@
 package fxhttpserver_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/ankorstore/yokai/fxhttpserver"
@@ -16,6 +17,8 @@ var testMiddleware = func(next echo.HandlerFunc) echo.HandlerFunc {
 var testHandler = func(c echo.Context) error {
 	return nil
 }
+
+var testErrorHandler = func(err error, c echo.Context) {}
 
 type testMiddlewareDefinitionMock struct {
 	mock.Mock
@@ -86,6 +89,10 @@ type testHandlerImplementation struct{}
 func (h testHandlerImplementation) Handle() echo.HandlerFunc {
 	return testHandler
 }
+
+type testErrorHandlerImplementation struct{}
+
+func (h testErrorHandlerImplementation) Handle() echo.HTTPErrorHandler { return testErrorHandler }
 
 func TestNewFxHttpServerRegistry(t *testing.T) {
 	t.Parallel()
@@ -467,4 +474,21 @@ func TestResolveHandlersGroupFailureOnInvalidHandlerMiddlewareImplementation(t *
 	_, err := registry.ResolveHandlersGroups()
 	assert.Error(t, err)
 	assert.Equal(t, "cannot cast middleware definition as MiddlewareFunc", err.Error())
+}
+
+func TestResolveErrorHandlerSuccess(t *testing.T) {
+	t.Parallel()
+
+	param := fxhttpserver.FxHttpServerRegistryParam{
+		ErrorHandlers: []fxhttpserver.ErrorHandler{
+			testErrorHandlerImplementation{},
+		},
+	}
+	registry := fxhttpserver.NewFxHttpServerRegistry(param)
+
+	resolvedErrorHandlers := registry.ResolveErrorHandlers()
+
+	assert.Len(t, resolvedErrorHandlers, 1)
+
+	assert.Equal(t, "echo.HTTPErrorHandler", fmt.Sprintf("%T", resolvedErrorHandlers[0].Handle()))
 }

@@ -291,3 +291,14 @@ func RegisterHandlersGroup(handlersGroupRegistration *HandlersGroupRegistration)
 		),
 	)
 }
+
+// AsErrorHandler replaces the default error handler.
+func AsErrorHandler(errorHandler any) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			errorHandler,
+			fx.As(new(ErrorHandler)),
+			fx.ResultTags(`group:"httpserver-error-handlers"`),
+		),
+	)
+}

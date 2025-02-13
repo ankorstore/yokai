@@ -19,6 +19,7 @@
     * [Middlewares](#middlewares)
     * [Handlers](#handlers)
     * [Handlers groups](#handlers-groups)
+    * [Error Handler](#error-handler)
   * [WebSocket](#websocket)
   * [Templates](#templates)
   * [Override](#override)
@@ -126,7 +127,7 @@ modules:
           namespace: foo              # http server metrics namespace (empty by default)
           subsystem: bar              # http server metrics subsystem (empty by default)
         buckets: 0.1, 1, 10           # to override default request duration buckets
-        normalize:               
+        normalize:
           request_path: true          # to normalize http request path, disabled by default
           response_status: true       # to normalize http response status code (2xx, 3xx, ...), disabled by default
       templates:
@@ -145,7 +146,7 @@ Notes:
 
 ### Registration
 
-This module offers the possibility to easily register handlers, groups and middlewares.
+This module offers the possibility to easily register handlers, groups, middlewares and error handlers.
 
 #### Middlewares
 
@@ -204,7 +205,7 @@ func main() {
 		fxmetrics.FxMetricsModule,
 		fxgenerate.FxGenerateModule,
 		fxhttpserver.FxHttpServerModule, // load the module
-		fx.Provide(
+		fx.Options(
 			fxhttpserver.AsMiddleware(middleware.CORS(), fxhttpserver.GlobalUse), // register echo CORS middleware via echo.Use()
 			fxhttpserver.AsMiddleware(NewSomeMiddleware, fxhttpserver.GlobalPre), // register and autowire the SomeMiddleware via echo.Pre()
 		),
@@ -296,7 +297,7 @@ func main() {
 		fxmetrics.FxMetricsModule,
 		fxgenerate.FxGenerateModule,
 		fxhttpserver.FxHttpServerModule, // load the module
-		fx.Provide(
+		fx.Options(
 			// register and autowire the SomeHandler handler for [GET] /some-path, with the SomeMiddleware and echo CORS() middlewares
 			fxhttpserver.AsHandler("GET", "/some-path", NewSomeHandler, NewSomeMiddleware, middleware.CORS()),
 		),
@@ -304,7 +305,7 @@ func main() {
 }
 ```
 
-Notes: 
+Notes:
 
 - you can specify several valid HTTP methods (comma separated) while registering a handler, for example `fxhttpserver.AsHandler("GET,POST", ...)`
 - you can use the shortcut `*` to register a handler for all valid HTTP methods, for example `fxhttpserver.AsHandler("*", ...)`
@@ -416,7 +417,7 @@ func main() {
 		fxmetrics.FxMetricsModule,
 		fxgenerate.FxGenerateModule,
 		fxhttpserver.FxHttpServerModule, // load the module
-		fx.Provide(
+		fx.Options(
 			// register and autowire the SomeHandler handler with NewSomeMiddleware middleware for [GET] /group/some-path
 			// register and autowire the OtherHandler handler with echo CORS middleware for [POST] /group/other-path
 			// register the echo CSRF middleware for all handlers of this group
@@ -438,6 +439,67 @@ Notes:
 - you can specify several valid HTTP methods (comma separated) while registering a handler in a group, for example `fxhttpserver.NewHandlerRegistration("GET,POST", ...)`
 - you can use the shortcut `*` to register a handler for all valid HTTP methods, for example `fxhttpserver.NewHandlerRegistration("*", ...)`
 - valid HTTP methods are `CONNECT`, `DELETE`, `GET`, `HEAD`, `OPTIONS`, `PATCH`, `POST`, `PUT`, `TRACE`, `PROPFIND` and `REPORT`
+
+#### Error Handler
+
+You can use the `AsErrorHandler()` function to register a custom error handler on your http server.
+
+You can provide any [ErrorHandler](registry.go) interface implementation (will be autowired from Fx container)
+
+```go
+package main
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/ankorstore/yokai/config"
+	"github.com/ankorstore/yokai/fxconfig"
+	"github.com/ankorstore/yokai/fxgenerate"
+	"github.com/ankorstore/yokai/fxhttpserver"
+	"github.com/ankorstore/yokai/fxlog"
+	"github.com/ankorstore/yokai/fxmetrics"
+	"github.com/ankorstore/yokai/fxtrace"
+	"github.com/ankorstore/yokai/httpserver"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"go.uber.org/fx"
+)
+
+type SomeErrorHandler struct {
+	config *config.Config
+}
+
+func NewSomeErrorHandler(config *config.Config) *SomeErrorHandler {
+	return &SomeErrorHandler{
+		config: config,
+	}
+}
+
+func (h *SomeErrorHandler) Handle() echo.HTTPErrorHandler {
+	return func(err error, c echo.Context) {
+		if c.Response().Committed {
+			return
+		}
+
+		c.String(http.StatusInternalServerError, fmt.Sprintf("error handled in %s: %s", h.config.AppName(), err))
+	}
+}
+
+func main() {
+	fx.New(
+		fxconfig.FxConfigModule, // load the module dependencies
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxhttpserver.FxHttpServerModule, // load the module
+		fx.Options(
+			fxhttpserver.AsErrorHandler(NewSomeErrorHandler), // register SomeErrorHandler as error handler
+		),
+	).Run()
+}
+```
 
 ### WebSocket
 
@@ -468,9 +530,9 @@ And the template:
 ```html
 <!-- templates/app.html -->
 <html>
-    <body>
-        <h1>App name is {{index . "name"}}</h1>
-    </body>
+<body>
+<h1>App name is {{index . "name"}}</h1>
+</body>
 </html>
 ```
 
@@ -521,7 +583,7 @@ func main() {
 		fxmetrics.FxMetricsModule,
 		fxgenerate.FxGenerateModule,
 		fxhttpserver.FxHttpServerModule, // load the module
-		fx.Provide(
+		fx.Options(
 			fxhttpserver.AsHandler("GET", "/app", NewTemplateHandler),
 		),
 	).Run()
