@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.9.0...fxcore/v1.10.0) (2025-02-13)
+
+
+### Features
+
+* **fxcore:** Updated httpserver module for dashboard handling ([#317](https://github.com/ankorstore/yokai/issues/317)) ([3013c65](https://github.com/ankorstore/yokai/commit/3013c65574e37aa27975fc58291bd6d23bce7487))
+
 ## [1.9.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.8.0...fxcore/v1.9.0) (2024-07-26)
 
 
