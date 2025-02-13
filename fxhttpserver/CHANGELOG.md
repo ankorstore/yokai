@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.6.1...fxhttpserver/v1.7.0) (2025-02-13)
+
+
+### Features
+
+* **fxhttpserver:** Added possibility to register custom error handler ([#314](https://github.com/ankorstore/yokai/issues/314)) ([a1dec9f](https://github.com/ankorstore/yokai/commit/a1dec9f5882ee19004a96b8fffc2d51da7b568b9))
+
 ## [1.6.1](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.6.0...fxhttpserver/v1.6.1) (2024-11-11)
 
 
