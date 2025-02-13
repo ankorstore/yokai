@@ -10,6 +10,7 @@ import (
 	"github.com/ankorstore/yokai/fxconfig"
 	"github.com/ankorstore/yokai/fxgenerate"
 	"github.com/ankorstore/yokai/fxhttpserver"
+	"github.com/ankorstore/yokai/fxhttpserver/testdata/errorhandler"
 	"github.com/ankorstore/yokai/fxhttpserver/testdata/factory"
 	"github.com/ankorstore/yokai/fxhttpserver/testdata/handler"
 	"github.com/ankorstore/yokai/fxhttpserver/testdata/middleware"
@@ -1143,6 +1144,37 @@ func TestModuleWithTemplates(t *testing.T) {
 		semconv.HTTPRoute("/template"),
 		semconv.HTTPStatusCode(http.StatusOK),
 	)
+}
+
+func TestModuleWithCustomErrorHandler(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("APP_DEBUG", "true")
+
+	var httpServer *echo.Echo
+
+	fxtest.New(
+		t,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxhttpserver.FxHttpServerModule,
+		fx.Options(
+			fxhttpserver.AsHandler("GET", "/error", handler.NewTestErrorHandler),
+			fxhttpserver.AsErrorHandler(errorhandler.NewTestErrorHandler),
+		),
+		fx.Populate(&httpServer),
+	).RequireStart().RequireStop()
+
+	// [GET] /error
+	req := httptest.NewRequest(http.MethodGet, "/error", nil)
+	rec := httptest.NewRecorder()
+	httpServer.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusInternalServerError, rec.Code)
+	assert.Contains(t, rec.Body.String(), "error handled in test error handler of test: test error")
 }
 
 func TestModuleWithInvalidHandlerMethods(t *testing.T) {

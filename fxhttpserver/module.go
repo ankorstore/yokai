@@ -63,9 +63,21 @@ func NewFxHttpServer(p FxHttpServerParam) (*echo.Echo, error) {
 	)
 
 	// renderer
-	var renderer echo.Renderer
+	var echoRenderer echo.Renderer
 	if p.Config.GetBool("modules.http.server.templates.enabled") {
-		renderer = httpserver.NewHtmlTemplateRenderer(p.Config.GetString("modules.http.server.templates.path"))
+		echoRenderer = httpserver.NewHtmlTemplateRenderer(p.Config.GetString("modules.http.server.templates.path"))
+	}
+
+	// error handler
+	var echoErrorHandler ErrorHandler
+	resolvedErrorHandlers := p.Registry.ResolveErrorHandlers()
+	if len(resolvedErrorHandlers) > 0 {
+		echoErrorHandler = resolvedErrorHandlers[0]
+	} else {
+		echoErrorHandler = httpserver.NewJsonErrorHandler(
+			p.Config.GetBool("modules.http.server.errors.obfuscate") || !appDebug,
+			p.Config.GetBool("modules.http.server.errors.stack") || appDebug,
+		)
 	}
 
 	// server
@@ -73,13 +85,8 @@ func NewFxHttpServer(p FxHttpServerParam) (*echo.Echo, error) {
 		httpserver.WithDebug(appDebug),
 		httpserver.WithBanner(false),
 		httpserver.WithLogger(echoLogger),
-		httpserver.WithRenderer(renderer),
-		httpserver.WithHttpErrorHandler(
-			httpserver.JsonErrorHandler(
-				p.Config.GetBool("modules.http.server.errors.obfuscate") || !appDebug,
-				p.Config.GetBool("modules.http.server.errors.stack") || appDebug,
-			),
-		),
+		httpserver.WithRenderer(echoRenderer),
+		httpserver.WithHttpErrorHandler(echoErrorHandler.Handle()),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http server: %w", err)

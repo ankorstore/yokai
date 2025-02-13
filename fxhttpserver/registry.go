@@ -17,6 +17,11 @@ type Handler interface {
 	Handle() echo.HandlerFunc
 }
 
+// ErrorHandler is the interface for error handlers.
+type ErrorHandler interface {
+	Handle() echo.HTTPErrorHandler
+}
+
 // HttpServerRegistry is the registry collecting middlewares, handlers, handlers groups and their definitions.
 type HttpServerRegistry struct {
 	middlewares              []Middleware
@@ -24,6 +29,7 @@ type HttpServerRegistry struct {
 	handlers                 []Handler
 	handlerDefinitions       []HandlerDefinition
 	handlersGroupDefinitions []HandlersGroupDefinition
+	errorHandlers            []ErrorHandler
 }
 
 // FxHttpServerRegistryParam allows injection of the required dependencies in [NewFxHttpServerRegistry].
@@ -34,16 +40,19 @@ type FxHttpServerRegistryParam struct {
 	Handlers                 []Handler                 `group:"httpserver-handlers"`
 	HandlerDefinitions       []HandlerDefinition       `group:"httpserver-handler-definitions"`
 	HandlersGroupDefinitions []HandlersGroupDefinition `group:"httpserver-handlers-group-definitions"`
+	ErrorHandlers            []ErrorHandler            `group:"httpserver-error-handlers"`
 }
 
 // NewFxHttpServerRegistry returns as new [HttpServerRegistry].
 func NewFxHttpServerRegistry(p FxHttpServerRegistryParam) *HttpServerRegistry {
 	return &HttpServerRegistry{
+
 		middlewares:              p.Middlewares,
 		middlewareDefinitions:    p.MiddlewareDefinitions,
 		handlers:                 p.Handlers,
 		handlerDefinitions:       p.HandlerDefinitions,
 		handlersGroupDefinitions: p.HandlersGroupDefinitions,
+		errorHandlers:            p.ErrorHandlers,
 	}
 }
 
@@ -141,6 +150,11 @@ func (r *HttpServerRegistry) ResolveHandlersGroups() ([]ResolvedHandlersGroup, e
 	}
 
 	return resolvedHandlersGroups, nil
+}
+
+// ResolveErrorHandlers resolves resolves a list of [ErrorHandler].
+func (r *HttpServerRegistry) ResolveErrorHandlers() []ErrorHandler {
+	return r.errorHandlers
 }
 
 func (r *HttpServerRegistry) resolveMiddlewareDefinition(middlewareDefinition MiddlewareDefinition) (ResolvedMiddleware, error) {

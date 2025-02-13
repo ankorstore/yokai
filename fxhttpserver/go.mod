@@ -10,7 +10,7 @@ require (
 	github.com/ankorstore/yokai/fxmetrics v1.2.0
 	github.com/ankorstore/yokai/fxtrace v1.2.0
 	github.com/ankorstore/yokai/generate v1.2.0
-	github.com/ankorstore/yokai/httpserver v1.5.0
+	github.com/ankorstore/yokai/httpserver v1.6.0
 	github.com/ankorstore/yokai/log v1.2.0
 	github.com/ankorstore/yokai/trace v1.3.0
 	github.com/labstack/echo/v4 v4.12.0
