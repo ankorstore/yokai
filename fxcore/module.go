@@ -112,10 +112,10 @@ func NewFxCore(p FxCoreParam) (*Core, error) {
 		httpserver.WithLogger(coreLogger),
 		httpserver.WithRenderer(NewDashboardRenderer(templatesFS, "templates/dashboard.html")),
 		httpserver.WithHttpErrorHandler(
-			httpserver.JsonErrorHandler(
+			httpserver.NewJsonErrorHandler(
 				p.Config.GetBool("modules.core.server.errors.obfuscate") || !appDebug,
 				p.Config.GetBool("modules.core.server.errors.stack") || appDebug,
-			),
+			).Handle(),
 		),
 	)
 	if err != nil {
