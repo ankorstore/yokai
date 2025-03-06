@@ -206,4 +206,92 @@ http_client_requests_total{method="GET",status="2xx",host="https://example.com",
 
 ## Testing
 
-See [net/http/httptest](https://pkg.go.dev/net/http/httptest) documentation.
+This module provides a [httpclienttest.NewTestHTTPServer()](https://github.com/ankorstore/yokai/blob/main/httpclient/httpclienttest/server.go) helper for testing your clients against a test server, that allows you:
+
+- to define test HTTP roundtrips: a couple of test aware functions to define the request and the response behavior
+- to configure several test HTTP roundtrips if you need to test successive calls
+
+To use it:
+
+```go  title="internal/service/example_test.go"
+package service_test
+
+import (
+	"net/http"
+	"testing"
+
+	"github.com/ankorstore/yokai/httpclient"
+	"github.com/ankorstore/yokai/httpclient/httpclienttest"
+	"github.com/stretchr/testify/assert"
+)
+
+func TestHTTPClient(t *testing.T) {
+	t.Parallel()
+
+	// retrieve your client
+	var client *http.Client
+
+	// test server preparation
+	testServer := httpclienttest.NewTestHTTPServer(
+		t,
+		// configures a roundtrip for the 1st client call (/foo)
+		httpclienttest.WithTestHTTPRoundTrip(
+			// func to configure / assert on the client request
+			func(tb testing.TB, req *http.Request) error {
+				tb.Helper()
+
+				// performs some assertions
+				assert.Equal(tb, "/foo", req.URL.Path)
+
+				// returning an error here will make the test fail, if needed
+				return nil
+			},
+			// func to configure / assert on the response for the client
+			func(tb testing.TB, w http.ResponseWriter) error {
+				tb.Helper()
+
+				// prepares the response for the client
+				w.Header.Set("foo", "bar")
+
+				// performs some assertions
+				assert.Equal(tb, "bar", w.Header.Get("foo"))
+
+				// returning an error here will make the test fail, if needed
+				return nil
+			},
+		),
+		// configures a roundtrip for the 2nd client call (/bar)
+		httpclienttest.WithTestHTTPRoundTrip(
+			// func to configure / assert on the client request
+			func(tb testing.TB, req *http.Request) error {
+				tb.Helper()
+
+				assert.Equal(tb, "/bar", req.URL.Path)
+				
+				return nil
+			},
+			// func to configure / assert on the response for the client
+			func(tb testing.TB, w http.ResponseWriter) error {
+				tb.Helper()
+
+				w.WriteHeader(http.StatusInternalServerError)
+				
+				return nil
+			},
+		),
+	)
+
+	// 1st client call (/foo)
+	resp, err := client.Get(testServer.URL + "/foo")
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, "bar", resp.Header.Get("foo"))
+
+	// 2nd client call (/bar)
+	resp, err = client.Get(testServer.URL + "/bar")
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+}
+```
+
+You can find more complete examples in the module [tests](https://github.com/ankorstore/yokai/blob/main/httpclient/httpclienttest/server_test.go).
