@@ -287,6 +287,8 @@ func TestHTTPClient(t *testing.T) {
 			func(tb testing.TB, req *http.Request) error {
 				tb.Helper()
 
+				assert.Equal(tb, "/bar", req.URL.Path)
+				
 				return nil
 			},
 			// func to configure / assert on the response for the client
@@ -307,7 +309,7 @@ func TestHTTPClient(t *testing.T) {
 	assert.Equal(t, "bar", resp.Header.Get("foo"))
 
 	// 2nd client call
-	resp, err = client.Get(testServer.URL + "/foo")
+	resp, err = client.Get(testServer.URL + "/bar")
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 }
