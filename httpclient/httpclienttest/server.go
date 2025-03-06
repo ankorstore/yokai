@@ -17,13 +17,18 @@ type TestHTTPRoundTrip struct {
 	ResponseFunc TestHTTPResponseFunc
 }
 
-func NewTestHTTPServer(tb testing.TB, roundtripStack ...TestHTTPRoundTrip) *httptest.Server {
+func NewTestHTTPServer(tb testing.TB, options ...TestHTTPServerOptionFunc) *httptest.Server {
 	tb.Helper()
 
 	var mu sync.Mutex
 
-	if len(roundtripStack) == 0 {
-		tb.Fatal("test HTTP server: empty roundtrips stack")
+	serverOptions := DefaultTestHTTPServerOptions()
+	for _, opt := range options {
+		opt(&serverOptions)
+	}
+
+	if len(serverOptions.RoundtripsStack) == 0 {
+		tb.Error("test HTTP server: empty roundtrips stack")
 
 		return nil
 	}
@@ -36,14 +41,16 @@ func NewTestHTTPServer(tb testing.TB, roundtripStack ...TestHTTPRoundTrip) *http
 				mu.Lock()
 				defer mu.Unlock()
 
-				if stackPosition >= len(roundtripStack) {
+				if stackPosition >= len(serverOptions.RoundtripsStack) {
 					tb.Error("test HTTP server: roundtrips stack exhausted")
+
+					return
 				}
 
-				err := roundtripStack[stackPosition].RequestFunc(tb, r)
+				err := serverOptions.RoundtripsStack[stackPosition].RequestFunc(tb, r)
 				assert.NoError(tb, err)
 
-				err = roundtripStack[stackPosition].ResponseFunc(tb, w)
+				err = serverOptions.RoundtripsStack[stackPosition].ResponseFunc(tb, w)
 				assert.NoError(tb, err)
 
 				stackPosition++
