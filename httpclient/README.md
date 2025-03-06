@@ -9,15 +9,14 @@
 > Http client module based on [net/http](https://pkg.go.dev/net/http).
 
 <!-- TOC -->
-
 * [Installation](#installation)
 * [Documentation](#documentation)
-	* [Requests](#requests)
-	* [Transports](#transports)
-		* [BaseTransport](#basetransport)
-		* [LoggerTransport](#loggertransport)
-		* [MetricsTransport](#metricstransport)
-
+  * [Requests](#requests)
+  * [Transports](#transports)
+    * [BaseTransport](#basetransport)
+    * [LoggerTransport](#loggertransport)
+    * [MetricsTransport](#metricstransport)
+  * [Testing](#testing)
 <!-- TOC -->
 
 ## Installation
