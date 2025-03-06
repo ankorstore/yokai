@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/ankorstore/yokai/compare/httpclient/v1.4.0...httpclient/v1.5.0) (2025-03-06)
+
+
+### Features
+
+* **httpclient:** Added test server helper ([#323](https://github.com/ankorstore/yokai/issues/323)) ([b2dd342](https://github.com/ankorstore/yokai/commit/b2dd342ecef06b24a290a9723bd839e5032f08cc))
+
 ## [1.4.0](https://github.com/ankorstore/yokai/compare/httpclient/v1.3.1...httpclient/v1.4.0) (2024-03-15)
 
 
