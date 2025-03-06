@@ -246,6 +246,7 @@ import (
 )
 
 func TestHTTPClient(t *testing.T) {
+	t.Parallel()
 
 	// client
 	client, err := httpclient.NewDefaultHttpClientFactory().Create()
