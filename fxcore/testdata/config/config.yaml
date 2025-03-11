@@ -47,6 +47,8 @@ modules:
           expose: ${READINESS_ENABLED}
         liveness:
           expose: ${LIVENESS_ENABLED}
+      tasks:
+        expose: ${TASKS_ENABLED}
       debug:
         config:
           expose: ${CONFIG_ENABLED}

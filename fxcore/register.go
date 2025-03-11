@@ -14,3 +14,14 @@ func AsCoreExtraInfo(name string, value string) fx.Option {
 		),
 	)
 }
+
+// AsTask registers a task.
+func AsTask(constructor any) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			constructor,
+			fx.As(new(Task)),
+			fx.ResultTags(`group:"core-tasks"`),
+		),
+	)
+}
