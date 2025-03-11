@@ -283,7 +283,7 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 			tasksPath = DefaultTasksPath
 		}
 
-		coreServer.POST(metricsPath, func(c echo.Context) error {
+		coreServer.POST(tasksPath, func(c echo.Context) error {
 			ctx := c.Request().Context()
 
 			logger := log.CtxLogger(ctx)
