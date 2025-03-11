@@ -304,16 +304,16 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("cannot close request body: %v", err.Error()))
 			}
 
-			res, err := p.TaskRegistry.Run(ctx, name, input)
-			if err != nil {
+			res := p.TaskRegistry.Run(ctx, name, input)
+			if res.Success == false {
 				logger.Error().Err(err).Str("task", name).Msg("task execution error")
 
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("task execution error: %v", err.Error()))
+				return c.JSON(http.StatusInternalServerError, res)
 			}
 
 			logger.Info().Str("task", name).Msg("task execution success")
 
-			return c.String(http.StatusOK, string(res))
+			return c.JSON(http.StatusOK, res)
 		})
 
 		coreServer.Logger.Debug("registered tasks handler")

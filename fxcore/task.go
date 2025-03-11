@@ -7,9 +7,15 @@ import (
 	"go.uber.org/fx"
 )
 
+type TaskResult struct {
+	Success  bool           `json:"success"`
+	Message  string         `json:"message"`
+	Metadata map[string]any `json:"metadata,omitempty"`
+}
+
 type Task interface {
 	Name() string
-	Run(ctx context.Context, input []byte) ([]byte, error)
+	Run(ctx context.Context, input []byte) TaskResult
 }
 
 type TaskRegistry struct {
@@ -42,10 +48,13 @@ func (r *TaskRegistry) Names() []string {
 	return names
 }
 
-func (r *TaskRegistry) Run(ctx context.Context, name string, input []byte) ([]byte, error) {
+func (r *TaskRegistry) Run(ctx context.Context, name string, input []byte) TaskResult {
 	task, ok := r.tasks[name]
 	if !ok {
-		return nil, fmt.Errorf("task %s not found in registry", name)
+		return TaskResult{
+			Success: false,
+			Message: fmt.Sprintf("task %s not found", name),
+		}
 	}
 
 	return task.Run(ctx, input)
