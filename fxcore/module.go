@@ -38,7 +38,7 @@ const (
 	DefaultHealthCheckStartupPath   = "/healthz"
 	DefaultHealthCheckLivenessPath  = "/livez"
 	DefaultHealthCheckReadinessPath = "/readyz"
-	DefaultTasksPath                = "/tasks/:name"
+	DefaultTasksPath                = "/tasks"
 	DefaultDebugConfigPath          = "/debug/config"
 	DefaultDebugPProfPath           = "/debug/pprof"
 	DefaultDebugBuildPath           = "/debug/build"
@@ -283,7 +283,7 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 			tasksPath = DefaultTasksPath
 		}
 
-		coreServer.POST(tasksPath, func(c echo.Context) error {
+		coreServer.POST(fmt.Sprintf("%s/:name", tasksPath), func(c echo.Context) error {
 			ctx := c.Request().Context()
 
 			logger := log.CtxLogger(ctx)
@@ -441,7 +441,7 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 		coreServer.Logger.Debug("registered debug build handler")
 	}
 
-	// debug modules
+	// modules
 	if modulesExpose || appDebug {
 		if modulesPath == "" {
 			modulesPath = DefaultDebugModulesPath

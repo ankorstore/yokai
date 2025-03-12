@@ -125,7 +125,7 @@
                         </div>
                         <div class="list-group list-group-flush">
                             {{ range $taskName := .tasksNames }}
-                            <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Task {{ $taskName }}" data-title='<i class="bi bi-clipboard2"></i> {{ $taskName }}' data-url="{{ $.tasksPath }}/{{ $taskName }}" data-type="task" data-task="{{ $taskName }}" data-view="task">
+                            <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Task {{ $taskName }}" data-title='<i class="bi bi-clipboard2"></i> {{ $taskName }}' data-type="task" data-task="{{ $taskName }}" data-view="task">
                                 <span><i class="bi bi-clipboard2"></i> {{ $taskName }}</span>
                             </a>
                             {{ else }}
@@ -281,14 +281,15 @@
                         <div id="task-body" class="card-body bg-{{ .theme }}" v-if="view == 'task'">
                             <form>
                                 <div class="mb-3">
-                                    <label for="taskInput" class="form-label">Task input</label>
-                                    <textarea class="form-control" id="taskInput" rows="6"></textarea>
+                                    <label for="taskInput" class="form-label">Input</label>
+                                    <textarea class="form-control" id="taskInput" rows="6" v-model="taskInput"></textarea>
                                 </div>
                                 <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Task actions">
-                                    <button type="button" class="btn btn-outline-secondary">Reset</button>
-                                    <button type="button" class="btn btn-outline-primary">Run</button>
+                                    <button @click="resetTask"  type="button" class="btn btn-secondary"><i class="bi bi-x-square"></i>&nbsp;&nbsp;Reset</button>
+                                    <button @click="runTask"  type="button" class="btn btn-primary"><i class="bi bi-arrow-right-square"></i>&nbsp;&nbsp;Run</button>
                                 </div>
                             </form>
+                            <div id="taskResult" v-html="taskResult"></div>
                         </div>
                     </div>
                 </div>
@@ -316,6 +317,15 @@
                 content: {
                     type: String,
                 },
+                taskName: {
+                    type: String,
+                },
+                taskInput: {
+                    type: String,
+                },
+                taskResult: {
+                    type: String,
+                },
             },
             setup() {
                 const error = ref('')
@@ -323,13 +333,15 @@
                 const title = ref('<i class="bi bi-info-circle"></i>&nbsp;&nbsp;Overview')
                 const view = ref('overview')
                 const content = ref('')
+                const taskName = ref('')
+                const taskInput = ref('')
+                const taskResult = ref('')
 
-                return { error, loading, title, view, content }
+                return { error, loading, title, view, content, taskName, taskInput, taskResult }
             },
             methods: {
                 loadContent(event) {
                     this.error = ''
-                    this.loading = true
 
                     let dataView = event.currentTarget.getAttribute('data-view')
                     let dataTitle = event.currentTarget.getAttribute('data-title')
@@ -339,8 +351,12 @@
                     this.view = dataView
 
                     if (dataType === 'task') {
+                        this.resetTask()
 
-                    }else {
+                        this.taskName = event.currentTarget.getAttribute('data-task')
+                    } else {
+                        this.loading = true
+
                         axios
                             .get(dataUrl)
                             .then(response => {
@@ -361,6 +377,21 @@
                                 hljs.highlightAll();
                             });
                     }
+                },
+                resetTask() {
+                    this.taskName = ''
+                    this.taskInput = ''
+                    this.takResult = ''
+                },
+                runTask() {
+                    axios
+                        .post('{{ $.tasksPath }}/' + this.taskName, this.taskInput)
+                        .then(response => {
+                            this.taskResult = response.data;
+                        })
+                        .catch(error => {
+                            console.log(error)
+                        })
                 },
                 switchTheme(event) {
                     let dataTheme = event.currentTarget.getAttribute('data-theme')
