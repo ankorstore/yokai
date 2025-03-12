@@ -125,7 +125,7 @@
                         </div>
                         <div class="list-group list-group-flush">
                             {{ range $taskName := .tasksNames }}
-                            <a @click="loadTask" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Task {{ $taskName }}" data-title='<i class="bi bi-clipboard2"></i> {{ $taskName }}' data-url="{{ $.tasksPath }}/{{ $taskName }}" data-type="task" data-task="{{ $taskName }}" data-view="task">
+                            <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Task {{ $taskName }}" data-title='<i class="bi bi-clipboard2"></i> {{ $taskName }}' data-url="{{ $.tasksPath }}/{{ $taskName }}" data-type="task" data-task="{{ $taskName }}" data-view="task">
                                 <span><i class="bi bi-clipboard2"></i> {{ $taskName }}</span>
                             </a>
                             {{ else }}
