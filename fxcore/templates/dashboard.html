@@ -279,7 +279,16 @@
                         </div>
                         <div id="content-body" class="card-body bg-{{ .theme }}" v-if="view == 'content'" v-html="computedContent"></div>
                         <div id="task-body" class="card-body bg-{{ .theme }}" v-if="view == 'task'">
-                            Task stuff
+                            <form>
+                                <div class="mb-3">
+                                    <label for="taskInput" class="form-label">Task input</label>
+                                    <textarea class="form-control" id="taskInput" rows="3"></textarea>
+                                </div>
+                                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Task actions">
+                                    <button type="button" class="btn btn-outline-secondary">Reset</button>
+                                    <button type="button" class="btn btn-outline-primary">Run</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
