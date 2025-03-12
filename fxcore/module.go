@@ -516,6 +516,7 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 				"overviewTraceProcessorExpose": overviewTraceProcessorExpose,
 				"tasksExpose":                  tasksExpose,
 				"tasksPath":                    tasksPath,
+				"tasksNames":                   p.TaskRegistry.Names(),
 				"metricsExpose":                metricsExpose,
 				"metricsPath":                  metricsPath,
 				"startupExpose":                startupExpose,
