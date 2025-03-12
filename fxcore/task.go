@@ -8,9 +8,9 @@ import (
 )
 
 type TaskResult struct {
-	Success  bool           `json:"success"`
-	Message  string         `json:"message"`
-	Metadata map[string]any `json:"metadata,omitempty"`
+	Success bool           `json:"success"`
+	Message string         `json:"message"`
+	Details map[string]any `json:"details,omitempty"`
 }
 
 type Task interface {
