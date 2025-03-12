@@ -311,11 +311,11 @@
             setup() {
                 const error = ref('')
                 const loading = ref(false)
-                const view = ref('overview')
                 const title = ref('<i class="bi bi-info-circle"></i>&nbsp;&nbsp;Overview')
+                const view = ref('overview')
                 const content = ref('')
 
-                return { error, loading, title, content }
+                return { error, loading, title, view, content }
             },
             methods: {
                 loadContent(event) {
