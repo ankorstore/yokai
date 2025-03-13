@@ -2,6 +2,7 @@ package fxcore_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/ankorstore/yokai/fxcore"
 	"github.com/ankorstore/yokai/fxcore/testdata/probes"
+	"github.com/ankorstore/yokai/fxcore/testdata/tasks"
 	"github.com/ankorstore/yokai/fxhealthcheck"
 	"github.com/ankorstore/yokai/healthcheck"
 	"github.com/ankorstore/yokai/log/logtest"
@@ -1052,4 +1054,72 @@ func TestModuleDashboardTheme(t *testing.T) {
 			assert.Equal(t, "light", cookie.Value)
 		}
 	}
+}
+
+func TestModuleDashboardTasks(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("TASKS_ENABLED", "true")
+
+	var core *fxcore.Core
+
+	fxcore.NewBootstrapper().RunTestApp(
+		t,
+		fxcore.AsTasks(
+			tasks.NewErrorTask,
+			tasks.NewSuccessTask,
+		),
+		fx.Populate(&core),
+	)
+
+	// [GET] /tasks/success
+	req := httptest.NewRequest(http.MethodPost, "/tasks/success", bytes.NewBuffer([]byte("test input")))
+	rec := httptest.NewRecorder()
+	core.HttpServer().ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+
+	res := fxcore.TaskResult{}
+	err := json.Unmarshal(rec.Body.Bytes(), &res)
+	assert.NoError(t, err)
+
+	assert.True(t, res.Success)
+	assert.Equal(t, "task success", res.Message)
+	assert.Equal(
+		t,
+		map[string]any{
+			"app":   "core-app",
+			"input": "test input",
+		},
+		res.Details,
+	)
+
+	// [GET] /tasks/error
+	req = httptest.NewRequest(http.MethodPost, "/tasks/error", bytes.NewBuffer([]byte("test input")))
+	rec = httptest.NewRecorder()
+	core.HttpServer().ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusInternalServerError, rec.Code)
+
+	res = fxcore.TaskResult{}
+	err = json.Unmarshal(rec.Body.Bytes(), &res)
+	assert.NoError(t, err)
+
+	assert.False(t, res.Success)
+	assert.Equal(t, "task error", res.Message)
+	assert.Nil(t, res.Details)
+
+	// [GET] /tasks/invalid
+	req = httptest.NewRequest(http.MethodPost, "/tasks/invalid", bytes.NewBuffer([]byte("test input")))
+	rec = httptest.NewRecorder()
+	core.HttpServer().ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusInternalServerError, rec.Code)
+
+	res = fxcore.TaskResult{}
+	err = json.Unmarshal(rec.Body.Bytes(), &res)
+	assert.NoError(t, err)
+
+	assert.False(t, res.Success)
+	assert.Equal(t, "task invalid not found", res.Message)
+	assert.Nil(t, res.Details)
 }

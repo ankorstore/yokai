@@ -134,6 +134,9 @@ modules:
         liveness:            
           expose: true                 # to expose health check liveness route, disabled by default
           path: /livez                 # health check liveness route path (default /livez)
+      tasks:
+        expose: true                   # to expose tasks route, disabled by default
+        path: /tasks/:name             # tasks route path (default /tasks/:name)
       debug:
         config:
           expose: true                 # to expose debug config route

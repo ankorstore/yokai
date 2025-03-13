@@ -1,3 +1,4 @@
+<!doctype html>
 <html lang="en" data-bs-theme="{{ .theme }}">
     <head>
         <title>{{ .overviewInfo.AppName }}</title>
@@ -16,10 +17,10 @@
         <div id="app" class="container">
             <nav class="navbar navbar-expand-lg bg-body-tertiary rounded-bottom border border-top-0 border-{{ .theme }}-subtle">
                 <div class="container-fluid">
-                    <a class="navbar-brand icon-link icon-link-hover fw-bold" href="/" style="--bs-icon-link-transform: scale(1.2);">
-                        <i class="bi bi-terminal"></i>&nbsp;{{ .overviewInfo.AppName }}
+                    <a class="navbar-brand fw-bold" href="/" style="--bs-icon-link-transform: scale(1.2);">
+                        <i class="bi bi-terminal"></i>&nbsp;&nbsp;{{ .overviewInfo.AppName }}
                         {{ if and .overviewAppDescriptionExpose .overviewInfo.AppDescription }}
-                            &nbsp;/&nbsp;<span class="d-inline-block text-truncate text-secondary" style="max-width: 350px;">{{ .overviewInfo.AppDescription }}</span>
+                        &nbsp;/&nbsp;<span class="d-inline-block text-truncate text-secondary" style="max-width: 350px;">{{ .overviewInfo.AppDescription }}</span>
                         {{ end }}
                     </a>
                     <span>
@@ -37,7 +38,6 @@
                             </a>
                         {{ end }}
                     </span>
-
                 </div>
             </nav>
             <br/>
@@ -50,39 +50,39 @@
                             </div>
                             <div class="list-group list-group-flush">
                                 {{ if .buildExpose }}
-                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Build information" data-title='<i class="bi bi-tools"></i> Build' data-url="{{ .buildPath }}" data-type="debug">
-                                    <span><i class="bi bi-tools"></i> Build</span>
+                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Build information" data-title='<i class="bi bi-tools"></i>&nbsp;&nbsp;Build' data-url="{{ .buildPath }}" data-type="debug" data-view="content">
+                                    <span><i class="bi bi-tools"></i>&nbsp;&nbsp;Build</span>
                                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .buildPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
                                 </a>
                                 {{ end }}
                                 {{ if .configExpose }}
-                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between" title="Resolved configuration" data-title='<i class="bi bi-sliders"></i> Config' data-url="{{ .configPath }}" data-type="debug">
-                                    <span><i class="bi bi-sliders"></i> Config</span>
+                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between" title="Resolved configuration" data-title='<i class="bi bi-sliders"></i>&nbsp;&nbsp;Config' data-url="{{ .configPath }}" data-type="debug" data-view="content">
+                                    <span><i class="bi bi-sliders"></i>&nbsp;&nbsp;Config</span>
                                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .configPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
                                 </a>
                                 {{ end }}
                                 {{ if .metricsExpose }}
-                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Prometheus metrics" data-title='<i class="bi bi-speedometer2"></i> Metrics' data-url="{{ .metricsPath }}" data-type="debug">
-                                    <span><i class="bi bi-speedometer2"></i> Metrics</span>
+                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Prometheus metrics" data-title='<i class="bi bi-speedometer2"></i>&nbsp;&nbsp;Metrics' data-url="{{ .metricsPath }}" data-type="debug" data-view="content">
+                                    <span><i class="bi bi-speedometer2"></i>&nbsp;&nbsp;Metrics</span>
                                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .metricsPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
                                 </a>
                                 {{ end }}
                                 {{ if .routesExpose }}
-                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Core routing" data-title='<i class="bi bi-signpost-split"></i> Routes' data-url="{{ .routesPath }}" data-type="debug">
-                                    <span><i class="bi bi-signpost-split"></i> Routes</span>
+                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Core routing" data-title='<i class="bi bi-signpost-split"></i>&nbsp;&nbsp;Routes' data-url="{{ .routesPath }}" data-type="debug" data-view="content">
+                                    <span><i class="bi bi-signpost-split"></i>&nbsp;&nbsp;Routes</span>
                                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .routesPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
                                 </a>
                                 {{ end }}
                                 {{ if .pprofExpose }}
                                 <a href="{{ .pprofPath }}/" role="button" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Pprof dashboard">
-                                    <span><i class="bi bi-clipboard-data"></i> Pprof</span>
+                                    <span><i class="bi bi-clipboard-data"></i>&nbsp;&nbsp;Pprof</span>
                                     <span><i class="bi bi-box-arrow-up-right"></i>&nbsp;&nbsp;</span>
 
                                 </a>
                                 {{ end }}
                                 {{ if .statsExpose }}
                                 <a href="{{ .statsPath }}/" role="button" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Statistics dashboard">
-                                    <span><i class="bi bi-graph-up"></i> Stats</span>
+                                    <span><i class="bi bi-graph-up"></i>&nbsp;&nbsp;Stats</span>
                                     <span><i class="bi bi-box-arrow-up-right"></i>&nbsp;&nbsp;</span>
                                 </a>
                                 {{ end }}
@@ -97,25 +97,44 @@
                             </div>
                             <div class="list-group list-group-flush">
                                 {{ if .startupExpose }}
-                                    <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Startup probe" data-title='<i class="bi bi-activity"></i> Startup' data-url="{{ .startupPath }}" data-type="healthcheck">
-                                        <span><i class="bi bi-activity"></i> Startup</span>
+                                    <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Startup probe" data-title='<i class="bi bi-activity"></i>&nbsp;&nbsp;Startup' data-url="{{ .startupPath }}" data-type="healthcheck" data-view="content">
+                                        <span><i class="bi bi-activity"></i>&nbsp;&nbsp;Startup</span>
                                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .startupPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
                                     </a>
                                 {{ end }}
                                 {{ if .livenessExpose }}
-                                    <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Liveness probe" data-title='<i class="bi bi-heart-pulse"></i> Liveness' data-url="{{ .livenessPath }}" data-type="healthcheck">
-                                        <span><i class="bi bi-heart-pulse"></i> Liveness</span>
+                                    <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Liveness probe" data-title='<i class="bi bi-heart-pulse"></i>&nbsp;&nbsp;Liveness' data-url="{{ .livenessPath }}" data-type="healthcheck" data-view="content">
+                                        <span><i class="bi bi-heart-pulse"></i>&nbsp;&nbsp;Liveness</span>
                                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .livenessPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
                                     </a>
                                 {{ end }}
                                 {{ if .readinessExpose }}
-                                    <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Readiness probe" data-title='<i class="bi bi-heart-pulse-fill"></i> Readiness' data-url="{{ .readinessPath }}" data-type="healthcheck">
-                                        <span><i class="bi bi-heart-pulse-fill"></i> Readiness</span>
+                                    <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Readiness probe" data-title='<i class="bi bi-heart-pulse-fill"></i>&nbsp;&nbsp;Readiness' data-url="{{ .readinessPath }}" data-type="healthcheck" data-view="content">
+                                        <span><i class="bi bi-heart-pulse-fill"></i>&nbsp;&nbsp;Readiness</span>
                                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ .readinessPath }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
                                     </a>
                                 {{ end }}
                             </div>
                         </div>
+                    {{ end }}
+                    {{ if .tasksExpose }}
+                    <br/>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-clipboard2-check"></i>&nbsp;&nbsp;Tasks
+                        </div>
+                        <div class="list-group list-group-flush">
+                            {{ range $taskName := .tasksNames }}
+                            <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Task {{ $taskName }}" data-title='<i class="bi bi-clipboard2"></i>&nbsp;&nbsp;Task {{ $taskName }}' data-type="task" data-task="{{ $taskName }}" data-view="task">
+                                <span><i class="bi bi-clipboard2"></i>&nbsp;&nbsp;{{ $taskName }}</span>
+                            </a>
+                            {{ else }}
+                            <a class="list-group-item list-group-item-action disabled" aria-disabled="true">
+                                <i class="bi bi-slash-circle"></i>&nbsp;&nbsp;n/a
+                            </a>
+                            {{ end }}
+                        </div>
+                    </div>
                     {{ end }}
                     {{ if .modulesExpose }}
                         <br/>
@@ -125,8 +144,8 @@
                             </div>
                             <div class="list-group list-group-flush">
                                 {{ range $moduleName := .modulesNames }}
-                                    <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="{{ $moduleName }} module details" data-title='<i class="bi bi-box"></i> {{ $moduleName }}' data-url="{{ $.modulesPath }}/{{ $moduleName }}" data-type="module">
-                                        <span><i class="bi bi-box"></i> {{ $moduleName }}</span>
+                                    <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Module {{ $moduleName }}" data-title='<i class="bi bi-box"></i>&nbsp;&nbsp;Module {{ $moduleName }}' data-url="{{ $.modulesPath }}/{{ $moduleName }}" data-type="module" data-view="content">
+                                        <span><i class="bi bi-box"></i>&nbsp;&nbsp;{{ $moduleName }}</span>
                                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); window.open('{{ $.modulesPath }}/{{ $moduleName }}', '_blank');"><i class="bi bi-box-arrow-up-right"></i></button>
                                     </a>
                                 {{ else }}
@@ -145,119 +164,150 @@
                             <div class="spinner-border spinner-border-sm" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
-                            &nbsp;Loading ...
+                            &nbsp;&nbsp;Loading ...
                         </div>
-                        <div id="dash-body" class="card-body bg-{{ .theme }}" v-if="content != ''" v-html="computedContent"></div>
-                        <div id="overview-body" class="card-body bg-{{ .theme }}" v-if="content == ''">
+                        <div id="overview-body" class="card-body bg-{{ .theme }}" v-if="view == 'overview'">
                             {{ if or .overviewAppEnvExpose .overviewAppDebugExpose .overviewAppVersionExpose }}
-                                <div class="card">
-                                    <div class="card-body">
-                                        <p class="card-title fw-bold">
-                                            <i class="bi bi-terminal"></i>&nbsp;&nbsp;{{ .overviewInfo.AppName }}
-                                        </p>
-                                        <table class="table table-borderless table-sm">
-                                            <tbody>
-                                                {{ if and .overviewAppDescriptionExpose .overviewInfo.AppDescription }}
-                                                <tr>
-                                                    <td class="w-25">Description</td>
-                                                    <td><code>{{ .overviewInfo.AppDescription }}</code></td>
-                                                </tr>
-                                                {{ end }}
-                                                {{ if .overviewAppEnvExpose }}
-                                                    <tr>
-                                                        <td class="w-25">Env</td>
-                                                        <td><code>{{ .overviewInfo.AppEnv }}</code></td>
-                                                    </tr>
-                                                {{ end }}
-                                                {{ if .overviewAppDebugExpose }}
-                                                    <tr>
-                                                        <td class="w-25">Debug</td>
-                                                        <td><code>{{ .overviewInfo.AppDebug }}</code></td>
-                                                    </tr>
-                                                {{ end }}
-                                                {{ if .overviewAppVersionExpose }}
-                                                    <tr>
-                                                        <td class="w-25">Version</td>
-                                                        <td><code>{{ .overviewInfo.AppVersion }}</code></td>
-                                                    </tr>
-                                                {{ end }}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="card-title fw-bold">
+                                        <i class="bi bi-terminal"></i>&nbsp;&nbsp;{{ .overviewInfo.AppName }}
+                                    </p>
+                                    <table class="table table-borderless table-sm">
+                                        <tbody>
+                                        {{ if and .overviewAppDescriptionExpose .overviewInfo.AppDescription }}
+                                        <tr>
+                                            <td class="w-25">Description</td>
+                                            <td><code>{{ .overviewInfo.AppDescription }}</code></td>
+                                        </tr>
+                                        {{ end }}
+                                        {{ if .overviewAppEnvExpose }}
+                                        <tr>
+                                            <td class="w-25">Env</td>
+                                            <td><code>{{ .overviewInfo.AppEnv }}</code></td>
+                                        </tr>
+                                        {{ end }}
+                                        {{ if .overviewAppDebugExpose }}
+                                        <tr>
+                                            <td class="w-25">Debug</td>
+                                            <td><code>{{ .overviewInfo.AppDebug }}</code></td>
+                                        </tr>
+                                        {{ end }}
+                                        {{ if .overviewAppVersionExpose }}
+                                        <tr>
+                                            <td class="w-25">Version</td>
+                                            <td><code>{{ .overviewInfo.AppVersion }}</code></td>
+                                        </tr>
+                                        {{ end }}
+                                        </tbody>
+                                    </table>
                                 </div>
+                            </div>
                             {{ end }}
                             {{ if or .overviewLogLevelExpose .overviewLogOutputExpose }}
-                                <br/>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <p class="card-title fw-bold">
-                                            <i class="bi bi-list-columns-reverse"></i>&nbsp;&nbsp;Logs
-                                        </p>
-                                        <table class="table table-borderless table-sm">
-                                            <tbody>
-                                                {{ if or .overviewLogLevelExpose }}
-                                                    <tr>
-                                                        <td class="w-25">Level</td>
-                                                        <td><code>{{ .overviewInfo.LogLevel }}</code></td>
-                                                    </tr>
-                                                {{ end }}
-                                                {{ if or .overviewLogOutputExpose }}
-                                                    <tr>
-                                                        <td class="w-25">Output</td>
-                                                        <td><code>{{ .overviewInfo.LogOutput }}</code></td>
-                                                    </tr>
-                                                {{ end }}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                            <br/>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="card-title fw-bold">
+                                        <i class="bi bi-list-columns-reverse"></i>&nbsp;&nbsp;Logs
+                                    </p>
+                                    <table class="table table-borderless table-sm">
+                                        <tbody>
+                                        {{ if or .overviewLogLevelExpose }}
+                                        <tr>
+                                            <td class="w-25">Level</td>
+                                            <td><code>{{ .overviewInfo.LogLevel }}</code></td>
+                                        </tr>
+                                        {{ end }}
+                                        {{ if or .overviewLogOutputExpose }}
+                                        <tr>
+                                            <td class="w-25">Output</td>
+                                            <td><code>{{ .overviewInfo.LogOutput }}</code></td>
+                                        </tr>
+                                        {{ end }}
+                                        </tbody>
+                                    </table>
                                 </div>
+                            </div>
                             {{ end }}
                             {{ if or .overviewTraceSamplerExpose .overviewTraceProcessorExpose }}
-                                <br/>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <p class="card-title fw-bold">
-                                            <i class="bi bi-bar-chart-steps"></i>&nbsp;&nbsp;Traces
-                                        </p>
-                                        <table class="table table-borderless table-sm">
-                                            <tbody>
-                                                {{ if or .overviewTraceSamplerExpose }}
-                                                    <tr>
-                                                        <td class="w-25">Sampler</td>
-                                                        <td><code>{{ .overviewInfo.TraceSampler }}</code></td>
-                                                    </tr>
-                                                {{ end }}
-                                                {{ if or .overviewTraceProcessorExpose }}
-                                                    <tr>
-                                                        <td class="w-25">Processor</td>
-                                                        <td><code>{{ .overviewInfo.TraceProcessor }}</code></td>
-                                                    </tr>
-                                                {{ end }}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                            <br/>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="card-title fw-bold">
+                                        <i class="bi bi-bar-chart-steps"></i>&nbsp;&nbsp;Traces
+                                    </p>
+                                    <table class="table table-borderless table-sm">
+                                        <tbody>
+                                        {{ if or .overviewTraceSamplerExpose }}
+                                        <tr>
+                                            <td class="w-25">Sampler</td>
+                                            <td><code>{{ .overviewInfo.TraceSampler }}</code></td>
+                                        </tr>
+                                        {{ end }}
+                                        {{ if or .overviewTraceProcessorExpose }}
+                                        <tr>
+                                            <td class="w-25">Processor</td>
+                                            <td><code>{{ .overviewInfo.TraceProcessor }}</code></td>
+                                        </tr>
+                                        {{ end }}
+                                        </tbody>
+                                    </table>
                                 </div>
+                            </div>
                             {{ end }}
                             {{ if ne (len .overviewInfo.ExtraInfos ) 0 }}
-                                <br/>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <p class="card-title fw-bold">
-                                            <i class="bi bi-info-square"></i>&nbsp;&nbsp;Extra information
-                                        </p>
-                                        <table class="table table-borderless table-sm">
-                                            <tbody>
-                                            {{ range $infoName, $infoValue := .overviewInfo.ExtraInfos }}
-                                                <tr>
-                                                    <td class="w-25">{{ $infoName }}</td>
-                                                    <td><code>{{ $infoValue }}</code></td>
-                                                </tr>
-                                            {{ end }}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                            <br/>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="card-title fw-bold">
+                                        <i class="bi bi-info-square"></i>&nbsp;&nbsp;Extra information
+                                    </p>
+                                    <table class="table table-borderless table-sm">
+                                        <tbody>
+                                        {{ range $infoName, $infoValue := .overviewInfo.ExtraInfos }}
+                                        <tr>
+                                            <td class="w-25">{{ $infoName }}</td>
+                                            <td><code>{{ $infoValue }}</code></td>
+                                        </tr>
+                                        {{ end }}
+                                        </tbody>
+                                    </table>
                                 </div>
+                            </div>
                             {{ end }}
+                        </div>
+                        <div id="content-body" class="card-body bg-{{ .theme }}" v-if="view == 'content'" v-html="computedContent"></div>
+                        <div id="task-body" class="card-body bg-{{ .theme }}" v-if="view == 'task'">
+                            <form>
+                                <div class="mb-3">
+                                    <textarea class="form-control" id="taskInput" rows="1" v-model="taskInput" placeholder="Optional input..."></textarea>
+                                </div>
+                                <div class="mb-3 btn-toolbar justify-content-between" role="toolbar" aria-label="Task actions">
+                                    <button @click="resetTask" type="button" class="btn btn-sm btn-secondary" :disabled="taskRunning">
+                                        <i class="bi bi-x-square"></i>&nbsp;&nbsp;Reset
+                                    </button>
+                                    <button @click="runTask" type="button" class="btn btn-sm btn-primary" :disabled="taskRunning">
+                                        <span v-if="!taskRunning"><i class="bi bi-caret-right-square"></i>&nbsp;&nbsp;Run</span>
+                                        <span class="spinner-border spinner-border-sm" aria-hidden="true" v-if="taskRunning"></span>
+                                        <span role="status" v-if="taskRunning">&nbsp;&nbsp;Run</span>
+                                    </button>
+                                </div>
+                            </form>
+                            <div class="card mb-3 border-success" v-show="taskResultMessage !== '' && taskResultSuccess && !taskRunning">
+                                <div class="card-header"><i class="bi bi-check2-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution success</div>
+                                <div class="card-body bg-{{ .theme }}">
+                                    <p class="card-text">{% taskResultMessage %}</p>
+                                    <p v-html="computedTaskResultDetails"></p>
+                                </div>
+                            </div>
+                            <div class="card mb-3 border-danger" v-show="taskResultMessage !== '' && !taskResultSuccess && !taskRunning">
+                                <div class="card-header"><i class="bi bi-x-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution error</div>
+                                <div class="card-body bg-{{ .theme }}">
+                                    <p class="card-text">{% taskResultMessage %}</p>
+                                    <p v-html="computedTaskResultDetails"></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -279,65 +329,135 @@
                 title: {
                     type: String,
                 },
+                view: {
+                    type: String,
+                },
                 content: {
                     type: String,
                 },
+                taskName: {
+                    type: String,
+                },
+                taskInput: {
+                    type: String,
+                },
+                taskRunning: {
+                    type: Boolean,
+                },
+                taskResultSuccess: {
+                    type: Boolean,
+                },
+                taskResultMessage: {
+                    type: String,
+                },
+                taskResultDetails: {
+                    type: Object,
+                    default: () => ({})
+                },
             },
             setup() {
-                const error = ref('')
-                const loading = ref(false)
-                const title = ref('<i class="bi bi-info-circle"></i>&nbsp;&nbsp;Overview')
-                const content = ref('')
+                const error = ref('');
+                const loading = ref(false);
+                const title = ref('<i class="bi bi-info-circle"></i>&nbsp;&nbsp;Overview');
+                const view = ref('overview');
+                const content = ref('');
+                const taskName = ref('');
+                const taskInput = ref('');
+                const taskRunning = ref(false);
+                const taskResultSuccess = ref(true);
+                const taskResultMessage = ref('');
+                const taskResultDetails = ref(undefined);
 
-                return { error, loading, title, content }
+                return { error, loading, title, view, content, taskName, taskInput, taskRunning, taskResultSuccess,  taskResultMessage, taskResultDetails}
             },
             methods: {
                 loadContent(event) {
-                    this.error = ''
-                    this.loading = true
+                    this.error = '';
 
-                    let dataTitle = event.currentTarget.getAttribute('data-title')
-                    let dataUrl = location.origin + event.currentTarget.getAttribute('data-url')
-                    let dataType = event.currentTarget.getAttribute('data-type')
+                    let dataView = event.currentTarget.getAttribute('data-view');
+                    let dataTitle = event.currentTarget.getAttribute('data-title');
+                    let dataUrl = location.origin + event.currentTarget.getAttribute('data-url');
+                    let dataType = event.currentTarget.getAttribute('data-type');
+
+                    this.view = dataView
+
+                    if (dataType === 'task') {
+                        this.resetTask();
+
+                        this.title = dataTitle;
+                        this.taskName = event.currentTarget.getAttribute('data-task');
+                    } else {
+                        this.loading = true
+
+                        axios
+                            .get(dataUrl)
+                            .then(response => {
+                                this.title = dataTitle
+                                this.content = response.data;
+                            })
+                            .catch(error => {
+                                if (dataType === 'healthcheck') {
+                                    this.title = dataTitle
+                                    this.content = error.response.data;
+                                } else {
+                                    this.title = '<i class="bi bi-exclamation-triangle"></i>&nbsp;&nbsp;Error'
+                                    this.error  = error.message
+                                }
+                            })
+                            .finally(() => {
+                                this.loading = false;
+                                hljs.highlightAll();
+                            });
+                    }
+                },
+                resetTask() {
+                    this.taskRunning = false
+                    this.taskInput = ''
+                    this.taskResultSuccess = true;
+                    this.taskResultMessage = '';
+                    this.taskResultDetails = undefined;
+                },
+                runTask() {
+                    this.taskRunning = true
 
                     axios
-                        .get(dataUrl)
+                        .post(
+                            '{{ $.tasksPath }}/' + this.taskName,
+                            this.taskInput
+                        )
                         .then(response => {
-                            this.title = dataTitle
-                            this.content = response.data;
+                            this.taskResultSuccess = response.data.success;
+                            this.taskResultMessage = response.data.message;
+                            this.taskResultDetails = response.data.details;
                         })
                         .catch(error => {
-                            if (dataType === 'healthcheck') {
-                                this.title = dataTitle
-                                this.content = error.response.data;
-                            } else {
-                                this.title = '<i class="bi bi-exclamation-triangle"></i>&nbsp;&nbsp;Error'
-                                this.error  = error.message
-                            }
+                            this.taskResultSuccess = error.response.data.success;
+                            this.taskResultMessage = error.response.data.message;
+                            this.taskResultDetails = error.response.data.details;
                         })
                         .finally(() => {
-                            this.loading = false;
+                            this.taskRunning = false;
                             hljs.highlightAll();
                         });
                 },
                 switchTheme(event) {
-                    let dataTheme = event.currentTarget.getAttribute('data-theme')
+                    let dataTheme = event.currentTarget.getAttribute('data-theme');
 
-                    localStorage.setItem("theme-mode", dataTheme)
+                    localStorage.setItem("theme-mode", dataTheme);
 
                     axios
-                        .post("/theme", {"theme": dataTheme},)
+                        .post("/theme", {"theme": dataTheme})
                         .then(() => location.reload())
                         .catch(error => {
                             this.title = '<i class="bi bi-exclamation-triangle"></i>&nbsp;&nbsp;Error'
                             this.error  = error.message
-                        })
+                        });
                 }
             },
             computed: {
                 computedContent() {
                     if (this.error !== '') {
-                        return '<div class="alert alert-danger" role="alert">' + this.error + '</div>'
+                        return '<div class="alert alert-danger" role="alert">' + this.error + '</div>';
                     } else {
                         if  (typeof this.content === 'string' || this.content instanceof String) {
                             return '<pre><code class="rounded language-ini">' + this.content + '</code></pre>';
@@ -345,10 +465,17 @@
                             return '<pre><code class="rounded language-json">' + JSON.stringify(this.content, null, 2) + '</code></pre>';
                         }
                     }
+                },
+                computedTaskResultDetails() {
+                    if (this.taskResultDetails === undefined) {
+                        return '';
+                    }
+
+                    return '<pre><code class="rounded language-json">' + JSON.stringify(this.taskResultDetails, null, 2) + '</code></pre>';
                 }
             },
         }).mount('#app')
 
-        document.dispatchEvent(new KeyboardEvent('keydown', {}))
+        document.dispatchEvent(new KeyboardEvent('keydown', {}));
     </script>
 </html>
