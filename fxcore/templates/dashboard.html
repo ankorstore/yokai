@@ -406,13 +406,13 @@
                         .then(response => {
                             this.taskResultError = response.data.error;
                             this.taskResultMessage = response.data.message;
-                            this.taskResultDetails = response.data.detail;
+                            this.taskResultDetails = response.data.details;
                             this.taskLoading = false
                         })
                         .catch(error => {
                             this.taskResultError = error.response.data.error;
                             this.taskResultMessage = error.response.data.message;
-                            this.taskResultDetails = error.response.data.detail;
+                            this.taskResultDetails = error.response.data.details;
                             this.taskLoading = false
                         })
                 },
