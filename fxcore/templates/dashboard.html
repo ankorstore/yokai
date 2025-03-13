@@ -327,7 +327,7 @@
                 taskLoading: {
                     type: Boolean,
                 },
-                taskResultError: {
+                taskResultSuccess: {
                     type: Boolean,
                 },
                 taskResultMessage: {
@@ -347,11 +347,11 @@
                 const taskName = ref('')
                 const taskInput = ref('')
                 const taskLoading = ref(false)
-                const taskResultError = ref(false)
+                const taskResultSuccess = ref(true)
                 const taskResultMessage = ref('')
                 const taskResultDetails = ref({})
 
-                return { error, loading, title, view, content, taskName, taskInput, taskLoading, taskResultError,  taskResultMessage, taskResultDetails}
+                return { error, loading, title, view, content, taskName, taskInput, taskLoading, taskResultSuccess,  taskResultMessage, taskResultDetails}
             },
             methods: {
                 loadContent(event) {
@@ -396,7 +396,7 @@
                 resetTask() {
                     this.taskLoading = false
                     this.taskInput = ''
-                    this.taskResultError = false;
+                    this.taskResultSuccess = true;
                     this.taskResultMessage = '';
                     this.taskResultDetails = {};
                 },
@@ -406,13 +406,13 @@
                     axios
                         .post('{{ $.tasksPath }}/' + this.taskName, this.taskInput)
                         .then(response => {
-                            this.taskResultError = response.data.error;
+                            this.taskResultSuccess = response.data.success;
                             this.taskResultMessage = response.data.message;
                             this.taskResultDetails = response.data.details;
                             this.taskLoading = false
                         })
                         .catch(error => {
-                            this.taskResultError = error.response.data.error;
+                            this.taskResultSuccess = error.response.data.success;
                             this.taskResultMessage = error.response.data.message;
                             this.taskResultDetails = error.response.data.details;
                             this.taskLoading = false
@@ -445,27 +445,32 @@
                     }
                 },
                 computedTaskResult() {
+                    if (this.taskLoading) {
+                        return '<div class="spinner-border spinner-border-sm" role="status"></div>\&nbsp;Running ...'
+                    }
+
                     if (this.taskResultMessage === '') {
                         return ''
-                    } else {
-                        let ret = ''
-
-                        if (this.taskResultError) {
-                            ret += '<div class="alert alert-danger" role="alert">' + this.taskResultMessage + '</div>'
-                        } else {
-                            ret += '<div class="alert alert-success" role="alert">' + this.taskResultMessage + '</div>'
-                        }
-
-                        if (this.taskResultDetails.length > 0) {
-                            ret += '<ul>'
-                            for (const key in this.taskResultDetails) {
-                                ret += '<li>' + `${key}: ${this.taskResultDetails[key]}` +'</li>'
-                            }
-                            ret += '</ul>'
-                        }
-
-                        return ret
                     }
+
+                    let ret = ''
+
+                    if (this.taskResultSuccess) {
+                        ret += '<div class="alert alert-success" role="alert">' + this.taskResultMessage + '</div>'
+                    } else {
+                        ret += '<div class="alert alert-danger" role="alert">' + this.taskResultMessage + '</div>'
+                    }
+
+                    if (this.taskResultDetails.length > 0) {
+                        ret += '<ul>'
+                        for (const key in this.taskResultDetails) {
+                            ret += '<li>' + `${key}: ${this.taskResultDetails[key]}` +'</li>'
+                        }
+                        ret += '</ul>'
+                    }
+
+                    return ret
+
                 }
             },
         }).mount('#app')
