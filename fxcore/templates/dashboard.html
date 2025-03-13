@@ -165,7 +165,7 @@
                             <div class="spinner-border spinner-border-sm" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
-                            &nbsp;Loading ...
+                            &nbsp;&nbsp;Loading ...
                         </div>
                         <div id="overview-body" class="card-body bg-{{ .theme }}" v-if="view == 'overview'">
                             {{ if or .overviewAppEnvExpose .overviewAppDebugExpose .overviewAppVersionExpose }}
@@ -284,9 +284,15 @@
                                 <div class="mb-3">
                                     <textarea class="form-control" id="taskInput" rows="6" v-model="taskInput" placeholder="Optional input ..."></textarea>
                                 </div>
-                                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Task actions">
-                                    <button @click="resetTask"  type="button" class="btn btn-secondary"><i class="bi bi-x-square"></i>&nbsp;&nbsp;Reset</button>
-                                    <button @click="runTask"  type="button" class="btn btn-primary"><i class="bi bi-arrow-right-square"></i>&nbsp;&nbsp;Run</button>
+                                <div class="mb-3 btn-toolbar justify-content-between" role="toolbar" aria-label="Task actions" v-if="!taskLoading">
+                                    <button @click="resetTask" type="button" class="btn btn-secondary"><i class="bi bi-x-square"></i>&nbsp;&nbsp;Reset</button>
+                                    <button @click="runTask" type="button" class="btn btn-primary"><i class="bi bi-arrow-right-square"></i>&nbsp;&nbsp;Run</button>
+                                </div>
+                                <div class="mb-3" v-if="taskLoading">
+                                    <div class="spinner-border spinner-border-sm" role="status">
+                                        <span class="visually-hidden">Running...</span>
+                                    </div>
+                                    &nbsp;&nbsp;Running ...
                                 </div>
                             </form>
                             <br/>
@@ -324,7 +330,7 @@
                 taskInput: {
                     type: String,
                 },
-                taskLoading: {
+                taskRunning: {
                     type: Boolean,
                 },
                 taskResultSuccess: {
@@ -346,12 +352,12 @@
                 const content = ref('')
                 const taskName = ref('')
                 const taskInput = ref('')
-                const taskLoading = ref(false)
+                const taskRunning = ref(false)
                 const taskResultSuccess = ref(true)
                 const taskResultMessage = ref('')
                 const taskResultDetails = ref({})
 
-                return { error, loading, title, view, content, taskName, taskInput, taskLoading, taskResultSuccess,  taskResultMessage, taskResultDetails}
+                return { error, loading, title, view, content, taskName, taskInput, taskRunning, taskResultSuccess,  taskResultMessage, taskResultDetails}
             },
             methods: {
                 loadContent(event) {
@@ -401,7 +407,7 @@
                     this.taskResultDetails = {};
                 },
                 runTask() {
-                    this.taskLoading = true
+                    this.taskRunning = true
 
                     axios
                         .post('{{ $.tasksPath }}/' + this.taskName, this.taskInput)
@@ -409,13 +415,13 @@
                             this.taskResultSuccess = response.data.success;
                             this.taskResultMessage = response.data.message;
                             this.taskResultDetails = response.data.details;
-                            this.taskLoading = false
+                            this.taskRunning = false
                         })
                         .catch(error => {
                             this.taskResultSuccess = error.response.data.success;
                             this.taskResultMessage = error.response.data.message;
                             this.taskResultDetails = error.response.data.details;
-                            this.taskLoading = false
+                            this.taskRunning = false
                         })
                 },
                 switchTheme(event) {
@@ -445,10 +451,6 @@
                     }
                 },
                 computedTaskResult() {
-                    if (this.taskLoading) {
-                        return '<div class="spinner-border spinner-border-sm" role="status"></div>\&nbsp;Running ...'
-                    }
-
                     if (this.taskResultMessage === '') {
                         return ''
                     }
