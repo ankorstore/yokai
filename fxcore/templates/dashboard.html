@@ -357,36 +357,36 @@
                 },
             },
             setup() {
-                const error = ref('')
-                const loading = ref(false)
-                const title = ref('<i class="bi bi-info-circle"></i>&nbsp;&nbsp;Overview')
-                const view = ref('overview')
-                const content = ref('')
-                const taskName = ref('')
-                const taskInput = ref('')
-                const taskRunning = ref(false)
-                const taskResultSuccess = ref(true)
-                const taskResultMessage = ref('')
-                const taskResultDetails = ref({})
+                const error = ref('');
+                const loading = ref(false);
+                const title = ref('<i class="bi bi-info-circle"></i>&nbsp;&nbsp;Overview');
+                const view = ref('overview');
+                const content = ref('');
+                const taskName = ref('');
+                const taskInput = ref('');
+                const taskRunning = ref(false);
+                const taskResultSuccess = ref(true);
+                const taskResultMessage = ref('');
+                const taskResultDetails = ref({});
 
                 return { error, loading, title, view, content, taskName, taskInput, taskRunning, taskResultSuccess,  taskResultMessage, taskResultDetails}
             },
             methods: {
                 loadContent(event) {
-                    this.error = ''
+                    this.error = '';
 
-                    let dataView = event.currentTarget.getAttribute('data-view')
-                    let dataTitle = event.currentTarget.getAttribute('data-title')
-                    let dataUrl = location.origin + event.currentTarget.getAttribute('data-url')
-                    let dataType = event.currentTarget.getAttribute('data-type')
+                    let dataView = event.currentTarget.getAttribute('data-view');
+                    let dataTitle = event.currentTarget.getAttribute('data-title');
+                    let dataUrl = location.origin + event.currentTarget.getAttribute('data-url');
+                    let dataType = event.currentTarget.getAttribute('data-type');
 
                     this.view = dataView
 
                     if (dataType === 'task') {
-                        this.resetTask()
+                        this.resetTask();
 
-                        this.title = dataTitle
-                        this.taskName = event.currentTarget.getAttribute('data-task')
+                        this.title = dataTitle;
+                        this.taskName = event.currentTarget.getAttribute('data-task');
                     } else {
                         this.loading = true
 
@@ -439,9 +439,9 @@
                         });
                 },
                 switchTheme(event) {
-                    let dataTheme = event.currentTarget.getAttribute('data-theme')
+                    let dataTheme = event.currentTarget.getAttribute('data-theme');
 
-                    localStorage.setItem("theme-mode", dataTheme)
+                    localStorage.setItem("theme-mode", dataTheme);
 
                     axios
                         .post("/theme", {"theme": dataTheme},)
@@ -449,13 +449,13 @@
                         .catch(error => {
                             this.title = '<i class="bi bi-exclamation-triangle"></i>&nbsp;&nbsp;Error'
                             this.error  = error.message
-                        })
+                        });
                 }
             },
             computed: {
                 computedContent() {
                     if (this.error !== '') {
-                        return '<div class="alert alert-danger" role="alert">' + this.error + '</div>'
+                        return '<div class="alert alert-danger" role="alert">' + this.error + '</div>';
                     } else {
                         if  (typeof this.content === 'string' || this.content instanceof String) {
                             return '<pre><code class="rounded language-ini">' + this.content + '</code></pre>';
@@ -466,7 +466,7 @@
                 },
                 computedTaskResultDetails() {
                     if (this.taskResultDetails === {}) {
-                        return ''
+                        return '';
                     }
 
                     return '<pre><code class="rounded language-json">' + JSON.stringify(this.taskResultDetails, null, 2) + '</code></pre>';
@@ -474,6 +474,6 @@
             },
         }).mount('#app')
 
-        document.dispatchEvent(new KeyboardEvent('keydown', {}))
+        document.dispatchEvent(new KeyboardEvent('keydown', {}));
     </script>
 </html>
