@@ -288,7 +288,7 @@
                                     <button @click="resetTask" type="button" class="btn btn-secondary"><i class="bi bi-x-square"></i>&nbsp;&nbsp;Reset</button>
                                     <button @click="runTask" type="button" class="btn btn-primary"><i class="bi bi-arrow-right-square"></i>&nbsp;&nbsp;Run</button>
                                 </div>
-                                <div class="mb-3" v-if="taskRunning">
+                                <div class="mb-3 float-end" v-if="taskRunning">
                                     <div class="spinner-border spinner-border-sm" role="status">
                                         <span class="visually-hidden">Running...</span>
                                     </div>
@@ -413,7 +413,7 @@
                     }
                 },
                 resetTask() {
-                    this.taskLoading = false
+                    this.taskRunning = false
                     this.taskInput = ''
                     this.taskResultSuccess = true;
                     this.taskResultMessage = '';
@@ -428,14 +428,16 @@
                             this.taskResultSuccess = response.data.success;
                             this.taskResultMessage = response.data.message;
                             this.taskResultDetails = response.data.details;
-                            this.taskRunning = false
                         })
                         .catch(error => {
                             this.taskResultSuccess = error.response.data.success;
                             this.taskResultMessage = error.response.data.message;
                             this.taskResultDetails = error.response.data.details;
-                            this.taskRunning = false
                         })
+                        .finally(() => {
+                            this.taskRunning = false;
+                            hljs.highlightAll();
+                        });
                 },
                 switchTheme(event) {
                     let dataTheme = event.currentTarget.getAttribute('data-theme')
