@@ -297,8 +297,15 @@
                             </form>
                             <div class="card mb-3 border-success" v-if="taskResultMessage !== '' && taskResultSuccess && !taskRunning">
                                 <div class="card-header"><i class="bi bi-check2-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution success</div>
-                                <div class="card-body">
-                                    <p class="card-text">{% taskResultMessage %}</p>
+                                <div class="card-body bg-{{ .theme }}">
+                                    <div class="card-text">{% taskResultMessage %}</div>
+                                    <div v-html="computedTaskResultDetails"></div>
+                                </div>
+                            </div>
+                            <div class="card mb-3 border-danger" v-if="taskResultMessage !== '' && !taskResultSuccess && !taskRunning">
+                                <div class="card-header"><i class="bi bi-x-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution error</div>
+                                <div class="card-body bg-{{ .theme }}">
+                                    <div class="card-text">{% taskResultMessage %}</div>
                                     <div v-html="computedTaskResultDetails"></div>
                                 </div>
                             </div>
@@ -415,7 +422,10 @@
                     this.taskRunning = true
 
                     axios
-                        .post('{{ $.tasksPath }}/' + this.taskName, this.taskInput)
+                        .post(
+                            '{{ $.tasksPath }}/' + this.taskName,
+                            this.taskInput
+                        )
                         .then(response => {
                             this.taskResultSuccess = response.data.success;
                             this.taskResultMessage = response.data.message;
@@ -437,7 +447,7 @@
                     localStorage.setItem("theme-mode", dataTheme);
 
                     axios
-                        .post("/theme", {"theme": dataTheme},)
+                        .post("/theme", {"theme": dataTheme})
                         .then(() => location.reload())
                         .catch(error => {
                             this.title = '<i class="bi bi-exclamation-triangle"></i>&nbsp;&nbsp;Error'
