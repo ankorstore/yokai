@@ -69,7 +69,7 @@ func TestFxModuleInfoRegistry(t *testing.T) {
 	t.Parallel()
 
 	createRegistry := func(tb testing.TB) *fxcore.FxModuleInfoRegistry {
-		t.Helper()
+		tb.Helper()
 
 		cfg, err := config.NewDefaultConfigFactory().Create(
 			config.WithFilePaths("./testdata/config"),
@@ -130,5 +130,4 @@ func TestFxModuleInfoRegistry(t *testing.T) {
 		assert.Equal(t, "fx module info with name invalid was not found", err.Error())
 		assert.Nil(t, invalidInfo)
 	})
-
 }

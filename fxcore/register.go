@@ -25,3 +25,14 @@ func AsTask(constructor any) fx.Option {
 		),
 	)
 }
+
+// AsTasks registers several tasks in the core.
+func AsTasks(constructors ...any) fx.Option {
+	options := []fx.Option{}
+
+	for _, constructor := range constructors {
+		options = append(options, AsTask(constructor))
+	}
+
+	return fx.Options(options...)
+}

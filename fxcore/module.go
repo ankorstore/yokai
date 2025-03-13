@@ -305,7 +305,7 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 			}
 
 			res := p.TaskRegistry.Run(ctx, name, input)
-			if res.Success == false {
+			if !res.Success {
 				logger.Error().Err(err).Str("task", name).Msg("task execution error")
 
 				return c.JSON(http.StatusInternalServerError, res)

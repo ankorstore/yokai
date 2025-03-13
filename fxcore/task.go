@@ -69,5 +69,4 @@ func (r *TaskRegistry) Run(ctx context.Context, name string, input []byte) TaskR
 	}
 
 	return task.Run(ctx, input)
-
 }
