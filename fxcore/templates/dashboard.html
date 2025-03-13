@@ -406,7 +406,6 @@
                             })
                             .finally(() => {
                                 this.loading = false;
-                                this.$forceUpdate();
                                 hljs.highlightAll();
                             });
                     }
@@ -438,7 +437,6 @@
                         })
                         .finally(() => {
                             this.taskRunning = false;
-                            this.$forceUpdate();
                             hljs.highlightAll();
                         });
                 },

@@ -15,7 +15,7 @@ func AsCoreExtraInfo(name string, value string) fx.Option {
 	)
 }
 
-// AsTask registers a task.
+// AsTask registers a task in the core.
 func AsTask(constructor any) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
