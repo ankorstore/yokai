@@ -3,6 +3,7 @@ package fxcore
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"go.uber.org/fx"
 )
@@ -45,6 +46,9 @@ func (r *TaskRegistry) Names() []string {
 	for name := range r.tasks {
 		names = append(names, name)
 	}
+
+	sort.Strings(names)
+
 	return names
 }
 
