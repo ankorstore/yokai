@@ -407,6 +407,7 @@
                             })
                             .finally(() => {
                                 this.loading = false;
+                                this.$forceUpdate();
                                 hljs.highlightAll();
                             });
                     }
@@ -430,16 +431,15 @@
                             this.taskResultSuccess = response.data.success;
                             this.taskResultMessage = response.data.message;
                             this.taskResultDetails = response.data.details;
-                            hljs.highlightAll();
                         })
                         .catch(error => {
                             this.taskResultSuccess = error.response.data.success;
                             this.taskResultMessage = error.response.data.message;
                             this.taskResultDetails = error.response.data.details;
-                            hljs.highlightAll();
                         })
                         .finally(() => {
                             this.taskRunning = false;
+                            this.$forceUpdate();
                             hljs.highlightAll();
                         });
                 },
