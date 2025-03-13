@@ -327,9 +327,15 @@
                 taskLoading: {
                     type: Boolean,
                 },
-                taskResult: {
+                taskResultError: {
+                    type: Boolean,
+                },
+                taskResultMessage: {
+                    type: String,
+                },
+                taskResultDetails: {
                     type: Object,
-                    default: () => ({ success: true, message: '', details: {} })
+                    default: () => ({})
                 },
             },
             setup() {
@@ -341,9 +347,11 @@
                 const taskName = ref('')
                 const taskInput = ref('')
                 const taskLoading = ref(false)
-                const taskResult = ref('')
+                const taskResultError = ref(false)
+                const taskResultMessage = ref('')
+                const taskResultDetails = ref({})
 
-                return { error, loading, title, view, content, taskName, taskInput, taskLoading, taskResult }
+                return { error, loading, title, view, content, taskName, taskInput, taskLoading, taskResultError,  taskResultMessage, taskResultDetails}
             },
             methods: {
                 loadContent(event) {
