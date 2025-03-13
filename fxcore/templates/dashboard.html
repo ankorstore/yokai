@@ -302,13 +302,6 @@
                                     <div v-html="computedTaskResultDetails"></div>
                                 </div>
                             </div>
-                            <div class="card mb-3 border-danger" v-if="taskResultMessage !== '' && !taskResultSuccess && !taskRunning">
-                                <div class="card-header"><i class="bi bi-x-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution error</div>
-                                <div class="card-body">
-                                    <p class="card-text">{% taskResultMessage %}</p>
-                                    <div v-html="computedTaskResultDetails"></div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
