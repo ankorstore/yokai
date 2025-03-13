@@ -353,6 +353,7 @@
                     if (dataType === 'task') {
                         this.resetTask()
 
+                        this.title = dataTitle
                         this.taskName = event.currentTarget.getAttribute('data-task')
                     } else {
                         this.loading = true
@@ -379,7 +380,6 @@
                     }
                 },
                 resetTask() {
-                    this.taskName = ''
                     this.taskInput = ''
                     this.taskResult = ''
                 },
