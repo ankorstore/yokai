@@ -456,20 +456,20 @@
                     let ret = ''
 
                     if (this.taskResultSuccess) {
-                        ret += '<div class="alert alert-success" role="alert">' + this.taskResultMessage + '</div>'
+                        ret += '<div class="alert alert-success" role="alert">' + this.taskResultMessage
                     } else {
-                        ret += '<div class="alert alert-danger" role="alert">' + this.taskResultMessage + '</div>'
+                        ret += '<div class="alert alert-danger" role="alert">' + this.taskResultMessage
                     }
 
-                    if (this.taskResultDetails.length > 0) {
-                        ret += '<ul>'
-                        for (const key in this.taskResultDetails) {
-                            ret += '<li>' + `${key}: ${this.taskResultDetails[key]}` +'</li>'
+                    if (this.taskResultDetails !== {}) {
+                        if  (typeof this.taskResultDetails === 'string' || this.taskResultDetails instanceof String) {
+                            ret += '<pre><code class="rounded language-ini">' + this.taskResultDetails + '</code></pre>';
+                        } else {
+                            ret += '<pre><code class="rounded language-json">' + JSON.stringify(this.taskResultDetails, null, 2) + '</code></pre>';
                         }
-                        ret += '</ul>'
                     }
 
-                    return ret
+                    return ret + '</div>'
 
                 }
             },
