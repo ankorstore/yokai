@@ -404,11 +404,15 @@
                     axios
                         .post('{{ $.tasksPath }}/' + this.taskName, this.taskInput)
                         .then(response => {
-                            this.taskResult = response.data;
+                            this.taskResultError = response.data.error;
+                            this.taskResultMessage = response.data.message;
+                            this.taskResultDetails = response.data.detail;
                             this.taskLoading = false
                         })
                         .catch(error => {
-                            this.taskResult = error.response.data;
+                            this.taskResultError = error.response.data.error;
+                            this.taskResultMessage = error.response.data.message;
+                            this.taskResultDetails = error.response.data.detail;
                             this.taskLoading = false
                         })
                 },
