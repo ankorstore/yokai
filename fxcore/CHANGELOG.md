@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.10.0...fxcore/v1.11.0) (2025-03-13)
+
+
+### Features
+
+* **fxcore:** Added core tasks system ([#326](https://github.com/ankorstore/yokai/issues/326)) ([ae58a8f](https://github.com/ankorstore/yokai/commit/ae58a8fe30a2b196101bd5a428ab464b528ae7b3))
+
 ## [1.10.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.9.0...fxcore/v1.10.0) (2025-02-13)
 
 
