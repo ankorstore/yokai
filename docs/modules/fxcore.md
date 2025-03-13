@@ -98,6 +98,9 @@ modules:
         liveness:            
           expose: true                 # to expose health check liveness route, disabled by default
           path: /livez                 # health check liveness route path (default /livez)
+      tasks:
+        expose: true                   # to expose tasks route, disabled by default
+        path: /tasks/:name             # tasks route path (default /tasks/:name)  
       debug:
         config:
           expose: true                 # to expose debug config route
@@ -254,19 +257,181 @@ If `modules.core.server.dashboard=true`, the core dashboard is available on the 
 ![](../../assets/images/dash-core-light.png#only-light)
 ![](../../assets/images/dash-core-dark.png#only-dark)
 
-From there, you can get:
-
-- an overview of your application
-- information and tooling about your application: build, config, metrics, pprof, etc.
-- access to the configured health check endpoints
-- access to the loaded modules information (when exposed)
-
-The core dashboard is made for `development` purposes.
-
-But since it's served on a dedicated port, you can safely decide to
+Since it's served on a dedicated port, you can safely decide to
 leave it enabled on production, to not expose it to the public, and access it
-via [port forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/)
-for example.
+via [port forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/).
+
+### Core
+
+The `Core` section of the dashboard offers you information about:
+
+- `Build`: environment and Go information about your application
+- `Config`: resolved configuration
+- `Metrics`: exposed metrics
+- `Routes`: routes of the core dashboard
+- `Pprof`: pprof page
+- `Stats`: statistics page
+
+### Health Check
+
+The `Healthcheck` section of the dashboard offers you the possibility to trigger the health check endpoints, depending on their configuration.
+
+You must ensure the health checks are exposed:
+
+```yaml title="configs/config.yaml"
+modules:
+  core:
+    server:
+      healthcheck:
+        startup:
+          expose: true    # to expose health check startup route, disabled by default
+          path: /healthz  # health check startup route path (default /healthz)
+        readiness:
+          expose: true    # to expose health check readiness route, disabled by default
+          path: /readyz   # health check readiness route path (default /readyz)
+        liveness:
+          expose: true    # to expose health check liveness route, disabled by default
+          path: /livez    # health check liveness route path (default /livez)
+    
+```
+
+See the [Health Check](https://ankorstore.github.io/yokai/modules/fxhealthcheck/) module documentation for more information.
+
+### Tasks
+
+If you need to execute one shot / private operations (like flush a cache, trigger an export, etc.) but don't want to expose an endpoint or a command for this, you can create a task.
+
+Yokai will collect them, and make them available in the core dashboard interface, under the `Tasks` section.
+
+This is particularly useful for admin / maintenance purposes, without exposing those to your end users.
+
+First, you must ensure the tasks are exposed:
+
+```yaml title="configs/config.yaml"
+modules:
+  core:
+    server:
+      tasks:
+        expose: true       # to expose tasks route, disabled by default
+        path: /tasks/:name # tasks route path (default /tasks/:name)  
+    
+```
+
+Then, provide a [Task](https://github.com/ankorstore/yokai/blob/main/fxcore/task.go) implementation:
+
+```go title="internal/tasks/example.go"
+package tasks
+
+import (
+	"context"
+
+	"github.com/ankorstore/yokai/config"
+	"github.com/ankorstore/yokai/fxcore"
+)
+
+var _ fxcore.Task = (*ExampleTask)(nil)
+
+type ExampleTask struct {
+	config *config.Config
+}
+
+func NewExampleTask(config *config.Config) *ExampleTask {
+	return &ExampleTask{
+		config: config,
+	}
+}
+
+func (t *ExampleTask) Name() string {
+	return "example"
+}
+
+func (t *ExampleTask) Run(ctx context.Context, input []byte) fxcore.TaskResult {
+	return fxcore.TaskResult{
+		Success: true,                     // task execution status
+		Message: "example message",        // task execution message
+		Details: map[string]any{           // optional task execution details
+			"app":   t.config.AppName(),
+			"input": string(input),
+		},
+	}
+}
+```
+
+Then, register the task with `AsTask()`:
+
+```go title="internal/register.go"
+package internal
+
+import (
+	"github.com/ankorstore/yokai/fxcore"
+	"github.com/foo/bar/internal/tasks"
+	"go.uber.org/fx"
+)
+
+func Register() fx.Option {
+	return fx.Options(
+		// register the ExampleTask (will auto wire dependencies)
+		fxcore.AsTask(tasks.NewExampleTask),
+		// ...
+	)
+}
+```
+
+Note: you can also use `AsTasks()` to register several tasks at once.
+
+It'll be then available on the core dashboard for execution:
+
+![](../../assets/images/dash-tasks-light.png#only-light)
+![](../../assets/images/dash-tasks-dark.png#only-dark)
+
+### Modules
+
+The `Modules` section of the dashboard offers you the possibility to check the details of the modules exposing information to the core.
+
+If you want your module to expose information in this section, you can provide a [FxModuleInfo](https://github.com/ankorstore/yokai/blob/main/fxcore/info.go) implementation:
+
+```go title="internal/info.go"
+package internal
+
+type ExampleModuleInfo struct {}
+
+func (i *ExampleModuleInfo) Name() string {
+  return "example"
+}
+
+func (i *ExampleModuleInfo) Data() map[string]any {
+  return map[string]any{
+    "example": "value",
+  }
+}
+```
+
+and then register it in the `core-module-infos` group:
+
+```go title="internal/register.go"
+package internal
+
+import (
+	"go.uber.org/fx"
+)
+
+func Register() fx.Option {
+	return fx.Options(
+		// register the ExampleModuleInfo in the core dashboard
+		fx.Provide(
+            fx.Annotate(
+              ExampleModuleInfo,
+              fx.As(new(interface{})),
+              fx.ResultTags(`group:"core-module-infos"`),
+            ),
+		  ),
+		// ...
+	)
+}
+```
+
+See [example](https://github.com/ankorstore/yokai/blob/main/fxhttpserver/info.go).
+
 
 ## Testing
 
