@@ -396,7 +396,9 @@
                 resetTask() {
                     this.taskLoading = false
                     this.taskInput = ''
-                    this.taskResult = ''
+                    this.taskResultError = false;
+                    this.taskResultMessage = '';
+                    this.taskResultDetails = {};
                 },
                 runTask() {
                     this.taskLoading = true
