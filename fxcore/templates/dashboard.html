@@ -288,9 +288,9 @@
                                         <i class="bi bi-x-square"></i>&nbsp;&nbsp;Reset
                                     </button>
                                     <button @click="runTask" type="button" class="btn btn-sm btn-primary" :disabled="taskRunning">
-                                        <span><i class="bi bi-arrow-right-square" v-if="!taskRunning"></i>&nbsp;&nbsp;Run</span>
+                                        <span v-if="!taskRunning"><i class="bi bi-arrow-right-square"></i>&nbsp;&nbsp;Run</span>
                                         <span class="spinner-border spinner-border-sm" aria-hidden="true" v-if="taskRunning"></span>
-                                        <span class="visually-hidden" role="status" v-if="taskRunning">Running...</span>
+                                        <span role="status" v-if="taskRunning">Running...</span>
                                     </button>
                                 </div>
                             </form>
