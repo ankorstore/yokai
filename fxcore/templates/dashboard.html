@@ -381,13 +381,13 @@
                 resetTask() {
                     this.taskName = ''
                     this.taskInput = ''
-                    this.takResult = ''
+                    this.taskResult = ''
                 },
                 runTask() {
                     axios
                         .post('{{ $.tasksPath }}/' + this.taskName, this.taskInput)
                         .then(response => {
-                            this.taskResult = response.data;
+                            this.taskResult = response.data.message;
                         })
                         .catch(error => {
                             console.log(error)
