@@ -439,14 +439,26 @@
                     }
                 },
                 computedTaskResult() {
-                    if (this.taskResult.message === '') {
+                    if (this.taskResultMessage === '') {
                         return ''
                     } else {
-                        if (this.taskResult.error) {
-                            return '<div class="alert alert-danger" role="alert">' + this.taskResult.message + '</div>'
+                        let ret = ''
+
+                        if (this.taskResultError) {
+                            ret += '<div class="alert alert-danger" role="alert">' + this.taskResultMessage + '</div>'
                         } else {
-                            return '<div class="alert alert-success" role="alert">' + this.taskResult.message + '</div>'
+                            ret += '<div class="alert alert-success" role="alert">' + this.taskResultMessage + '</div>'
                         }
+
+                        if (this.taskResultDetails.length > 0) {
+                            ret += '<ul>'
+                            for (const key in this.taskResultDetails) {
+                                ret += '<li>' + `${key}: ${this.taskResultDetails[key]}` +'</li>'
+                            }
+                            ret += '</ul>'
+                        }
+
+                        return ret
                     }
                 }
             },
