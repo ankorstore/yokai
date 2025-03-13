@@ -297,16 +297,16 @@
                             </form>
                             <br/>
                             <div class="card mb-3 border-success" v-if="taskResultMessage !== '' && taskResultSuccess && !taskRunning">
-                                <div class="card-header" v-html="taskResultMessage">Task {% taskName %} execution success</div>
-                                <div class="card-body text-success">
-                                    <h5 class="card-title">{% taskResultMessage %}</h5>
+                                <div class="card-header"><i class="bi bi-check2-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution success</div>
+                                <div class="card-body">
+                                    <p class="card-text">{% taskResultMessage %}</p>
                                     <p class="card-text" v-html="computedTaskResultDetails"></p>
                                 </div>
                             </div>
                             <div class="card mb-3 border-danger" v-if="taskResultMessage !== '' && !taskResultSuccess && !taskRunning">
-                                <div class="card-header" v-html="taskResultMessage">Task {% taskName %} execution failure</div>
-                                <div class="card-body text-danger">
-                                    <h5 class="card-title">{% taskResultMessage %}</h5>
+                                <div class="card-header"><i class="bi bi-x-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution error</div>
+                                <div class="card-body">
+                                    <p class="card-text">{% taskResultMessage %}</p>
                                     <p class="card-text" v-html="computedTaskResultDetails"></p>
                                 </div>
                             </div>
