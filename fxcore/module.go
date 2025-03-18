@@ -102,56 +102,61 @@ type FxCoreParam struct {
 
 // NewFxCore returns a new [Core].
 func NewFxCore(p FxCoreParam) (*Core, error) {
-	appDebug := p.Config.AppDebug()
+	var coreServer *echo.Echo
+	var err error
 
-	// logger
-	coreLogger := httpserver.NewEchoLogger(
-		log.FromZerolog(p.Logger.ToZerolog().With().Str("module", ModuleName).Logger()),
-	)
+	if p.Config.GetBool("modules.core.server.expose") {
+		appDebug := p.Config.AppDebug()
 
-	// server
-	coreServer, err := httpserver.NewDefaultHttpServerFactory().Create(
-		httpserver.WithDebug(appDebug),
-		httpserver.WithBanner(false),
-		httpserver.WithLogger(coreLogger),
-		httpserver.WithRenderer(NewDashboardRenderer(templatesFS, "templates/dashboard.html")),
-		httpserver.WithHttpErrorHandler(
-			httpserver.NewJsonErrorHandler(
-				p.Config.GetBool("modules.core.server.errors.obfuscate") || !appDebug,
-				p.Config.GetBool("modules.core.server.errors.stack") || appDebug,
-			).Handle(),
-		),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create core http server: %w", err)
+		// logger
+		coreLogger := httpserver.NewEchoLogger(
+			log.FromZerolog(p.Logger.ToZerolog().With().Str("module", ModuleName).Logger()),
+		)
+
+		// server
+		coreServer, err = httpserver.NewDefaultHttpServerFactory().Create(
+			httpserver.WithDebug(appDebug),
+			httpserver.WithBanner(false),
+			httpserver.WithLogger(coreLogger),
+			httpserver.WithRenderer(NewDashboardRenderer(templatesFS, "templates/dashboard.html")),
+			httpserver.WithHttpErrorHandler(
+				httpserver.NewJsonErrorHandler(
+					p.Config.GetBool("modules.core.server.errors.obfuscate") || !appDebug,
+					p.Config.GetBool("modules.core.server.errors.stack") || appDebug,
+				).Handle(),
+			),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create core http server: %w", err)
+		}
+
+		// middlewares
+		coreServer = withMiddlewares(coreServer, p)
+
+		// handlers
+		coreServer, err = withHandlers(coreServer, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to register core http server handlers: %w", err)
+		}
+
+		// lifecycles
+		p.LifeCycle.Append(fx.Hook{
+			OnStart: func(ctx context.Context) error {
+				address := p.Config.GetString("modules.core.server.address")
+				if address == "" {
+					address = DefaultAddress
+				}
+
+				//nolint:errcheck
+				go coreServer.Start(address)
+
+				return nil
+			},
+			OnStop: func(ctx context.Context) error {
+				return coreServer.Shutdown(ctx)
+			},
+		})
 	}
-
-	// middlewares
-	coreServer = withMiddlewares(coreServer, p)
-
-	// handlers
-	coreServer, err = withHandlers(coreServer, p)
-	if err != nil {
-		return nil, fmt.Errorf("failed to register core http server handlers: %w", err)
-	}
-
-	// lifecycles
-	p.LifeCycle.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
-			address := p.Config.GetString("modules.core.server.address")
-			if address == "" {
-				address = DefaultAddress
-			}
-
-			//nolint:errcheck
-			go coreServer.Start(address)
-
-			return nil
-		},
-		OnStop: func(ctx context.Context) error {
-			return coreServer.Shutdown(ctx)
-		},
-	})
 
 	return NewCore(p.Config, p.Checker, coreServer), nil
 }

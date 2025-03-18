@@ -13,6 +13,7 @@ modules:
       type: test
   core:
     server:
+      expose: true
       errors:
         obfuscate: false
         stack: false
