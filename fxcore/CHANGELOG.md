@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.11.0...fxcore/v1.12.0) (2025-03-18)
+
+
+### Features
+
+* **fxcore:** Added core server exposition config ([#329](https://github.com/ankorstore/yokai/issues/329)) ([f5b741b](https://github.com/ankorstore/yokai/commit/f5b741bbadf7d3097df7b0d1879c4306a37f893f))
+
 ## [1.11.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.10.0...fxcore/v1.11.0) (2025-03-13)
 
 
