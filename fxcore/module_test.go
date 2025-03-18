@@ -22,6 +22,17 @@ import (
 	"go.uber.org/fx"
 )
 
+func TestModuleWithServerDisabled(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("MODULES_CORE_SERVER_EXPOSE", "false")
+
+	var core *fxcore.Core
+
+	fxcore.NewBootstrapper().RunTestApp(t, fx.Populate(&core))
+
+	assert.Nil(t, core.HttpServer())
+}
+
 func TestModuleWithMetricsDisabled(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("METRICS_ENABLED", "false")

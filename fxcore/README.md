@@ -83,6 +83,7 @@ modules:
       type: stdout
   core:
     server:
+      expose: true                     # to expose the core http server, disabled by default
       address: ":8081"                 # core http server listener address (default :8081)
       errors:              
         obfuscate: false               # to obfuscate error messages on the core http server responses
