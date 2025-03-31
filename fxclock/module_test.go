@@ -113,4 +113,21 @@ func TestFxClockworkClockModule(t *testing.T) {
 		fakeClock.Advance(10 * time.Second)
 		wg.Wait()
 	})
+
+	t.Run("test mode with invalid time", func(t *testing.T) {
+		testTime := "invalid"
+		t.Setenv("APP_ENV", config.AppEnvTest)
+		t.Setenv("MODULES_CLOCK_TEST_TIME", testTime)
+
+		app := fx.New(
+			fx.NopLogger,
+			fxconfig.FxConfigModule,
+			fxclock.FxClockModule,
+			fx.Invoke(func(clock clockwork.Clock) {}),
+		)
+
+		err := app.Start(context.Background())
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), fmt.Sprintf("cannot parse %q", testTime))
+	})
 }
