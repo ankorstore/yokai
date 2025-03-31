@@ -57,6 +57,11 @@
       "component": "worker",
       "tag-separator": "/"
     },
+    "fxclock": {
+      "release-type": "go",
+      "component": "fxclock",
+      "tag-separator": "/"
+    },
     "fxcore": {
       "release-type": "go",
       "component": "fxcore",

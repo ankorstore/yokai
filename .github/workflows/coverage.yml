@@ -32,6 +32,7 @@ jobs:
         - "sql"
         - "trace"
         - "worker"
+        - "fxclock"
         - "fxcore"
         - "fxconfig"
         - "fxcron"
