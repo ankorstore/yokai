@@ -83,6 +83,7 @@ nav:
       - "Worker application": demos/worker-application.md
   - "Modules":
       - "Core": modules/fxcore.md
+      - "Clock": modules/fxclock.md
       - "Config": modules/fxconfig.md
       - "Cron": modules/fxcron.md
       - "Generate": modules/fxgenerate.md
