@@ -29,3 +29,4 @@ jobs:
         secrets: inherit
         with:
             module: "fxclock"
+            go_version: "1.21"
