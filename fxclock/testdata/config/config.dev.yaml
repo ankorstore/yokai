@@ -1,0 +1,6 @@
+app:
+  env: dev
+modules:
+  log:
+    level: debug
+    output: test
