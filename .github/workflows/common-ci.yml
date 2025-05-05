@@ -63,7 +63,7 @@ jobs:
           go-version: ${{ inputs.go_version }}
       - name: Install lint
         working-directory: ${{ inputs.module }}
-        run:  go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
+        run:  go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.60.2
       - name: Run lint
         working-directory: ${{ inputs.module }}
         run: golangci-lint run
