@@ -37,6 +37,7 @@ func TestMCPServerModule(t *testing.T) {
 	var logBuffer logtest.TestLogBuffer
 	var traceExporter tracetest.TestTraceExporter
 	var metricsRegistry *prometheus.Registry
+	var info *fxmcpserver.MCPServerModuleInfo
 
 	fxtest.New(
 		t,
@@ -53,7 +54,7 @@ func TestMCPServerModule(t *testing.T) {
 			fxmcpserver.AsMCPServerResources(resource.NewTestResource),
 			fxmcpserver.AsMCPServerResourceTemplates(resource.NewTestResourceTemplate),
 		),
-		fx.Populate(&mcpServer, &handler, &logBuffer, &traceExporter, &metricsRegistry),
+		fx.Populate(&mcpServer, &handler, &logBuffer, &traceExporter, &metricsRegistry, &info),
 	).RequireStart().RequireStop()
 
 	// test server
