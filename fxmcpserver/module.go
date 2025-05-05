@@ -2,7 +2,6 @@ package fxmcpserver
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ankorstore/yokai/config"
 	fs "github.com/ankorstore/yokai/fxmcpserver/server"
@@ -172,7 +171,6 @@ func ProvideMCPSSEServer(p ProvideMCPSSEServerParam) *sse.MCPSSEServer {
 		p.LifeCycle.Append(fx.Hook{
 			OnStart: func(context.Context) error {
 				if !p.Config.IsTestEnv() {
-					fmt.Println("*************************************** start")
 					//nolint:contextcheck,errcheck
 					go sseServer.Start(p.Context)
 				}
