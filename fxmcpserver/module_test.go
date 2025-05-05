@@ -13,6 +13,9 @@ import (
 	"github.com/ankorstore/yokai/fxmcpserver"
 	fs "github.com/ankorstore/yokai/fxmcpserver/server"
 	"github.com/ankorstore/yokai/fxmcpserver/server/sse"
+	"github.com/ankorstore/yokai/fxmcpserver/testdata/prompt"
+	"github.com/ankorstore/yokai/fxmcpserver/testdata/resource"
+	"github.com/ankorstore/yokai/fxmcpserver/testdata/resourcetemplate"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/tool"
 	"github.com/ankorstore/yokai/fxmetrics"
 	"github.com/ankorstore/yokai/fxtrace"
@@ -52,7 +55,11 @@ func TestMCPServerModule(t *testing.T) {
 		fxhealthcheck.FxHealthcheckModule,
 		fxmcpserver.FxMCPServerModule,
 		fx.Options(
-			fxmcpserver.AsMCPServerTools(tool.NewAdvancedTestTool),
+			fxmcpserver.AsMCPServerTools(tool.NewSimpleTestTool, tool.NewAdvancedTestTool),
+			fxmcpserver.AsMCPServerPrompts(prompt.NewSimpleTestPrompt),
+			fxmcpserver.AsMCPServerResources(resource.NewSimpleTestResource),
+			fxmcpserver.AsMCPServerResourceTemplates(resourcetemplate.NewSimpleTestResourceTemplate),
+
 			fxhealthcheck.AsCheckerProbe(fs.NewMCPServerProbe),
 		),
 		fx.Supply(fx.Annotate(context.Background(), fx.As(new(context.Context)))),

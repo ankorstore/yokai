@@ -39,6 +39,8 @@ func NewDefaultMCPServerHooksProvider(registry prometheus.Registerer, config *co
 
 	buckets := prometheus.DefBuckets
 	if bucketsConfig := config.GetString("modules.mcp.server.metrics.buckets"); bucketsConfig != "" {
+		buckets = []float64{}
+
 		for _, s := range Split(bucketsConfig) {
 			f, err := strconv.ParseFloat(s, 64)
 			if err == nil {
