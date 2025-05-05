@@ -2,12 +2,6 @@ app:
   name: test
   version: 0.1.0
 modules:
-  log:
-    level: debug
-    output: test
-  trace:
-    processor:
-      type: test
   mcp:
     server:
       name: "test-server"

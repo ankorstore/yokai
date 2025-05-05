@@ -2,6 +2,7 @@ package fxmcpserver
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ankorstore/yokai/config"
 	fs "github.com/ankorstore/yokai/fxmcpserver/server"
@@ -170,13 +171,20 @@ func ProvideMCPSSEServer(p ProvideMCPSSEServerParam) *sse.MCPSSEServer {
 	if p.Config.GetBool("modules.mcp.server.transport.sse.expose") {
 		p.LifeCycle.Append(fx.Hook{
 			OnStart: func(context.Context) error {
-				//nolint:contextcheck,errcheck
-				go sseServer.Start(p.Context)
+				if !p.Config.IsTestEnv() {
+					fmt.Println("*************************************** start")
+					//nolint:contextcheck,errcheck
+					go sseServer.Start(p.Context)
+				}
 
 				return nil
 			},
 			OnStop: func(ctx context.Context) error {
-				return sseServer.Stop(ctx)
+				if !p.Config.IsTestEnv() {
+					return sseServer.Stop(ctx)
+				}
+
+				return nil
 			},
 		})
 	}
@@ -226,8 +234,10 @@ func ProvideMCPStdioServer(p ProvideMCPStdioServerParam) *stdio.MCPStdioServer {
 	if p.Config.GetBool("modules.mcp.server.transport.stdio.expose") {
 		p.LifeCycle.Append(fx.Hook{
 			OnStart: func(context.Context) error {
-				//nolint:contextcheck,errcheck
-				go stdioServer.Start(p.Context)
+				if !p.Config.IsTestEnv() {
+					//nolint:contextcheck,errcheck
+					go stdioServer.Start(p.Context)
+				}
 
 				return nil
 			},

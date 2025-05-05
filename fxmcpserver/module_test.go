@@ -31,6 +31,7 @@ import (
 )
 
 func TestMCPServerModule(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 
 	var mcpServer *server.MCPServer
@@ -64,8 +65,8 @@ func TestMCPServerModule(t *testing.T) {
 
 	// health check
 	checkResult := checker.Check(context.Background(), healthcheck.Readiness)
-	assert.True(t, checkResult.Success)
-	assert.Equal(t, "MCP SSE server is running", checkResult.ProbesResults["mcpserver"].Message)
+	assert.False(t, checkResult.Success)
+	assert.Equal(t, "MCP SSE server is not running", checkResult.ProbesResults["mcpserver"].Message)
 
 	// create test client
 	testClient, err := client.NewSSEMCPClient(testServer.URL + "/sse")
