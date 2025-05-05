@@ -150,7 +150,7 @@ func (p *DefaultMCPServerHooksProvider) Provide() *server.Hooks {
 		case mcp.MethodResourcesRead:
 			if req, ok := message.(*mcp.ReadResourceRequest); ok {
 				spanNameSuffix = fmt.Sprintf("%s %s", spanNameSuffix, req.Params.URI)
-				spanAttributes = append(spanAttributes, attribute.String("mcp.resource", req.Params.URI))
+				spanAttributes = append(spanAttributes, attribute.String("mcp.resourceURI", req.Params.URI))
 				logFields["mcpResourceURI"] = req.Params.URI
 				metricTarget = req.Params.URI
 			}
@@ -224,7 +224,7 @@ func (p *DefaultMCPServerHooksProvider) Provide() *server.Hooks {
 		case mcp.MethodResourcesRead:
 			if req, ok := message.(*mcp.ReadResourceRequest); ok {
 				spanNameSuffix = fmt.Sprintf("%s %s", spanNameSuffix, req.Params.URI)
-				spanAttributes = append(spanAttributes, attribute.String("mcp.resource", req.Params.URI))
+				spanAttributes = append(spanAttributes, attribute.String("mcp.resourceURI", req.Params.URI))
 				logFields["mcpResourceURI"] = req.Params.URI
 				metricTarget = req.Params.URI
 			}

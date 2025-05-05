@@ -33,7 +33,7 @@ func (r *SimpleTestResource) Handle() server.ResourceHandlerFunc {
 			mcp.TextResourceContents{
 				URI:      request.Params.URI,
 				MIMEType: "text/plain",
-				Text:     "ok",
+				Text:     "simple test resource",
 			},
 		}, nil
 	}

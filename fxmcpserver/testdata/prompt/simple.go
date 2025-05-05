@@ -30,7 +30,7 @@ func (p *SimpleTestPrompt) Handle() server.PromptHandlerFunc {
 			[]mcp.PromptMessage{
 				mcp.NewPromptMessage(
 					mcp.RoleAssistant,
-					mcp.NewTextContent("test content"),
+					mcp.NewTextContent("simple test prompt"),
 				),
 			},
 		), nil

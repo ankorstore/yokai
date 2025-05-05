@@ -143,8 +143,9 @@ func TestMCPServerModule(t *testing.T) {
 		"shouldFail": "false",
 	}
 
-	_, err = testClient.CallTool(ctx, callToolRequest)
+	callToolResult, err := testClient.CallTool(ctx, callToolRequest)
 	assert.NoError(t, err)
+	assert.False(t, callToolResult.IsError)
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
 		"level":        "info",
@@ -180,7 +181,7 @@ func TestMCPServerModule(t *testing.T) {
 	)
 	assert.NoError(t, err)
 
-	// send failing tools/call request
+	// send error tools/call request
 	expectedRequest = `{"method":"tools/call","params":{"name":"advanced-test-tool","arguments":{"shouldFail":"true"}}}`
 
 	callToolRequest = mcp.CallToolRequest{}
@@ -217,6 +218,197 @@ func TestMCPServerModule(t *testing.T) {
 		# HELP foo_bar_mcp_server_requests_total Number of processed MCP requests
 		# TYPE foo_bar_mcp_server_requests_total counter
 		foo_bar_mcp_server_requests_total{method="initialize",status="success",target=""} 1
+		foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
+		foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
+	`
+	err = testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"foo_bar_mcp_server_requests_total",
+	)
+	assert.NoError(t, err)
+
+	// send success prompts/get request
+	expectedRequest = `{"method":"prompts/get","params":{"name":"simple-test-prompt"}}`
+	expectedResponse = `{"description":"ok","messages":[{"role":"assistant","content":{"type":"text","text":"simple test prompt"}}]}`
+
+	getPromptRequest := mcp.GetPromptRequest{}
+	getPromptRequest.Params.Name = "simple-test-prompt"
+
+	getPromptResult, err := testClient.GetPrompt(ctx, getPromptRequest)
+	assert.NoError(t, err)
+	assert.Equal(t, mcp.RoleAssistant, getPromptResult.Messages[0].Role)
+	assert.Equal(t, "simple test prompt", getPromptResult.Messages[0].Content.(mcp.TextContent).Text)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
+		"level":        "info",
+		"mcpMethod":    "prompts/get",
+		"mcpPrompt":    "simple-test-prompt",
+		"mcpRequest":   expectedRequest,
+		"mcpResponse":  expectedResponse,
+		"mcpTransport": "sse",
+		"message":      "MCP request success",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"MCP prompts/get simple-test-prompt",
+		attribute.String("mcp.method", "prompts/get"),
+		attribute.String("mcp.prompt", "simple-test-prompt"),
+		attribute.String("mcp.request", expectedRequest),
+		attribute.String("mcp.response", expectedResponse),
+		attribute.String("mcp.transport", "sse"),
+	)
+
+	expectedMetric = `
+		# HELP foo_bar_mcp_server_requests_total Number of processed MCP requests
+		# TYPE foo_bar_mcp_server_requests_total counter
+		foo_bar_mcp_server_requests_total{method="prompts/get",status="success",target="simple-test-prompt"} 1
+		foo_bar_mcp_server_requests_total{method="initialize",status="success",target=""} 1
+		foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
+		foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
+	`
+	err = testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"foo_bar_mcp_server_requests_total",
+	)
+	assert.NoError(t, err)
+
+	// send error prompts/get request
+	expectedRequest = `{"method":"prompts/get","params":{"name":"invalid-test-prompt"}}`
+
+	getPromptRequest = mcp.GetPromptRequest{}
+	getPromptRequest.Params.Name = "invalid-test-prompt"
+
+	_, err = testClient.GetPrompt(ctx, getPromptRequest)
+	assert.Error(t, err)
+	assert.Equal(t, "prompt 'invalid-test-prompt' not found: prompt not found", err.Error())
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
+		"level":        "error",
+		"mcpError":     "request error: prompt 'invalid-test-prompt' not found: prompt not found",
+		"mcpMethod":    "prompts/get",
+		"mcpPrompt":    "invalid-test-prompt",
+		"mcpRequest":   expectedRequest,
+		"mcpTransport": "sse",
+		"message":      "MCP request error",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"MCP prompts/get invalid-test-prompt",
+		attribute.String("mcp.method", "prompts/get"),
+		attribute.String("mcp.prompt", "invalid-test-prompt"),
+		attribute.String("mcp.request", expectedRequest),
+		attribute.String("mcp.transport", "sse"),
+	)
+
+	expectedMetric = `
+		# HELP foo_bar_mcp_server_requests_total Number of processed MCP requests
+		# TYPE foo_bar_mcp_server_requests_total counter
+		foo_bar_mcp_server_requests_total{method="prompts/get",status="error",target="invalid-test-prompt"} 1
+		foo_bar_mcp_server_requests_total{method="prompts/get",status="success",target="simple-test-prompt"} 1
+		foo_bar_mcp_server_requests_total{method="initialize",status="success",target=""} 1
+		foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
+		foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
+	`
+	err = testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"foo_bar_mcp_server_requests_total",
+	)
+	assert.NoError(t, err)
+
+	// send success resources/get request
+	expectedRequest = `{"method":"resources/read","params":{"uri":"simple-test://resources"}}`
+	expectedResponse = `{"contents":[{"uri":"simple-test://resources","mimeType":"text/plain","text":"simple test resource"}]}`
+
+	readResourceRequest := mcp.ReadResourceRequest{}
+	readResourceRequest.Params.URI = "simple-test://resources"
+
+	readResourceResult, err := testClient.ReadResource(ctx, readResourceRequest)
+	assert.NoError(t, err)
+	assert.Equal(t, "simple test resource", readResourceResult.Contents[0].(mcp.TextResourceContents).Text)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
+		"level":          "info",
+		"mcpMethod":      "resources/read",
+		"mcpResourceURI": "simple-test://resources",
+		"mcpRequest":     expectedRequest,
+		"mcpResponse":    expectedResponse,
+		"mcpTransport":   "sse",
+		"message":        "MCP request success",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"MCP resources/read simple-test://resources",
+		attribute.String("mcp.method", "resources/read"),
+		attribute.String("mcp.resourceURI", "simple-test://resources"),
+		attribute.String("mcp.request", expectedRequest),
+		attribute.String("mcp.response", expectedResponse),
+		attribute.String("mcp.transport", "sse"),
+	)
+
+	expectedMetric = `
+		# HELP foo_bar_mcp_server_requests_total Number of processed MCP requests
+		# TYPE foo_bar_mcp_server_requests_total counter
+		foo_bar_mcp_server_requests_total{method="prompts/get",status="error",target="invalid-test-prompt"} 1
+		foo_bar_mcp_server_requests_total{method="prompts/get",status="success",target="simple-test-prompt"} 1
+		foo_bar_mcp_server_requests_total{method="initialize",status="success",target=""} 1
+		foo_bar_mcp_server_requests_total{method="resources/read",status="success",target="simple-test://resources"} 1
+		foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
+		foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
+	`
+	err = testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"foo_bar_mcp_server_requests_total",
+	)
+	assert.NoError(t, err)
+
+	// send error resources/get request
+	expectedRequest = `{"method":"resources/read","params":{"uri":"simple-test://invalid"}}`
+
+	readResourceRequest = mcp.ReadResourceRequest{}
+	readResourceRequest.Params.URI = "simple-test://invalid"
+
+	readResourceResult, err = testClient.ReadResource(ctx, readResourceRequest)
+	assert.Error(t, err)
+	assert.Equal(t, "handler not found for resource URI 'simple-test://invalid': resource not found", err.Error())
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
+		"level":          "error",
+		"mcpError":       "request error: handler not found for resource URI 'simple-test://invalid': resource not found",
+		"mcpMethod":      "resources/read",
+		"mcpResourceURI": "simple-test://invalid",
+		"mcpRequest":     expectedRequest,
+		"mcpTransport":   "sse",
+		"message":        "MCP request error",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"MCP resources/read simple-test://invalid",
+		attribute.String("mcp.method", "resources/read"),
+		attribute.String("mcp.resourceURI", "simple-test://invalid"),
+		attribute.String("mcp.request", expectedRequest),
+		attribute.String("mcp.transport", "sse"),
+	)
+
+	expectedMetric = `
+		# HELP foo_bar_mcp_server_requests_total Number of processed MCP requests
+		# TYPE foo_bar_mcp_server_requests_total counter
+		foo_bar_mcp_server_requests_total{method="prompts/get",status="error",target="invalid-test-prompt"} 1
+		foo_bar_mcp_server_requests_total{method="prompts/get",status="success",target="simple-test-prompt"} 1
+		foo_bar_mcp_server_requests_total{method="initialize",status="success",target=""} 1
+		foo_bar_mcp_server_requests_total{method="resources/read",status="error",target="simple-test://invalid"} 1
+		foo_bar_mcp_server_requests_total{method="resources/read",status="success",target="simple-test://resources"} 1
 		foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
 		foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
 	`
