@@ -7,6 +7,7 @@ import (
 	"github.com/ankorstore/yokai/fxmcpserver/server"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/prompt"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/resource"
+	"github.com/ankorstore/yokai/fxmcpserver/testdata/resourcetemplate"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/tool"
 	"github.com/stretchr/testify/assert"
 )
@@ -22,16 +23,16 @@ func TestMCPServerRegistry_Info(t *testing.T) {
 	reg := server.NewMCPServerRegistry(
 		cfg,
 		[]server.MCPServerTool{
-			tool.NewTestTool(),
+			tool.NewSimpleTestTool(),
 		},
 		[]server.MCPServerPrompt{
-			prompt.NewTestPrompt(),
+			prompt.NewSimpleTestPrompt(),
 		},
 		[]server.MCPServerResource{
-			resource.NewTestResource(),
+			resource.NewSimpleTestResource(),
 		},
 		[]server.MCPServerResourceTemplate{
-			resource.NewTestResourceTemplate(),
+			resourcetemplate.NewSimpleTestResourceTemplate(),
 		},
 	)
 
@@ -52,16 +53,16 @@ func TestMCPServerRegistry_Info(t *testing.T) {
 			ResourceTemplates map[string]string
 		}{
 			Tools: map[string]string{
-				"test-tool": "github.com/ankorstore/yokai/fxmcpserver/testdata/tool.(*TestTool).Handle.func1",
+				"simple-test-tool": "github.com/ankorstore/yokai/fxmcpserver/testdata/tool.(*SimpleTestTool).Handle.func1",
 			},
 			Prompts: map[string]string{
-				"test-prompt": "github.com/ankorstore/yokai/fxmcpserver/testdata/prompt.(*TestPrompt).Handle.func1",
+				"simple-test-prompt": "github.com/ankorstore/yokai/fxmcpserver/testdata/prompt.(*SimpleTestPrompt).Handle.func1",
 			},
 			Resources: map[string]string{
-				"test-resource": "github.com/ankorstore/yokai/fxmcpserver/testdata/resource.(*TestResource).Handle.func1",
+				"simple-test-resource": "github.com/ankorstore/yokai/fxmcpserver/testdata/resource.(*SimpleTestResource).Handle.func1",
 			},
 			ResourceTemplates: map[string]string{
-				"test-template": "github.com/ankorstore/yokai/fxmcpserver/testdata/resource.(*TestResourceTemplate).Handle.func1",
+				"simple-test-resource-template": "github.com/ankorstore/yokai/fxmcpserver/testdata/resourcetemplate.(*SimpleTestResourceTemplate).Handle.func1",
 			},
 		},
 	}

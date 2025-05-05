@@ -6,6 +6,8 @@ github.com/ankorstore/yokai/fxconfig v1.3.0 h1:kk+RkpgECjZYciN2E3lnVj1dpewRy54JN
 github.com/ankorstore/yokai/fxconfig v1.3.0/go.mod h1:NTF2TbT+xZNEzI/iTCQLtY+oS/AJSDAPAqouPgAYzbE=
 github.com/ankorstore/yokai/fxgenerate v1.3.0 h1:+opuO9YWn71CVtGAR4+c9K07XyyhUHilGsPHqTFGO5c=
 github.com/ankorstore/yokai/fxgenerate v1.3.0/go.mod h1:Ts66FYH0ItnlMmz1YhCjfsOoVpnx8u6mrHuyoa9War4=
+github.com/ankorstore/yokai/fxhealthcheck v1.1.0 h1:E/ADes6EC49kPwQlOel5BUyWNv45R21GtCa2WmSmZCQ=
+github.com/ankorstore/yokai/fxhealthcheck v1.1.0/go.mod h1:j8ki4ZHL/G5zaD3GwVX3j5/xFyuQNNvsZPnoSG7E/AY=
 github.com/ankorstore/yokai/fxlog v1.1.0 h1:vLI8Qd9KfCzAH9IvzGJTvFYmlE1jtMnjvA4z/vxJpYg=
 github.com/ankorstore/yokai/fxlog v1.1.0/go.mod h1:VHlj/FNGAuLNqTyRCCx3iGUi9IZXv7qVNrDLUQng1cE=
 github.com/ankorstore/yokai/fxmetrics v1.2.0 h1:B4vwfOxsUeFXC5rn0bDHsFnOhEFhRq9aUEWpEayEOCY=

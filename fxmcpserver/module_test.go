@@ -8,14 +8,15 @@ import (
 
 	"github.com/ankorstore/yokai/fxconfig"
 	"github.com/ankorstore/yokai/fxgenerate"
+	"github.com/ankorstore/yokai/fxhealthcheck"
 	"github.com/ankorstore/yokai/fxlog"
 	"github.com/ankorstore/yokai/fxmcpserver"
+	fs "github.com/ankorstore/yokai/fxmcpserver/server"
 	"github.com/ankorstore/yokai/fxmcpserver/server/sse"
-	"github.com/ankorstore/yokai/fxmcpserver/testdata/prompt"
-	"github.com/ankorstore/yokai/fxmcpserver/testdata/resource"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/tool"
 	"github.com/ankorstore/yokai/fxmetrics"
 	"github.com/ankorstore/yokai/fxtrace"
+	"github.com/ankorstore/yokai/healthcheck"
 	"github.com/ankorstore/yokai/log/logtest"
 	"github.com/ankorstore/yokai/trace/tracetest"
 	"github.com/mark3labs/mcp-go/client"
@@ -34,10 +35,10 @@ func TestMCPServerModule(t *testing.T) {
 
 	var mcpServer *server.MCPServer
 	var handler sse.MCPSSEServerContextHandler
+	var checker *healthcheck.Checker
 	var logBuffer logtest.TestLogBuffer
 	var traceExporter tracetest.TestTraceExporter
 	var metricsRegistry *prometheus.Registry
-	var info *fxmcpserver.MCPServerModuleInfo
 
 	fxtest.New(
 		t,
@@ -47,26 +48,31 @@ func TestMCPServerModule(t *testing.T) {
 		fxtrace.FxTraceModule,
 		fxgenerate.FxGenerateModule,
 		fxmetrics.FxMetricsModule,
+		fxhealthcheck.FxHealthcheckModule,
 		fxmcpserver.FxMCPServerModule,
 		fx.Options(
-			fxmcpserver.AsMCPServerTools(tool.NewTestTool),
-			fxmcpserver.AsMCPServerPrompts(prompt.NewTestPrompt),
-			fxmcpserver.AsMCPServerResources(resource.NewTestResource),
-			fxmcpserver.AsMCPServerResourceTemplates(resource.NewTestResourceTemplate),
+			fxmcpserver.AsMCPServerTools(tool.NewAdvancedTestTool),
+			fxhealthcheck.AsCheckerProbe(fs.NewMCPServerProbe),
 		),
-		fx.Populate(&mcpServer, &handler, &logBuffer, &traceExporter, &metricsRegistry, &info),
+		fx.Supply(fx.Annotate(context.Background(), fx.As(new(context.Context)))),
+		fx.Populate(&mcpServer, &handler, &checker, &logBuffer, &traceExporter, &metricsRegistry),
 	).RequireStart().RequireStop()
 
-	// test server
+	// create test server
 	testServer := server.NewTestServer(mcpServer, server.WithSSEContextFunc(handler.Handle()))
 	defer testServer.Close()
 
-	// test client
+	// health check
+	checkResult := checker.Check(context.Background(), healthcheck.Readiness)
+	assert.True(t, checkResult.Success)
+	assert.Equal(t, "MCP SSE server is running", checkResult.ProbesResults["mcpserver"].Message)
+
+	// create test client
 	testClient, err := client.NewSSEMCPClient(testServer.URL + "/sse")
 	assert.NoError(t, err)
 
 	// start the client
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	err = testClient.Start(ctx)
@@ -79,27 +85,24 @@ func TestMCPServerModule(t *testing.T) {
 	})
 
 	// send initialize request
-	expectedRequest := `{"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test-client","version":"1.0.0"}}}`
-	expectedResponse := `{"protocolVersion":"2024-11-05","capabilities":{"logging":{},"prompts":{},"resources":{},"tools":{}},"serverInfo":{"name":"test-server","version":"1.0.0"}}`
-
-	initRequest := mcp.InitializeRequest{}
-	initRequest.Params.ProtocolVersion = mcp.LATEST_PROTOCOL_VERSION
-	initRequest.Params.ClientInfo = mcp.Implementation{
+	initializeRequest := mcp.InitializeRequest{}
+	initializeRequest.Params.ProtocolVersion = mcp.LATEST_PROTOCOL_VERSION
+	initializeRequest.Params.ClientInfo = mcp.Implementation{
 		Name:    "test-client",
 		Version: "1.0.0",
 	}
 
-	initResult, err := testClient.Initialize(ctx, initRequest)
+	initializeResult, err := testClient.Initialize(ctx, mcp.InitializeRequest{})
 	assert.NoError(t, err)
-	assert.Equal(t, "test-server", initResult.ServerInfo.Name)
-	assert.Equal(t, "1.0.0", initResult.ServerInfo.Version)
+
+	assert.Equal(t, "test-server", initializeResult.ServerInfo.Name)
+	assert.Equal(t, "1.0.0", initializeResult.ServerInfo.Version)
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
-		"level":       "info",
-		"mcpMethod":   "initialize",
-		"mcpRequest":  expectedRequest,
-		"mcpResponse": expectedResponse,
-		"message":     "MCP request success",
+		"level":        "info",
+		"mcpMethod":    "initialize",
+		"mcpTransport": "sse",
+		"message":      "MCP request success",
 	})
 
 	tracetest.AssertHasTraceSpan(
@@ -107,8 +110,7 @@ func TestMCPServerModule(t *testing.T) {
 		traceExporter,
 		"MCP initialize",
 		attribute.String("mcp.method", "initialize"),
-		attribute.String("mcp.request", expectedRequest),
-		attribute.String("mcp.response", expectedResponse),
+		attribute.String("mcp.transport", "sse"),
 	)
 
 	expectedMetric := `
@@ -123,38 +125,92 @@ func TestMCPServerModule(t *testing.T) {
 	)
 	assert.NoError(t, err)
 
-	// send tool/list request
-	expectedRequest = `{"method":"tools/list","params":{}}`
-	expectedResponse = `{"tools":[{"annotations":{"destructiveHint":true,"openWorldHint":true},"description":"Test tool.","inputSchema":{"properties":{},"type":"object"},"name":"test-tool"}]}`
+	// send success tools/call request
+	expectedRequest := `{"method":"tools/call","params":{"name":"advanced-test-tool","arguments":{"shouldFail":"false"}}}`
+	expectedResponse := `{"content":[{"type":"text","text":"test"}]}`
 
-	toolsListRequest := mcp.ListToolsRequest{}
+	callToolRequest := mcp.CallToolRequest{}
+	callToolRequest.Params.Name = "advanced-test-tool"
+	callToolRequest.Params.Arguments = map[string]interface{}{
+		"shouldFail": "false",
+	}
 
-	toolsListResult, err := testClient.ListTools(ctx, toolsListRequest)
+	_, err = testClient.CallTool(ctx, callToolRequest)
 	assert.NoError(t, err)
-	assert.Len(t, toolsListResult.Tools, 1)
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
-		"level":       "info",
-		"mcpMethod":   "tools/list",
-		"mcpRequest":  expectedRequest,
-		"mcpResponse": expectedResponse,
-		"message":     "MCP request success",
+		"level":        "info",
+		"mcpMethod":    "tools/call",
+		"mcpTool":      "advanced-test-tool",
+		"mcpRequest":   expectedRequest,
+		"mcpResponse":  expectedResponse,
+		"mcpTransport": "sse",
+		"message":      "MCP request success",
 	})
 
 	tracetest.AssertHasTraceSpan(
 		t,
 		traceExporter,
-		"MCP tools/list",
-		attribute.String("mcp.method", "tools/list"),
+		"MCP tools/call advanced-test-tool",
+		attribute.String("mcp.method", "tools/call"),
+		attribute.String("mcp.tool", "advanced-test-tool"),
 		attribute.String("mcp.request", expectedRequest),
 		attribute.String("mcp.response", expectedResponse),
+		attribute.String("mcp.transport", "sse"),
 	)
 
 	expectedMetric = `
 		# HELP foo_bar_mcp_server_requests_total Number of processed MCP requests
 		# TYPE foo_bar_mcp_server_requests_total counter
-        foo_bar_mcp_server_requests_total{method="initialize",status="success",target=""} 1
-        foo_bar_mcp_server_requests_total{method="tools/list",status="success",target=""} 1
+		foo_bar_mcp_server_requests_total{method="initialize",status="success",target=""} 1
+		foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
+	`
+	err = testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"foo_bar_mcp_server_requests_total",
+	)
+	assert.NoError(t, err)
+
+	// send failing tools/call request
+	expectedRequest = `{"method":"tools/call","params":{"name":"advanced-test-tool","arguments":{"shouldFail":"true"}}}`
+
+	callToolRequest = mcp.CallToolRequest{}
+	callToolRequest.Params.Name = "advanced-test-tool"
+	callToolRequest.Params.Arguments = map[string]interface{}{
+		"shouldFail": "true",
+	}
+
+	_, err = testClient.CallTool(ctx, callToolRequest)
+	assert.Error(t, err)
+	assert.Equal(t, "advanced tool test failure", err.Error())
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
+		"level":        "error",
+		"mcpError":     "request error: advanced tool test failure",
+		"mcpMethod":    "tools/call",
+		"mcpTool":      "advanced-test-tool",
+		"mcpRequest":   expectedRequest,
+		"mcpTransport": "sse",
+		"message":      "MCP request error",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"MCP tools/call advanced-test-tool",
+		attribute.String("mcp.method", "tools/call"),
+		attribute.String("mcp.tool", "advanced-test-tool"),
+		attribute.String("mcp.request", expectedRequest),
+		attribute.String("mcp.transport", "sse"),
+	)
+
+	expectedMetric = `
+		# HELP foo_bar_mcp_server_requests_total Number of processed MCP requests
+		# TYPE foo_bar_mcp_server_requests_total counter
+		foo_bar_mcp_server_requests_total{method="initialize",status="success",target=""} 1
+		foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
+		foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
 	`
 	err = testutil.GatherAndCompare(
 		metricsRegistry,

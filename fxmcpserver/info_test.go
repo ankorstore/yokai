@@ -10,6 +10,7 @@ import (
 	"github.com/ankorstore/yokai/fxmcpserver/server/stdio"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/prompt"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/resource"
+	"github.com/ankorstore/yokai/fxmcpserver/testdata/resourcetemplate"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/tool"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/stretchr/testify/assert"
@@ -26,16 +27,16 @@ func TestMCPServerModuleInfo(t *testing.T) {
 	reg := fs.NewMCPServerRegistry(
 		cfg,
 		[]fs.MCPServerTool{
-			tool.NewTestTool(),
+			tool.NewSimpleTestTool(),
 		},
 		[]fs.MCPServerPrompt{
-			prompt.NewTestPrompt(),
+			prompt.NewSimpleTestPrompt(),
 		},
 		[]fs.MCPServerResource{
-			resource.NewTestResource(),
+			resource.NewSimpleTestResource(),
 		},
 		[]fs.MCPServerResourceTemplate{
-			resource.NewTestResourceTemplate(),
+			resourcetemplate.NewSimpleTestResourceTemplate(),
 		},
 	)
 
@@ -77,16 +78,16 @@ func TestMCPServerModuleInfo(t *testing.T) {
 		},
 		"registrations": map[string]any{
 			"tools": map[string]string{
-				"test-tool": "github.com/ankorstore/yokai/fxmcpserver/testdata/tool.(*TestTool).Handle.func1",
+				"simple-test-tool": "github.com/ankorstore/yokai/fxmcpserver/testdata/tool.(*SimpleTestTool).Handle.func1",
 			},
 			"prompts": map[string]string{
-				"test-prompt": "github.com/ankorstore/yokai/fxmcpserver/testdata/prompt.(*TestPrompt).Handle.func1",
+				"simple-test-prompt": "github.com/ankorstore/yokai/fxmcpserver/testdata/prompt.(*SimpleTestPrompt).Handle.func1",
 			},
 			"resources": map[string]string{
-				"test-resource": "github.com/ankorstore/yokai/fxmcpserver/testdata/resource.(*TestResource).Handle.func1",
+				"simple-test-resource": "github.com/ankorstore/yokai/fxmcpserver/testdata/resource.(*SimpleTestResource).Handle.func1",
 			},
 			"resourceTemplates": map[string]string{
-				"test-template": "github.com/ankorstore/yokai/fxmcpserver/testdata/resource.(*TestResourceTemplate).Handle.func1",
+				"simple-test-resource-template": "github.com/ankorstore/yokai/fxmcpserver/testdata/resourcetemplate.(*SimpleTestResourceTemplate).Handle.func1",
 			},
 		},
 	}

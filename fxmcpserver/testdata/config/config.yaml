@@ -27,7 +27,7 @@ modules:
           keep_alive: true
           keep_alive_interval: 10
         stdio:
-          expose: true
+          expose: false
       log:
         request: true
         response: true

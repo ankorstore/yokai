@@ -6,6 +6,7 @@ require (
 	github.com/ankorstore/yokai/config v1.5.0
 	github.com/ankorstore/yokai/fxconfig v1.3.0
 	github.com/ankorstore/yokai/fxgenerate v1.3.0
+	github.com/ankorstore/yokai/fxhealthcheck v1.1.0
 	github.com/ankorstore/yokai/fxlog v1.1.0
 	github.com/ankorstore/yokai/fxmetrics v1.2.0
 	github.com/ankorstore/yokai/fxtrace v1.2.0

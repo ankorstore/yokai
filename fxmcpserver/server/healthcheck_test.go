@@ -30,5 +30,5 @@ func TestMCPServerProbe(t *testing.T) {
 	res := probe.Check(context.Background())
 
 	assert.False(t, res.Success)
-	assert.Equal(t, "MCP SSE server is not running, MCP Stdio server is not running", res.Message)
+	assert.Equal(t, "MCP SSE server is not running", res.Message)
 }
