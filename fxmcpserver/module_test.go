@@ -33,6 +33,7 @@ import (
 	"go.uber.org/fx/fxtest"
 )
 
+//nolint:maintidx,forcetypeassert
 func TestMCPServerModule(t *testing.T) {
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
@@ -377,7 +378,7 @@ func TestMCPServerModule(t *testing.T) {
 	readResourceRequest = mcp.ReadResourceRequest{}
 	readResourceRequest.Params.URI = "simple-test://invalid"
 
-	readResourceResult, err = testClient.ReadResource(ctx, readResourceRequest)
+	_, err = testClient.ReadResource(ctx, readResourceRequest)
 	assert.Error(t, err)
 	assert.Equal(t, "handler not found for resource URI 'simple-test://invalid': resource not found", err.Error())
 
