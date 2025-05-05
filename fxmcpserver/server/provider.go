@@ -85,6 +85,8 @@ func NewDefaultMCPServerHooksProvider(registry prometheus.Registerer, config *co
 }
 
 // Provide provides the MCP server hooks.
+//
+//nolint:cyclop,gocognit
 func (p *DefaultMCPServerHooksProvider) Provide() *server.Hooks {
 	hooks := &server.Hooks{}
 
@@ -141,6 +143,7 @@ func (p *DefaultMCPServerHooksProvider) Provide() *server.Hooks {
 			}
 		}
 
+		//nolint:exhaustive
 		switch method {
 		case mcp.MethodResourcesRead:
 			if req, ok := message.(*mcp.ReadResourceRequest); ok {
@@ -214,6 +217,7 @@ func (p *DefaultMCPServerHooksProvider) Provide() *server.Hooks {
 			}
 		}
 
+		//nolint:exhaustive
 		switch method {
 		case mcp.MethodResourcesRead:
 			if req, ok := message.(*mcp.ReadResourceRequest); ok {

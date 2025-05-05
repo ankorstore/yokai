@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// FuncName returns a readable func name for code browsing purposes
+// FuncName returns a readable func name for code browsing purposes.
 func FuncName(f any) string {
 	return runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
 }
@@ -22,15 +22,4 @@ func Sanitize(str string) string {
 // Split trims and splits a provided string by comma.
 func Split(str string) []string {
 	return strings.Split(strings.ReplaceAll(str, " ", ""), ",")
-}
-
-// Contain returns true if a given string can be found in a given slice of strings.
-func Contain(list []string, item string) bool {
-	for _, i := range list {
-		if strings.ToLower(i) == strings.ToLower(item) {
-			return true
-		}
-	}
-
-	return false
 }

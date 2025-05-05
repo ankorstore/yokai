@@ -147,6 +147,8 @@ func ProvideDefaultMCPSSEServerFactory(p ProvideDefaultMCPServerFactoryParams) *
 }
 
 // ProvideMCPSSEServerParam allows injection of the required dependencies in ProvideMCPSSEServer.
+//
+//nolint:containedctx
 type ProvideMCPSSEServerParam struct {
 	fx.In
 	LifeCycle                  fx.Lifecycle
@@ -168,6 +170,7 @@ func ProvideMCPSSEServer(p ProvideMCPSSEServerParam) *sse.MCPSSEServer {
 	if p.Config.GetBool("modules.mcp.server.transport.sse.expose") {
 		p.LifeCycle.Append(fx.Hook{
 			OnStart: func(context.Context) error {
+				//nolint:contextcheck,errcheck
 				go sseServer.Start(p.Context)
 
 				return nil
@@ -200,6 +203,8 @@ func ProvideDefaultMCPStdioServerFactory() *stdio.DefaultMCPStdioServerFactory {
 }
 
 // ProvideMCPStdioServerParam allows injection of the required dependencies in ProvideMCPStdioServer.
+//
+//nolint:containedctx
 type ProvideMCPStdioServerParam struct {
 	fx.In
 	LifeCycle                    fx.Lifecycle
@@ -221,6 +226,7 @@ func ProvideMCPStdioServer(p ProvideMCPStdioServerParam) *stdio.MCPStdioServer {
 	if p.Config.GetBool("modules.mcp.server.transport.stdio.expose") {
 		p.LifeCycle.Append(fx.Hook{
 			OnStart: func(context.Context) error {
+				//nolint:contextcheck,errcheck
 				go stdioServer.Start(p.Context)
 
 				return nil

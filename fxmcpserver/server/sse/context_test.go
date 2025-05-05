@@ -23,6 +23,7 @@ func (m *generatorMock) Generate() string {
 	return m.Called().String(0)
 }
 
+//nolint:cyclop
 func TestDefaultMCPSSEServerContextHandler_Handle(t *testing.T) {
 	t.Parallel()
 
