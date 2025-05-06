@@ -401,6 +401,7 @@ import (
 	
 	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/log"
+	"github.com/ankorstore/yokai/trace"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 )
@@ -443,9 +444,14 @@ func (t *CalculatorTool) Options() []mcp.ToolOption {
 
 func (t *CalculatorTool) Handle() server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		// correlated trace span
+		ctx, span := trace.CtxTracer(ctx).Start(ctx, "in calculator tool")
+		defer span.End()
 
-		log.CtxLogger(c.Request().Context()).Info().Msg("in calculator tool")
+		// correlated log
+		log.CtxLogger(ctx).Info().Msg("in calculator tool")
 		
+		// calculator logic
 		if !t.config.GetBool("config.calculator.enabled") {
 			return nil, fmt.Errorf("calculator is not enabled")
 		}
@@ -628,7 +634,7 @@ You can easily assert on:
 - traces
 - metrics
 
-For example, a test an `MCP ping`:
+For example, to test an `MCP ping`:
 
 ```go title="internal/mcp/ping_test.go"
 package handler_test
