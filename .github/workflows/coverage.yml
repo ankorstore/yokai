@@ -42,6 +42,7 @@ jobs:
         - "fxhttpclient"
         - "fxhttpserver"
         - "fxlog"
+        - "fxmcpserver"
         - "fxmetrics"
         - "fxorm"
         - "fxsql"

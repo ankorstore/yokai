@@ -107,6 +107,11 @@
       "component": "fxlog",
       "tag-separator": "/"
     },
+    "fxmcpserver": {
+      "release-type": "go",
+      "component": "fxmcpserver",
+      "tag-separator": "/"
+    },
     "fxmetrics": {
       "release-type": "go",
       "component": "fxmetrics",
