@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ankorstore/yokai/config"
+	"github.com/ankorstore/yokai/fxmcpserver/fxmcpservertest"
 	fs "github.com/ankorstore/yokai/fxmcpserver/server"
 	"github.com/ankorstore/yokai/fxmcpserver/server/sse"
 	"github.com/ankorstore/yokai/fxmcpserver/server/stdio"
@@ -25,6 +26,7 @@ var FxMCPServerModule = fx.Module(
 		ProvideMCPServerRegistry,
 		ProvideMCPServer,
 		ProvideMCPSSEServer,
+		ProvideMCPSSETestServer,
 		ProvideMCPStdioServer,
 		// module overridable dependencies
 		fx.Annotate(
@@ -188,6 +190,19 @@ func ProvideMCPSSEServer(p ProvideMCPSSEServerParam) *sse.MCPSSEServer {
 	}
 
 	return sseServer
+}
+
+// ProvideMCPSSETestServerParam allows injection of the required dependencies in ProvideMCPSSETestServer.
+type ProvideMCPSSETestServerParam struct {
+	fx.In
+	Config                     *config.Config
+	MCPServer                  *server.MCPServer
+	MCPSSEServerContextHandler sse.MCPSSEServerContextHandler
+}
+
+// ProvideMCPSSETestServer provides the fxmcpservertest.MCPSSETestServer.
+func ProvideMCPSSETestServer(p ProvideMCPSSEServerParam) *fxmcpservertest.MCPSSETestServer {
+	return fxmcpservertest.NewMCPSSETestServer(p.Config, p.MCPServer, p.MCPSSEServerContextHandler)
 }
 
 // ProvideDefaultMCPStdioContextHandlerParam allows injection of the required dependencies in ProvideDefaultMCPStdioServerContextHandler.

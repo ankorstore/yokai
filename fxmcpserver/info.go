@@ -7,6 +7,7 @@ import (
 	"github.com/ankorstore/yokai/fxmcpserver/server/stdio"
 )
 
+// MCPServerModuleInfo is the MCP server module info.
 type MCPServerModuleInfo struct {
 	config      *config.Config
 	registry    *server.MCPServerRegistry
@@ -14,6 +15,7 @@ type MCPServerModuleInfo struct {
 	stdioServer *stdio.MCPStdioServer
 }
 
+// NewMCPServerModuleInfo returns a new MCPServerModuleInfo instance.
 func NewMCPServerModuleInfo(
 	config *config.Config,
 	registry *server.MCPServerRegistry,
