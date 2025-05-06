@@ -92,6 +92,7 @@ nav:
       - "HTTP Client": modules/fxhttpclient.md
       - "HTTP Server": modules/fxhttpserver.md
       - "Log": modules/fxlog.md
+      - "MCP Server": modules/fxmcpserver.md
       - "Metrics": modules/fxmetrics.md
       - "ORM": modules/fxorm.md
       - "SQL": modules/fxsql.md
