@@ -88,7 +88,7 @@ func (f *DefaultMCPSSEServerFactory) Create(mcpServer *server.MCPServer, options
 	}
 
 	if srvConfig.KeepAlive {
-		srvOptions = append(srvOptions, server.WithKeepAliveInterval(srvConfig.KeepAliveInterval))
+		//srvOptions = append(srvOptions, server.WithKeepAliveInterval(srvConfig.KeepAliveInterval))
 	}
 
 	srvOptions = append(srvOptions, options...)
