@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.0.0...fxmcpserver/v1.1.0) (2025-05-07)
+
+
+### Features
+
+* **fxmcpserver:** Updated context handling ([#340](https://github.com/ankorstore/yokai/issues/340)) ([66811ff](https://github.com/ankorstore/yokai/commit/66811ff2c6464a2d5d30210943e638ab96f35098))
+
 ## 1.0.0 (2025-05-06)
 
 
