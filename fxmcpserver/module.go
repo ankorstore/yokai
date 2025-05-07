@@ -26,7 +26,7 @@ var FxMCPServerModule = fx.Module(
 		ProvideMCPServerRegistry,
 		ProvideMCPServer,
 		ProvideMCPSSEServer,
-		ProvideMCPSSETestServer,
+		//ProvideMCPSSETestServer,
 		ProvideMCPStdioServer,
 		// module overridable dependencies
 		fx.Annotate(
