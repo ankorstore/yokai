@@ -31,7 +31,12 @@ func (s *MCPSSETestServer) Close() {
 }
 
 func (s *MCPSSETestServer) StartClient(ctx context.Context, options ...transport.ClientOption) (*client.Client, error) {
-	baseURL := s.testServer.URL + s.config.GetString("modules.mcp.server.transport.sse.sse_endpoint")
+	sseEndpoint := s.config.GetString("modules.mcp.server.transport.sse.sse_endpoint")
+	if sseEndpoint == "" {
+		sseEndpoint = sse.DefaultSSEEndpoint
+	}
+
+	baseURL := s.testServer.URL + sseEndpoint
 
 	cli, err := client.NewSSEMCPClient(baseURL, options...)
 	if err != nil {
