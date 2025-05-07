@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.1.0...fxmcpserver/v1.2.0) (2025-05-07)
+
+
+### Features
+
+* **fxmcpserver:** Updated SSE test client ([#342](https://github.com/ankorstore/yokai/issues/342)) ([119bd6c](https://github.com/ankorstore/yokai/commit/119bd6c15e16c776a441f6c0856e80040c4610b3))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.0.0...fxmcpserver/v1.1.0) (2025-05-07)
 
 
