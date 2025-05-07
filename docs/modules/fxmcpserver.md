@@ -694,7 +694,7 @@ func TestMCPPing(t *testing.T) {
 
 	// assertion on the metrics registry
 	expectedMetric := `
-		# HELP mcp_server_requests_total Number of processed HTTP requests
+		# HELP mcp_server_requests_total Number of processed MCP requests
 		# TYPE mcp_server_requests_total counter
 		mcp_server_requests_total{method="ping",status="success",target=""} 1
 	`
