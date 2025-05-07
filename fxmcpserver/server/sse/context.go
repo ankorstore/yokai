@@ -94,6 +94,7 @@ func (h *DefaultMCPSSEServerContextHandler) Handle() server.SSEContextFunc {
 		// request propagation
 		req = req.WithContext(ctx)
 
-		return ctx
+		// cancellation removal
+		return context.WithoutCancel(ctx)
 	}
 }
