@@ -149,12 +149,9 @@ func ProvideDefaultMCPSSEServerFactory(p ProvideDefaultMCPServerFactoryParams) *
 }
 
 // ProvideMCPSSEServerParam allows injection of the required dependencies in ProvideMCPSSEServer.
-//
-//nolint:containedctx
 type ProvideMCPSSEServerParam struct {
 	fx.In
 	LifeCycle                  fx.Lifecycle
-	Context                    context.Context
 	Logger                     *log.Logger
 	Config                     *config.Config
 	MCPServer                  *server.MCPServer
@@ -169,12 +166,14 @@ func ProvideMCPSSEServer(p ProvideMCPSSEServerParam) *sse.MCPSSEServer {
 		server.WithSSEContextFunc(p.MCPSSEServerContextHandler.Handle()),
 	)
 
+	sseServerCtx := p.Logger.WithContext(context.Background())
+
 	if p.Config.GetBool("modules.mcp.server.transport.sse.expose") {
 		p.LifeCycle.Append(fx.Hook{
 			OnStart: func(context.Context) error {
 				if !p.Config.IsTestEnv() {
-					//nolint:contextcheck,errcheck
-					go sseServer.Start(p.Context)
+					//nolint:errcheck
+					go sseServer.Start(sseServerCtx)
 				}
 
 				return nil
@@ -224,12 +223,9 @@ func ProvideDefaultMCPStdioServerFactory() *stdio.DefaultMCPStdioServerFactory {
 }
 
 // ProvideMCPStdioServerParam allows injection of the required dependencies in ProvideMCPStdioServer.
-//
-//nolint:containedctx
 type ProvideMCPStdioServerParam struct {
 	fx.In
 	LifeCycle                    fx.Lifecycle
-	Context                      context.Context
 	Logger                       *log.Logger
 	Config                       *config.Config
 	MCPServer                    *server.MCPServer
@@ -244,12 +240,14 @@ func ProvideMCPStdioServer(p ProvideMCPStdioServerParam) *stdio.MCPStdioServer {
 		server.WithStdioContextFunc(p.MCPStdioServerContextHandler.Handle()),
 	)
 
+	stdioServerCtx := p.Logger.WithContext(context.Background())
+
 	if p.Config.GetBool("modules.mcp.server.transport.stdio.expose") {
 		p.LifeCycle.Append(fx.Hook{
 			OnStart: func(context.Context) error {
 				if !p.Config.IsTestEnv() {
-					//nolint:contextcheck,errcheck
-					go stdioServer.Start(p.Context)
+					//nolint:errcheck
+					go stdioServer.Start(stdioServerCtx)
 				}
 
 				return nil

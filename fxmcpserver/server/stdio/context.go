@@ -76,6 +76,9 @@ func (h *DefaultMCPStdioServerContextHandler) Handle() server.StdioContextFunc {
 			Str("mcpRequestID", rID).
 			Logger()
 
-		return logger.WithContext(ctx)
+		ctx = logger.WithContext(ctx)
+
+		// cancellation removal
+		return context.WithoutCancel(ctx)
 	}
 }

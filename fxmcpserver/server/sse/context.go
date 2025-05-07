@@ -43,21 +43,21 @@ func NewDefaultMCPSSEServerContextHandler(
 
 // Handle returns the handler func.
 func (h *DefaultMCPSSEServerContextHandler) Handle() server.SSEContextFunc {
-	return func(ctx context.Context, r *http.Request) context.Context {
+	return func(ctx context.Context, req *http.Request) context.Context {
 		// start time propagation
 		ctx = fsc.WithStartTime(ctx, time.Now())
 
 		// sessionId propagation
-		sID := r.URL.Query().Get("sessionId")
+		sID := req.URL.Query().Get("sessionId")
 
 		ctx = fsc.WithSessionID(ctx, sID)
 
 		// requestId propagation
-		rID := r.Header.Get("X-Request-Id")
+		rID := req.Header.Get("X-Request-Id")
 
 		if rID == "" {
 			rID = h.generator.Generate()
-			r.Header.Set("X-Request-Id", rID)
+			req.Header.Set("X-Request-Id", rID)
 		}
 
 		ctx = fsc.WithRequestID(ctx, rID)
@@ -89,6 +89,9 @@ func (h *DefaultMCPSSEServerContextHandler) Handle() server.SSEContextFunc {
 			Str("mcpRequestID", rID).
 			Logger()
 
-		return logger.WithContext(ctx)
+		ctx = logger.WithContext(ctx)
+
+		// cancellation removal
+		return context.WithoutCancel(ctx)
 	}
 }
