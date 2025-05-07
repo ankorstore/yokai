@@ -27,11 +27,13 @@ This demo application is following the [recommended project layout](https://go.d
 	- `migrations/`: database migrations
 	- `seeds/`: database seeds
 - `internal/`:
-	- `handler/`: HTTP handlers
-	- `middleware/`: HTTP middlewares
-	- `model/`: models
-	- `repository/`: models repositories
-	- `service/`: services
+	- `api/`: HTTP API
+		- `handler/`: HTTP handlers
+		- `middleware/`: HTTP middlewares
+	- `domain/`: domain
+		- `model.go`: gophers model
+		- `repository.go`: gophers repository
+		- `service.go`: gophers service
 	- `bootstrap.go`: bootstrap
 	- `register.go`: dependencies registration
 	- `router.go`: routing registration
@@ -81,7 +83,7 @@ On [http://localhost:8080](http://localhost:8080), you can use:
 
 ### Authentication
 
-This demo application provides an example [authentication middleware](https://github.com/ankorstore/yokai-showroom/blob/main/http-demo/internal/middleware/authentication.go).
+This demo application provides an example [authentication middleware](https://github.com/ankorstore/yokai-showroom/blob/main/http-demo/internal/api/middleware/authentication.go).
 
 You can enable authentication in the application [configuration file](https://github.com/ankorstore/yokai-showroom/blob/main/http-demo/configs/config.yaml) with `config.authentication.enabled=true`.
 
