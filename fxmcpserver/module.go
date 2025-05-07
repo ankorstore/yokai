@@ -172,7 +172,7 @@ func ProvideMCPSSEServer(p ProvideMCPSSEServerParam) *sse.MCPSSEServer {
 		p.LifeCycle.Append(fx.Hook{
 			OnStart: func(context.Context) error {
 				if !p.Config.IsTestEnv() {
-					//nolint:contextcheck,errcheck
+					//nolint:errcheck
 					go sseServer.Start(sseServerCtx)
 				}
 
