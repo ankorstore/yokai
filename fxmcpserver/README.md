@@ -12,16 +12,16 @@
 * [Installation](#installation)
 * [Features](#features)
 * [Documentation](#documentation)
-  * [Dependencies](#dependencies)
-  * [Loading](#loading)
-  * [Configuration](#configuration)
-  * [Registration](#registration)
-    * [Resources](#resources)
-    * [Resource templates](#resource-templates)
-    * [Prompts](#prompts)
-    * [Tools](#tools)
-  * [Hooks](#hooks)
-  * [Testing](#testing)
+	* [Dependencies](#dependencies)
+	* [Loading](#loading)
+	* [Configuration](#configuration)
+	* [Registration](#registration)
+		* [Resources](#resources)
+		* [Resource templates](#resource-templates)
+		* [Prompts](#prompts)
+		* [Tools](#tools)
+	* [Hooks](#hooks)
+	* [Testing](#testing)
 <!-- TOC -->
 
 ## Installation
@@ -109,7 +109,7 @@ modules:
         prompts: true                     # to expose MCP prompts (disabled by default)
         tools: true                       # to expose MCP tools (disabled by default)
       transport:
-        sse:                              
+        sse:
           expose: true                    # to remotely expose the MCP server via SSE (disabled by default)
           address: ":8082"                # exposition address (":8082" by default)
           base_url: ""                    # base url ("" by default)
@@ -250,7 +250,7 @@ package main
 
 import (
 	"context"
-	
+
 	"github.com/foo/bar/internal/user"
 
 	"github.com/ankorstore/yokai/config"
@@ -553,59 +553,59 @@ modules:
 ```
 ### Hooks
 
-This module offers the possibility to provide context hooks with [MCPSSEServerContextHook](server/sse/context.go) implementations, applied on each MCP SSE request.
+This module offers the possibility to provide context hooks with [MCPSSEServerContextHook](server/sse/context.go) implementations, that will be applied on each MCP SSE request.
 
-You can use the `AsMCPSSEServerMiddleware()` function to register an MCP SSE server middleware, or `AsMCPSSEServerMiddlewares()` to register several MCP SSE server middlewares at once.
+You can use the `AsMCPSSEServerContextHook()` function to register an MCP SSE server context hook, or `AsMCPSSEServerContextHooks()` to register several MCP SSE server context hooks at once.
 
-The dependencies of your MCP SSE server middlewares will be autowired.
+The dependencies of your MCP SSE server context hooks will be autowired.
 
 ```go
 package main
 
 import (
-  "context"
-  "net/http"
+	"context"
+	"net/http"
 
-  "github.com/ankorstore/yokai/config"
-  "github.com/ankorstore/yokai/fxconfig"
-  "github.com/ankorstore/yokai/fxgenerate"
-  "github.com/ankorstore/yokai/fxlog"
-  "github.com/ankorstore/yokai/fxmcpserver"
-  "github.com/ankorstore/yokai/fxmetrics"
-  "github.com/ankorstore/yokai/fxtrace"
-  "github.com/mark3labs/mcp-go/mcp"
-  "github.com/mark3labs/mcp-go/server"
-  "go.uber.org/fx"
+	"github.com/ankorstore/yokai/config"
+	"github.com/ankorstore/yokai/fxconfig"
+	"github.com/ankorstore/yokai/fxgenerate"
+	"github.com/ankorstore/yokai/fxlog"
+	"github.com/ankorstore/yokai/fxmcpserver"
+	"github.com/ankorstore/yokai/fxmetrics"
+	"github.com/ankorstore/yokai/fxtrace"
+	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/mark3labs/mcp-go/server"
+	"go.uber.org/fx"
 )
 
 type ExampleHook struct {
-  config *config.Config
+	config *config.Config
 }
 
 func NewExampleHook(config *config.Config) *ExampleHook {
-  return &ExampleHook{
-    config: config,
-  }
+	return &ExampleHook{
+		config: config,
+	}
 }
 
-func (r *ExampleHook) Handle() server.SSEContextFunc {
-  return func(ctx context.Context, r *http.Request) context.Context {
-    return context.WithValue(ctx, "foo", "bar")
-  }
+func (h *ExampleHook) Handle() server.SSEContextFunc {
+	return func(ctx context.Context, r *http.Request) context.Context {
+		return context.WithValue(ctx, "foo", h.config.GetString("foo"))
+	}
 }
 
 func main() {
-  fx.New(
-    fxconfig.FxConfigModule,
-    fxlog.FxLogModule,
-    fxtrace.FxTraceModule,
-    fxmetrics.FxMetricsModule,
-    fxgenerate.FxGenerateModule,
-    fxmcpserver.FxMCPServerModule,
-    fx.Options(
-      fxmcpserver.AsMCPSSEServerContextHook(NewExampleHook), // registers the NewExampleHook as MCP SSE server context hook
-    ),
-  ).Run()
+	fx.New(
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxmcpserver.FxMCPServerModule,
+		fx.Options(
+			fxmcpserver.AsMCPSSEServerContextHook(NewExampleHook), // registers the NewExampleHook as MCP SSE server context hook
+		),
+	).Run()
 }
 ```
 
