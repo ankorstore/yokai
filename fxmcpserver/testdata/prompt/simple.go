@@ -2,6 +2,7 @@ package prompt
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
@@ -25,12 +26,15 @@ func (p *SimpleTestPrompt) Options() []mcp.PromptOption {
 
 func (p *SimpleTestPrompt) Handle() server.PromptHandlerFunc {
 	return func(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+		//nolint:forcetypeassert
+		value := ctx.Value("foo").(string)
+
 		return mcp.NewGetPromptResult(
 			"ok",
 			[]mcp.PromptMessage{
 				mcp.NewPromptMessage(
 					mcp.RoleAssistant,
-					mcp.NewTextContent("simple test prompt"),
+					mcp.NewTextContent(fmt.Sprintf("context hook value: %s", value)),
 				),
 			},
 		), nil

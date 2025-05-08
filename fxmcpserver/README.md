@@ -20,6 +20,7 @@
     * [Resource templates](#resource-templates)
     * [Prompts](#prompts)
     * [Tools](#tools)
+  * [Hooks](#hooks)
   * [Testing](#testing)
 <!-- TOC -->
 
@@ -37,6 +38,7 @@ This module provides an [MCP server](https://modelcontextprotocol.io/introductio
 - automatic requests logging and tracing (method, target, duration, ...)
 - automatic requests metrics (count and duration)
 - possibility to register MCP resources, resource templates, prompts and tools
+- possibility to register MCP SSE server context hooks
 - possibility to expose the MCP server via Stdio (local) and/or HTTP SSE (remote)
 
 ## Documentation
@@ -548,6 +550,63 @@ modules:
     server:
       capabilities:
         tools: true # to expose MCP tools (disabled by default)
+```
+### Hooks
+
+This module offers the possibility to provide context hooks with [MCPSSEServerContextHook](server/sse/context.go) implementations, applied on each MCP SSE request.
+
+You can use the `AsMCPSSEServerMiddleware()` function to register an MCP SSE server middleware, or `AsMCPSSEServerMiddlewares()` to register several MCP SSE server middlewares at once.
+
+The dependencies of your MCP SSE server middlewares will be autowired.
+
+```go
+package main
+
+import (
+  "context"
+  "net/http"
+
+  "github.com/ankorstore/yokai/config"
+  "github.com/ankorstore/yokai/fxconfig"
+  "github.com/ankorstore/yokai/fxgenerate"
+  "github.com/ankorstore/yokai/fxlog"
+  "github.com/ankorstore/yokai/fxmcpserver"
+  "github.com/ankorstore/yokai/fxmetrics"
+  "github.com/ankorstore/yokai/fxtrace"
+  "github.com/mark3labs/mcp-go/mcp"
+  "github.com/mark3labs/mcp-go/server"
+  "go.uber.org/fx"
+)
+
+type ExampleHook struct {
+  config *config.Config
+}
+
+func NewExampleHook(config *config.Config) *ExampleHook {
+  return &ExampleHook{
+    config: config,
+  }
+}
+
+func (r *ExampleHook) Handle() server.SSEContextFunc {
+  return func(ctx context.Context, r *http.Request) context.Context {
+    return context.WithValue(ctx, "foo", "bar")
+  }
+}
+
+func main() {
+  fx.New(
+    fxconfig.FxConfigModule,
+    fxlog.FxLogModule,
+    fxtrace.FxTraceModule,
+    fxmetrics.FxMetricsModule,
+    fxgenerate.FxGenerateModule,
+    fxmcpserver.FxMCPServerModule,
+    fx.Options(
+      fxmcpserver.AsMCPSSEServerContextHook(NewExampleHook), // registers the NewExampleHook as MCP SSE server context hook
+    ),
+  ).Run()
+}
 ```
 
 ### Testing

@@ -2,6 +2,7 @@ package fxmcpserver
 
 import (
 	"github.com/ankorstore/yokai/fxmcpserver/server"
+	"github.com/ankorstore/yokai/fxmcpserver/server/sse"
 	"go.uber.org/fx"
 )
 
@@ -88,6 +89,28 @@ func AsMCPServerResourceTemplates(constructors ...any) fx.Option {
 
 	for _, constructor := range constructors {
 		options = append(options, AsMCPServerResourceTemplate(constructor))
+	}
+
+	return fx.Options(options...)
+}
+
+// AsMCPSSEServerContextHook registers an MCP SSE server context hook.
+func AsMCPSSEServerContextHook(constructor any) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			constructor,
+			fx.As(new(sse.MCPSSEServerContextHook)),
+			fx.ResultTags(`group:"mcp-sse-server-context-hooks"`),
+		),
+	)
+}
+
+// AsMCPSSEServerContextHooks registers several MCP SSE server context hook.
+func AsMCPSSEServerContextHooks(constructors ...any) fx.Option {
+	options := []fx.Option{}
+
+	for _, constructor := range constructors {
+		options = append(options, AsMCPSSEServerContextHook(constructor))
 	}
 
 	return fx.Options(options...)

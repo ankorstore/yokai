@@ -78,7 +78,7 @@ func (h *DefaultMCPStdioServerContextHandler) Handle() server.StdioContextFunc {
 
 		ctx = logger.WithContext(ctx)
 
-		// cancellation removal
+		// cancellation removal propagation
 		return context.WithoutCancel(ctx)
 	}
 }
