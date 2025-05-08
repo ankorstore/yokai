@@ -34,7 +34,7 @@ func (p *SimpleTestPrompt) Handle() server.PromptHandlerFunc {
 			[]mcp.PromptMessage{
 				mcp.NewPromptMessage(
 					mcp.RoleAssistant,
-					mcp.NewTextContent(fmt.Sprintf("context value: %s", value)),
+					mcp.NewTextContent(fmt.Sprintf("context hook value: %s", value)),
 				),
 			},
 		), nil

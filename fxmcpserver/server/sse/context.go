@@ -16,8 +16,8 @@ import (
 
 var _ MCPSSEServerContextHandler = (*DefaultMCPSSEServerContextHandler)(nil)
 
-// MCPSSEServerMiddleware is the interface for MCP SSE server middlewares.
-type MCPSSEServerMiddleware interface {
+// MCPSSEServerContextHook is the interface for MCP SSE server context hooks.
+type MCPSSEServerContextHook interface {
 	Handle() server.SSEContextFunc
 }
 
@@ -31,7 +31,7 @@ type DefaultMCPSSEServerContextHandler struct {
 	generator      uuid.UuidGenerator
 	tracerProvider ot.TracerProvider
 	logger         *log.Logger
-	middlewares    []MCPSSEServerMiddleware
+	contextHooks   []MCPSSEServerContextHook
 }
 
 // NewDefaultMCPSSEServerContextHandler returns a new DefaultMCPSSEServerContextHandler instance.
@@ -39,13 +39,13 @@ func NewDefaultMCPSSEServerContextHandler(
 	generator uuid.UuidGenerator,
 	tracerProvider ot.TracerProvider,
 	logger *log.Logger,
-	middlewares ...MCPSSEServerMiddleware,
+	contextHooks ...MCPSSEServerContextHook,
 ) *DefaultMCPSSEServerContextHandler {
 	return &DefaultMCPSSEServerContextHandler{
 		generator:      generator,
 		tracerProvider: tracerProvider,
 		logger:         logger,
-		middlewares:    middlewares,
+		contextHooks:   contextHooks,
 	}
 }
 
@@ -99,12 +99,12 @@ func (h *DefaultMCPSSEServerContextHandler) Handle() server.SSEContextFunc {
 
 		ctx = logger.WithContext(ctx)
 
-		// cancellation removal
+		// cancellation removal propagation
 		ctx = context.WithoutCancel(ctx)
 
-		// middlewares
-		for _, m := range h.middlewares {
-			ctx = m.Handle()(ctx, req)
+		// hooks propagation
+		for _, hook := range h.contextHooks {
+			ctx = hook.Handle()(ctx, req)
 		}
 
 		return ctx

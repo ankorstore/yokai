@@ -20,7 +20,7 @@
     * [Resource templates](#resource-templates)
     * [Prompts](#prompts)
     * [Tools](#tools)
-  * [Middlewares](#middlewares)
+  * [Hooks](#hooks)
   * [Testing](#testing)
 <!-- TOC -->
 
@@ -38,7 +38,7 @@ This module provides an [MCP server](https://modelcontextprotocol.io/introductio
 - automatic requests logging and tracing (method, target, duration, ...)
 - automatic requests metrics (count and duration)
 - possibility to register MCP resources, resource templates, prompts and tools
-- possibility to register MCP SSE server middlewares
+- possibility to register MCP SSE server context hooks
 - possibility to expose the MCP server via Stdio (local) and/or HTTP SSE (remote)
 
 ## Documentation
@@ -551,9 +551,9 @@ modules:
       capabilities:
         tools: true # to expose MCP tools (disabled by default)
 ```
-### Middlewares
+### Hooks
 
-This module offers the possibility to provide [MCPSSEServerMiddleware](server/sse/context.go) implementations, applied on each MCP SSE request.
+This module offers the possibility to provide context hooks with [MCPSSEServerContextHook](server/sse/context.go) implementations, applied on each MCP SSE request.
 
 You can use the `AsMCPSSEServerMiddleware()` function to register an MCP SSE server middleware, or `AsMCPSSEServerMiddlewares()` to register several MCP SSE server middlewares at once.
 
@@ -578,17 +578,17 @@ import (
   "go.uber.org/fx"
 )
 
-type ExampleMiddleware struct {
+type ExampleHook struct {
   config *config.Config
 }
 
-func NewExampleMiddleware(config *config.Config) *ExampleMiddleware {
-  return &ExampleMiddleware{
+func NewExampleHook(config *config.Config) *ExampleHook {
+  return &ExampleHook{
     config: config,
   }
 }
 
-func (r *ExampleMiddleware) Handle() server.SSEContextFunc {
+func (r *ExampleHook) Handle() server.SSEContextFunc {
   return func(ctx context.Context, r *http.Request) context.Context {
     return context.WithValue(ctx, "foo", "bar")
   }
@@ -603,7 +603,7 @@ func main() {
     fxgenerate.FxGenerateModule,
     fxmcpserver.FxMCPServerModule,
     fx.Options(
-      fxmcpserver.AsMCPSSEServerMiddleware(NewExampleMiddleware), // registers the ExampleMiddleware as MCP SSE server middleware
+      fxmcpserver.AsMCPSSEServerContextHook(NewExampleHook), // registers the NewExampleHook as MCP SSE server context hook
     ),
   ).Run()
 }

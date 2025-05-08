@@ -12,7 +12,7 @@ import (
 	"github.com/ankorstore/yokai/fxmcpserver"
 	"github.com/ankorstore/yokai/fxmcpserver/fxmcpservertest"
 	fs "github.com/ankorstore/yokai/fxmcpserver/server"
-	"github.com/ankorstore/yokai/fxmcpserver/testdata/middleware"
+	"github.com/ankorstore/yokai/fxmcpserver/testdata/hook"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/prompt"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/resource"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/resourcetemplate"
@@ -57,7 +57,7 @@ func TestMCPServerModule(t *testing.T) {
 			fxmcpserver.AsMCPServerPrompts(prompt.NewSimpleTestPrompt),
 			fxmcpserver.AsMCPServerResources(resource.NewSimpleTestResource),
 			fxmcpserver.AsMCPServerResourceTemplates(resourcetemplate.NewSimpleTestResourceTemplate),
-			fxmcpserver.AsMCPSSEServerMiddlewares(middleware.NewSimpleMCPSSEServerMiddleware),
+			fxmcpserver.AsMCPSSEServerContextHooks(hook.NewSimpleMCPSSEServerContextHook),
 			fxhealthcheck.AsCheckerProbe(fs.NewMCPServerProbe),
 		),
 		fx.Supply(fx.Annotate(context.Background(), fx.As(new(context.Context)))),
@@ -176,7 +176,7 @@ func TestMCPServerModule(t *testing.T) {
 
 	// send success prompts/get request
 	expectedRequest = `{"method":"prompts/get","params":{"name":"simple-test-prompt"}}`
-	expectedResponse = `{"description":"ok","messages":[{"role":"assistant","content":{"type":"text","text":"context value: bar"}}]}`
+	expectedResponse = `{"description":"ok","messages":[{"role":"assistant","content":{"type":"text","text":"context hook value: bar"}}]}`
 
 	getPromptRequest := mcp.GetPromptRequest{}
 	getPromptRequest.Params.Name = "simple-test-prompt"
@@ -184,7 +184,7 @@ func TestMCPServerModule(t *testing.T) {
 	getPromptResult, err := testClient.GetPrompt(ctx, getPromptRequest)
 	assert.NoError(t, err)
 	assert.Equal(t, mcp.RoleAssistant, getPromptResult.Messages[0].Role)
-	assert.Equal(t, "context value: bar", getPromptResult.Messages[0].Content.(mcp.TextContent).Text)
+	assert.Equal(t, "context hook value: bar", getPromptResult.Messages[0].Content.(mcp.TextContent).Text)
 
 	logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
 		"level":        "info",

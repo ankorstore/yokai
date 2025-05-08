@@ -127,10 +127,10 @@ func ProvideMCPServer(p ProvideMCPServerParam) *server.MCPServer {
 // ProvideDefaultMCPSSEContextHandlerParam allows injection of the required dependencies in ProvideDefaultMCPSSEServerContextHandler.
 type ProvideDefaultMCPSSEContextHandlerParam struct {
 	fx.In
-	Generator               uuid.UuidGenerator
-	TracerProvider          trace.TracerProvider
-	Logger                  *log.Logger
-	MCPSSEServerMiddlewares []sse.MCPSSEServerMiddleware `group:"mcp-sse-server-middlewares"`
+	Generator                uuid.UuidGenerator
+	TracerProvider           trace.TracerProvider
+	Logger                   *log.Logger
+	MCPSSEServerContextHooks []sse.MCPSSEServerContextHook `group:"mcp-sse-server-context-hooks"`
 }
 
 // ProvideDefaultMCPSSEServerContextHandler provides the default sse.MCPSSEServerContextHandler instance.
@@ -139,7 +139,7 @@ func ProvideDefaultMCPSSEServerContextHandler(p ProvideDefaultMCPSSEContextHandl
 		p.Generator,
 		p.TracerProvider,
 		p.Logger,
-		p.MCPSSEServerMiddlewares...,
+		p.MCPSSEServerContextHooks...,
 	)
 }
 

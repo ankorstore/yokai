@@ -94,23 +94,23 @@ func AsMCPServerResourceTemplates(constructors ...any) fx.Option {
 	return fx.Options(options...)
 }
 
-// AsMCPSSEServerMiddleware registers an MCP SSE server middleware.
-func AsMCPSSEServerMiddleware(constructor any) fx.Option {
+// AsMCPSSEServerContextHook registers an MCP SSE server context hook.
+func AsMCPSSEServerContextHook(constructor any) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
 			constructor,
-			fx.As(new(sse.MCPSSEServerMiddleware)),
-			fx.ResultTags(`group:"mcp-sse-server-middlewares"`),
+			fx.As(new(sse.MCPSSEServerContextHook)),
+			fx.ResultTags(`group:"mcp-sse-server-context-hooks"`),
 		),
 	)
 }
 
-// AsMCPSSEServerMiddlewares registers several MCP SSE server middleware.
-func AsMCPSSEServerMiddlewares(constructors ...any) fx.Option {
+// AsMCPSSEServerContextHooks registers several MCP SSE server context hook.
+func AsMCPSSEServerContextHooks(constructors ...any) fx.Option {
 	options := []fx.Option{}
 
 	for _, constructor := range constructors {
-		options = append(options, AsMCPSSEServerMiddleware(constructor))
+		options = append(options, AsMCPSSEServerContextHook(constructor))
 	}
 
 	return fx.Options(options...)

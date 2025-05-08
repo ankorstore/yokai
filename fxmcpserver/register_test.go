@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/ankorstore/yokai/fxmcpserver"
-	"github.com/ankorstore/yokai/fxmcpserver/testdata/middleware"
+	"github.com/ankorstore/yokai/fxmcpserver/testdata/hook"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/prompt"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/resource"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/resourcetemplate"
@@ -86,19 +86,19 @@ func TestAsMCPServerResourceTemplates(t *testing.T) {
 	assert.Implements(t, (*fx.Option)(nil), reg)
 }
 
-func TestAsMCPSSEServerMiddleware(t *testing.T) {
+func TestAsMCPSSEServerContextHook(t *testing.T) {
 	t.Parallel()
 
-	reg := fxmcpserver.AsMCPSSEServerMiddleware(middleware.NewSimpleMCPSSEServerMiddleware)
+	reg := fxmcpserver.AsMCPSSEServerContextHook(hook.NewSimpleMCPSSEServerContextHook)
 
 	assert.Equal(t, "fx.provideOption", fmt.Sprintf("%T", reg))
 	assert.Implements(t, (*fx.Option)(nil), reg)
 }
 
-func TestAsMCPSSEServerMiddlewares(t *testing.T) {
+func TestAsMCPSSEServerContextHooks(t *testing.T) {
 	t.Parallel()
 
-	reg := fxmcpserver.AsMCPSSEServerMiddlewares(middleware.NewSimpleMCPSSEServerMiddleware)
+	reg := fxmcpserver.AsMCPSSEServerContextHooks(hook.NewSimpleMCPSSEServerContextHook)
 
 	assert.Equal(t, "fx.optionGroup", fmt.Sprintf("%T", reg))
 	assert.Implements(t, (*fx.Option)(nil), reg)
