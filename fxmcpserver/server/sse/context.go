@@ -16,6 +16,11 @@ import (
 
 var _ MCPSSEServerContextHandler = (*DefaultMCPSSEServerContextHandler)(nil)
 
+// MCPSSEServerMiddleware is the interface for MCP SSE server middlewares.
+type MCPSSEServerMiddleware interface {
+	Handle() server.SSEContextFunc
+}
+
 // MCPSSEServerContextHandler is the interface for MCP SSE server context handlers.
 type MCPSSEServerContextHandler interface {
 	Handle() server.SSEContextFunc
@@ -26,6 +31,7 @@ type DefaultMCPSSEServerContextHandler struct {
 	generator      uuid.UuidGenerator
 	tracerProvider ot.TracerProvider
 	logger         *log.Logger
+	middlewares    []MCPSSEServerMiddleware
 }
 
 // NewDefaultMCPSSEServerContextHandler returns a new DefaultMCPSSEServerContextHandler instance.
@@ -33,11 +39,13 @@ func NewDefaultMCPSSEServerContextHandler(
 	generator uuid.UuidGenerator,
 	tracerProvider ot.TracerProvider,
 	logger *log.Logger,
+	middlewares ...MCPSSEServerMiddleware,
 ) *DefaultMCPSSEServerContextHandler {
 	return &DefaultMCPSSEServerContextHandler{
 		generator:      generator,
 		tracerProvider: tracerProvider,
 		logger:         logger,
+		middlewares:    middlewares,
 	}
 }
 
@@ -92,6 +100,13 @@ func (h *DefaultMCPSSEServerContextHandler) Handle() server.SSEContextFunc {
 		ctx = logger.WithContext(ctx)
 
 		// cancellation removal
-		return context.WithoutCancel(ctx)
+		ctx = context.WithoutCancel(ctx)
+
+		// middlewares
+		for _, m := range h.middlewares {
+			ctx = m.Handle()(ctx, req)
+		}
+
+		return ctx
 	}
 }

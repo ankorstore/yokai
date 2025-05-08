@@ -2,6 +2,7 @@ package fxmcpserver
 
 import (
 	"github.com/ankorstore/yokai/fxmcpserver/server"
+	"github.com/ankorstore/yokai/fxmcpserver/server/sse"
 	"go.uber.org/fx"
 )
 
@@ -88,6 +89,28 @@ func AsMCPServerResourceTemplates(constructors ...any) fx.Option {
 
 	for _, constructor := range constructors {
 		options = append(options, AsMCPServerResourceTemplate(constructor))
+	}
+
+	return fx.Options(options...)
+}
+
+// AsMCPSSEServerMiddleware registers an MCP SSE server middleware.
+func AsMCPSSEServerMiddleware(constructor any) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			constructor,
+			fx.As(new(sse.MCPSSEServerMiddleware)),
+			fx.ResultTags(`group:"mcp-sse-server-middlewares"`),
+		),
+	)
+}
+
+// AsMCPSSEServerMiddlewares registers several MCP SSE server middleware.
+func AsMCPSSEServerMiddlewares(constructors ...any) fx.Option {
+	options := []fx.Option{}
+
+	for _, constructor := range constructors {
+		options = append(options, AsMCPSSEServerMiddleware(constructor))
 	}
 
 	return fx.Options(options...)
