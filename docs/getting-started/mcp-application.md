@@ -15,7 +15,7 @@ The [MCP server application template](https://github.com/ankorstore/yokai-mcp-te
 - a ready to use [dev environment](https://github.com/ankorstore/yokai-http-template/blob/main/docker-compose.yaml), based on [Air](https://github.com/air-verse/air) (for live reloading)
 - a ready to use [Dockerfile](https://github.com/ankorstore/yokai-http-template/blob/main/Dockerfile) for production
 - some examples of [MCP tool](https://github.com/ankorstore/yokai-mcp-template/blob/main/internal/tool/example.go) and [test](https://github.com/ankorstore/yokai-mcp-template/blob/main/internal/tool/example_test.go) to get started
-- 
+
 ### Layout
 
 This template is following the [recommended project layout](https://go.dev/doc/modules/layout#server-project):
