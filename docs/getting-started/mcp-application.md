@@ -76,5 +76,5 @@ Once ready, the application will be available on:
 To go further, you can:
 
 - check the [MCP server](../modules/fxmcpserver.md) module documentation to learn more about its features
-- follow the [HTTP application tutorial](../tutorials/http-application.md) to create, step by step, an HTTP application
+- follow the [MCP application tutorial](../tutorials/mcp-application.md) to create, step by step, an MCP server application
 - test the [MCP demo application](../demos/mcp-application.md) to see all this in action
