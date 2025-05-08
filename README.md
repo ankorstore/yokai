@@ -78,6 +78,7 @@ Yokai provides ready to use `application templates` to start your projects:
 
 - for [gRPC applications](https://ankorstore.github.io/yokai/getting-started/grpc-application)
 - for [HTTP applications](https://ankorstore.github.io/yokai/getting-started/http-application)
+- for [MCP applications](https://ankorstore.github.io/yokai/getting-started/mcp-application)
 - for [worker applications](https://ankorstore.github.io/yokai/getting-started/worker-application)
 
 ## Showroom
@@ -86,6 +87,7 @@ Yokai provides a [showroom repository](https://github.com/ankorstore/yokai-showr
 
 - [gRPC demo application](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo)
 - [HTTP demo application](https://github.com/ankorstore/yokai-showroom/tree/main/http-demo)
+- [MCP demo application](https://github.com/ankorstore/yokai-showroom/tree/main/mcp-demo)
 - [worker demo application](https://github.com/ankorstore/yokai-showroom/tree/main/worker-demo)
 
 ## Contributing
