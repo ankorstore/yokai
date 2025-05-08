@@ -23,6 +23,7 @@ It comes with:
 - automatic requests logging and tracing (method, target, duration, ...)
 - automatic requests metrics (count and duration)
 - possibility to register MCP resources, resource templates, prompts and tools
+- possibility to register MCP SSE server context hooks
 - possibility to expose the MCP server via Stdio (local) and/or HTTP SSE (remote)
 
 ## Installation
@@ -515,6 +516,66 @@ modules:
       capabilities:
         tools: true # to expose MCP tools (disabled by default)
 ```
+
+## Hooks
+
+This module offers the possibility to provide context hooks with [MCPSSEServerContextHook](https://github.com/ankorstore/yokai/blob/main/fxmcpserver/server/sse/context.go) implementations, that will be applied on each MCP SSE request.
+
+For example, an MCP SSE server context hook that adds a config value to the context:
+
+```go title="internal/mcp/resource/readme.go"
+package hook
+
+import (
+	"context"
+	"net/http"
+
+	"github.com/ankorstore/yokai/config"
+	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/mark3labs/mcp-go/server"
+)
+
+type ExampleHook struct {
+	config *config.Config
+}
+
+func NewExampleHook(config *config.Config) *ExampleHook {
+	return &ExampleHook{
+		config: config,
+	}
+}
+
+func (h *ExampleHook) Handle() server.SSEContextFunc {
+	return func(ctx context.Context, r *http.Request) context.Context {
+		return context.WithValue(ctx, "foo", h.config.GetString("foo"))
+	}
+}
+```
+
+You can register your MCP SSE server context hook:
+
+- with `AsMCPSSEServerContextHook()` to register a single MCP SSE server context hook
+- with `AsMCPSSEServerContextHooks()` to register several MCP SSE server context hooks at once
+
+```go title="internal/register.go"
+package internal
+
+import (
+	"github.com/ankorstore/yokai/fxmcpserver"
+	"github.com/foo/bar/internal/mcp/hook"
+	"go.uber.org/fx"
+)
+
+func Register() fx.Option {
+	return fx.Options(
+		// registers ReadmeResource as MCP resource
+		fxmcpserver.AsMCPSSEServerContextHook(hook.NewExampleHook),
+		// ...
+	)
+}
+```
+
+The dependencies of your MCP SSE server context hooks will be autowired.
 
 ## Logging
 
