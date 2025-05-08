@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.2.0...fxmcpserver/v1.3.0) (2025-05-08)
+
+
+### Features
+
+* **fxmcpserver:** Added MCP SSE server context hooks ([#347](https://github.com/ankorstore/yokai/issues/347)) ([17dabfe](https://github.com/ankorstore/yokai/commit/17dabfebe23951215ead3a2efdb502eafe2b7751))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.1.0...fxmcpserver/v1.2.0) (2025-05-07)
 
 
