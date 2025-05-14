@@ -12,6 +12,7 @@ import (
 	"github.com/ankorstore/yokai/log/logtest"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/stretchr/testify/assert"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 
@@ -27,11 +28,13 @@ func TestMCPSSETestServer(t *testing.T) {
 
 	tp := trace.NewTracerProvider()
 
+	tmp := propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{})
+
 	lb := logtest.NewDefaultTestLogBuffer()
 	lg, err := log.NewDefaultLoggerFactory().Create(log.WithOutputWriter(lb))
 	assert.NoError(t, err)
 
-	hdl := sse.NewDefaultMCPSSEServerContextHandler(gm, tp, lg)
+	hdl := sse.NewDefaultMCPSSEServerContextHandler(gm, tp, tmp, lg)
 
 	mcpSrv := server.NewMCPServer("test-server", "1.0.0")
 
