@@ -18,7 +18,22 @@ type MCPSSETestServer struct {
 }
 
 func NewMCPSSETestServer(cfg *config.Config, srv *server.MCPServer, hdl sse.MCPSSEServerContextHandler) *MCPSSETestServer {
-	testSrv := server.NewTestServer(srv, server.WithSSEContextFunc(hdl.Handle()))
+	sseEndpoint := cfg.GetString("modules.mcp.server.transport.sse.sse_endpoint")
+	if sseEndpoint == "" {
+		sseEndpoint = sse.DefaultSSEEndpoint
+	}
+
+	messageEndpoint := cfg.GetString("modules.mcp.server.transport.sse.message_endpoint")
+	if messageEndpoint == "" {
+		messageEndpoint = sse.DefaultMessageEndpoint
+	}
+
+	testSrv := server.NewTestServer(
+		srv,
+		server.WithSSEContextFunc(hdl.Handle()),
+		server.WithSSEEndpoint(sseEndpoint),
+		server.WithMessageEndpoint(messageEndpoint),
+	)
 
 	return &MCPSSETestServer{
 		config:     cfg,
