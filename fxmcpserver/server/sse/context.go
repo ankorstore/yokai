@@ -11,6 +11,7 @@ import (
 	"github.com/ankorstore/yokai/trace"
 	"github.com/mark3labs/mcp-go/server"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/propagation"
 	ot "go.opentelemetry.io/otel/trace"
 )
 
@@ -28,24 +29,27 @@ type MCPSSEServerContextHandler interface {
 
 // DefaultMCPSSEServerContextHandler is the default MCPSSEServerContextHandler implementation.
 type DefaultMCPSSEServerContextHandler struct {
-	generator      uuid.UuidGenerator
-	tracerProvider ot.TracerProvider
-	logger         *log.Logger
-	contextHooks   []MCPSSEServerContextHook
+	generator         uuid.UuidGenerator
+	tracerProvider    ot.TracerProvider
+	textMapPropagator propagation.TextMapPropagator
+	logger            *log.Logger
+	contextHooks      []MCPSSEServerContextHook
 }
 
 // NewDefaultMCPSSEServerContextHandler returns a new DefaultMCPSSEServerContextHandler instance.
 func NewDefaultMCPSSEServerContextHandler(
 	generator uuid.UuidGenerator,
 	tracerProvider ot.TracerProvider,
+	textMapPropagator propagation.TextMapPropagator,
 	logger *log.Logger,
 	contextHooks ...MCPSSEServerContextHook,
 ) *DefaultMCPSSEServerContextHandler {
 	return &DefaultMCPSSEServerContextHandler{
-		generator:      generator,
-		tracerProvider: tracerProvider,
-		logger:         logger,
-		contextHooks:   contextHooks,
+		generator:         generator,
+		tracerProvider:    tracerProvider,
+		textMapPropagator: textMapPropagator,
+		logger:            logger,
+		contextHooks:      contextHooks,
 	}
 }
 
@@ -71,6 +75,8 @@ func (h *DefaultMCPSSEServerContextHandler) Handle() server.SSEContextFunc {
 		ctx = fsc.WithRequestID(ctx, rID)
 
 		// tracer propagation
+		ctx = h.textMapPropagator.Extract(ctx, propagation.HeaderCarrier(req.Header))
+
 		ctx = trace.WithContext(ctx, h.tracerProvider)
 
 		ctx, span := trace.CtxTracer(ctx).Start(

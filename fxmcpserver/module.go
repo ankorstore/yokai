@@ -12,6 +12,7 @@ import (
 	"github.com/ankorstore/yokai/log"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/prometheus/client_golang/prometheus"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/fx"
 )
@@ -135,9 +136,15 @@ type ProvideDefaultMCPSSEContextHandlerParam struct {
 
 // ProvideDefaultMCPSSEServerContextHandler provides the default sse.MCPSSEServerContextHandler instance.
 func ProvideDefaultMCPSSEServerContextHandler(p ProvideDefaultMCPSSEContextHandlerParam) *sse.DefaultMCPSSEServerContextHandler {
+	textMapPropagator := propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{},
+		propagation.Baggage{},
+	)
+
 	return sse.NewDefaultMCPSSEServerContextHandler(
 		p.Generator,
 		p.TracerProvider,
+		textMapPropagator,
 		p.Logger,
 		p.MCPSSEServerContextHooks...,
 	)
