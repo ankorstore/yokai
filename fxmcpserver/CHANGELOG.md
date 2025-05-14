@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.4.0...fxmcpserver/v1.5.0) (2025-05-14)
+
+
+### Features
+
+* **fxmcpserver:** Added autoconfiguration of the SSE test server endpoints ([#352](https://github.com/ankorstore/yokai/issues/352)) ([bd74d10](https://github.com/ankorstore/yokai/commit/bd74d10adc96ba1d16c7b02be99e689c5b588ef5))
+
 ## [1.4.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.3.0...fxmcpserver/v1.4.0) (2025-05-14)
 
 
