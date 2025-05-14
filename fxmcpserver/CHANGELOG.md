@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.3.0...fxmcpserver/v1.4.0) (2025-05-14)
+
+
+### Features
+
+* **fxmcpserver:** Added tracing remote propagation ([#350](https://github.com/ankorstore/yokai/issues/350)) ([dfc463e](https://github.com/ankorstore/yokai/commit/dfc463ebd7f607326f4bb63f464d4f14cec03ced))
+
 ## [1.3.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.2.0...fxmcpserver/v1.3.0) (2025-05-08)
 
 
