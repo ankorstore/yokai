@@ -13,6 +13,7 @@ import (
 	"github.com/ankorstore/yokai/log/logtest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 
@@ -36,11 +37,13 @@ func TestDefaultMCPSSEServerContextHandler_Handle(t *testing.T) {
 
 		tp := trace.NewTracerProvider()
 
+		tmp := propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{})
+
 		lb := logtest.NewDefaultTestLogBuffer()
 		lg, err := log.NewDefaultLoggerFactory().Create(log.WithOutputWriter(lb))
 		assert.NoError(t, err)
 
-		handler := sse.NewDefaultMCPSSEServerContextHandler(gm, tp, lg)
+		handler := sse.NewDefaultMCPSSEServerContextHandler(gm, tp, tmp, lg)
 
 		req := httptest.NewRequest(http.MethodGet, "/sse", nil)
 
@@ -91,13 +94,15 @@ func TestDefaultMCPSSEServerContextHandler_Handle(t *testing.T) {
 
 		tp := trace.NewTracerProvider()
 
+		tmp := propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{})
+
 		lb := logtest.NewDefaultTestLogBuffer()
 		lg, err := log.NewDefaultLoggerFactory().Create(log.WithOutputWriter(lb))
 		assert.NoError(t, err)
 
 		hk := hook.NewSimpleMCPSSEServerContextHook()
 
-		handler := sse.NewDefaultMCPSSEServerContextHandler(gm, tp, lg, hk)
+		handler := sse.NewDefaultMCPSSEServerContextHandler(gm, tp, tmp, lg, hk)
 
 		req := httptest.NewRequest(http.MethodGet, "/sse?sessionId=test-session-id", nil)
 		req.Header.Set("X-Request-Id", "test-request-id")
