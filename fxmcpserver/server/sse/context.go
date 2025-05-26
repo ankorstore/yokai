@@ -82,7 +82,6 @@ func (h *DefaultMCPSSEServerContextHandler) Handle() server.SSEContextFunc {
 		ctx, span := trace.CtxTracer(ctx).Start(
 			ctx,
 			"MCP",
-			ot.WithNewRoot(),
 			ot.WithSpanKind(ot.SpanKindServer),
 			ot.WithAttributes(
 				attribute.String("system", "mcpserver"),
