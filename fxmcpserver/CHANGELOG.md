@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.5.0...fxmcpserver/v1.5.1) (2025-05-26)
+
+
+### Bug Fixes
+
+* **fxmcpserver:** Fixed MCP SSE server tracing to accept remote context ([#354](https://github.com/ankorstore/yokai/issues/354)) ([d9e879a](https://github.com/ankorstore/yokai/commit/d9e879a62d5da19a607c3f9617a4232a0fc13080))
+
 ## [1.5.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.4.0...fxmcpserver/v1.5.0) (2025-05-14)
 
 
