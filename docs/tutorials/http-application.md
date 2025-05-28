@@ -748,7 +748,8 @@ First let's activate the [trace](../modules/fxtrace.md#configuration) module exp
 ```yaml title="configs/config.yaml"
 modules:
   trace:
-    processor: stdout
+    processor:
+      type: stdout
 ```
 
 Let's then add trace spans from our `ListGophersHandler` with `trace.CtxTracerProvider()`:
