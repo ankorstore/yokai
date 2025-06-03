@@ -14,14 +14,14 @@ require (
 	github.com/ankorstore/yokai/healthcheck v1.1.0
 	github.com/ankorstore/yokai/log v1.2.0
 	github.com/ankorstore/yokai/trace v1.4.0
-	github.com/mark3labs/mcp-go v0.25.0
+	github.com/mark3labs/mcp-go v0.31.0
 	github.com/prometheus/client_golang v1.22.0
 	github.com/stretchr/testify v1.10.0
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/otel v1.24.0
 	go.opentelemetry.io/otel/sdk v1.24.0
 	go.opentelemetry.io/otel/trace v1.24.0
-	go.uber.org/fx v1.23.0
+	go.uber.org/fx v1.24.0
 )
 
 require (
@@ -65,7 +65,7 @@ require (
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.24.0 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.1.0 // indirect
-	go.uber.org/dig v1.18.0 // indirect
+	go.uber.org/dig v1.19.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225 // indirect
