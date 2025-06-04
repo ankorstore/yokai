@@ -2,6 +2,7 @@ package server_test
 
 import (
 	"context"
+	"github.com/ankorstore/yokai/fxmcpserver/server/stream"
 	"testing"
 
 	"github.com/ankorstore/yokai/config"
@@ -22,13 +23,14 @@ func TestMCPServerProbe(t *testing.T) {
 
 	mcpSrv := server.NewMCPServer("test-server", "1.0.0")
 
+	streamSrv := stream.NewDefaultMCPStreamableHTTPServerFactory(cfg).Create(mcpSrv)
 	sseSrv := sse.NewDefaultMCPSSEServerFactory(cfg).Create(mcpSrv)
 	stdioSrv := stdio.NewDefaultMCPStdioServerFactory().Create(mcpSrv)
 
-	probe := fs.NewMCPServerProbe(cfg, sseSrv, stdioSrv)
+	probe := fs.NewMCPServerProbe(cfg, streamSrv, sseSrv, stdioSrv)
 
 	res := probe.Check(context.Background())
 
 	assert.False(t, res.Success)
-	assert.Equal(t, "MCP SSE server is not running", res.Message)
+	assert.Equal(t, "MCP StreamableHTTP server is not running, MCP SSE server is not running", res.Message)
 }

@@ -164,12 +164,11 @@ func ProvideDefaultMCPStreamableHTTPServerContextHandler(p ProvideDefaultMCPStre
 type ProvideDefaultMCPStreamableHTTPServerFactoryParams struct {
 	fx.In
 	Config *config.Config
-	Logger *log.Logger
 }
 
 // ProvideDefaultMCPStreamableHTTPServerFactory provides the default sse.MCPStreamableHTTPServerFactory instance.
 func ProvideDefaultMCPStreamableHTTPServerFactory(p ProvideDefaultMCPStreamableHTTPServerFactoryParams) *stream.DefaultMCPStreamableHTTPServerFactory {
-	return stream.NewDefaultMCPStreamableHTTPServerFactory(p.Config, p.Logger)
+	return stream.NewDefaultMCPStreamableHTTPServerFactory(p.Config)
 }
 
 // ProvideMCPStreamableHTTPServerParam allows injection of the required dependencies in ProvideMCPStreamableHTTPServer.

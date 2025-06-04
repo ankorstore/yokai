@@ -2,7 +2,6 @@ package stream
 
 import (
 	"github.com/ankorstore/yokai/config"
-	"github.com/ankorstore/yokai/log"
 	"github.com/mark3labs/mcp-go/server"
 	"time"
 )
@@ -23,14 +22,12 @@ type MCPStreamableHTTPServerFactory interface {
 // DefaultMCPStreamableHTTPServerFactory is the default MCPStreamableHTTPServerFactory implementation.
 type DefaultMCPStreamableHTTPServerFactory struct {
 	config *config.Config
-	logger *log.Logger
 }
 
 // NewDefaultMCPStreamableHTTPServerFactory returns a new DefaultMCPStreamableHTTPServerFactory instance.
-func NewDefaultMCPStreamableHTTPServerFactory(config *config.Config, logger *log.Logger) *DefaultMCPStreamableHTTPServerFactory {
+func NewDefaultMCPStreamableHTTPServerFactory(config *config.Config) *DefaultMCPStreamableHTTPServerFactory {
 	return &DefaultMCPStreamableHTTPServerFactory{
 		config: config,
-		logger: logger,
 	}
 }
 
@@ -67,7 +64,6 @@ func (f *DefaultMCPStreamableHTTPServerFactory) Create(mcpServer *server.MCPServ
 	srvOptions := []server.StreamableHTTPOption{
 		server.WithStateLess(srvConfig.Stateless),
 		server.WithEndpointPath(srvConfig.BasePath),
-		server.WithLogger(NewMCPStreamableHTTPServerLogger(f.logger)),
 	}
 
 	if srvConfig.KeepAlive {
