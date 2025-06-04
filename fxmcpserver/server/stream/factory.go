@@ -2,11 +2,15 @@ package stream
 
 import (
 	"github.com/ankorstore/yokai/config"
+	"github.com/ankorstore/yokai/log"
 	"github.com/mark3labs/mcp-go/server"
+	"time"
 )
 
 const (
-	DefaultAddr = ":8083"
+	DefaultAddr              = ":8083"
+	DefaultBasePath          = "/mcp"
+	DefaultKeepAliveInterval = 10 * time.Second
 )
 
 var _ MCPStreamableHTTPServerFactory = (*DefaultMCPStreamableHTTPServerFactory)(nil)
@@ -19,12 +23,14 @@ type MCPStreamableHTTPServerFactory interface {
 // DefaultMCPStreamableHTTPServerFactory is the default MCPStreamableHTTPServerFactory implementation.
 type DefaultMCPStreamableHTTPServerFactory struct {
 	config *config.Config
+	logger *log.Logger
 }
 
 // NewDefaultMCPStreamableHTTPServerFactory returns a new DefaultMCPStreamableHTTPServerFactory instance.
-func NewDefaultMCPStreamableHTTPServerFactory(config *config.Config) *DefaultMCPStreamableHTTPServerFactory {
+func NewDefaultMCPStreamableHTTPServerFactory(config *config.Config, logger *log.Logger) *DefaultMCPStreamableHTTPServerFactory {
 	return &DefaultMCPStreamableHTTPServerFactory{
 		config: config,
+		logger: logger,
 	}
 }
 
@@ -35,12 +41,37 @@ func (f *DefaultMCPStreamableHTTPServerFactory) Create(mcpServer *server.MCPServ
 		addr = DefaultAddr
 	}
 
+	stateless := f.config.GetBool("modules.mcp.server.transport.stream.stateless")
+
+	basePath := f.config.GetString("modules.mcp.server.transport.stream.base_path")
+	if basePath == "" {
+		basePath = DefaultBasePath
+	}
+
+	keepAlive := f.config.GetBool("modules.mcp.server.transport.stream.keep_alive")
+
+	keepAliveInterval := DefaultKeepAliveInterval
+	keepAliveIntervalConfig := f.config.GetInt("modules.mcp.server.transport.stream.keep_alive_interval")
+	if keepAliveIntervalConfig != 0 {
+		keepAliveInterval = time.Duration(keepAliveIntervalConfig) * time.Second
+	}
+
 	srvConfig := MCPStreamableHTTPServerConfig{
-		Address: addr,
+		Address:           addr,
+		Stateless:         stateless,
+		BasePath:          basePath,
+		KeepAlive:         keepAlive,
+		KeepAliveInterval: keepAliveInterval,
 	}
 
 	srvOptions := []server.StreamableHTTPOption{
-		server.WithStateLess(true),
+		server.WithStateLess(srvConfig.Stateless),
+		server.WithEndpointPath(srvConfig.BasePath),
+		server.WithLogger(NewMCPStreamableHTTPServerLogger(f.logger)),
+	}
+
+	if srvConfig.KeepAlive {
+		srvOptions = append(srvOptions, server.WithHeartbeatInterval(srvConfig.KeepAliveInterval))
 	}
 
 	srvOptions = append(srvOptions, options...)

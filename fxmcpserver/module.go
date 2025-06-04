@@ -41,6 +41,10 @@ var FxMCPServerModule = fx.Module(
 			fx.As(new(fs.MCPServerFactory)),
 		),
 		fx.Annotate(
+			ProvideDefaultMCPStreamableHTTPServerContextHandler,
+			fx.As(new(stream.MCPStreamableHTTPServerContextHandler)),
+		),
+		fx.Annotate(
 			ProvideDefaultMCPStreamableHTTPServerFactory,
 			fx.As(new(stream.MCPStreamableHTTPServerFactory)),
 		),
@@ -131,30 +135,60 @@ func ProvideMCPServer(p ProvideMCPServerParam) *server.MCPServer {
 	return srv
 }
 
+// ProvideDefaultMCPStreamableHTTPContextHandlerParam allows injection of the required dependencies in ProvideDefaultMCPStreamableHTTPServerContextHandler.
+type ProvideDefaultMCPStreamableHTTPContextHandlerParam struct {
+	fx.In
+	Generator                           uuid.UuidGenerator
+	TracerProvider                      trace.TracerProvider
+	Logger                              *log.Logger
+	MCPStreamableHTTPServerContextHooks []stream.MCPStreamableHTTPServerContextHook `group:"mcp-streamable-http-server-context-hooks"`
+}
+
+// ProvideDefaultMCPStreamableHTTPServerContextHandler provides the default sse.MCPStreamableHTTPServerContextHandler instance.
+func ProvideDefaultMCPStreamableHTTPServerContextHandler(p ProvideDefaultMCPStreamableHTTPContextHandlerParam) *stream.DefaultMCPStreamableHTTPServerContextHandler {
+	textMapPropagator := propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{},
+		propagation.Baggage{},
+	)
+
+	return stream.NewDefaultMCPStreamableHTTPServerContextHandler(
+		p.Generator,
+		p.TracerProvider,
+		textMapPropagator,
+		p.Logger,
+		p.MCPStreamableHTTPServerContextHooks...,
+	)
+}
+
 // ProvideDefaultMCPStreamableHTTPServerFactoryParams allows injection of the required dependencies in ProvideDefaultMCPSSEServerFactory.
 type ProvideDefaultMCPStreamableHTTPServerFactoryParams struct {
 	fx.In
 	Config *config.Config
+	Logger *log.Logger
 }
 
 // ProvideDefaultMCPStreamableHTTPServerFactory provides the default sse.MCPStreamableHTTPServerFactory instance.
 func ProvideDefaultMCPStreamableHTTPServerFactory(p ProvideDefaultMCPStreamableHTTPServerFactoryParams) *stream.DefaultMCPStreamableHTTPServerFactory {
-	return stream.NewDefaultMCPStreamableHTTPServerFactory(p.Config)
+	return stream.NewDefaultMCPStreamableHTTPServerFactory(p.Config, p.Logger)
 }
 
 // ProvideMCPStreamableHTTPServerParam allows injection of the required dependencies in ProvideMCPStreamableHTTPServer.
 type ProvideMCPStreamableHTTPServerParam struct {
 	fx.In
-	LifeCycle                      fx.Lifecycle
-	Logger                         *log.Logger
-	Config                         *config.Config
-	MCPServer                      *server.MCPServer
-	MCPStreamableHTTPServerFactory stream.MCPStreamableHTTPServerFactory
+	LifeCycle                             fx.Lifecycle
+	Logger                                *log.Logger
+	Config                                *config.Config
+	MCPServer                             *server.MCPServer
+	MCPStreamableHTTPServerFactory        stream.MCPStreamableHTTPServerFactory
+	MCPStreamableHTTPServerContextHandler stream.MCPStreamableHTTPServerContextHandler
 }
 
 // ProvideMCPStreamableHTTPServer provides the stream.MCPStreamableHTTPServer.
 func ProvideMCPStreamableHTTPServer(p ProvideMCPStreamableHTTPServerParam) *stream.MCPStreamableHTTPServer {
-	streamableHTTPServer := p.MCPStreamableHTTPServerFactory.Create(p.MCPServer)
+	streamableHTTPServer := p.MCPStreamableHTTPServerFactory.Create(
+		p.MCPServer,
+		server.WithHTTPContextFunc(p.MCPStreamableHTTPServerContextHandler.Handle()),
+	)
 
 	streamableHTTPServerCtx := p.Logger.WithContext(context.Background())
 

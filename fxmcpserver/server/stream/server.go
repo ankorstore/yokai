@@ -5,11 +5,16 @@ import (
 	"github.com/ankorstore/yokai/log"
 	"github.com/mark3labs/mcp-go/server"
 	"sync"
+	"time"
 )
 
 // MCPStreamableHTTPServerConfig is the MCP StreamableHTTP server configuration.
 type MCPStreamableHTTPServerConfig struct {
-	Address string
+	Address           string
+	Stateless         bool
+	BasePath          string
+	KeepAlive         bool
+	KeepAliveInterval time.Duration
 }
 
 // MCPStreamableHTTPServer is the MCP StreamableHTTP server.
@@ -89,6 +94,13 @@ func (s *MCPStreamableHTTPServer) Running() bool {
 // Info returns the MCPStreamableHTTPServer information.
 func (s *MCPStreamableHTTPServer) Info() map[string]any {
 	return map[string]any{
+		"config": map[string]any{
+			"address":             s.config.Address,
+			"stateless":           s.config.Stateless,
+			"base_path":           s.config.BasePath,
+			"keep_alive":          s.config.KeepAlive,
+			"keep_alive_interval": s.config.KeepAliveInterval.Seconds(),
+		},
 		"status": map[string]any{
 			"running": s.running,
 		},
