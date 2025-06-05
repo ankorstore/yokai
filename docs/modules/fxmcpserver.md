@@ -277,7 +277,7 @@ import (
 
 func Register() fx.Option {
 	return fx.Options(
-		// registers UserProfileResource as MCP resource
+		// registers UserProfileResource as MCP resource template
 		fxmcpserver.AsMCPServerResourceTemplate(resource.NewUserProfileResource),
 		// ...
 	)
