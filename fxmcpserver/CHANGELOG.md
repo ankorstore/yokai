@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.5.1...fxmcpserver/v1.6.0) (2025-06-05)
+
+
+### Features
+
+* **fxmcpserver:** Provided streamable HTTP transport ([#357](https://github.com/ankorstore/yokai/issues/357)) ([b9b01f0](https://github.com/ankorstore/yokai/commit/b9b01f043e67c14d0bd787e62fa02cf604d298a1))
+
 ## [1.5.1](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.5.0...fxmcpserver/v1.5.1) (2025-05-26)
 
 
