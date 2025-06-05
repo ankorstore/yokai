@@ -410,5 +410,4 @@ func TestMCPServerModule(t *testing.T) {
 			assert.NoError(t, err)
 		})
 	}
-
 }
