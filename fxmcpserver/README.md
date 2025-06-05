@@ -42,8 +42,8 @@ This module provides an [MCP server](https://modelcontextprotocol.io/introductio
 - automatic requests logging and tracing (method, target, duration, ...)
 - automatic requests metrics (count and duration)
 - possibility to register MCP resources, resource templates, prompts and tools
-- possibility to register MCP SSE server context hooks
-- possibility to expose the MCP server via Stdio (local) and/or HTTP SSE (remote)
+- possibility to register MCP Streamable HTTP and SSE server context hooks
+- possibility to expose the MCP server via Streamable HTTP (remote), HTTP SSE (remote) and Stdio (local)
 
 ## Documentation
 
