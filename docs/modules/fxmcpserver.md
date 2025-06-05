@@ -664,8 +664,8 @@ modules:
 As a result, in your application logs:
 
 ```
-INF in calculator tool mcpRequestID=460aab37-e16e-4464-9956-54fce47746e7 mcpSessionID=8f617d54-e4c9-4459-bb26-76b4d96e2b72 mcpTransport=sse service=yokai-mcp spanID=0f536ffa84fb8800 system=mcpserver traceID=594a9585cbfd5362c03968cd6d7d786c
-INF MCP request success mcpLatency=4.869308ms mcpMethod=tools/call mcpRequest="..." mcpResponse="..." mcpRequestID=460aab37-e16e-4464-9956-54fce47746e7 mcpSessionID=8f617d54-e4c9-4459-bb26-76b4d96e2b72 mcpTool=calculator mcpTransport=sse service=yokai-mcp spanID=0f536ffa84fb8800 system=mcpserver traceID=594a9585cbfd5362c03968cd6d7d786c
+INF in calculator tool mcpRequestID=460aab37-e16e-4464-9956-54fce47746e7 mcpSessionID=8f617d54-e4c9-4459-bb26-76b4d96e2b72 mcpTransport=streamable-http service=yokai-mcp spanID=0f536ffa84fb8800 system=mcpserver traceID=594a9585cbfd5362c03968cd6d7d786c
+INF MCP request success mcpLatency=4.869308ms mcpMethod=tools/call mcpRequest="..." mcpResponse="..." mcpRequestID=460aab37-e16e-4464-9956-54fce47746e7 mcpSessionID=8f617d54-e4c9-4459-bb26-76b4d96e2b72 mcpTool=calculator mcpTransport=streamable-http service=yokai-mcp spanID=0f536ffa84fb8800 system=mcpserver traceID=594a9585cbfd5362c03968cd6d7d786c
 ```
 
 If both HTTP server logging and tracing are enabled, log records will automatically have the current `traceID` and `spanID` to be able to correlate logs and trace spans.
@@ -697,7 +697,7 @@ As a result, in your application trace spans attributes:
 service.name: yokai-mcp
 mcp.method: tools/call
 mcp.tool: calculator
-mcp.transport: sse
+mcp.transport: streamable-http
 mcp.request: ...
 mcp.response: ...
 ...
@@ -803,9 +803,6 @@ func TestMCPPing(t *testing.T) {
 	// start test client
 	testClient, err := testServer.StartClient(context.Background())
 	assert.NoError(t, err)
-
-	// close the test client once done
-	defer testClient.Close()
 
 	// send MCP ping request
 	err = testClient.Ping(context.Background())

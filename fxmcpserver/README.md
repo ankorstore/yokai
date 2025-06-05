@@ -745,9 +745,6 @@ func TestExample(t *testing.T) {
 	testClient, err := testServer.StartClient(context.Background())
 	assert.NoError(t, err)
 
-	// close the test client once done
-	defer testClient.Close()
-
 	// send MCP ping request
 	err = testClient.Ping(context.Background())
 	assert.NoError(t, err)
