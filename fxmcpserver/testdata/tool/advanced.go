@@ -42,7 +42,7 @@ func (t *AdvancedTestTool) Handle() server.ToolHandlerFunc {
 
 		log.CtxLogger(ctx).Info().Msg("AdvancedTestTool.Handle")
 
-		shouldFail := request.Params.Arguments["shouldFail"].(string)
+		shouldFail := request.GetArguments()["shouldFail"].(string)
 		if shouldFail == "true" {
 			return nil, fmt.Errorf("advanced tool test failure")
 		}

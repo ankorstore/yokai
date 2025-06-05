@@ -3,6 +3,7 @@ package fxmcpserver
 import (
 	"github.com/ankorstore/yokai/fxmcpserver/server"
 	"github.com/ankorstore/yokai/fxmcpserver/server/sse"
+	"github.com/ankorstore/yokai/fxmcpserver/server/stream"
 	"go.uber.org/fx"
 )
 
@@ -105,12 +106,34 @@ func AsMCPSSEServerContextHook(constructor any) fx.Option {
 	)
 }
 
-// AsMCPSSEServerContextHooks registers several MCP SSE server context hook.
+// AsMCPSSEServerContextHooks registers several MCP SSE server context hooks.
 func AsMCPSSEServerContextHooks(constructors ...any) fx.Option {
 	options := []fx.Option{}
 
 	for _, constructor := range constructors {
 		options = append(options, AsMCPSSEServerContextHook(constructor))
+	}
+
+	return fx.Options(options...)
+}
+
+// AsMCPStreamableHTTPServerContextHook registers an MCP StreamableHTTP server context hook.
+func AsMCPStreamableHTTPServerContextHook(constructor any) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			constructor,
+			fx.As(new(stream.MCPStreamableHTTPServerContextHook)),
+			fx.ResultTags(`group:"mcp-streamable-http-server-context-hooks"`),
+		),
+	)
+}
+
+// AsMCPStreamableHTTPServerContextHooks registers several MCP StreamableHTTP server context hooks.
+func AsMCPStreamableHTTPServerContextHooks(constructors ...any) fx.Option {
+	options := []fx.Option{}
+
+	for _, constructor := range constructors {
+		options = append(options, AsMCPStreamableHTTPServerContextHook(constructor))
 	}
 
 	return fx.Options(options...)

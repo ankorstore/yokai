@@ -12,16 +12,20 @@
 * [Installation](#installation)
 * [Features](#features)
 * [Documentation](#documentation)
-	* [Dependencies](#dependencies)
-	* [Loading](#loading)
-	* [Configuration](#configuration)
-	* [Registration](#registration)
-		* [Resources](#resources)
-		* [Resource templates](#resource-templates)
-		* [Prompts](#prompts)
-		* [Tools](#tools)
-	* [Hooks](#hooks)
-	* [Testing](#testing)
+  * [Dependencies](#dependencies)
+  * [Loading](#loading)
+  * [Configuration](#configuration)
+  * [Registration](#registration)
+    * [Resources](#resources)
+    * [Resource templates](#resource-templates)
+    * [Prompts](#prompts)
+    * [Tools](#tools)
+  * [Hooks](#hooks)
+    * [StreamableHTTP server hooks](#streamablehttp-server-hooks)
+    * [SSE server hooks](#sse-server-hooks)
+  * [Testing](#testing)
+    * [StreamableHTTP test server](#streamablehttp-test-server)
+    * [SSE test server](#sse-test-server)
 <!-- TOC -->
 
 ## Installation
@@ -38,8 +42,8 @@ This module provides an [MCP server](https://modelcontextprotocol.io/introductio
 - automatic requests logging and tracing (method, target, duration, ...)
 - automatic requests metrics (count and duration)
 - possibility to register MCP resources, resource templates, prompts and tools
-- possibility to register MCP SSE server context hooks
-- possibility to expose the MCP server via Stdio (local) and/or HTTP SSE (remote)
+- possibility to register MCP Streamable HTTP and SSE server context hooks
+- possibility to expose the MCP server via Streamable HTTP (remote), HTTP SSE (remote) and Stdio (local)
 
 ## Documentation
 
@@ -109,6 +113,13 @@ modules:
         prompts: true                     # to expose MCP prompts (disabled by default)
         tools: true                       # to expose MCP tools (disabled by default)
       transport:
+        stream:
+          expose: true                    # to remotely expose the MCP server via streamable HTTP (disabled by default)
+          address: ":8083"                # exposition address (":8083" by default)
+          stateless: false                # stateless server mode (disabled by default)
+          base_path: "/mcp"               # base path ("/mcp" by default)
+          keep_alive: true                # to keep the connections alive
+          keep_alive_interval: 10         # keep alive interval in seconds (10 by default)
         sse:
           expose: true                    # to remotely expose the MCP server via SSE (disabled by default)
           address: ":8082"                # exposition address (":8082" by default)
@@ -116,7 +127,7 @@ modules:
           base_path: ""                   # base path ("" by default)
           sse_endpoint: "/sse"            # SSE endpoint ("/sse" by default)
           message_endpoint: "/message"    # message endpoint ("/message" by default)
-          keep_alive: true                # to keep connection alive
+          keep_alive: true                # to keep the connections alive
           keep_alive_interval: 10         # keep alive interval in seconds (10 by default)
         stdio:
           expose: false                   # to locally expose the MCP server via Stdio (disabled by default)
@@ -553,6 +564,68 @@ modules:
 ```
 ### Hooks
 
+This module provides hooking mechanisms for the `StreamableHTTP` and `SSE` servers requests handling.
+
+#### StreamableHTTP server hooks
+
+This module offers the possibility to provide context hooks with [MCPStreamableHTTPServerContextHook](server/stream/context.go) implementations, that will be applied on each MCP StreamableHTTP request.
+
+You can use the `AsMCPStreamableHTTPServerContextHook()` function to register an MCP StreamableHTTP server context hook, or `AsMCPStreamableHTTPServerContextHooks()` to register several MCP StreamableHTTP server context hooks at once.
+
+The dependencies of your MCP StreamableHTTP server context hooks will be autowired.
+
+```go
+package main
+
+import (
+	"context"
+	"net/http"
+
+	"github.com/ankorstore/yokai/config"
+	"github.com/ankorstore/yokai/fxconfig"
+	"github.com/ankorstore/yokai/fxgenerate"
+	"github.com/ankorstore/yokai/fxlog"
+	"github.com/ankorstore/yokai/fxmcpserver"
+	"github.com/ankorstore/yokai/fxmetrics"
+	"github.com/ankorstore/yokai/fxtrace"
+	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/mark3labs/mcp-go/server"
+	"go.uber.org/fx"
+)
+
+type ExampleHook struct {
+	config *config.Config
+}
+
+func NewExampleHook(config *config.Config) *ExampleHook {
+	return &ExampleHook{
+		config: config,
+	}
+}
+
+func (h *ExampleHook) Handle() server.HTTPContextFunc {
+	return func(ctx context.Context, r *http.Request) context.Context {
+		return context.WithValue(ctx, "foo", h.config.GetString("foo"))
+	}
+}
+
+func main() {
+	fx.New(
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxmetrics.FxMetricsModule,
+		fxgenerate.FxGenerateModule,
+		fxmcpserver.FxMCPServerModule,
+		fx.Options(
+			fxmcpserver.AsMCPStreamableHTTPServerContextHook(NewExampleHook), // registers the NewExampleHook as MCP StreamableHTTP server context hook
+		),
+	).Run()
+}
+```
+
+#### SSE server hooks
+
 This module offers the possibility to provide context hooks with [MCPSSEServerContextHook](server/sse/context.go) implementations, that will be applied on each MCP SSE request.
 
 You can use the `AsMCPSSEServerContextHook()` function to register an MCP SSE server context hook, or `AsMCPSSEServerContextHooks()` to register several MCP SSE server context hooks at once.
@@ -611,7 +684,112 @@ func main() {
 
 ### Testing
 
-This module provides a [MCPSSETestServer](fxmcpservertest/server.go) to enable you to easily test your exposed MCP capabilities.
+This module provide `StreamableHTTP` and `SSE` test servers, to functionally test your applications.
+
+#### StreamableHTTP test server
+
+This module provides a [MCPStreamableHTTPTestServer](fxmcpservertest/stream.go) to enable you to easily test your exposed MCP capabilities.
+
+From this server, you can create a ready to use client via `StartClient()` to perform MCP requests, to functionally test your MCP server.
+
+You can then test it, considering `logs`, `traces` and `metrics` are enabled:
+
+```go
+package internal_test
+
+import (
+	"context"
+	"strings"
+	"testing"
+
+	"github.com/ankorstore/yokai/fxconfig"
+	"github.com/ankorstore/yokai/fxgenerate"
+	"github.com/ankorstore/yokai/fxhttpserver"
+	"github.com/ankorstore/yokai/fxlog"
+	"github.com/ankorstore/yokai/fxmcpserver"
+	"github.com/ankorstore/yokai/fxmcpserver/fxmcpservertest"
+	"github.com/ankorstore/yokai/fxmetrics"
+	"github.com/ankorstore/yokai/fxtrace"
+	"github.com/ankorstore/yokai/log/logtest"
+	"github.com/ankorstore/yokai/trace/tracetest"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/testutil"
+	"github.com/stretchr/testify/assert"
+	"go.opentelemetry.io/otel/attribute"
+	"go.uber.org/fx"
+	"go.uber.org/fx/fxtest"
+)
+
+func TestExample(t *testing.T) {
+	var testServer *fxmcpservertest.MCPStreamableHTTPTestServer
+	var logBuffer logtest.TestLogBuffer
+	var traceExporter tracetest.TestTraceExporter
+	var metricsRegistry *prometheus.Registry
+
+	fxtest.New(
+		t,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxgenerate.FxGenerateModule,
+		fxmetrics.FxMetricsModule,
+		fxmcpserver.FxMCPServerModule,
+		fx.Populate(&testServer, &logBuffer, &traceExporter, &metricsRegistry),
+	).RequireStart().RequireStop()
+
+	// close the test server once done
+	defer testServer.Close()
+
+	// start test client
+	testClient, err := testServer.StartClient(context.Background())
+	assert.NoError(t, err)
+
+	// close the test client once done
+	defer testClient.Close()
+
+	// send MCP ping request
+	err = testClient.Ping(context.Background())
+	assert.NoError(t, err)
+
+	// assertion on the logs buffer
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":        "info",
+		"mcpMethod":    "ping",
+		"mcpTransport": "streamable-http",
+		"message":      "MCP request success",
+	})
+
+	// assertion on the traces exporter
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"MCP ping",
+		attribute.String("mcp.method", "ping"),
+		attribute.String("mcp.transport", "streamable-http"),
+	)
+
+	// assertion on the metrics registry
+	expectedMetric := `
+		# HELP mcp_server_requests_total Number of processed HTTP requests
+		# TYPE mcp_server_requests_total counter
+		mcp_server_requests_total{method="ping",status="success",target=""} 1
+	`
+
+	err = testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"mcp_server_requests_total",
+	)
+	assert.NoError(t, err)
+}
+```
+
+You can find more tests examples in this module own [tests](module_test.go).
+
+#### SSE test server
+
+This module provides a [MCPSSETestServer](fxmcpservertest/sse.go) to enable you to easily test your exposed MCP capabilities.
 
 From this server, you can create a ready to use client via `StartClient()` to perform MCP requests, to functionally test your MCP server.
 

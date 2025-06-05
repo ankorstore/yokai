@@ -11,6 +11,13 @@ modules:
         prompts: true
         tools: true
       transport:
+        stream:
+          expose: true
+          address: ":0"
+          stateless: true
+          base_path: "/mcp"
+          keep_alive: true
+          keep_alive_interval: 10
         sse:
           expose: true
           address: ":0"

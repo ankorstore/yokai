@@ -1,19 +1,19 @@
-package sse_test
+package stream_test
 
 import (
 	"context"
+	"github.com/ankorstore/yokai/fxmcpserver/server/stream"
 	"testing"
 	"time"
 
 	"github.com/ankorstore/yokai/config"
-	"github.com/ankorstore/yokai/fxmcpserver/server/sse"
 	"github.com/ankorstore/yokai/log"
 	"github.com/ankorstore/yokai/log/logtest"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMCPSSEServer(t *testing.T) {
+func TestMCPStreamableHTTPServer(t *testing.T) {
 	t.Parallel()
 
 	cfg, err := config.NewDefaultConfigFactory().Create(
@@ -27,7 +27,7 @@ func TestMCPSSEServer(t *testing.T) {
 
 	mcpSrv := server.NewMCPServer("test-server", "1.0.0")
 
-	srv := sse.NewDefaultMCPSSEServerFactory(cfg).Create(mcpSrv)
+	srv := stream.NewDefaultMCPStreamableHTTPServerFactory(cfg).Create(mcpSrv)
 
 	assert.False(t, srv.Running())
 
@@ -36,12 +36,10 @@ func TestMCPSSEServer(t *testing.T) {
 		map[string]any{
 			"config": map[string]any{
 				"address":             ":0",
-				"base_url":            sse.DefaultBaseURL,
-				"base_path":           sse.DefaultBasePath,
-				"sse_endpoint":        sse.DefaultSSEEndpoint,
-				"message_endpoint":    sse.DefaultMessageEndpoint,
+				"stateless":           true,
+				"base_path":           stream.DefaultBasePath,
 				"keep_alive":          true,
-				"keep_alive_interval": sse.DefaultKeepAliveInterval.Seconds(),
+				"keep_alive_interval": stream.DefaultKeepAliveInterval.Seconds(),
 			},
 			"status": map[string]any{
 				"running": false,
@@ -61,7 +59,7 @@ func TestMCPSSEServer(t *testing.T) {
 
 	logtest.AssertHasLogRecord(t, lb, map[string]any{
 		"level":   "info",
-		"message": "starting MCP SSE server on :0",
+		"message": "starting MCP StreamableHTTP server on :0",
 	})
 
 	err = srv.Stop(ctx)
@@ -73,6 +71,6 @@ func TestMCPSSEServer(t *testing.T) {
 
 	logtest.AssertHasLogRecord(t, lb, map[string]any{
 		"level":   "info",
-		"message": "stopping MCP SSE server",
+		"message": "stopping MCP StreamableHTTP server",
 	})
 }

@@ -1,13 +1,13 @@
-package sse_test
+package stream_test
 
 import (
 	"context"
+	"github.com/ankorstore/yokai/fxmcpserver/server/stream"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	servercontext "github.com/ankorstore/yokai/fxmcpserver/server/context"
-	"github.com/ankorstore/yokai/fxmcpserver/server/sse"
 	"github.com/ankorstore/yokai/fxmcpserver/testdata/hook"
 	"github.com/ankorstore/yokai/log"
 	"github.com/ankorstore/yokai/log/logtest"
@@ -25,8 +25,7 @@ func (m *generatorMock) Generate() string {
 	return m.Called().String(0)
 }
 
-//nolint:cyclop
-func TestDefaultMCPSSEServerContextHandler_Handle(t *testing.T) {
+func TestDefaultMCPStreamableHTTPServerContextHandler_Handle(t *testing.T) {
 	t.Parallel()
 
 	t.Run("with defaults", func(t *testing.T) {
@@ -43,9 +42,9 @@ func TestDefaultMCPSSEServerContextHandler_Handle(t *testing.T) {
 		lg, err := log.NewDefaultLoggerFactory().Create(log.WithOutputWriter(lb))
 		assert.NoError(t, err)
 
-		handler := sse.NewDefaultMCPSSEServerContextHandler(gm, tp, tmp, lg)
+		handler := stream.NewDefaultMCPStreamableHTTPServerContextHandler(gm, tp, tmp, lg)
 
-		req := httptest.NewRequest(http.MethodGet, "/sse", nil)
+		req := httptest.NewRequest(http.MethodGet, "/mcp", nil)
 
 		ctx := handler.Handle()(context.Background(), req)
 
@@ -62,10 +61,7 @@ func TestDefaultMCPSSEServerContextHandler_Handle(t *testing.T) {
 				assert.Equal(t, "mcpserver", attr.Value.AsString())
 			}
 			if attr.Key == "mcp.transport" {
-				assert.Equal(t, "sse", attr.Value.AsString())
-			}
-			if attr.Key == "mcp.sessionID" {
-				assert.Equal(t, "", attr.Value.AsString())
+				assert.Equal(t, "streamable-http", attr.Value.AsString())
 			}
 			if attr.Key == "mcp.requestID" {
 				assert.Equal(t, "test-request-id", attr.Value.AsString())
@@ -77,8 +73,7 @@ func TestDefaultMCPSSEServerContextHandler_Handle(t *testing.T) {
 		logtest.AssertHasLogRecord(t, lb, map[string]any{
 			"level":        "info",
 			"system":       "mcpserver",
-			"mcpTransport": "sse",
-			"mcpSessionID": "",
+			"mcpTransport": "streamable-http",
 			"mcpRequestID": "test-request-id",
 			"message":      "test log",
 		})
@@ -86,7 +81,7 @@ func TestDefaultMCPSSEServerContextHandler_Handle(t *testing.T) {
 		gm.AssertExpectations(t)
 	})
 
-	t.Run("with provided session id and request id and hook", func(t *testing.T) {
+	t.Run("with provided request id and hook", func(t *testing.T) {
 		t.Parallel()
 
 		gm := new(generatorMock)
@@ -100,16 +95,15 @@ func TestDefaultMCPSSEServerContextHandler_Handle(t *testing.T) {
 		lg, err := log.NewDefaultLoggerFactory().Create(log.WithOutputWriter(lb))
 		assert.NoError(t, err)
 
-		hk := hook.NewSimpleMCPSSEServerContextHook()
+		hk := hook.NewSimpleMCPStreamableHTTPServerContextHook()
 
-		handler := sse.NewDefaultMCPSSEServerContextHandler(gm, tp, tmp, lg, hk)
+		handler := stream.NewDefaultMCPStreamableHTTPServerContextHandler(gm, tp, tmp, lg, hk)
 
-		req := httptest.NewRequest(http.MethodGet, "/sse?sessionId=test-session-id", nil)
+		req := httptest.NewRequest(http.MethodGet, "/mcp", nil)
 		req.Header.Set("X-Request-Id", "test-request-id")
 
 		ctx := handler.Handle()(context.Background(), req)
 
-		assert.Equal(t, "test-session-id", servercontext.CtxSessionID(ctx))
 		assert.Equal(t, "test-request-id", servercontext.CtxRequestId(ctx))
 
 		span, ok := servercontext.CtxRootSpan(ctx).(trace.ReadWriteSpan)
@@ -122,10 +116,7 @@ func TestDefaultMCPSSEServerContextHandler_Handle(t *testing.T) {
 				assert.Equal(t, "mcpserver", attr.Value.AsString())
 			}
 			if attr.Key == "mcp.transport" {
-				assert.Equal(t, "sse", attr.Value.AsString())
-			}
-			if attr.Key == "mcp.sessionID" {
-				assert.Equal(t, "test-session-id", attr.Value.AsString())
+				assert.Equal(t, "streamable-http", attr.Value.AsString())
 			}
 			if attr.Key == "mcp.requestID" {
 				assert.Equal(t, "test-request-id", attr.Value.AsString())
@@ -137,8 +128,7 @@ func TestDefaultMCPSSEServerContextHandler_Handle(t *testing.T) {
 		logtest.AssertHasLogRecord(t, lb, map[string]any{
 			"level":        "info",
 			"system":       "mcpserver",
-			"mcpTransport": "sse",
-			"mcpSessionID": "test-session-id",
+			"mcpTransport": "streamable-http",
 			"mcpRequestID": "test-request-id",
 			"message":      "test log",
 		})

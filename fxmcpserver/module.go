@@ -2,6 +2,7 @@ package fxmcpserver
 
 import (
 	"context"
+	"github.com/ankorstore/yokai/fxmcpserver/server/stream"
 
 	"github.com/ankorstore/yokai/config"
 	"github.com/ankorstore/yokai/fxmcpserver/fxmcpservertest"
@@ -26,6 +27,8 @@ var FxMCPServerModule = fx.Module(
 		// module fixed dependencies
 		ProvideMCPServerRegistry,
 		ProvideMCPServer,
+		ProvideMCPStreamableHTTPServer,
+		ProvideMCPStreamableHTTPTestServer,
 		ProvideMCPSSEServer,
 		ProvideMCPSSETestServer,
 		ProvideMCPStdioServer,
@@ -37,6 +40,14 @@ var FxMCPServerModule = fx.Module(
 		fx.Annotate(
 			ProvideDefaultMCPServerFactory,
 			fx.As(new(fs.MCPServerFactory)),
+		),
+		fx.Annotate(
+			ProvideDefaultMCPStreamableHTTPServerContextHandler,
+			fx.As(new(stream.MCPStreamableHTTPServerContextHandler)),
+		),
+		fx.Annotate(
+			ProvideDefaultMCPStreamableHTTPServerFactory,
+			fx.As(new(stream.MCPStreamableHTTPServerFactory)),
 		),
 		fx.Annotate(
 			ProvideDefaultMCPSSEServerContextHandler,
@@ -123,6 +134,98 @@ func ProvideMCPServer(p ProvideMCPServerParam) *server.MCPServer {
 	p.Registry.Register(srv)
 
 	return srv
+}
+
+// ProvideDefaultMCPStreamableHTTPContextHandlerParam allows injection of the required dependencies in ProvideDefaultMCPStreamableHTTPServerContextHandler.
+type ProvideDefaultMCPStreamableHTTPContextHandlerParam struct {
+	fx.In
+	Generator                           uuid.UuidGenerator
+	TracerProvider                      trace.TracerProvider
+	Logger                              *log.Logger
+	MCPStreamableHTTPServerContextHooks []stream.MCPStreamableHTTPServerContextHook `group:"mcp-streamable-http-server-context-hooks"`
+}
+
+// ProvideDefaultMCPStreamableHTTPServerContextHandler provides the default sse.MCPStreamableHTTPServerContextHandler instance.
+func ProvideDefaultMCPStreamableHTTPServerContextHandler(p ProvideDefaultMCPStreamableHTTPContextHandlerParam) *stream.DefaultMCPStreamableHTTPServerContextHandler {
+	textMapPropagator := propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{},
+		propagation.Baggage{},
+	)
+
+	return stream.NewDefaultMCPStreamableHTTPServerContextHandler(
+		p.Generator,
+		p.TracerProvider,
+		textMapPropagator,
+		p.Logger,
+		p.MCPStreamableHTTPServerContextHooks...,
+	)
+}
+
+// ProvideDefaultMCPStreamableHTTPServerFactoryParams allows injection of the required dependencies in ProvideDefaultMCPSSEServerFactory.
+type ProvideDefaultMCPStreamableHTTPServerFactoryParams struct {
+	fx.In
+	Config *config.Config
+}
+
+// ProvideDefaultMCPStreamableHTTPServerFactory provides the default sse.MCPStreamableHTTPServerFactory instance.
+func ProvideDefaultMCPStreamableHTTPServerFactory(p ProvideDefaultMCPStreamableHTTPServerFactoryParams) *stream.DefaultMCPStreamableHTTPServerFactory {
+	return stream.NewDefaultMCPStreamableHTTPServerFactory(p.Config)
+}
+
+// ProvideMCPStreamableHTTPServerParam allows injection of the required dependencies in ProvideMCPStreamableHTTPServer.
+type ProvideMCPStreamableHTTPServerParam struct {
+	fx.In
+	LifeCycle                             fx.Lifecycle
+	Logger                                *log.Logger
+	Config                                *config.Config
+	MCPServer                             *server.MCPServer
+	MCPStreamableHTTPServerFactory        stream.MCPStreamableHTTPServerFactory
+	MCPStreamableHTTPServerContextHandler stream.MCPStreamableHTTPServerContextHandler
+}
+
+// ProvideMCPStreamableHTTPServer provides the stream.MCPStreamableHTTPServer.
+func ProvideMCPStreamableHTTPServer(p ProvideMCPStreamableHTTPServerParam) *stream.MCPStreamableHTTPServer {
+	streamableHTTPServer := p.MCPStreamableHTTPServerFactory.Create(
+		p.MCPServer,
+		server.WithHTTPContextFunc(p.MCPStreamableHTTPServerContextHandler.Handle()),
+	)
+
+	streamableHTTPServerCtx := p.Logger.WithContext(context.Background())
+
+	if p.Config.GetBool("modules.mcp.server.transport.stream.expose") {
+		p.LifeCycle.Append(fx.Hook{
+			OnStart: func(context.Context) error {
+				if !p.Config.IsTestEnv() {
+					//nolint:errcheck
+					go streamableHTTPServer.Start(streamableHTTPServerCtx)
+				}
+
+				return nil
+			},
+			OnStop: func(ctx context.Context) error {
+				if !p.Config.IsTestEnv() {
+					return streamableHTTPServer.Stop(ctx)
+				}
+
+				return nil
+			},
+		})
+	}
+
+	return streamableHTTPServer
+}
+
+// ProvideMCPStreamableHTTPTestServerParam allows injection of the required dependencies in ProvideMCPStreamableHTTPTestServer.
+type ProvideMCPStreamableHTTPTestServerParam struct {
+	fx.In
+	Config                                *config.Config
+	MCPServer                             *server.MCPServer
+	MCPStreamableHTTPServerContextHandler stream.MCPStreamableHTTPServerContextHandler
+}
+
+// ProvideMCPStreamableHTTPTestServer provides the fxmcpservertest.MCPStreamableHTTPTestServer.
+func ProvideMCPStreamableHTTPTestServer(p ProvideMCPStreamableHTTPTestServerParam) *fxmcpservertest.MCPStreamableHTTPTestServer {
+	return fxmcpservertest.NewMCPStreamableHTTPTestServer(p.Config, p.MCPServer, p.MCPStreamableHTTPServerContextHandler)
 }
 
 // ProvideDefaultMCPSSEContextHandlerParam allows injection of the required dependencies in ProvideDefaultMCPSSEServerContextHandler.

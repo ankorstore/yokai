@@ -82,7 +82,7 @@ func (f *DefaultMCPSSEServerFactory) Create(mcpServer *server.MCPServer, options
 
 	srvOptions := []server.SSEOption{
 		server.WithBaseURL(srvConfig.BaseURL),
-		server.WithBasePath(srvConfig.BasePath),
+		server.WithStaticBasePath(srvConfig.BasePath),
 		server.WithSSEEndpoint(srvConfig.SSEEndpoint),
 		server.WithMessageEndpoint(srvConfig.MessageEndpoint),
 	}

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/ankorstore/yokai/fxmcpserver/server/stream"
 	"strings"
 
 	"github.com/ankorstore/yokai/config"
@@ -12,21 +13,24 @@ import (
 
 // MCPServerProbe is a probe compatible with the healthcheck module.
 type MCPServerProbe struct {
-	config      *config.Config
-	sseServer   *sse.MCPSSEServer
-	stdioServer *stdio.MCPStdioServer
+	config              *config.Config
+	steamableHTTPServer *stream.MCPStreamableHTTPServer
+	sseServer           *sse.MCPSSEServer
+	stdioServer         *stdio.MCPStdioServer
 }
 
 // NewMCPServerProbe returns a new MCPServerProbe.
 func NewMCPServerProbe(
 	config *config.Config,
+	steamableHTTPServer *stream.MCPStreamableHTTPServer,
 	sseServer *sse.MCPSSEServer,
 	stdioServer *stdio.MCPStdioServer,
 ) *MCPServerProbe {
 	return &MCPServerProbe{
-		config:      config,
-		sseServer:   sseServer,
-		stdioServer: stdioServer,
+		config:              config,
+		steamableHTTPServer: steamableHTTPServer,
+		sseServer:           sseServer,
+		stdioServer:         stdioServer,
 	}
 }
 
@@ -39,6 +43,15 @@ func (p *MCPServerProbe) Name() string {
 func (p *MCPServerProbe) Check(context.Context) *healthcheck.CheckerProbeResult {
 	success := true
 	var messages []string
+
+	if p.config.GetBool("modules.mcp.server.transport.stream.expose") {
+		if p.steamableHTTPServer.Running() {
+			messages = append(messages, "MCP StreamableHTTP server is running")
+		} else {
+			success = false
+			messages = append(messages, "MCP StreamableHTTP server is not running")
+		}
+	}
 
 	if p.config.GetBool("modules.mcp.server.transport.sse.expose") {
 		if p.sseServer.Running() {

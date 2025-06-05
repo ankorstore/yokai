@@ -1,6 +1,7 @@
 package fxmcpserver_test
 
 import (
+	"github.com/ankorstore/yokai/fxmcpserver/server/stream"
 	"testing"
 
 	"github.com/ankorstore/yokai/config"
@@ -42,10 +43,11 @@ func TestMCPServerModuleInfo(t *testing.T) {
 
 	mcpSrv := server.NewMCPServer("test-server", "1.0.0")
 
+	streamSrv := stream.NewDefaultMCPStreamableHTTPServerFactory(cfg).Create(mcpSrv)
 	sseSrv := sse.NewDefaultMCPSSEServerFactory(cfg).Create(mcpSrv)
 	stdioSrv := stdio.NewDefaultMCPStdioServerFactory().Create(mcpSrv)
 
-	info := fxmcpserver.NewMCPServerModuleInfo(cfg, reg, sseSrv, stdioSrv)
+	info := fxmcpserver.NewMCPServerModuleInfo(cfg, reg, streamSrv, sseSrv, stdioSrv)
 
 	assert.Equal(t, info.Name(), fxmcpserver.ModuleName)
 
@@ -66,6 +68,18 @@ func TestMCPServerModuleInfo(t *testing.T) {
 				},
 			},
 			"stdio": map[string]any{
+				"status": map[string]any{
+					"running": false,
+				},
+			},
+			"stream": map[string]any{
+				"config": map[string]any{
+					"address":             ":0",
+					"stateless":           true,
+					"base_path":           stream.DefaultBasePath,
+					"keep_alive":          true,
+					"keep_alive_interval": stream.DefaultKeepAliveInterval.Seconds(),
+				},
 				"status": map[string]any{
 					"running": false,
 				},
