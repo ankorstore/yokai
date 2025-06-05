@@ -262,3 +262,9 @@ func (p *DefaultMCPServerHooksProvider) Provide() *server.Hooks {
 
 	return hooks
 }
+
+// Reset resets the MCP requests metrics.
+func (p *DefaultMCPServerHooksProvider) Reset() {
+	p.requestsCounter.Reset()
+	p.requestsDuration.Reset()
+}

@@ -28,6 +28,7 @@ var FxMCPServerModule = fx.Module(
 		ProvideMCPServerRegistry,
 		ProvideMCPServer,
 		ProvideMCPStreamableHTTPServer,
+		ProvideMCPStreamableHTTPTestServer,
 		ProvideMCPSSEServer,
 		ProvideMCPSSETestServer,
 		ProvideMCPStdioServer,
@@ -212,6 +213,19 @@ func ProvideMCPStreamableHTTPServer(p ProvideMCPStreamableHTTPServerParam) *stre
 	}
 
 	return streamableHTTPServer
+}
+
+// ProvideMCPStreamableHTTPTestServerParam allows injection of the required dependencies in ProvideMCPStreamableHTTPTestServer.
+type ProvideMCPStreamableHTTPTestServerParam struct {
+	fx.In
+	Config                                *config.Config
+	MCPServer                             *server.MCPServer
+	MCPStreamableHTTPServerContextHandler stream.MCPStreamableHTTPServerContextHandler
+}
+
+// ProvideMCPStreamableHTTPTestServer provides the fxmcpservertest.MCPStreamableHTTPTestServer.
+func ProvideMCPStreamableHTTPTestServer(p ProvideMCPStreamableHTTPTestServerParam) *fxmcpservertest.MCPStreamableHTTPTestServer {
+	return fxmcpservertest.NewMCPStreamableHTTPTestServer(p.Config, p.MCPServer, p.MCPStreamableHTTPServerContextHandler)
 }
 
 // ProvideDefaultMCPSSEContextHandlerParam allows injection of the required dependencies in ProvideDefaultMCPSSEServerContextHandler.

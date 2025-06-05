@@ -59,11 +59,6 @@ func (h *DefaultMCPStreamableHTTPServerContextHandler) Handle() server.HTTPConte
 		// start time propagation
 		ctx = fsc.WithStartTime(ctx, time.Now())
 
-		// sessionId propagation
-		sID := req.URL.Query().Get("sessionId")
-
-		ctx = fsc.WithSessionID(ctx, sID)
-
 		// requestId propagation
 		rID := req.Header.Get("X-Request-Id")
 
@@ -86,7 +81,6 @@ func (h *DefaultMCPStreamableHTTPServerContextHandler) Handle() server.HTTPConte
 			ot.WithAttributes(
 				attribute.String("system", "mcpserver"),
 				attribute.String("mcp.transport", "streamable-http"),
-				attribute.String("mcp.sessionID", sID),
 				attribute.String("mcp.requestID", rID),
 			),
 		)
@@ -98,7 +92,6 @@ func (h *DefaultMCPStreamableHTTPServerContextHandler) Handle() server.HTTPConte
 			With().
 			Str("system", "mcpserver").
 			Str("mcpTransport", "streamable-http").
-			Str("mcpSessionID", sID).
 			Str("mcpRequestID", rID).
 			Logger()
 

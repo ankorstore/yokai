@@ -24,6 +24,8 @@
     * [StreamableHTTP server hooks](#streamablehttp-server-hooks)
     * [SSE server hooks](#sse-server-hooks)
   * [Testing](#testing)
+    * [StreamableHTTP test server](#streamablehttp-test-server)
+    * [SSE test server](#sse-test-server)
 <!-- TOC -->
 
 ## Installation
@@ -562,6 +564,8 @@ modules:
 ```
 ### Hooks
 
+This module provides hooking mechanisms for the `StreamableHTTP` and `SSE` servers requests handling.
+
 #### StreamableHTTP server hooks
 
 This module offers the possibility to provide context hooks with [MCPStreamableHTTPServerContextHook](server/stream/context.go) implementations, that will be applied on each MCP StreamableHTTP request.
@@ -680,7 +684,112 @@ func main() {
 
 ### Testing
 
-This module provides a [MCPSSETestServer](fxmcpservertest/server.go) to enable you to easily test your exposed MCP capabilities.
+This module provide `StreamableHTTP` and `SSE` test servers, to functionally test your applications.
+
+#### StreamableHTTP test server
+
+This module provides a [MCPStreamableHTTPTestServer](fxmcpservertest/stream.go) to enable you to easily test your exposed MCP capabilities.
+
+From this server, you can create a ready to use client via `StartClient()` to perform MCP requests, to functionally test your MCP server.
+
+You can then test it, considering `logs`, `traces` and `metrics` are enabled:
+
+```go
+package internal_test
+
+import (
+	"context"
+	"strings"
+	"testing"
+
+	"github.com/ankorstore/yokai/fxconfig"
+	"github.com/ankorstore/yokai/fxgenerate"
+	"github.com/ankorstore/yokai/fxhttpserver"
+	"github.com/ankorstore/yokai/fxlog"
+	"github.com/ankorstore/yokai/fxmcpserver"
+	"github.com/ankorstore/yokai/fxmcpserver/fxmcpservertest"
+	"github.com/ankorstore/yokai/fxmetrics"
+	"github.com/ankorstore/yokai/fxtrace"
+	"github.com/ankorstore/yokai/log/logtest"
+	"github.com/ankorstore/yokai/trace/tracetest"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/testutil"
+	"github.com/stretchr/testify/assert"
+	"go.opentelemetry.io/otel/attribute"
+	"go.uber.org/fx"
+	"go.uber.org/fx/fxtest"
+)
+
+func TestExample(t *testing.T) {
+	var testServer *fxmcpservertest.MCPStreamableHTTPTestServer
+	var logBuffer logtest.TestLogBuffer
+	var traceExporter tracetest.TestTraceExporter
+	var metricsRegistry *prometheus.Registry
+
+	fxtest.New(
+		t,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxgenerate.FxGenerateModule,
+		fxmetrics.FxMetricsModule,
+		fxmcpserver.FxMCPServerModule,
+		fx.Populate(&testServer, &logBuffer, &traceExporter, &metricsRegistry),
+	).RequireStart().RequireStop()
+
+	// close the test server once done
+	defer testServer.Close()
+
+	// start test client
+	testClient, err := testServer.StartClient(context.Background())
+	assert.NoError(t, err)
+
+	// close the test client once done
+	defer testClient.Close()
+
+	// send MCP ping request
+	err = testClient.Ping(context.Background())
+	assert.NoError(t, err)
+
+	// assertion on the logs buffer
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":        "info",
+		"mcpMethod":    "ping",
+		"mcpTransport": "streamable-http",
+		"message":      "MCP request success",
+	})
+
+	// assertion on the traces exporter
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"MCP ping",
+		attribute.String("mcp.method", "ping"),
+		attribute.String("mcp.transport", "streamable-http"),
+	)
+
+	// assertion on the metrics registry
+	expectedMetric := `
+		# HELP mcp_server_requests_total Number of processed HTTP requests
+		# TYPE mcp_server_requests_total counter
+		mcp_server_requests_total{method="ping",status="success",target=""} 1
+	`
+
+	err = testutil.GatherAndCompare(
+		metricsRegistry,
+		strings.NewReader(expectedMetric),
+		"mcp_server_requests_total",
+	)
+	assert.NoError(t, err)
+}
+```
+
+You can find more tests examples in this module own [tests](module_test.go).
+
+#### SSE test server
+
+This module provides a [MCPSSETestServer](fxmcpservertest/sse.go) to enable you to easily test your exposed MCP capabilities.
 
 From this server, you can create a ready to use client via `StartClient()` to perform MCP requests, to functionally test your MCP server.
 

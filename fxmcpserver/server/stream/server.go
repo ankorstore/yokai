@@ -59,7 +59,9 @@ func (s *MCPStreamableHTTPServer) Start(ctx context.Context) error {
 	if err != nil {
 		logger.Error().Err(err).Msgf("failed to start MCP StreamableHTTP server")
 
+		s.mutex.Lock()
 		s.running = false
+		s.mutex.Unlock()
 	}
 
 	return err
@@ -102,7 +104,7 @@ func (s *MCPStreamableHTTPServer) Info() map[string]any {
 			"keep_alive_interval": s.config.KeepAliveInterval.Seconds(),
 		},
 		"status": map[string]any{
-			"running": s.running,
+			"running": s.Running(),
 		},
 	}
 }

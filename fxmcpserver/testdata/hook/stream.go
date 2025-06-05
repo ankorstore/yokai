@@ -13,7 +13,7 @@ func NewSimpleMCPStreamableHTTPServerContextHook() *SimpleMCPStreamableHTTPServe
 	return &SimpleMCPStreamableHTTPServerContextHook{}
 }
 
-func (p *SimpleMCPStreamableHTTPServerContextHook) Handle() server.SSEContextFunc {
+func (p *SimpleMCPStreamableHTTPServerContextHook) Handle() server.HTTPContextFunc {
 	return func(ctx context.Context, r *http.Request) context.Context {
 		return context.WithValue(ctx, "foo", "bar")
 	}
