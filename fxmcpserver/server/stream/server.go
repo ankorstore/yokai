@@ -67,7 +67,7 @@ func (s *MCPStreamableHTTPServer) Start(ctx context.Context) error {
 	return err
 }
 
-// Stop stops the MCPSSEServer.
+// Stop stops the MCPStreamableHTTPServer.
 func (s *MCPStreamableHTTPServer) Stop(ctx context.Context) error {
 	logger := log.CtxLogger(ctx)
 
