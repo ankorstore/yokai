@@ -103,3 +103,21 @@ func TestAsMCPSSEServerContextHooks(t *testing.T) {
 	assert.Equal(t, "fx.optionGroup", fmt.Sprintf("%T", reg))
 	assert.Implements(t, (*fx.Option)(nil), reg)
 }
+
+func TestAsMCPStreamableHTTPServerContextHook(t *testing.T) {
+	t.Parallel()
+
+	reg := fxmcpserver.AsMCPStreamableHTTPServerContextHook(hook.NewSimpleMCPStreamableHTTPServerContextHook)
+
+	assert.Equal(t, "fx.provideOption", fmt.Sprintf("%T", reg))
+	assert.Implements(t, (*fx.Option)(nil), reg)
+}
+
+func TestAsMCPStreamableHTTPServerContextHooks(t *testing.T) {
+	t.Parallel()
+
+	reg := fxmcpserver.AsMCPStreamableHTTPServerContextHooks(hook.NewSimpleMCPStreamableHTTPServerContextHook)
+
+	assert.Equal(t, "fx.optionGroup", fmt.Sprintf("%T", reg))
+	assert.Implements(t, (*fx.Option)(nil), reg)
+}
