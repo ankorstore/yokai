@@ -65,7 +65,7 @@ make fresh
 
 After a short moment, the application will offer:
 
-- [http://localhost:8080/sse](http://localhost:8080/sse): application MCP server (SSE)
+- [http://localhost:8080/mcp](http://localhost:8080/mcp): application MCP server (Streamable HTTP)
 - [http://localhost:8081](http://localhost:8081): application core dashboard
 - [http://localhost:6274](http://localhost:6274): MCP inspector
 - [http://localhost:16686](http://localhost:16686): jaeger UI
@@ -78,8 +78,8 @@ You can use the provided [MCP Inspector](https://modelcontextprotocol.io/docs/to
 
 To connect to the MCP server, use:
 
-- `SSE` as transport type
-- `http://mcp-demo-app:8080/sse` as URL
+- `Streamable HTTP` as transport type
+- `http://mcp-demo-app:8080/mcp` as URL
 
 Then simply click `Connect`: from there, you will be able to interact with the resources, prompts and tools of the application.
 
@@ -91,7 +91,7 @@ If you use MCP compatible applications like [Cursor](https://www.cursor.com/), o
 {
   "mcpServers": {
     "mcp-demo-app": {
-      "url": "http://localhost:8080/sse"
+      "url": "http://localhost:8080/mcp"
     }
   }
 }
@@ -104,7 +104,7 @@ Note, if you client does not support remote MCP servers, you can use a [local pr
   "mcpServers": {
     "mcp-demo-app": {
       "command": "npx",
-      "args": ["mcp-remote", "http://localhost:8080/sse"]
+      "args": ["mcp-remote", "http://localhost:8080/mcp"]
     }
   }
 }
