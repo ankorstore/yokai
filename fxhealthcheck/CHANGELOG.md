@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/ankorstore/yokai/compare/fxhealthcheck/v1.1.0...fxhealthcheck/v1.1.1) (2025-09-02)
+
+
+### Bug Fixes
+
+* **fxhealthcheck:** Fix resolution collision by using full import path in type IDs ([#368](https://github.com/ankorstore/yokai/issues/368)) ([d318ece](https://github.com/ankorstore/yokai/commit/d318eced460fb7bb81d092c37f1d15d36544685c))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/fxhealthcheck/v1.0.0...fxhealthcheck/v1.1.0) (2024-03-15)
 
 
