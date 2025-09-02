@@ -17,7 +17,7 @@ func TestGetType(t *testing.T) {
 	}{
 		{123, "int"},
 		{"test", "string"},
-		{tracker.NewCronExecutionTracker(), "*tracker.CronExecutionTracker"},
+		{tracker.NewCronExecutionTracker(), "github.com/ankorstore/yokai/fxcron/testdata/cron/tracker.CronExecutionTracker"},
 	}
 
 	for _, tt := range tests {
