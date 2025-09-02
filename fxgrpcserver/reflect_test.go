@@ -3,7 +3,7 @@ package fxgrpcserver_test
 import (
 	"testing"
 
-	"github.com/ankorstore/yokai/fxhealthcheck"
+	"github.com/ankorstore/yokai/fxgrpcserver"
 	"github.com/ankorstore/yokai/fxhealthcheck/testdata/probes"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,10 +15,11 @@ func TestGetType(t *testing.T) {
 		target   any
 		expected string
 	}{
+		{nil, ""},
 		{123, "int"},
 		{"test", "string"},
-		{probes.NewSuccessProbe(), "*probes.SuccessProbe"},
-		{probes.NewFailureProbe(), "*probes.FailureProbe"},
+		{probes.NewSuccessProbe(), "github.com/ankorstore/yokai/fxhealthcheck/testdata/probes.SuccessProbe"},
+		{probes.NewFailureProbe(), "github.com/ankorstore/yokai/fxhealthcheck/testdata/probes.FailureProbe"},
 	}
 
 	for _, tt := range tests {
@@ -27,7 +28,7 @@ func TestGetType(t *testing.T) {
 		t.Run(tt.expected, func(t *testing.T) {
 			t.Parallel()
 
-			got := fxhealthcheck.GetType(tt.target)
+			got := fxgrpcserver.GetType(tt.target)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -40,6 +41,7 @@ func TestGetReturnType(t *testing.T) {
 		target   any
 		expected string
 	}{
+		{nil, ""},
 		{func() string { return "test" }, "string"},
 		{func() int { return 123 }, "int"},
 	}
@@ -49,7 +51,7 @@ func TestGetReturnType(t *testing.T) {
 		t.Run(tt.expected, func(t *testing.T) {
 			t.Parallel()
 
-			got := fxhealthcheck.GetReturnType(tt.target)
+			got := fxgrpcserver.GetReturnType(tt.target)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
