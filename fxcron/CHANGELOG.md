@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/ankorstore/yokai/compare/fxcron/v1.1.0...fxcron/v1.1.1) (2025-09-02)
+
+
+### Bug Fixes
+
+* **fxcron:** Fix resolution collision by using full import path in type IDs ([#366](https://github.com/ankorstore/yokai/issues/366)) ([8db4440](https://github.com/ankorstore/yokai/commit/8db44400dada7536833cea6251f8e39e21d05d85))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/fxcron/v1.0.0...fxcron/v1.1.0) (2024-03-15)
 
 
