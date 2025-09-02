@@ -1,7 +1,6 @@
 package fxcron
 
 import (
-	"reflect"
 	"time"
 
 	"github.com/go-co-op/gocron/v2"
@@ -94,5 +93,5 @@ func (i *FxCronModuleInfo) jobNextRun(job gocron.Job) string {
 }
 
 func (i *FxCronModuleInfo) jobType(job CronJob) string {
-	return reflect.ValueOf(job).Type().String()
+	return GetType(job)
 }
