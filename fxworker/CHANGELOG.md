@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/ankorstore/yokai/compare/fxworker/v1.1.0...fxworker/v1.1.1) (2025-09-02)
+
+
+### Bug Fixes
+
+* **fxworker:** Fix resolution collision by using full import path in type IDs ([#365](https://github.com/ankorstore/yokai/issues/365)) ([bb92938](https://github.com/ankorstore/yokai/commit/bb92938031f7cbab1e04ec6bf844d870c204bcac))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/fxworker/v1.0.0...fxworker/v1.1.0) (2024-03-15)
 
 
