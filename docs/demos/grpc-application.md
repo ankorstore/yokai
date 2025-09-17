@@ -22,11 +22,12 @@ This demo application is following the [recommended project layout](https://go.d
 
 - `cmd/`: entry points
 - `configs/`: configuration files
-- `internal/`:
-  	- `interceptor/`: gRPC interceptors
-  	- `service/`: gRPC services
-  	- `bootstrap.go`: bootstrap
-  	- `register.go`: dependencies registration
+  - `internal/`:
+    - `api/`: gRPC API
+      - `interceptor/`: gRPC interceptors
+      - `service/`: gRPC services
+    - `bootstrap.go`: bootstrap
+    - `register.go`: dependencies registration
 - `proto/`: protobuf definition and stubs
 
 ### Makefile
@@ -76,7 +77,7 @@ This demo application also provides [reflection](../modules/fxgrpcserver.md#refl
 
 ### Authentication
 
-This demo application provides example [authentication interceptors](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/internal/interceptor/authentication.go).
+This demo application provides example [authentication interceptors](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/internal/api/interceptor/authentication.go).
 
 You can enable authentication in the application [configuration file](https://github.com/ankorstore/yokai-showroom/tree/main/grpc-demo/configs/config.yaml) with `config.authentication.enabled=true`.
 

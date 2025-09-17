@@ -1,0 +1,32 @@
+name: "fxclock-ci"
+
+on:
+    push:
+        branches:
+            - "feat**"
+            - "fix**"
+            - "hotfix**"
+            - "chore**"
+        paths:
+            - "fxclock/**.go"
+            - "fxclock/go.mod"
+            - "fxclock/go.sum"
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        branches:
+            - main
+        paths:
+            - "fxclock/**.go"
+            - "fxclock/go.mod"
+            - "fxclock/go.sum"
+
+jobs:
+    ci:
+        uses: ./.github/workflows/common-ci.yml
+        secrets: inherit
+        with:
+            module: "fxclock"
+            go_version: "1.21"

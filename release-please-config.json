@@ -57,6 +57,11 @@
       "component": "worker",
       "tag-separator": "/"
     },
+    "fxclock": {
+      "release-type": "go",
+      "component": "fxclock",
+      "tag-separator": "/"
+    },
     "fxcore": {
       "release-type": "go",
       "component": "fxcore",
@@ -100,6 +105,11 @@
     "fxlog": {
       "release-type": "go",
       "component": "fxlog",
+      "tag-separator": "/"
+    },
+    "fxmcpserver": {
+      "release-type": "go",
+      "component": "fxmcpserver",
       "tag-separator": "/"
     },
     "fxmetrics": {

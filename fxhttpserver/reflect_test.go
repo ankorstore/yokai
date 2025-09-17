@@ -15,11 +15,12 @@ func TestGetType(t *testing.T) {
 		target   any
 		expected string
 	}{
+		{nil, ""},
 		{123, "int"},
 		{"test", "string"},
 		{echo.MiddlewareFunc(func(next echo.HandlerFunc) echo.HandlerFunc {
 			return next
-		}), "echo.MiddlewareFunc"},
+		}), "github.com/labstack/echo/v4.MiddlewareFunc"},
 	}
 
 	for _, tt := range tests {
@@ -41,8 +42,12 @@ func TestGetReturnType(t *testing.T) {
 		target   any
 		expected string
 	}{
+		{nil, ""},
 		{func() string { return "test" }, "string"},
 		{func() int { return 123 }, "int"},
+		{echo.MiddlewareFunc(func(next echo.HandlerFunc) echo.HandlerFunc {
+			return next
+		}), "github.com/labstack/echo/v4.HandlerFunc"},
 	}
 
 	for _, tt := range tests {

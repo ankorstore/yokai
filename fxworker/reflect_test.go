@@ -15,9 +15,10 @@ func TestGetType(t *testing.T) {
 		target   any
 		expected string
 	}{
+		{nil, ""},
 		{123, "int"},
 		{"test", "string"},
-		{workers.NewClassicWorker(), "*workers.ClassicWorker"},
+		{workers.NewClassicWorker(), "github.com/ankorstore/yokai/worker/testdata/workers.ClassicWorker"},
 	}
 
 	for _, tt := range tests {
@@ -39,6 +40,7 @@ func TestGetReturnType(t *testing.T) {
 		target   any
 		expected string
 	}{
+		{nil, ""},
 		{func() string { return "test" }, "string"},
 		{func() int { return 123 }, "int"},
 	}

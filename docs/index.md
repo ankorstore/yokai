@@ -64,4 +64,5 @@ Yokai provides ready to use `application templates` to start your projects:
 
 - for [gRPC applications](getting-started/grpc-application.md)
 - for [HTTP applications](getting-started/http-application.md)
+- for [MCP applications](getting-started/mcp-application.md)
 - for [worker applications](getting-started/worker-application.md)

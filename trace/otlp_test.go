@@ -34,6 +34,7 @@ func TestNewOtlpGrpcInsecureConnectionSuccess(t *testing.T) {
 		context.Background(),
 		"bufnet",
 		grpc.WithContextDialer(bufDialer),
+		grpc.WithBlock(),
 	)
 	assert.NoError(t, err)
 
@@ -51,7 +52,11 @@ func TestNewOtlpGrpcInsecureConnectionError(t *testing.T) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(1*time.Microsecond))
 	defer cancel()
 
-	_, err := trace.NewOtlpGrpcClientConnection(ctx, "https://example.com")
+	_, err := trace.NewOtlpGrpcClientConnection(
+		ctx,
+		"https://example.com",
+		grpc.WithBlock(),
+	)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "context deadline exceeded")
 }

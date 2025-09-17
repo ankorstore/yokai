@@ -83,6 +83,7 @@ modules:
       type: stdout
   core:
     server:
+      expose: true                     # to expose the core http server, disabled by default
       address: ":8081"                 # core http server listener address (default :8081)
       errors:              
         obfuscate: false               # to obfuscate error messages on the core http server responses
@@ -134,6 +135,9 @@ modules:
         liveness:            
           expose: true                 # to expose health check liveness route, disabled by default
           path: /livez                 # health check liveness route path (default /livez)
+      tasks:
+        expose: true                   # to expose tasks route, disabled by default
+        path: /tasks/:name             # tasks route path (default /tasks/:name)
       debug:
         config:
           expose: true                 # to expose debug config route

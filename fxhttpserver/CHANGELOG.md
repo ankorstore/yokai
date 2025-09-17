@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.7.0...fxhttpserver/v1.7.1) (2025-09-01)
+
+
+### Bug Fixes
+
+* **fxhttpserver:** Fix HTTP handlers/middlewares dependency injection signature  ([#362](https://github.com/ankorstore/yokai/issues/362)) ([2042e33](https://github.com/ankorstore/yokai/commit/2042e33001c50bbda91a6fe92c126036b2264338))
+
 ## [1.7.0](https://github.com/ankorstore/yokai/compare/fxhttpserver/v1.6.1...fxhttpserver/v1.7.0) (2025-02-13)
 
 

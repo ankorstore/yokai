@@ -31,8 +31,8 @@ func TestResolveCheckerProbesRegistrationsSuccess(t *testing.T) {
 			workers.NewCancellableWorker(),
 		},
 		Definitions: []fxworker.WorkerDefinition{
-			fxworker.NewWorkerDefinition("*workers.ClassicWorker"),
-			fxworker.NewWorkerDefinition("*workers.CancellableWorker"),
+			fxworker.NewWorkerDefinition("github.com/ankorstore/yokai/worker/testdata/workers.ClassicWorker"),
+			fxworker.NewWorkerDefinition("github.com/ankorstore/yokai/worker/testdata/workers.CancellableWorker"),
 		},
 	}
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -37,6 +38,7 @@ const (
 	DefaultHealthCheckStartupPath   = "/healthz"
 	DefaultHealthCheckLivenessPath  = "/livez"
 	DefaultHealthCheckReadinessPath = "/readyz"
+	DefaultTasksPath                = "/tasks"
 	DefaultDebugConfigPath          = "/debug/config"
 	DefaultDebugPProfPath           = "/debug/pprof"
 	DefaultDebugBuildPath           = "/debug/build"
@@ -63,6 +65,7 @@ var FxCoreModule = fx.Module(
 	fxhealthcheck.FxHealthcheckModule,
 	fx.Provide(
 		NewFxModuleInfoRegistry,
+		NewTaskRegistry,
 		NewFxCore,
 		fx.Annotate(
 			NewFxCoreModuleInfo,
@@ -92,62 +95,68 @@ type FxCoreParam struct {
 	Checker         *healthcheck.Checker
 	Config          *config.Config
 	Logger          *log.Logger
-	Registry        *FxModuleInfoRegistry
+	InfoRegistry    *FxModuleInfoRegistry
+	TaskRegistry    *TaskRegistry
 	MetricsRegistry *prometheus.Registry
 }
 
 // NewFxCore returns a new [Core].
 func NewFxCore(p FxCoreParam) (*Core, error) {
-	appDebug := p.Config.AppDebug()
+	var coreServer *echo.Echo
+	var err error
 
-	// logger
-	coreLogger := httpserver.NewEchoLogger(
-		log.FromZerolog(p.Logger.ToZerolog().With().Str("module", ModuleName).Logger()),
-	)
+	if p.Config.GetBool("modules.core.server.expose") {
+		appDebug := p.Config.AppDebug()
 
-	// server
-	coreServer, err := httpserver.NewDefaultHttpServerFactory().Create(
-		httpserver.WithDebug(appDebug),
-		httpserver.WithBanner(false),
-		httpserver.WithLogger(coreLogger),
-		httpserver.WithRenderer(NewDashboardRenderer(templatesFS, "templates/dashboard.html")),
-		httpserver.WithHttpErrorHandler(
-			httpserver.NewJsonErrorHandler(
-				p.Config.GetBool("modules.core.server.errors.obfuscate") || !appDebug,
-				p.Config.GetBool("modules.core.server.errors.stack") || appDebug,
-			).Handle(),
-		),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create core http server: %w", err)
+		// logger
+		coreLogger := httpserver.NewEchoLogger(
+			log.FromZerolog(p.Logger.ToZerolog().With().Str("module", ModuleName).Logger()),
+		)
+
+		// server
+		coreServer, err = httpserver.NewDefaultHttpServerFactory().Create(
+			httpserver.WithDebug(appDebug),
+			httpserver.WithBanner(false),
+			httpserver.WithLogger(coreLogger),
+			httpserver.WithRenderer(NewDashboardRenderer(templatesFS, "templates/dashboard.html")),
+			httpserver.WithHttpErrorHandler(
+				httpserver.NewJsonErrorHandler(
+					p.Config.GetBool("modules.core.server.errors.obfuscate") || !appDebug,
+					p.Config.GetBool("modules.core.server.errors.stack") || appDebug,
+				).Handle(),
+			),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create core http server: %w", err)
+		}
+
+		// middlewares
+		coreServer = withMiddlewares(coreServer, p)
+
+		// handlers
+		coreServer, err = withHandlers(coreServer, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to register core http server handlers: %w", err)
+		}
+
+		// lifecycles
+		p.LifeCycle.Append(fx.Hook{
+			OnStart: func(ctx context.Context) error {
+				address := p.Config.GetString("modules.core.server.address")
+				if address == "" {
+					address = DefaultAddress
+				}
+
+				//nolint:errcheck
+				go coreServer.Start(address)
+
+				return nil
+			},
+			OnStop: func(ctx context.Context) error {
+				return coreServer.Shutdown(ctx)
+			},
+		})
 	}
-
-	// middlewares
-	coreServer = withMiddlewares(coreServer, p)
-
-	// handlers
-	coreServer, err = withHandlers(coreServer, p)
-	if err != nil {
-		return nil, fmt.Errorf("failed to register core http server handlers: %w", err)
-	}
-
-	// lifecycles
-	p.LifeCycle.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
-			address := p.Config.GetString("modules.core.server.address")
-			if address == "" {
-				address = DefaultAddress
-			}
-
-			//nolint:errcheck
-			go coreServer.Start(address)
-
-			return nil
-		},
-		OnStop: func(ctx context.Context) error {
-			return coreServer.Shutdown(ctx)
-		},
-	})
 
 	return NewCore(p.Config, p.Checker, coreServer), nil
 }
@@ -232,7 +241,7 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 	dashboardEnabled := p.Config.GetBool("modules.core.server.dashboard.enabled")
 
 	// dashboard overview
-	overviewInfo, err := p.Registry.Find(ModuleName)
+	overviewInfo, err := p.InfoRegistry.Find(ModuleName)
 	if err != nil {
 		return nil, err
 	}
@@ -248,6 +257,7 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 	overviewTraceProcessorExpose := p.Config.GetBool("modules.core.server.dashboard.overview.trace_processor")
 
 	// template expositions
+	tasksExpose := p.Config.GetBool("modules.core.server.tasks.expose")
 	metricsExpose := p.Config.GetBool("modules.core.server.metrics.expose")
 	startupExpose := p.Config.GetBool("modules.core.server.healthcheck.startup.expose")
 	livenessExpose := p.Config.GetBool("modules.core.server.healthcheck.liveness.expose")
@@ -260,6 +270,7 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 	modulesExpose := p.Config.GetBool("modules.core.server.debug.modules.expose")
 
 	// template paths
+	tasksPath := p.Config.GetString("modules.core.server.tasks.path")
 	metricsPath := p.Config.GetString("modules.core.server.metrics.path")
 	startupPath := p.Config.GetString("modules.core.server.healthcheck.startup.path")
 	livenessPath := p.Config.GetString("modules.core.server.healthcheck.liveness.path")
@@ -270,6 +281,48 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 	statsPath := p.Config.GetString("modules.core.server.debug.stats.path")
 	buildPath := p.Config.GetString("modules.core.server.debug.build.path")
 	modulesPath := p.Config.GetString("modules.core.server.debug.modules.path")
+
+	// tasks
+	if tasksExpose {
+		if tasksPath == "" {
+			tasksPath = DefaultTasksPath
+		}
+
+		coreServer.POST(fmt.Sprintf("%s/:name", tasksPath), func(c echo.Context) error {
+			ctx := c.Request().Context()
+
+			logger := log.CtxLogger(ctx)
+
+			name := c.Param("name")
+
+			input, err := io.ReadAll(c.Request().Body)
+			if err != nil {
+				logger.Error().Err(err).Str("task", name).Msg("request body read error")
+
+				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("cannot read request body: %v", err.Error()))
+			}
+
+			err = c.Request().Body.Close()
+			if err != nil {
+				logger.Error().Err(err).Str("task", name).Msg("request body close error")
+
+				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("cannot close request body: %v", err.Error()))
+			}
+
+			res := p.TaskRegistry.Run(ctx, name, input)
+			if !res.Success {
+				logger.Error().Err(err).Str("task", name).Msg("task execution error")
+
+				return c.JSON(http.StatusInternalServerError, res)
+			}
+
+			logger.Info().Str("task", name).Msg("task execution success")
+
+			return c.JSON(http.StatusOK, res)
+		})
+
+		coreServer.Logger.Debug("registered tasks handler")
+	}
 
 	// metrics
 	if metricsExpose {
@@ -393,14 +446,14 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 		coreServer.Logger.Debug("registered debug build handler")
 	}
 
-	// debug modules
+	// modules
 	if modulesExpose || appDebug {
 		if modulesPath == "" {
 			modulesPath = DefaultDebugModulesPath
 		}
 
 		coreServer.GET(fmt.Sprintf("%s/:name", modulesPath), func(c echo.Context) error {
-			info, err := p.Registry.Find(c.Param("name"))
+			info, err := p.InfoRegistry.Find(c.Param("name"))
 			if err != nil {
 				return echo.NewHTTPError(http.StatusNotFound, err.Error())
 			}
@@ -466,6 +519,9 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 				"overviewLogOutputExpose":      overviewLogOutputExpose,
 				"overviewTraceSamplerExpose":   overviewTraceSamplerExpose,
 				"overviewTraceProcessorExpose": overviewTraceProcessorExpose,
+				"tasksExpose":                  tasksExpose,
+				"tasksPath":                    tasksPath,
+				"tasksNames":                   p.TaskRegistry.Names(),
 				"metricsExpose":                metricsExpose,
 				"metricsPath":                  metricsPath,
 				"startupExpose":                startupExpose,
@@ -486,7 +542,7 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 				"buildPath":                    buildPath,
 				"modulesExpose":                modulesExpose || appDebug,
 				"modulesPath":                  modulesPath,
-				"modulesNames":                 p.Registry.Names(),
+				"modulesNames":                 p.InfoRegistry.Names(),
 				"theme":                        theme,
 			})
 		})

@@ -30,8 +30,8 @@ func TestResolveCheckerProbesRegistrationsSuccess(t *testing.T) {
 			probes.NewFailureProbe(),
 		},
 		Definitions: []fxhealthcheck.CheckerProbeDefinition{
-			fxhealthcheck.NewCheckerProbeDefinition("*probes.SuccessProbe", healthcheck.Liveness),
-			fxhealthcheck.NewCheckerProbeDefinition("*probes.FailureProbe", healthcheck.Readiness),
+			fxhealthcheck.NewCheckerProbeDefinition("github.com/ankorstore/yokai/fxhealthcheck/testdata/probes.SuccessProbe", healthcheck.Liveness),
+			fxhealthcheck.NewCheckerProbeDefinition("github.com/ankorstore/yokai/fxhealthcheck/testdata/probes.FailureProbe", healthcheck.Readiness),
 		},
 	}
 

@@ -13,6 +13,7 @@ modules:
       type: test
   core:
     server:
+      expose: true
       errors:
         obfuscate: false
         stack: false
@@ -47,6 +48,8 @@ modules:
           expose: ${READINESS_ENABLED}
         liveness:
           expose: ${LIVENESS_ENABLED}
+      tasks:
+        expose: ${TASKS_ENABLED}
       debug:
         config:
           expose: ${CONFIG_ENABLED}

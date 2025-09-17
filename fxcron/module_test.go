@@ -360,7 +360,7 @@ func TestModuleInfo(t *testing.T) {
 						"expression": `*/1 * * * * *`,
 						"last_run":   time.Time{}.Format(time.RFC3339),
 						"next_run":   startAt.Format(time.RFC3339),
-						"type":       "*job.DummyCron",
+						"type":       "github.com/ankorstore/yokai/fxcron/testdata/cron/job.DummyCron",
 					},
 				},
 				"unscheduled": map[string]interface{}{},

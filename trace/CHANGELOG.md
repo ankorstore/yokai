@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/ankorstore/yokai/compare/trace/v1.3.0...trace/v1.4.0) (2025-03-05)
+
+
+### Features
+
+* **trace:** Disabled otlp-grpc block mode ([#321](https://github.com/ankorstore/yokai/issues/321)) ([e84e2ce](https://github.com/ankorstore/yokai/commit/e84e2ce249d0b317f4f615ad3bddad4c3cd33102))
+
 ## [1.3.0](https://github.com/ankorstore/yokai/compare/trace/v1.2.0...trace/v1.3.0) (2024-03-27)
 
 

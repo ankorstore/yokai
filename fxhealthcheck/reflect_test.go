@@ -15,10 +15,11 @@ func TestGetType(t *testing.T) {
 		target   any
 		expected string
 	}{
+		{nil, ""},
 		{123, "int"},
 		{"test", "string"},
-		{probes.NewSuccessProbe(), "*probes.SuccessProbe"},
-		{probes.NewFailureProbe(), "*probes.FailureProbe"},
+		{probes.NewSuccessProbe(), "github.com/ankorstore/yokai/fxhealthcheck/testdata/probes.SuccessProbe"},
+		{probes.NewFailureProbe(), "github.com/ankorstore/yokai/fxhealthcheck/testdata/probes.FailureProbe"},
 	}
 
 	for _, tt := range tests {
@@ -40,6 +41,7 @@ func TestGetReturnType(t *testing.T) {
 		target   any
 		expected string
 	}{
+		{nil, ""},
 		{func() string { return "test" }, "string"},
 		{func() int { return 123 }, "int"},
 	}

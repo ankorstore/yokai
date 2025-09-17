@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/ankorstore/yokai/compare/fxgrpcserver/v1.3.0...fxgrpcserver/v1.3.1) (2025-09-02)
+
+
+### Bug Fixes
+
+* **fxgrpcserver:** Fix resolution collision by using full import path in type IDs ([#367](https://github.com/ankorstore/yokai/issues/367)) ([2cdca0b](https://github.com/ankorstore/yokai/commit/2cdca0b66f4cb594fa6d3d41fe9c5783191b126a))
+
 ## [1.3.0](https://github.com/ankorstore/yokai/compare/fxgrpcserver/v1.2.0...fxgrpcserver/v1.3.0) (2024-10-01)
 
 
