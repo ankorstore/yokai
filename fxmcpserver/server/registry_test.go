@@ -24,6 +24,8 @@ func TestMCPServerRegistry_Info(t *testing.T) {
 		cfg,
 		[]server.MCPServerTool{
 			tool.NewSimpleTestTool(),
+			tool.NewTypedTestTool(),
+			tool.NewStructuredTestTool(),
 		},
 		[]server.MCPServerPrompt{
 			prompt.NewSimpleTestPrompt(),
@@ -53,7 +55,9 @@ func TestMCPServerRegistry_Info(t *testing.T) {
 			ResourceTemplates map[string]string
 		}{
 			Tools: map[string]string{
-				"simple-test-tool": "github.com/ankorstore/yokai/fxmcpserver/testdata/tool.(*SimpleTestTool).Handle.func1",
+				"simple-test-tool":     "github.com/ankorstore/yokai/fxmcpserver/testdata/tool.(*SimpleTestTool).Handle.func1",
+				"typed-test-tool":      "github.com/ankorstore/yokai/fxmcpserver/testdata/tool.(*TypedTestTool).Handle.NewTypedToolHandler[...].func2",
+				"structured-test-tool": "github.com/ankorstore/yokai/fxmcpserver/testdata/tool.(*StructuredTestTool).Handle.NewStructuredToolHandler[...].func2",
 			},
 			Prompts: map[string]string{
 				"simple-test-prompt": "github.com/ankorstore/yokai/fxmcpserver/testdata/prompt.(*SimpleTestPrompt).Handle.func1",

@@ -56,7 +56,12 @@ func TestMCPServerModule(t *testing.T) {
 		fxhealthcheck.FxHealthcheckModule,
 		fxmcpserver.FxMCPServerModule,
 		fx.Options(
-			fxmcpserver.AsMCPServerTools(tool.NewSimpleTestTool, tool.NewAdvancedTestTool),
+			fxmcpserver.AsMCPServerTools(
+				tool.NewSimpleTestTool,
+				tool.NewAdvancedTestTool,
+				tool.NewTypedTestTool,
+				tool.NewStructuredTestTool,
+			),
 			fxmcpserver.AsMCPServerPrompts(prompt.NewSimpleTestPrompt),
 			fxmcpserver.AsMCPServerResources(resource.NewSimpleTestResource),
 			fxmcpserver.AsMCPServerResourceTemplates(resourcetemplate.NewSimpleTestResourceTemplate),
@@ -187,7 +192,7 @@ func TestMCPServerModule(t *testing.T) {
 
 			_, err = tt.client.CallTool(ctx, callToolRequest)
 			assert.Error(t, err)
-			assert.Equal(t, "advanced tool test failure", err.Error())
+			assert.Contains(t, err.Error(), "advanced tool test failure")
 
 			logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
 				"level":        "error",
@@ -214,6 +219,105 @@ func TestMCPServerModule(t *testing.T) {
 				# TYPE foo_bar_mcp_server_requests_total counter
 				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
 				foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
+			`
+			err = testutil.GatherAndCompare(
+				metricsRegistry,
+				strings.NewReader(expectedMetric),
+				"foo_bar_mcp_server_requests_total",
+			)
+			assert.NoError(t, err)
+
+			// send success typed tools/call request
+			expectedRequest = `{"method":"tools/call","params":{"name":"typed-test-tool","arguments":{"input":"test-value"}}}`
+			expectedResponse = `{"content":[{"type":"text","text":"input: test-value"}]}`
+
+			callToolRequest = mcp.CallToolRequest{}
+			callToolRequest.Params.Name = "typed-test-tool"
+			callToolRequest.Params.Arguments = map[string]interface{}{
+				"input": "test-value",
+			}
+
+			callToolResult, err = tt.client.CallTool(ctx, callToolRequest)
+			assert.NoError(t, err)
+			assert.False(t, callToolResult.IsError)
+			assert.Equal(t, "input: test-value", callToolResult.Content[0].(mcp.TextContent).Text)
+
+			logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
+				"level":        "info",
+				"mcpMethod":    "tools/call",
+				"mcpTool":      "typed-test-tool",
+				"mcpRequest":   expectedRequest,
+				"mcpResponse":  expectedResponse,
+				"mcpTransport": tt.transport,
+				"message":      "MCP request success",
+			})
+
+			tracetest.AssertHasTraceSpan(
+				t,
+				traceExporter,
+				"MCP tools/call typed-test-tool",
+				attribute.String("mcp.method", "tools/call"),
+				attribute.String("mcp.tool", "typed-test-tool"),
+				attribute.String("mcp.request", expectedRequest),
+				attribute.String("mcp.response", expectedResponse),
+				attribute.String("mcp.transport", tt.transport),
+			)
+
+			expectedMetric = `
+				# HELP foo_bar_mcp_server_requests_total Number of processed MCP requests
+				# TYPE foo_bar_mcp_server_requests_total counter
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="typed-test-tool"} 1
+			`
+			err = testutil.GatherAndCompare(
+				metricsRegistry,
+				strings.NewReader(expectedMetric),
+				"foo_bar_mcp_server_requests_total",
+			)
+			assert.NoError(t, err)
+
+			// send success structured tools/call request
+			expectedRequest = `{"method":"tools/call","params":{"name":"structured-test-tool","arguments":{"input":"structured-value"}}}`
+			expectedResponse = `{"content":[{"type":"text","text":"{\"output\":\"input: structured-value\"}"}]}`
+
+			callToolRequest = mcp.CallToolRequest{}
+			callToolRequest.Params.Name = "structured-test-tool"
+			callToolRequest.Params.Arguments = map[string]interface{}{
+				"input": "structured-value",
+			}
+
+			callToolResult, err = tt.client.CallTool(ctx, callToolRequest)
+			assert.NoError(t, err)
+			assert.False(t, callToolResult.IsError)
+			assert.Equal(t, "{\"output\":\"input: structured-value\"}", callToolResult.Content[0].(mcp.TextContent).Text)
+
+			logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
+				"level":        "info",
+				"mcpMethod":    "tools/call",
+				"mcpTool":      "structured-test-tool",
+				"mcpRequest":   expectedRequest,
+				"mcpTransport": tt.transport,
+				"message":      "MCP request success",
+			})
+
+			tracetest.AssertHasTraceSpan(
+				t,
+				traceExporter,
+				"MCP tools/call structured-test-tool",
+				attribute.String("mcp.method", "tools/call"),
+				attribute.String("mcp.tool", "structured-test-tool"),
+				attribute.String("mcp.request", expectedRequest),
+				attribute.String("mcp.transport", tt.transport),
+			)
+
+			expectedMetric = `
+				# HELP foo_bar_mcp_server_requests_total Number of processed MCP requests
+				# TYPE foo_bar_mcp_server_requests_total counter
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="structured-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="typed-test-tool"} 1
 			`
 			err = testutil.GatherAndCompare(
 				metricsRegistry,
@@ -261,6 +365,8 @@ func TestMCPServerModule(t *testing.T) {
 				foo_bar_mcp_server_requests_total{method="prompts/get",status="success",target="simple-test-prompt"} 1
 				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
 				foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="structured-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="typed-test-tool"} 1
 			`
 			err = testutil.GatherAndCompare(
 				metricsRegistry,
@@ -277,7 +383,7 @@ func TestMCPServerModule(t *testing.T) {
 
 			_, err = tt.client.GetPrompt(ctx, getPromptRequest)
 			assert.Error(t, err)
-			assert.Equal(t, "prompt 'invalid-test-prompt' not found: prompt not found", err.Error())
+			assert.Contains(t, err.Error(), "prompt 'invalid-test-prompt' not found: prompt not found")
 
 			logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
 				"level":        "error",
@@ -306,6 +412,8 @@ func TestMCPServerModule(t *testing.T) {
 				foo_bar_mcp_server_requests_total{method="prompts/get",status="success",target="simple-test-prompt"} 1
 				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
 				foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="structured-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="typed-test-tool"} 1
 			`
 			err = testutil.GatherAndCompare(
 				metricsRegistry,
@@ -354,6 +462,8 @@ func TestMCPServerModule(t *testing.T) {
 				foo_bar_mcp_server_requests_total{method="resources/read",status="success",target="simple-test://resources"} 1
 				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
 				foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="structured-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="typed-test-tool"} 1
 			`
 			err = testutil.GatherAndCompare(
 				metricsRegistry,
@@ -370,7 +480,7 @@ func TestMCPServerModule(t *testing.T) {
 
 			_, err = tt.client.ReadResource(ctx, readResourceRequest)
 			assert.Error(t, err)
-			assert.Equal(t, "handler not found for resource URI 'simple-test://invalid': resource not found", err.Error())
+			assert.Contains(t, err.Error(), "handler not found for resource URI 'simple-test://invalid': resource not found")
 
 			logtest.AssertHasLogRecord(t, logBuffer, map[string]any{
 				"level":          "error",
@@ -401,6 +511,8 @@ func TestMCPServerModule(t *testing.T) {
 				foo_bar_mcp_server_requests_total{method="resources/read",status="success",target="simple-test://resources"} 1
 				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="advanced-test-tool"} 1
 				foo_bar_mcp_server_requests_total{method="tools/call",status="error",target="advanced-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="structured-test-tool"} 1
+				foo_bar_mcp_server_requests_total{method="tools/call",status="success",target="typed-test-tool"} 1
 			`
 			err = testutil.GatherAndCompare(
 				metricsRegistry,
