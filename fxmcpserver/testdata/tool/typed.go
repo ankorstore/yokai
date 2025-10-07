@@ -20,7 +20,7 @@ func (t *TypedTestTool) Name() string {
 
 func (t *TypedTestTool) Options() []mcp.ToolOption {
 	return []mcp.ToolOption{
-		mcp.WithDescription("Simple test tool."),
+		mcp.WithDescription("Typed test tool."),
 	}
 }
 

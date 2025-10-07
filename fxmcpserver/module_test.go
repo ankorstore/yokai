@@ -279,7 +279,6 @@ func TestMCPServerModule(t *testing.T) {
 
 			// send success structured tools/call request
 			expectedRequest = `{"method":"tools/call","params":{"name":"structured-test-tool","arguments":{"input":"structured-value"}}}`
-			expectedResponse = `{"content":[{"type":"text","text":"{\"output\":\"input: structured-value\"}"}]}`
 
 			callToolRequest = mcp.CallToolRequest{}
 			callToolRequest.Params.Name = "structured-test-tool"
