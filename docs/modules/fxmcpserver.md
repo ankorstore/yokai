@@ -524,6 +524,11 @@ modules:
         tools: true # to expose MCP tools (disabled by default)
 ```
 
+Note: you can also create `typed` and `structured` tools, for [MCP tools with structured content](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#structured-content):
+
+- see [typed tool example](https://github.com/ankorstore/yokai/blob/main/fxmcpserver/testdata/tool/typed.go)
+- see [structured tool example](https://github.com/ankorstore/yokai/blob/main/fxmcpserver/testdata/tool/structured.go)
+
 ## Hooks
 
 This module provides hooking mechanisms for the `StreamableHTTP` and `SSE` servers requests handling.

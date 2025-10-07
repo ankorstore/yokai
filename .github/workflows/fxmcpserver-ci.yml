@@ -30,3 +30,4 @@ jobs:
         with:
             module: "fxmcpserver"
             go_version: "1.23"
+            linter_version: "1.64.8"
