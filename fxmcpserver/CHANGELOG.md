@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.6.0...fxmcpserver/v1.7.0) (2025-10-07)
+
+
+### Features
+
+* **fxmcpserver:** Added type and structured tools support ([#378](https://github.com/ankorstore/yokai/issues/378)) ([2d0e44d](https://github.com/ankorstore/yokai/commit/2d0e44d928308c6b31793300c1e8bbedbb03b496))
+
 ## [1.6.0](https://github.com/ankorstore/yokai/compare/fxmcpserver/v1.5.1...fxmcpserver/v1.6.0) (2025-06-05)
 
 
