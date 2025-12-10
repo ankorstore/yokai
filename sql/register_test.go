@@ -574,11 +574,188 @@ func TestRegisterWithUnsupportedDriver(t *testing.T) {
 	assert.Equal(t, "unsupported database system for driver invalid", err.Error())
 }
 
+func TestRegisterNamedAndExecContext(t *testing.T) {
+	driver := registerNamedTestDriver(t, "test-exec")
+	logger, logBuffer := createTestLogTools(t)
+	tracerProvider, traceExporter := createTestTraceTools(t)
+
+	db, err := basesql.Open(driver, ":memory:")
+	assert.NoError(t, err)
+
+	// create table
+	_, err = db.ExecContext(
+		createTestContext(logger, tracerProvider),
+		"CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)",
+	)
+	assert.NoError(t, err)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":        "debug",
+		"system":       "sqlite",
+		"operation":    "connection:exec-context",
+		"query":        "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)",
+		"lastInsertId": 0,
+		"rowsAffected": 0,
+		"message":      "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:exec-context",
+		semconv.DBSystemKey.String("sqlite"),
+		attribute.String("db.statement", "CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, bar INTEGER)"),
+	)
+
+	// insert into table
+	result, err := db.ExecContext(
+		createTestContext(logger, tracerProvider),
+		"INSERT INTO foo (bar) VALUES ($1)",
+		42,
+	)
+	assert.NoError(t, err)
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":        "debug",
+		"system":       "sqlite",
+		"operation":    "connection:exec-context",
+		"query":        "INSERT INTO foo (bar) VALUES ($1)",
+		"arguments":    "[map[Name: Ordinal:1 Value:42]]",
+		"lastInsertId": 1,
+		"rowsAffected": 1,
+		"message":      "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:exec-context",
+		semconv.DBSystemKey.String("sqlite"),
+		attribute.String("db.statement", "INSERT INTO foo (bar) VALUES ($1)"),
+		attribute.String("db.statement.arguments", "[{Name: Ordinal:1 Value:42}]"),
+		attribute.Int64("db.lastInsertId", int64(1)),
+		attribute.Int64("db.rowsAffected", int64(1)),
+	)
+
+	lastInsertId, err := result.LastInsertId()
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), lastInsertId)
+
+	rowsAffected, err := result.RowsAffected()
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), rowsAffected)
+
+	err = db.Close()
+	assert.NoError(t, err)
+}
+
+func TestRegisterNamedAndQueryContext(t *testing.T) {
+	driver := registerNamedTestDriver(t, "test-query")
+	logger, logBuffer := createTestLogTools(t)
+	tracerProvider, traceExporter := createTestTraceTools(t)
+
+	db, err := basesql.Open(driver, ":memory:")
+	assert.NoError(t, err)
+
+	rows, err := db.QueryContext(createTestContext(logger, tracerProvider), "SELECT $1 AS foo", "bar")
+	assert.NoError(t, err)
+	assert.NoError(t, rows.Err())
+
+	logtest.AssertHasLogRecord(t, logBuffer, map[string]interface{}{
+		"level":     "debug",
+		"system":    "sqlite",
+		"operation": "connection:query-context",
+		"query":     "SELECT $1 AS foo",
+		"arguments": "[map[Name: Ordinal:1 Value:bar]]",
+		"message":   "sql logger",
+	})
+
+	tracetest.AssertHasTraceSpan(
+		t,
+		traceExporter,
+		"SQL connection:query-context",
+		semconv.DBSystemKey.String("sqlite"),
+		attribute.String("db.statement", "SELECT $1 AS foo"),
+		attribute.String("db.statement.arguments", "[{Name: Ordinal:1 Value:bar}]"),
+	)
+
+	cols, err := rows.Columns()
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"foo"}, cols)
+
+	for rows.Next() {
+		var foo string
+		err = rows.Scan(&foo)
+		assert.NoError(t, err)
+		assert.Equal(t, "bar", foo)
+	}
+
+	err = rows.Close()
+	assert.NoError(t, err)
+
+	err = db.Close()
+	assert.NoError(t, err)
+}
+
+func TestRegisterNamedTwice(t *testing.T) {
+	driverName1 := registerNamedTestDriver(t, "test-twice")
+	driverName2 := registerNamedTestDriver(t, "test-twice")
+
+	expectedDriverName := fmt.Sprintf("%s-sqlite-test-twice", sql.DriverRegistrationPrefix)
+	assert.Equal(t, expectedDriverName, driverName1)
+	assert.Equal(t, expectedDriverName, driverName2)
+}
+
+func TestRegisterNamedMultiple(t *testing.T) {
+	driverName1 := registerNamedTestDriver(t, "name-one")
+	driverName2 := registerNamedTestDriver(t, "name-two")
+
+	expectedDriverName1 := fmt.Sprintf("%s-sqlite-name-one", sql.DriverRegistrationPrefix)
+	expectedDriverName2 := fmt.Sprintf("%s-sqlite-name-two", sql.DriverRegistrationPrefix)
+	assert.Equal(t, expectedDriverName1, driverName1)
+	assert.Equal(t, expectedDriverName2, driverName2)
+	assert.NotEqual(t, driverName1, driverName2)
+}
+
+func TestRegisterNamedWithUnsupportedDriver(t *testing.T) {
+	driver, err := sql.RegisterNamed("invalid", "test")
+
+	assert.Equal(t, "", driver)
+	assert.Error(t, err)
+	assert.Equal(t, "unsupported database system for driver invalid", err.Error())
+}
+
 func registerTestDriver(t *testing.T) string {
 	t.Helper()
 
 	driver, err := sql.Register(
 		"sqlite",
+		trace.NewTraceHook(
+			trace.WithArguments(true),
+			trace.WithExcludedOperations(
+				sql.ConnectionPingOperation,
+				sql.ConnectionResetSessionOperation,
+			),
+		),
+		log.NewLogHook(
+			log.WithArguments(true),
+			log.WithExcludedOperations(
+				sql.ConnectionPingOperation,
+				sql.ConnectionResetSessionOperation,
+			),
+		),
+	)
+	assert.NoError(t, err)
+
+	return driver
+}
+
+func registerNamedTestDriver(t *testing.T, name string) string {
+	t.Helper()
+
+	driver, err := sql.RegisterNamed(
+		"sqlite",
+		name,
 		trace.NewTraceHook(
 			trace.WithArguments(true),
 			trace.WithExcludedOperations(

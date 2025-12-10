@@ -17,27 +17,53 @@ func init() {
 }
 
 // Register registers a new Driver for a given name and an optional list of Hook.
-func Register(name string, hooks ...Hook) (string, error) {
-	registrationName := fmt.Sprintf("%s-%s", DriverRegistrationPrefix, name)
+func Register(driver string, hooks ...Hook) (string, error) {
+	driverName := fmt.Sprintf("%s-%s", DriverRegistrationPrefix, driver)
 
-	if GlobalDriverRegistry.Has(registrationName) {
-		return registrationName, nil
+	if GlobalDriverRegistry.Has(driverName) {
+		return driverName, nil
 	}
 
-	system := FetchSystem(name)
+	system := FetchSystem(driver)
 	if system == UnknownSystem {
-		return "", fmt.Errorf("unsupported database system for driver %s", name)
+		return "", fmt.Errorf("unsupported database system for driver %s", driver)
 	}
 
-	driver, err := GlobalDriverFactory.Create(system, hooks...)
+	drv, err := GlobalDriverFactory.Create(system, hooks...)
 	if err != nil {
 		return "", err
 	}
 
-	err = GlobalDriverRegistry.Add(registrationName, driver)
+	err = GlobalDriverRegistry.Add(driverName, drv)
 	if err != nil {
 		return "", err
 	}
 
-	return registrationName, nil
+	return driverName, nil
+}
+
+// RegisterNamed registers a named Driver for a given name and an optional list of Hook.
+func RegisterNamed(driver string, name string, hooks ...Hook) (string, error) {
+	driverName := fmt.Sprintf("%s-%s-%s", DriverRegistrationPrefix, driver, name)
+
+	if GlobalDriverRegistry.Has(driverName) {
+		return driverName, nil
+	}
+
+	system := FetchSystem(driver)
+	if system == UnknownSystem {
+		return "", fmt.Errorf("unsupported database system for driver %s", driver)
+	}
+
+	drv, err := GlobalDriverFactory.Create(system, hooks...)
+	if err != nil {
+		return "", err
+	}
+
+	err = GlobalDriverRegistry.Add(driverName, drv)
+	if err != nil {
+		return "", err
+	}
+
+	return driverName, nil
 }
