@@ -79,3 +79,16 @@ func TestWorkerExecutionOptionsWithMaxExecutionsAttempts(t *testing.T) {
 
 	assert.Equal(t, 2, opt.MaxExecutionsAttempts)
 }
+
+func TestWorkerExecutionOptionsWithMiddleware(t *testing.T) {
+	t.Parallel()
+
+	opt := worker.DefaultWorkerExecutionOptions()
+
+	assert.Len(t, opt.Middlewares, 0)
+
+	worker.WithMiddleware(&TestMiddleware{})(&opt)
+	worker.WithMiddleware(&TestMiddleware{})(&opt)
+
+	assert.Len(t, opt.Middlewares, 2)
+}

@@ -13,6 +13,7 @@
 * [Documentation](#documentation)
   * [Workers](#workers)
   * [WorkerPool](#workerpool)
+  * [Middlewares](#middlewares)
   * [Logging](#logging)
   * [Tracing](#tracing)
   * [Metrics](#metrics)
@@ -153,6 +154,115 @@ func main() {
 
 	// get a specific worker execution report, after pool stop
 	execution, _ := pool.Execution("cancellable-worker")
+}
+```
+
+### Middlewares
+
+This module provides middleware support for workers, allowing you to add behaviors without modifying the worker's core implementation.
+
+Middlewares wrap a worker's `Run` method and can perform actions before and after the worker execution, or even modify the execution flow.
+
+#### Using Middlewares
+
+Here's an example of a middleware that returns an error if a worker takes too long to execute:
+
+```go
+package main
+
+import (
+	"context"
+	"errors"
+	"time"
+
+	"github.com/ankorstore/yokai/worker"
+)
+
+// SimpleWorker is a basic worker that sleeps for a specified duration
+type SimpleWorker struct {
+	sleepDuration time.Duration
+}
+
+// NewSimpleWorker creates a new SimpleWorker
+func NewSimpleWorker(sleepDuration time.Duration) *SimpleWorker {
+	return &SimpleWorker{
+		sleepDuration: sleepDuration,
+	}
+}
+
+// Name returns the worker name
+func (w *SimpleWorker) Name() string {
+	return "simple-worker"
+}
+
+// Run executes the worker
+func (w *SimpleWorker) Run(ctx context.Context) error {
+	// Simulate work by sleeping
+	time.Sleep(w.sleepDuration)
+	
+	return nil
+}
+
+// TimeoutMiddleware implements the worker.Middleware interface
+type TimeoutMiddleware struct {
+	timeout time.Duration
+}
+
+// NewTimeoutMiddleware creates a new TimeoutMiddleware with the specified timeout
+func NewTimeoutMiddleware(timeout time.Duration) *TimeoutMiddleware {
+	return &TimeoutMiddleware{
+		timeout: timeout,
+	}
+}
+
+// Name returns the middleware name
+func (m *TimeoutMiddleware) Name() string {
+	return "timeout-middleware"
+}
+
+// Handle returns the middleware function
+func (m *TimeoutMiddleware) Handle() worker.MiddlewareFunc {
+	return func(next worker.HandlerFunc) worker.HandlerFunc {
+		return func(ctx context.Context) error {
+			// Create a timeout context
+			timeoutCtx, cancel := context.WithTimeout(ctx, m.timeout)
+			defer cancel()
+
+			// Create a channel to receive the result of the worker execution
+			done := make(chan error)
+
+			// Execute the worker in a goroutine
+			go func() {
+				done <- next(timeoutCtx)
+			}()
+
+			// Wait for either the worker to complete or the timeout to occur
+			select {
+			case err := <-done:
+				return err
+			case <-timeoutCtx.Done():
+				if errors.Is(timeoutCtx.Err(), context.DeadlineExceeded) {
+					return errors.New("worker execution timed out")
+				}
+				return timeoutCtx.Err()
+			}
+		}
+	}
+}
+
+func main() {
+	// Create a worker pool with a worker and the timeout middleware
+	pool, _ := worker.NewDefaultWorkerPoolFactory().Create(
+		worker.WithWorker(
+			NewSimpleWorker(10 * time.Second), // Worker that takes 10 seconds to complete
+			worker.WithMiddleware(NewTimeoutMiddleware(5 * time.Second)), // Middleware that times out after 5 seconds
+		),
+	)
+
+	// Start the pool
+	pool.Start(context.Background())
+	
+	// The worker will be interrupted after 5 seconds with a timeout error
 }
 ```
 
