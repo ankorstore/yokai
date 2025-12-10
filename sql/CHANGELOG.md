@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/sql/v1.1.0...sql/v1.2.0) (2025-12-10)
+
+
+### Features
+
+* **sql:** Added RegisterNamed ([#381](https://github.com/ankorstore/yokai/issues/381)) ([5210f4a](https://github.com/ankorstore/yokai/commit/5210f4afdd682f8bcfc0ef1e2486f6ee568b762d))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/sql/v1.0.0...sql/v1.1.0) (2024-05-08)
 
 
