@@ -214,7 +214,14 @@ func (p *WorkerPool) startWorkerRegistration(ctx context.Context, registration *
 
 		p.metrics.IncrementWorkerExecutionStart(registration.Worker().Name())
 
-		if err := registration.Worker().Run(ctx); err != nil {
+		runFunc := registration.Worker().Run
+
+		for i := len(execution.Middlewares()) - 1; i >= 0; i-- {
+			middleware := execution.Middlewares()[i]
+			runFunc = middleware.Handle()(runFunc)
+		}
+
+		if err := runFunc(ctx); err != nil {
 			message = fmt.Sprintf(
 				"stopping execution attempt %d/%d with error: %v",
 				workerExecution.CurrentExecutionAttempt(),

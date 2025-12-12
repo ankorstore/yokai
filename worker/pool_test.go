@@ -544,3 +544,67 @@ func TestExecutionWithRestartingPanicWorker(t *testing.T) {
 	)
 	assert.NoError(t, err)
 }
+
+func TestExecutionWithMiddlewares(t *testing.T) {
+	t.Parallel()
+
+	// Create a slice to track the execution order
+	executionOrder := []string{}
+
+	// Create a worker
+	testWorker := workers.NewClassicWorker()
+
+	// Create the first middleware
+	middleware1 := &TestMiddleware{
+		Func: func(next worker.HandlerFunc) worker.HandlerFunc {
+			return func(ctx context.Context) error {
+				executionOrder = append(executionOrder, "middleware1 before")
+				err := next(ctx)
+				executionOrder = append(executionOrder, "middleware1 after")
+
+				return err
+			}
+		},
+	}
+
+	// Create the second middleware
+	middleware2 := &TestMiddleware{
+		Func: func(next worker.HandlerFunc) worker.HandlerFunc {
+			return func(ctx context.Context) error {
+				executionOrder = append(executionOrder, "middleware2 before")
+				err := next(ctx)
+				executionOrder = append(executionOrder, "middleware2 after")
+
+				return err
+			}
+		},
+	}
+
+	// Create a worker pool with the worker and middlewares
+	pool, err := worker.NewDefaultWorkerPoolFactory().Create(
+		worker.WithWorker(
+			testWorker,
+			worker.WithMiddlewares(middleware1, middleware2),
+		),
+	)
+	assert.NoError(t, err)
+
+	// Start the worker pool
+	err = pool.Start(context.Background())
+	assert.NoError(t, err)
+
+	// Wait for the worker to complete
+	time.Sleep(10 * time.Millisecond)
+
+	// Stop the worker pool
+	err = pool.Stop()
+	assert.NoError(t, err)
+
+	// Verify the execution order
+	assert.Equal(t, []string{
+		"middleware1 before",
+		"middleware2 before",
+		"middleware2 after",
+		"middleware1 after",
+	}, executionOrder)
+}
