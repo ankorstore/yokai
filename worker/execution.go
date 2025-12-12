@@ -15,6 +15,7 @@ type WorkerExecution struct {
 	maxExecutionsAttempts   int
 	deferredStartThreshold  float64
 	events                  []*WorkerExecutionEvent
+	middlewares             []Middleware
 }
 
 // NewWorkerExecution returns a new [WorkerExecution].
@@ -27,6 +28,7 @@ func NewWorkerExecution(id string, name string, options ExecutionOptions) *Worke
 		maxExecutionsAttempts:   options.MaxExecutionsAttempts,
 		deferredStartThreshold:  options.DeferredStartThreshold,
 		events:                  []*WorkerExecutionEvent{},
+		middlewares:             options.Middlewares,
 	}
 }
 
@@ -156,4 +158,11 @@ func (e *WorkerExecution) HasEvent(message string) bool {
 	}
 
 	return false
+}
+
+func (e *WorkerExecution) Middlewares() []Middleware {
+	e.mutex.Lock()
+	defer e.mutex.Unlock()
+
+	return e.middlewares
 }

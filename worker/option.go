@@ -71,6 +71,7 @@ func WithWorker(worker Worker, options ...WorkerExecutionOption) WorkerPoolOptio
 type ExecutionOptions struct {
 	DeferredStartThreshold float64
 	MaxExecutionsAttempts  int
+	Middlewares            []Middleware
 }
 
 // DefaultWorkerExecutionOptions are the default options for the [Worker] executions.
@@ -78,6 +79,7 @@ func DefaultWorkerExecutionOptions() ExecutionOptions {
 	return ExecutionOptions{
 		DeferredStartThreshold: DefaultDeferredStartThreshold,
 		MaxExecutionsAttempts:  DefaultMaxExecutionsAttempts,
+		Middlewares:            []Middleware{},
 	}
 }
 
@@ -95,5 +97,15 @@ func WithDeferredStartThreshold(t float64) WorkerExecutionOption {
 func WithMaxExecutionsAttempts(l int) WorkerExecutionOption {
 	return func(o *ExecutionOptions) {
 		o.MaxExecutionsAttempts = l
+	}
+}
+
+// WithMiddlewares is used to add middlewares to a worker registration.
+func WithMiddlewares(middlewares ...Middleware) WorkerExecutionOption {
+	return func(o *ExecutionOptions) {
+		if o.Middlewares == nil {
+			o.Middlewares = []Middleware{}
+		}
+		o.Middlewares = append(o.Middlewares, middlewares...)
 	}
 }
