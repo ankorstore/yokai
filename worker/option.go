@@ -100,12 +100,12 @@ func WithMaxExecutionsAttempts(l int) WorkerExecutionOption {
 	}
 }
 
-// WithMiddleware is used to add a middleware to a worker registration.
-func WithMiddleware(middleware Middleware) WorkerExecutionOption {
+// WithMiddlewares is used to add middlewares to a worker registration.
+func WithMiddlewares(middlewares ...Middleware) WorkerExecutionOption {
 	return func(o *ExecutionOptions) {
 		if o.Middlewares == nil {
 			o.Middlewares = []Middleware{}
 		}
-		o.Middlewares = append(o.Middlewares, middleware)
+		o.Middlewares = append(o.Middlewares, middlewares...)
 	}
 }

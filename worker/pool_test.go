@@ -584,8 +584,7 @@ func TestExecutionWithMiddlewares(t *testing.T) {
 	pool, err := worker.NewDefaultWorkerPoolFactory().Create(
 		worker.WithWorker(
 			testWorker,
-			worker.WithMiddleware(middleware1),
-			worker.WithMiddleware(middleware2),
+			worker.WithMiddlewares(middleware1, middleware2),
 		),
 	)
 	assert.NoError(t, err)

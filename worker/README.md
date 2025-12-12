@@ -255,7 +255,7 @@ func main() {
 	pool, _ := worker.NewDefaultWorkerPoolFactory().Create(
 		worker.WithWorker(
 			NewSimpleWorker(10 * time.Second), // Worker that takes 10 seconds to complete
-			worker.WithMiddleware(NewTimeoutMiddleware(5 * time.Second)), // Middleware that times out after 5 seconds
+			worker.WithMiddlewares(NewTimeoutMiddleware(5 * time.Second)), // Middleware that times out after 5 seconds
 		),
 	)
 
