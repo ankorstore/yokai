@@ -10,8 +10,8 @@ github.com/ankorstore/yokai/fxtrace v1.2.0 h1:SXlWbjKSsb2wVH+hXSE9OD2VwyqkznwwW+
 github.com/ankorstore/yokai/fxtrace v1.2.0/go.mod h1:ch72eVTlIedETOApK7SXk2NEWpn3yYeM018dNRccocg=
 github.com/ankorstore/yokai/log v1.2.0 h1:jiuDiC0dtqIGIOsFQslUHYoFJ1qjI+rOMa6dI1LBf2Y=
 github.com/ankorstore/yokai/log v1.2.0/go.mod h1:MVvUcms1AYGo0BT6l88B9KJdvtK6/qGKdgyKVXfbmyc=
-github.com/ankorstore/yokai/sql v1.1.0 h1:l9u+uIRIZGOz1gzEbGphrPjLXvlHjNiw1hI2MMFdy24=
-github.com/ankorstore/yokai/sql v1.1.0/go.mod h1:IXjNeSbE/sfnsOWF5SFcxUCxk8dcVgfNkaP/i6uHeZk=
+github.com/ankorstore/yokai/sql v1.2.0 h1:DEFV/85WL0+3c11tk5TYa/6tzDfDGscxqWKUB7BtER4=
+github.com/ankorstore/yokai/sql v1.2.0/go.mod h1:IXjNeSbE/sfnsOWF5SFcxUCxk8dcVgfNkaP/i6uHeZk=
 github.com/ankorstore/yokai/trace v1.3.0 h1:0ji32oymIcxTmH5h6GRWLo5ypwBbWrZkXRf9rWF9070=
 github.com/ankorstore/yokai/trace v1.3.0/go.mod h1:m7EL2MRBilgCtrly5gA4F0jkGSXR2EbG6LsotbTJ4nA=
 github.com/cenkalti/backoff/v4 v4.3.0 h1:MyRJ/UdXutAwSAT+s3wNd7MfTIcy71VQueUuFK343L8=

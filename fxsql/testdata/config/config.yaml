@@ -2,8 +2,8 @@ app:
   name: test
 modules:
   sql:
-    driver: ${SQL_DRIVER}
-    dsn: ${SQL_DSN}
+    driver: ${SQL_PRIMARY_DRIVER}
+    dsn: ${SQL_PRIMARY_DSN}
     migrations:
       path: testdata/migrations
       stdout: false
@@ -18,3 +18,10 @@ modules:
       arguments: true
       exclude:
         - "connection:ping"
+    auxiliaries:
+      auxiliary1:
+        driver: ${SQL_AUXILIARY1_DRIVER}
+        dsn: ${SQL_AUXILIARY1_DSN}
+      auxiliary2:
+        driver: ${SQL_AUXILIARY2_DRIVER}
+        dsn: ${SQL_AUXILIARY2_DSN}

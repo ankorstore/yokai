@@ -25,8 +25,12 @@ import (
 func TestModule(t *testing.T) {
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
-	t.Setenv("SQL_DRIVER", "sqlite")
-	t.Setenv("SQL_DSN", ":memory:")
+	t.Setenv("SQL_PRIMARY_DRIVER", "sqlite")
+	t.Setenv("SQL_PRIMARY_DSN", "file:primary?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY1_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY1_DSN", "file:auxiliary1?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY2_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY2_DSN", "file:auxiliary2?mode=memory&cache=shared")
 
 	var ctx context.Context
 	var db *sql.DB
@@ -172,8 +176,12 @@ func TestModule(t *testing.T) {
 
 func TestModuleWithMigrationShutdown(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
-	t.Setenv("SQL_DRIVER", "sqlite")
-	t.Setenv("SQL_DSN", ":memory:")
+	t.Setenv("SQL_PRIMARY_DRIVER", "sqlite")
+	t.Setenv("SQL_PRIMARY_DSN", "file:primary?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY1_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY1_DSN", "file:auxiliary1?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY2_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY2_DSN", "file:auxiliary2?mode=memory&cache=shared")
 
 	ctx := context.Background()
 
@@ -202,7 +210,12 @@ func TestModuleWithMigrationShutdown(t *testing.T) {
 func TestModuleErrorWithInvalidDriver(t *testing.T) {
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
-	t.Setenv("SQL_DRIVER", "invalid")
+	t.Setenv("SQL_PRIMARY_DRIVER", "invalid")
+	t.Setenv("SQL_PRIMARY_DSN", "file:primary?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY1_DRIVER", "invalid")
+	t.Setenv("SQL_AUXILIARY1_DSN", "file:auxiliary1?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY2_DRIVER", "invalid")
+	t.Setenv("SQL_AUXILIARY2_DSN", "file:auxiliary2?mode=memory&cache=shared")
 
 	ctx := context.Background()
 
@@ -229,8 +242,12 @@ func TestModuleErrorWithInvalidDriver(t *testing.T) {
 func TestModuleErrorWithInvalidDsn(t *testing.T) {
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
-	t.Setenv("SQL_DRIVER", "mysql")
-	t.Setenv("SQL_DSN", "invalid")
+	t.Setenv("SQL_PRIMARY_DRIVER", "mysql")
+	t.Setenv("SQL_PRIMARY_DSN", "invalid")
+	t.Setenv("SQL_AUXILIARY1_DRIVER", "mysql")
+	t.Setenv("SQL_AUXILIARY1_DSN", "invalid")
+	t.Setenv("SQL_AUXILIARY2_DRIVER", "mysql")
+	t.Setenv("SQL_AUXILIARY2_DSN", "invalid")
 
 	ctx := context.Background()
 
@@ -257,8 +274,12 @@ func TestModuleErrorWithInvalidDsn(t *testing.T) {
 func TestModuleErrorWithInvalidSeed(t *testing.T) {
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
-	t.Setenv("SQL_DRIVER", "sqlite")
-	t.Setenv("SQL_DSN", ":memory:")
+	t.Setenv("SQL_PRIMARY_DRIVER", "sqlite")
+	t.Setenv("SQL_PRIMARY_DSN", "file:primary?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY1_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY1_DSN", "file:auxiliary1?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY2_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY2_DSN", "file:auxiliary2?mode=memory&cache=shared")
 
 	ctx := context.Background()
 
@@ -304,8 +325,12 @@ func TestModuleErrorWithInvalidSeed(t *testing.T) {
 
 func TestModuleWithSeedsShutdown(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
-	t.Setenv("SQL_DRIVER", "sqlite")
-	t.Setenv("SQL_DSN", ":memory:")
+	t.Setenv("SQL_PRIMARY_DRIVER", "sqlite")
+	t.Setenv("SQL_PRIMARY_DSN", "file:primary?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY1_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY1_DSN", "file:auxiliary1?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY2_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY2_DSN", "file:auxiliary2?mode=memory&cache=shared")
 
 	ctx := context.Background()
 
