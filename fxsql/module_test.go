@@ -26,11 +26,11 @@ func TestModule(t *testing.T) {
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("SQL_PRIMARY_DRIVER", "sqlite")
-	t.Setenv("SQL_PRIMARY_DSN", "file:primary?mode=memory&cache=shared")
+	t.Setenv("SQL_PRIMARY_DSN", ":memory:")
 	t.Setenv("SQL_AUXILIARY1_DRIVER", "sqlite")
-	t.Setenv("SQL_AUXILIARY1_DSN", "file:auxiliary1?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY1_DSN", ":memory:")
 	t.Setenv("SQL_AUXILIARY2_DRIVER", "sqlite")
-	t.Setenv("SQL_AUXILIARY2_DSN", "file:auxiliary2?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY2_DSN", ":memory:")
 
 	var ctx context.Context
 	var db *sql.DB
@@ -177,11 +177,11 @@ func TestModule(t *testing.T) {
 func TestModuleWithMigrationShutdown(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("SQL_PRIMARY_DRIVER", "sqlite")
-	t.Setenv("SQL_PRIMARY_DSN", "file:primary?mode=memory&cache=shared")
+	t.Setenv("SQL_PRIMARY_DSN", ":memory:")
 	t.Setenv("SQL_AUXILIARY1_DRIVER", "sqlite")
-	t.Setenv("SQL_AUXILIARY1_DSN", "file:auxiliary1?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY1_DSN", ":memory:")
 	t.Setenv("SQL_AUXILIARY2_DRIVER", "sqlite")
-	t.Setenv("SQL_AUXILIARY2_DSN", "file:auxiliary2?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY2_DSN", ":memory:")
 
 	ctx := context.Background()
 
@@ -211,11 +211,11 @@ func TestModuleErrorWithInvalidDriver(t *testing.T) {
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("SQL_PRIMARY_DRIVER", "invalid")
-	t.Setenv("SQL_PRIMARY_DSN", "file:primary?mode=memory&cache=shared")
+	t.Setenv("SQL_PRIMARY_DSN", ":memory:")
 	t.Setenv("SQL_AUXILIARY1_DRIVER", "invalid")
-	t.Setenv("SQL_AUXILIARY1_DSN", "file:auxiliary1?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY1_DSN", ":memory:")
 	t.Setenv("SQL_AUXILIARY2_DRIVER", "invalid")
-	t.Setenv("SQL_AUXILIARY2_DSN", "file:auxiliary2?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY2_DSN", ":memory:")
 
 	ctx := context.Background()
 
@@ -275,11 +275,11 @@ func TestModuleErrorWithInvalidSeed(t *testing.T) {
 	t.Setenv("APP_ENV", "test")
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("SQL_PRIMARY_DRIVER", "sqlite")
-	t.Setenv("SQL_PRIMARY_DSN", "file:primary?mode=memory&cache=shared")
+	t.Setenv("SQL_PRIMARY_DSN", ":memory:")
 	t.Setenv("SQL_AUXILIARY1_DRIVER", "sqlite")
-	t.Setenv("SQL_AUXILIARY1_DSN", "file:auxiliary1?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY1_DSN", ":memory:")
 	t.Setenv("SQL_AUXILIARY2_DRIVER", "sqlite")
-	t.Setenv("SQL_AUXILIARY2_DSN", "file:auxiliary2?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY2_DSN", ":memory:")
 
 	ctx := context.Background()
 
@@ -326,11 +326,11 @@ func TestModuleErrorWithInvalidSeed(t *testing.T) {
 func TestModuleWithSeedsShutdown(t *testing.T) {
 	t.Setenv("APP_CONFIG_PATH", "testdata/config")
 	t.Setenv("SQL_PRIMARY_DRIVER", "sqlite")
-	t.Setenv("SQL_PRIMARY_DSN", "file:primary?mode=memory&cache=shared")
+	t.Setenv("SQL_PRIMARY_DSN", ":memory:")
 	t.Setenv("SQL_AUXILIARY1_DRIVER", "sqlite")
-	t.Setenv("SQL_AUXILIARY1_DSN", "file:auxiliary1?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY1_DSN", ":memory:")
 	t.Setenv("SQL_AUXILIARY2_DRIVER", "sqlite")
-	t.Setenv("SQL_AUXILIARY2_DSN", "file:auxiliary2?mode=memory&cache=shared")
+	t.Setenv("SQL_AUXILIARY2_DSN", ":memory:")
 
 	ctx := context.Background()
 
@@ -353,5 +353,164 @@ func TestModuleWithSeedsShutdown(t *testing.T) {
 	assert.NoError(t, err)
 
 	err = app.Stop(ctx)
+	assert.NoError(t, err)
+}
+
+func TestModuleDatabasePoolWithDedicatedConnections(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("SQL_PRIMARY_DRIVER", "sqlite")
+	t.Setenv("SQL_PRIMARY_DSN", ":memory:")
+	t.Setenv("SQL_AUXILIARY1_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY1_DSN", ":memory:")
+	t.Setenv("SQL_AUXILIARY2_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY2_DSN", ":memory:")
+
+	var pool *fxsql.DatabasePool
+	var db *sql.DB
+
+	fxtest.New(
+		t,
+		fx.NopLogger,
+		// provide context
+		fx.Provide(func() context.Context {
+			return context.Background()
+		}),
+		// load module and dependencies
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxsql.FxSQLModule,
+		// populate test components
+		fx.Populate(&pool, &db),
+	).RequireStart().RequireStop()
+
+	// verify pool is not nil
+	assert.NotNil(t, pool)
+
+	// verify primary database from pool
+	assert.NotNil(t, pool.Primary())
+	assert.Equal(t, fxsql.PrimaryDatabaseName, pool.Primary().Name())
+
+	// verify primary *sql.DB injection matches pool primary
+	assert.Same(t, pool.Primary().DB(), db)
+
+	// verify auxiliaries exist
+	aux1, err := pool.Auxiliary("auxiliary1")
+	assert.NoError(t, err)
+	assert.NotNil(t, aux1)
+	assert.Equal(t, "auxiliary1", aux1.Name())
+
+	aux2, err := pool.Auxiliary("auxiliary2")
+	assert.NoError(t, err)
+	assert.NotNil(t, aux2)
+	assert.Equal(t, "auxiliary2", aux2.Name())
+
+	// verify auxiliaries map
+	auxiliaries := pool.Auxiliaries()
+	assert.Len(t, auxiliaries, 2)
+	assert.Contains(t, auxiliaries, "auxiliary1")
+	assert.Contains(t, auxiliaries, "auxiliary2")
+
+	// verify each database connection is dedicated by creating unique tables
+	// primary database
+	_, err = pool.Primary().DB().Exec("CREATE TABLE primary_table (id INTEGER PRIMARY KEY, value TEXT)")
+	assert.NoError(t, err)
+	_, err = pool.Primary().DB().Exec("INSERT INTO primary_table (value) VALUES ('primary_value')")
+	assert.NoError(t, err)
+
+	// auxiliary1 database
+	_, err = aux1.DB().Exec("CREATE TABLE aux1_table (id INTEGER PRIMARY KEY, value TEXT)")
+	assert.NoError(t, err)
+	_, err = aux1.DB().Exec("INSERT INTO aux1_table (value) VALUES ('aux1_value')")
+	assert.NoError(t, err)
+
+	// auxiliary2 database
+	_, err = aux2.DB().Exec("CREATE TABLE aux2_table (id INTEGER PRIMARY KEY, value TEXT)")
+	assert.NoError(t, err)
+	_, err = aux2.DB().Exec("INSERT INTO aux2_table (value) VALUES ('aux2_value')")
+	assert.NoError(t, err)
+
+	// verify primary only has primary_table
+	var primaryValue string
+	err = pool.Primary().DB().QueryRow("SELECT value FROM primary_table").Scan(&primaryValue)
+	assert.NoError(t, err)
+	assert.Equal(t, "primary_value", primaryValue)
+
+	// verify primary does NOT have aux1_table
+	err = pool.Primary().DB().QueryRow("SELECT value FROM aux1_table").Scan(&primaryValue)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no such table")
+
+	// verify aux1 only has aux1_table
+	var aux1Value string
+	err = aux1.DB().QueryRow("SELECT value FROM aux1_table").Scan(&aux1Value)
+	assert.NoError(t, err)
+	assert.Equal(t, "aux1_value", aux1Value)
+
+	// verify aux1 does NOT have primary_table
+	err = aux1.DB().QueryRow("SELECT value FROM primary_table").Scan(&aux1Value)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no such table")
+
+	// verify aux2 only has aux2_table
+	var aux2Value string
+	err = aux2.DB().QueryRow("SELECT value FROM aux2_table").Scan(&aux2Value)
+	assert.NoError(t, err)
+	assert.Equal(t, "aux2_value", aux2Value)
+
+	// verify aux2 does NOT have aux1_table or primary_table
+	err = aux2.DB().QueryRow("SELECT value FROM aux1_table").Scan(&aux2Value)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no such table")
+
+	err = aux2.DB().QueryRow("SELECT value FROM primary_table").Scan(&aux2Value)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no such table")
+
+	// cleanup
+	err = pool.Primary().DB().Close()
+	assert.NoError(t, err)
+	err = aux1.DB().Close()
+	assert.NoError(t, err)
+	err = aux2.DB().Close()
+	assert.NoError(t, err)
+}
+
+func TestModuleDatabasePoolAuxiliaryNotFound(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("SQL_PRIMARY_DRIVER", "sqlite")
+	t.Setenv("SQL_PRIMARY_DSN", ":memory:")
+	t.Setenv("SQL_AUXILIARY1_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY1_DSN", ":memory:")
+	t.Setenv("SQL_AUXILIARY2_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY2_DSN", ":memory:")
+
+	var pool *fxsql.DatabasePool
+
+	fxtest.New(
+		t,
+		fx.NopLogger,
+		// provide context
+		fx.Provide(func() context.Context {
+			return context.Background()
+		}),
+		// load module and dependencies
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxsql.FxSQLModule,
+		// populate test components
+		fx.Populate(&pool),
+	).RequireStart().RequireStop()
+
+	// verify auxiliary not found error
+	_, err := pool.Auxiliary("nonexistent")
+	assert.Error(t, err)
+	assert.Equal(t, "database with name nonexistent was not found", err.Error())
+
+	// cleanup
+	err = pool.Primary().DB().Close()
 	assert.NoError(t, err)
 }
