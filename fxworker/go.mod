@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/ankorstore/yokai/config v1.3.0
 	github.com/ankorstore/yokai/fxconfig v1.1.0
-	github.com/ankorstore/yokai/fxgenerate v1.1.0
+	github.com/ankorstore/yokai/fxgenerate v1.2.0
 	github.com/ankorstore/yokai/fxlog v1.1.0
 	github.com/ankorstore/yokai/fxmetrics v1.1.0
 	github.com/ankorstore/yokai/fxtrace v1.2.0
@@ -16,7 +16,7 @@ require (
 	github.com/prometheus/client_golang v1.19.1
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/otel/trace v1.24.0
-	go.uber.org/fx v1.21.0
+	go.uber.org/fx v1.22.0
 )
 
 require (
