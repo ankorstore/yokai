@@ -43,6 +43,8 @@ type FxSQLDatabasePoolParam struct {
 }
 
 // NewFxSQLDatabasePool returns a DatabasePool instance.
+//
+//nolint:cyclop
 func NewFxSQLDatabasePool(p FxSQLDatabasePoolParam) (*DatabasePool, error) {
 	// database drivers hooks
 	driverHooks := p.Hooks
@@ -88,7 +90,7 @@ func NewFxSQLDatabasePool(p FxSQLDatabasePoolParam) (*DatabasePool, error) {
 	primaryDatabase := NewDatabase(PrimaryDatabaseName, primaryDB)
 
 	// auxiliaries databases preparation
-	var auxiliaryDatabases []*Database
+	auxiliaryDatabases := []*Database{}
 
 	for auxiliaryDatabaseName := range p.Config.GetStringMap("modules.sql.auxiliaries") {
 		auxiliaryDriverName, err := yokaisql.RegisterNamed(
