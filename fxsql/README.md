@@ -163,6 +163,24 @@ This module automatically injects the primary database connection into your Fx a
 
 To retrieve auxiliary databases connections, inject the `DatabasePool` where required, and use `Auxiliary(name string)` to retrieve the desired connection.
 
+For example:
+
+```yaml
+# ./configs/config.yaml
+modules:
+  sql:
+    auxiliaries:
+      postgres:
+        driver: postgres
+        dsn: "postgres://user:password@localhost:5432/db?sslmode=disable"
+      sqlite:
+        driver: sqlite
+        dsn: ":memory:"
+```
+
+- to retrieve the `postgres` auxiliary database connection, inject the `DatabasePool` and use `Auxiliary("postgres")`
+- to retrieve the `sqlite` auxiliary database connection, inject the `DatabasePool` and use `Auxiliary("sqlite")`
+
 ### Migrations
 
 This module provides the possibility to run your DB schemas migrations, using [Goose](https://github.com/pressly/goose) under the hood.
