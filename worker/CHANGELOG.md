@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/worker/v1.2.0...worker/v1.3.0) (2025-12-12)
+
+
+### Features
+
+* **worker:** Added middleware support for worker registration ([#380](https://github.com/ankorstore/yokai/issues/380)) ([eff6532](https://github.com/ankorstore/yokai/commit/eff65324c93f40ae74575a1be36ad630964c2a1b))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/worker/v1.1.0...worker/v1.2.0) (2024-07-17)
 
 
