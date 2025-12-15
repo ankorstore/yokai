@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/fxworker/v1.1.1...fxworker/v1.2.0) (2025-12-15)
+
+
+### Features
+
+* **fxworker:** Add support for worker middlewares ([#386](https://github.com/ankorstore/yokai/issues/386)) ([9b49db7](https://github.com/ankorstore/yokai/commit/9b49db7d2bbcf67579b3eba0cf6d09d7c036e663))
+
 ## [1.1.1](https://github.com/ankorstore/yokai/compare/fxworker/v1.1.0...fxworker/v1.1.1) (2025-09-02)
 
 
