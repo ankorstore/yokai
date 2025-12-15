@@ -77,13 +77,13 @@ modules:
       exclude:             # to exclude SQL operations from tracing (empty by default)
         - "connection:ping"
         - "connection:reset-session"
-      auxiliaries:         # auxiliary databases configurations (empty by default)
-        postgres-db:
-          driver: postgres
-          dsn: "postgres://user:password@localhost:5432/db?sslmode=disable"
-        sqlite-db:
-          driver: sqlite
-          dsn: ":memory:"
+    auxiliaries:         # auxiliary databases configurations (empty by default)
+      postgres-db:
+        driver: postgres
+        dsn: "postgres://user:password@localhost:5432/db?sslmode=disable"
+      sqlite-db:
+        driver: sqlite
+        dsn: ":memory:"
 ```
 
 This module provides the possibility to configure several database connections:
