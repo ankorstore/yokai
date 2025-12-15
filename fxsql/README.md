@@ -15,6 +15,7 @@
   * [Dependencies](#dependencies)
   * [Loading](#loading)
   * [Configuration](#configuration)
+  * [Pool](#pool)
   * [Migrations](#migrations)
   * [Seeds](#seeds)
   * [Hooks](#hooks)
@@ -96,8 +97,8 @@ app:
   debug: false
 modules:
   sql:
-    driver: mysql                                               # database driver (empty by default)
-    dsn: "user:password@tcp(localhost:3306)/db?parseTime=true"  # database DSN (empty by default)
+    driver: mysql                                               # primary database driver (empty by default)
+    dsn: "user:password@tcp(localhost:3306)/db?parseTime=true"  # primary database DSN (empty by default)
     migrations: 
       path: db/migrations       # migrations path (empty by default)
       stdout: true              # to print in stdout the migration logs (disabled by default)
@@ -112,6 +113,13 @@ modules:
       arguments: true           # to add SQL queries arguments to trace spans (disabled by default)
       exclude:                  # to exclude SQL operations from tracing (empty by default)
         - "connection:ping"
+    auxiliaries:                # auxiliary databases configurations (empty by default)
+      postgres:
+        driver: postgres
+        dsn: "postgres://user:password@localhost:5432/db?sslmode=disable"
+      sqlite:
+        driver: sqlite
+        dsn: ":memory:"
 ```
 
 For security reasons, you should avoid to hardcode DSN sensible parts (like the password) in your config files, you can use the [env vars placeholders](https://github.com/ankorstore/yokai/tree/main/fxconfig#configuration-env-var-placeholders) instead:
@@ -143,6 +151,35 @@ Available SQL operations:
 - `statement:query-context`
 - `transaction:commit`
 - `transaction:rollback`
+
+### Pool
+
+This module offers the possibility to handle optionally several databases connections, via the [DatabasePool](pool.go):
+
+- the primary database connection can be retrieved via `Primary()`
+- auxiliary databases connections can be retrieved via `Auxiliary(name string)`
+
+This module automatically injects the primary database connection into your Fx application as `*sql.DB`.
+
+To retrieve auxiliary databases connections, inject the `DatabasePool` where required, and use `Auxiliary(name string)` to retrieve the desired connection.
+
+For example:
+
+```yaml
+# ./configs/config.yaml
+modules:
+  sql:
+    auxiliaries:
+      postgres:
+        driver: postgres
+        dsn: "postgres://user:password@localhost:5432/db?sslmode=disable"
+      sqlite:
+        driver: sqlite
+        dsn: ":memory:"
+```
+
+- to retrieve the `postgres` auxiliary database connection, inject the `DatabasePool` and use `Auxiliary("postgres")`
+- to retrieve the `sqlite` auxiliary database connection, inject the `DatabasePool` and use `Auxiliary("sqlite")`
 
 ### Migrations
 

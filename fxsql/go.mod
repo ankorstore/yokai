@@ -8,7 +8,7 @@ require (
 	github.com/ankorstore/yokai/fxlog v1.1.0
 	github.com/ankorstore/yokai/fxtrace v1.2.0
 	github.com/ankorstore/yokai/log v1.2.0
-	github.com/ankorstore/yokai/sql v1.1.0
+	github.com/ankorstore/yokai/sql v1.2.0
 	github.com/ankorstore/yokai/trace v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/pressly/goose/v3 v3.20.0

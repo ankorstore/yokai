@@ -3,6 +3,7 @@ package fxsql
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"sync"
 
 	"github.com/ankorstore/yokai/config"
@@ -25,14 +26,15 @@ const ModuleName = "sql"
 var FxSQLModule = fx.Module(
 	ModuleName,
 	fx.Provide(
-		NewFxSQLDatabase,
+		NewFxSQLDatabasePool,
+		NewFxSQLPrimaryDatabase,
 		NewFxSQLMigrator,
 		NewFxSQLSeeder,
 	),
 )
 
-// FxSQLDatabaseParam allows injection of the required dependencies in [NewFxSQLDatabase].
-type FxSQLDatabaseParam struct {
+// FxSQLDatabasePoolParam allows injection of the required dependencies in [NewFxSQLDatabasePool].
+type FxSQLDatabasePoolParam struct {
 	fx.In
 	LifeCycle fx.Lifecycle
 	Config    *config.Config
@@ -40,12 +42,14 @@ type FxSQLDatabaseParam struct {
 	Hooks     []yokaisql.Hook `group:"sql-hooks"`
 }
 
-// NewFxSQLDatabase returns a sql.DB instance.
-func NewFxSQLDatabase(p FxSQLDatabaseParam) (*sql.DB, error) {
-	// custom hooks
+// NewFxSQLDatabasePool returns a DatabasePool instance.
+//
+//nolint:cyclop
+func NewFxSQLDatabasePool(p FxSQLDatabasePoolParam) (*DatabasePool, error) {
+	// database drivers hooks
 	driverHooks := p.Hooks
 
-	// trace hook
+	// database drivers trace hook
 	if p.Config.GetBool("modules.sql.trace.enabled") {
 		driverHooks = append(
 			driverHooks,
@@ -58,7 +62,7 @@ func NewFxSQLDatabase(p FxSQLDatabaseParam) (*sql.DB, error) {
 		)
 	}
 
-	// log hook
+	// database drivers log hook
 	if p.Config.GetBool("modules.sql.log.enabled") {
 		driverHooks = append(
 			driverHooks,
@@ -72,30 +76,75 @@ func NewFxSQLDatabase(p FxSQLDatabaseParam) (*sql.DB, error) {
 		)
 	}
 
-	// driver registration
-	driverName, err := yokaisql.Register(p.Config.GetString("modules.sql.driver"), driverHooks...)
+	// primary database preparation
+	primaryDriverName, err := yokaisql.RegisterNamed(p.Config.GetString("modules.sql.driver"), PrimaryDatabaseName, driverHooks...)
 	if err != nil {
 		return nil, err
 	}
 
-	// database preparation
-	db, err := sql.Open(driverName, p.Config.GetString("modules.sql.dsn"))
+	primaryDB, err := sql.Open(primaryDriverName, p.Config.GetString("modules.sql.dsn"))
 	if err != nil {
 		return nil, err
 	}
+
+	primaryDatabase := NewDatabase(PrimaryDatabaseName, primaryDB)
+
+	// auxiliaries databases preparation
+	auxiliaryDatabases := []*Database{}
+
+	for auxiliaryDatabaseName := range p.Config.GetStringMap("modules.sql.auxiliaries") {
+		auxiliaryDriverName, err := yokaisql.RegisterNamed(
+			p.Config.GetString(fmt.Sprintf("modules.sql.auxiliaries.%s.driver", auxiliaryDatabaseName)),
+			auxiliaryDatabaseName,
+			driverHooks...,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		auxiliaryDB, err := sql.Open(auxiliaryDriverName, fmt.Sprintf("modules.sql.auxiliaries.%s.dsn", auxiliaryDatabaseName))
+		if err != nil {
+			return nil, err
+		}
+
+		auxiliaryDatabases = append(auxiliaryDatabases, NewDatabase(auxiliaryDatabaseName, auxiliaryDB))
+	}
+
+	// database pool
+	databasePool := NewDatabasePool(primaryDatabase, auxiliaryDatabases...)
 
 	// lifecycles
 	p.LifeCycle.Append(fx.Hook{
 		OnStop: func(_ context.Context) error {
 			if !p.Config.IsTestEnv() {
-				return db.Close()
+				// close auxiliaries
+				for _, auxiliaryDatabase := range databasePool.Auxiliaries() {
+					err = auxiliaryDatabase.DB().Close()
+					if err != nil {
+						return err
+					}
+				}
+
+				// close primary
+				return databasePool.Primary().DB().Close()
 			}
 
 			return nil
 		},
 	})
 
-	return db, nil
+	return databasePool, nil
+}
+
+// FxSQLPrimaryDatabaseParam allows injection of the required dependencies in [FxSQLPrimaryDatabase].
+type FxSQLPrimaryDatabaseParam struct {
+	fx.In
+	Pool *DatabasePool
+}
+
+// NewFxSQLPrimaryDatabase returns the primary database.
+func NewFxSQLPrimaryDatabase(p FxSQLPrimaryDatabaseParam) *sql.DB {
+	return p.Pool.Primary().DB()
 }
 
 // FxSQLMigratorParam allows injection of the required dependencies in [NewFxSQLMigrator].
@@ -172,7 +221,7 @@ func RunFxSQLSeeds(names ...string) fx.Option {
 	)
 }
 
-// RunFxSQLSeedsAndShutdown runs database seeds with a context and shutodwn.
+// RunFxSQLSeedsAndShutdown runs database seeds with a context and shutdown.
 func RunFxSQLSeedsAndShutdown(names ...string) fx.Option {
 	return fx.Invoke(
 		func(ctx context.Context, seeder *Seeder, shutdown fx.Shutdowner) error {
