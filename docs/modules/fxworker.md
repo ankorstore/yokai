@@ -164,6 +164,106 @@ You can get, in real time, the status of your workers executions on the [core](f
 ![](../../assets/images/dash-workers-light.png#only-light)
 ![](../../assets/images/dash-workers-dark.png#only-dark)
 
+## Middlewares
+
+This module provides middleware support for workers, allowing you to add behaviors without modifying the worker's core implementation.
+
+Middlewares wrap a worker's `Run` method and can perform actions before and after the worker execution, or even modify the execution flow.
+
+### Implementing Middlewares
+
+To create a middleware, you need to implement the `worker.Middleware` interface:
+
+```go title="internal/worker/middleware/timeout.go"
+package middleware
+
+import (
+	"context"
+	"errors"
+	"time"
+
+	"github.com/ankorstore/yokai/config"
+	"github.com/ankorstore/yokai/worker"
+)
+
+// TimeoutMiddleware implements the worker.Middleware interface
+type TimeoutMiddleware struct {
+	timeout time.Duration
+}
+
+// NewTimeoutMiddleware creates a new TimeoutMiddleware with timeout from config
+func NewTimeoutMiddleware(cfg *config.Config) *TimeoutMiddleware {
+	timeout := cfg.GetDuration("modules.worker.middleware.timeout")
+
+	return &TimeoutMiddleware{
+		timeout: timeout,
+	}
+}
+
+// Name returns the middleware name
+func (m *TimeoutMiddleware) Name() string {
+	return "timeout-middleware"
+}
+
+// Handle returns the middleware function
+func (m *TimeoutMiddleware) Handle() worker.MiddlewareFunc {
+	return func(next worker.HandlerFunc) worker.HandlerFunc {
+		return func(ctx context.Context) error {
+			// Create a timeout context
+			timeoutCtx, cancel := context.WithTimeout(ctx, m.timeout)
+			defer cancel()
+
+			// Create a channel to receive the result of the worker execution
+			done := make(chan error)
+
+			// Execute the worker in a goroutine
+			go func() {
+				done <- next(timeoutCtx)
+			}()
+
+			// Wait for either the worker to complete or the timeout to occur
+			select {
+			case err := <-done:
+				return err
+			case <-timeoutCtx.Done():
+				if errors.Is(timeoutCtx.Err(), context.DeadlineExceeded) {
+					return errors.New("worker execution timed out")
+				}
+
+				return timeoutCtx.Err()
+			}
+		}
+	}
+}
+```
+
+### Using Middlewares with AsWorker()
+
+You can register your middlewares along with your workers using the `AsWorker()` function:
+
+```go title="internal/register.go"
+package internal
+
+import (
+	"github.com/ankorstore/yokai/fxworker"
+	"github.com/ankorstore/yokai/worker"
+	w "github.com/foo/bar/worker"
+	m "github.com/foo/bar/worker/middleware"
+	"go.uber.org/fx"
+)
+
+func Register() fx.Option {
+	return fx.Options(
+		fxworker.AsWorker(
+			w.NewExampleWorker,                   // register the ExampleWorker
+			m.NewTimeoutMiddleware,               // register the middleware
+			worker.WithDeferredStartThreshold(1), // with a deferred start of 1 second
+		),
+		// ...
+	)
+}
+```
+
 ## Health Check
 
 This module provides a ready to use [WorkerProbe](https://github.com/ankorstore/yokai/blob/main/worker/healthcheck/probe.go), to be used by the [health check](fxhealthcheck.md) module.
