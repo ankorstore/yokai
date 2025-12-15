@@ -64,3 +64,47 @@ func TestResolveCheckerProbesRegistrationsFailure(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "cannot find worker implementation for type invalid", err.Error())
 }
+
+func TestResolveWorkersRegistrationsWithMiddlewares(t *testing.T) {
+	t.Parallel()
+
+	// Create middleware definition
+	middlewareDef := fxworker.NewMiddlewareDefinition("github.com/ankorstore/yokai/fxworker_test.TestMiddleware")
+
+	// Create worker definition with middleware
+	workerDef := fxworker.NewWorkerDefinitionWithMiddlewares(
+		"github.com/ankorstore/yokai/worker/testdata/workers.ClassicWorker",
+		[]fxworker.MiddlewareDefinition{middlewareDef},
+	)
+
+	// Create middleware instance
+	middleware := &TestMiddleware{}
+
+	// Create registry param
+	param := fxworker.FxWorkerRegistryParam{
+		Workers: []worker.Worker{
+			workers.NewClassicWorker(),
+		},
+		Definitions: []fxworker.WorkerDefinition{
+			workerDef,
+		},
+		Middlewares: []worker.Middleware{
+			middleware,
+		},
+	}
+
+	// Create registry
+	registry := fxworker.NewFxWorkerRegistry(param)
+
+	// Resolve worker registrations
+	registrations, err := registry.ResolveWorkersRegistrations()
+	assert.NoError(t, err)
+	assert.Len(t, registrations, 1)
+
+	// Get the worker registration
+	registration := registrations[0]
+	assert.IsType(t, &workers.ClassicWorker{}, registration.Worker())
+
+	// Check that the registration has options (which should include the middleware)
+	assert.Len(t, registration.Options(), 1)
+}
