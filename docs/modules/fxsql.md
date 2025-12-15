@@ -19,6 +19,7 @@ It wraps the [sql](https://github.com/ankorstore/yokai/tree/main/sql) module, ba
 
 It comes with:
 
+- primary and auxiliary databases connections management
 - automatic SQL operations logging and tracing
 - possibility to define and execute database migrations (based on [Goose](https://github.com/pressly/goose))
 - possibility to register and execute database seeds
@@ -53,17 +54,13 @@ var Bootstrapper = fxcore.NewBootstrapper().WithOptions(
 
 ## Configuration
 
-This module provides the possibility to configure the database `driver`:
-
-- `mysql` for MySQL databases (based on [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql))
-- `postgres` for PostgreSQL databases (based on [lib/pq](https://github.com/lib/pq))
-- `sqlite` for SQLite databases (based on [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3))
+Configuration overview:
 
 ```yaml title="configs/config.yaml"
 modules:
   sql:
-    driver: mysql                                               # database driver
-    dsn: "user:password@tcp(localhost:3306)/db?parseTime=true"  # database DSN
+    driver: mysql                                               # primary database driver
+    dsn: "user:password@tcp(localhost:3306)/db?parseTime=true"  # primary database DSN
     migrations:
       path: db/migrations  # migrations path (empty by default)
       stdout: true         # to print in stdout the migration execution logs (disabled by default)
@@ -80,7 +77,25 @@ modules:
       exclude:             # to exclude SQL operations from tracing (empty by default)
         - "connection:ping"
         - "connection:reset-session"
+      auxiliaries:         # auxiliary databases configurations (empty by default)
+        postgres-db:
+          driver: postgres
+          dsn: "postgres://user:password@localhost:5432/db?sslmode=disable"
+        sqlite-db:
+          driver: sqlite
+          dsn: ":memory:"
 ```
+
+This module provides the possibility to configure several database connections:
+
+- a primary database connection, that will be made injectable by default as `sql.DB`
+- optionally some auxiliary databases connections, accessible via an injectable database connection pool
+
+This module supports the following database connection `driver` types:
+
+- `mysql` for MySQL databases (based on [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql))
+- `postgres` for PostgreSQL databases (based on [lib/pq](https://github.com/lib/pq))
+- `sqlite` for SQLite databases (based on [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3))
 
 You can find below the list of supported `SQL operations`:
 
@@ -109,9 +124,11 @@ You can find below the list of supported `SQL operations`:
 
 ## Usage
 
-Installing this module will automatically make a configured `sql.DB` instance available in Yokai dependency injection system.
+### Primary database connection
 
-To access it, you just need to inject it where needed, for example in a repository:
+This module will automatically make the primary database connection `sql.DB` instance available in Yokai dependency injection system.
+
+To access it, inject it where needed, for example in a repository:
 
 ```go title="internal/repository/foo.go"
 package repository
@@ -155,9 +172,62 @@ func Register() fx.Option {
 }
 ```
 
+### Database connections pool
+
+This module provides a [DatabasePool](https://github.com/ankorstore/yokai/blob/main/fxsql/pool.go), allowing to retrieve:
+
+- the primary database connection via `Primary()` (also made available as `sql.DB` by default)
+- auxiliary databases connections via `Auxiliary(name string)`
+
+To retrieve auxiliary databases connections, inject the `DatabasePool` where required, and use `Auxiliary(name string)` to retrieve the desired connection.
+
+For example:
+
+```yaml
+# ./configs/config.yaml
+modules:
+  sql:
+    auxiliaries:
+      postgres-db:
+        driver: postgres
+        dsn: "postgres://user:password@localhost:5432/db?sslmode=disable"
+```
+
+To access them, you just need to inject the pool where needed, for example in a repository:
+
+```go title="internal/repository/foo.go"
+package repository
+
+import (
+	"context"
+	"database/sql"
+
+	"github.com/ankorstore/yokai/fxsql"
+)
+
+type FooRepository struct {
+	pool *fxsql.DatabasePool
+}
+
+func NewFooRepository(pool *fxsql.DatabasePool) *FooRepository {
+	return &FooRepository{
+		pool: pool,
+	}
+}
+
+func (r *FooRepository) Insert(ctx context.Context, bar string) (sql.Result, error) {
+	// primary connection
+	res, err := r.pool.Primary().DB().ExecContext(ctx, "INSERT INTO foo (bar) VALUES ?", bar)
+	// auxiliary "postgres-db" connection
+	res, err = r.pool.Auxiliary("postgres-db").DB().ExecContext(ctx, "INSERT INTO baz (qux) VALUES ?", bar)
+	// ...
+	return res, err
+}
+```
+
 ## Migrations
 
-This module provides the possibility to run your `database migrations`, using [Goose](https://github.com/pressly/goose) under the hood.
+This module provides the possibility to run your `primary database migrations`, using [Goose](https://github.com/pressly/goose) under the hood.
 
 ### Migrations creation
 
@@ -288,7 +358,7 @@ You can then execute this command when needed by running for example `app migrat
 
 ## Seeds
 
-This module provides the possibility to `seed` your database, useful for testing.
+This module provides the possibility to `seed` your `primary database`, useful for testing.
 
 ### Seeds creation
 
@@ -389,6 +459,8 @@ You can also call for example `RunFxSQLSeeds("example-seed", "other-seed")` to r
 ## Hooks
 
 This module provides the possibility to `extend` the logic around the `SQL operations` via a hooking mechanism.
+
+Hooks will be `applied on all connections` (primary and auxiliaries).
 
 ### Hooks creation
 
@@ -492,7 +564,7 @@ func Register() fx.Option {
 
 ## Logging
 
-You can enable the SQL queries automatic logging with `modules.sql.log.enabled=true`:
+You can enable the SQL queries automatic logging of your database connections with `modules.sql.log.enabled=true`:
 
 ```yaml title="configs/config.yaml"
 modules:
@@ -520,7 +592,7 @@ DBG system:"mysql" operation:"connection:exec-context" latency="54.32µs" query=
 
 ## Tracing
 
-You can enable the SQL queries automatic tracing with `modules.sql.trace.enabled=true`:
+You can enable the SQL queries automatic tracing of your database connections with `modules.sql.trace.enabled=true`:
 
 ```yaml title="configs/config.yaml"
 modules:
