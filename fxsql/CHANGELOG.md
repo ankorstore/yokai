@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/ankorstore/yokai/compare/fxsql/v1.3.0...fxsql/v1.4.0) (2025-12-15)
+
+
+### Features
+
+* **fxsql:** Added auxiliary databases support ([#384](https://github.com/ankorstore/yokai/issues/384)) ([21dbafc](https://github.com/ankorstore/yokai/commit/21dbafcd0135946ca96c292548731a9bda369a5b))
+
 ## [1.3.0](https://github.com/ankorstore/yokai/compare/fxsql/v1.2.0...fxsql/v1.3.0) (2024-06-05)
 
 
