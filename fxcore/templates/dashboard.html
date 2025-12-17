@@ -297,7 +297,7 @@
                             <div class="card mb-3 border-success" v-show="taskResultMessage !== '' && taskResultSuccess && !taskRunning">
                                 <div class="card-header"><i class="bi bi-check2-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution success</div>
                                 <div class="card-body bg-{{ .theme }}">
-                                    <p class="card-text">{% taskResultMessage %}</p>
+                                    <pre class="card-text">{% taskResultMessage %}</pre>
                                     <p v-html="computedTaskResultDetails"></p>
                                 </div>
                             </div>
@@ -427,12 +427,12 @@
                         )
                         .then(response => {
                             this.taskResultSuccess = response.data.success;
-                            this.taskResultMessage = response.data.message;
+                            this.taskResultMessage = JSON.stringify(response.data.message, undefined, 2);
                             this.taskResultDetails = response.data.details;
                         })
                         .catch(error => {
                             this.taskResultSuccess = error.response.data.success;
-                            this.taskResultMessage = error.response.data.message;
+                            this.taskResultMessage = JSON.stringify(error.response.data.message, undefined, 2);
                             this.taskResultDetails = error.response.data.details;
                         })
                         .finally(() => {
