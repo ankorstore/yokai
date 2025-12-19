@@ -125,7 +125,8 @@
                         </div>
                         <div class="list-group list-group-flush">
                             {{ range $taskName := .tasksNames }}
-                            <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Task {{ $taskName }}" data-title='<i class="bi bi-clipboard2"></i>&nbsp;&nbsp;Task {{ $taskName }}' data-type="task" data-task="{{ $taskName }}" data-view="task">
+                            {{ $settings := index $.tasksTemplateSettings $taskName }}
+                            <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Task {{ $taskName }}" data-title='<i class="bi bi-clipboard2"></i>&nbsp;&nbsp;Task {{ $taskName }}' data-type="task" data-task="{{ $taskName }}" data-view="task" data-placeholder="{{ $settings.Placeholder }}" data-default-value="{{ $settings.DefaultValue }}" data-rows="{{ $settings.Rows }}">
                                 <span><i class="bi bi-clipboard2"></i>&nbsp;&nbsp;{{ $taskName }}</span>
                             </a>
                             {{ else }}
@@ -281,7 +282,7 @@
                         <div id="task-body" class="card-body bg-{{ .theme }}" v-if="view == 'task'">
                             <form>
                                 <div class="mb-3">
-                                    <textarea class="form-control" id="taskInput" rows="1" v-model="taskInput" placeholder="Optional input..."></textarea>
+                                    <textarea class="form-control" id="taskInput" :rows="taskRows" v-model="taskInput" :placeholder="taskPlaceholder"></textarea>
                                 </div>
                                 <div class="mb-3 btn-toolbar justify-content-between" role="toolbar" aria-label="Task actions">
                                     <button @click="resetTask" type="button" class="btn btn-sm btn-secondary" :disabled="taskRunning">
@@ -338,8 +339,15 @@
                 taskName: {
                     type: String,
                 },
+                taskPlaceholder: {
+                    type: String,
+                },
                 taskInput: {
                     type: String,
+                },
+                taskRows: {
+                    type: Number,
+                    default: 1
                 },
                 taskRunning: {
                     type: Boolean,
@@ -362,13 +370,15 @@
                 const view = ref('overview');
                 const content = ref('');
                 const taskName = ref('');
+                const taskPlaceholder = ref('');
                 const taskInput = ref('');
+                const taskRows = ref(1);
                 const taskRunning = ref(false);
                 const taskResultSuccess = ref(true);
                 const taskResultMessage = ref('');
                 const taskResultDetails = ref(undefined);
 
-                return { error, loading, title, view, content, taskName, taskInput, taskRunning, taskResultSuccess,  taskResultMessage, taskResultDetails}
+                return { error, loading, title, view, content, taskName, taskPlaceholder, taskInput, taskRows, taskRunning, taskResultSuccess,  taskResultMessage, taskResultDetails}
             },
             methods: {
                 loadContent(event) {
@@ -386,6 +396,19 @@
 
                         this.title = dataTitle;
                         this.taskName = event.currentTarget.getAttribute('data-task');
+                        this.taskPlaceholder = event.currentTarget.getAttribute('data-placeholder');
+
+                        const defaultValue = event.currentTarget.getAttribute('data-default-value');
+                        if (defaultValue) {
+                            this.taskInput = defaultValue;
+                        }
+
+                        const rows = event.currentTarget.getAttribute('data-rows');
+                        if (rows && !isNaN(parseInt(rows))) {
+                            this.taskRows = parseInt(rows);
+                        } else {
+                            this.taskRows = 1;
+                        }
                     } else {
                         this.loading = true
 
