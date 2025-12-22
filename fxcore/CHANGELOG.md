@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.12.0...fxcore/v1.13.0) (2025-12-22)
+
+
+### Features
+
+* **fxcore:** Make tasks page configurable ([#393](https://github.com/ankorstore/yokai/issues/393)) ([63635df](https://github.com/ankorstore/yokai/commit/63635df4709f0eff85f9f31306f1ab27232a961d))
+
 ## [1.12.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.11.0...fxcore/v1.12.0) (2025-03-18)
 
 
