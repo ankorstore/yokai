@@ -298,7 +298,7 @@
                             <div class="card mb-3 border-success" v-show="taskResultMessage !== '' && taskResultSuccess && !taskRunning">
                                 <div class="card-header"><i class="bi bi-check2-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution success</div>
                                 <div class="card-body bg-{{ .theme }}">
-                                    <p class="card-text">{% taskResultMessage %}</p>
+                                    <pre class="card-text">{% taskResultMessage %}</pre>
                                     <p v-html="computedTaskResultDetails"></p>
                                 </div>
                             </div>
@@ -450,12 +450,18 @@
                         )
                         .then(response => {
                             this.taskResultSuccess = response.data.success;
-                            this.taskResultMessage = response.data.message;
+                            console.log(response.data.message);
+                            const parsedMessage = JSON.parse(response.data.message);
+                            this.taskResultMessage = JSON.stringify(parsedMessage, undefined, 2);
+                            console.log(this.taskResultMessage);
                             this.taskResultDetails = response.data.details;
                         })
                         .catch(error => {
                             this.taskResultSuccess = error.response.data.success;
-                            this.taskResultMessage = error.response.data.message;
+                            console.log(error.response.data.message);
+                            const parsedMessage = JSON.parse(error.response.data.message);
+                            this.taskResultMessage = JSON.stringify(parsedMessage, undefined, 2);
+                            console.log(this.taskResultMessage);
                             this.taskResultDetails = error.response.data.details;
                         })
                         .finally(() => {
