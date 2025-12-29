@@ -451,14 +451,16 @@
                         .then(response => {
                             this.taskResultSuccess = response.data.success;
                             console.log(response.data.message);
-                            this.taskResultMessage = JSON.stringify(response.data.message, undefined, 2);
+                            const parsedMessage = JSON.parse(response.data.message);
+                            this.taskResultMessage = JSON.stringify(parsedMessage, undefined, 2);
                             console.log(this.taskResultMessage);
                             this.taskResultDetails = response.data.details;
                         })
                         .catch(error => {
                             this.taskResultSuccess = error.response.data.success;
                             console.log(error.response.data.message);
-                            this.taskResultMessage = JSON.stringify(error.response.data.message, undefined, 2);
+                            const parsedMessage = JSON.parse(error.response.data.message);
+                            this.taskResultMessage = JSON.stringify(parsedMessage, undefined, 2);
                             console.log(this.taskResultMessage);
                             this.taskResultDetails = error.response.data.details;
                         })
