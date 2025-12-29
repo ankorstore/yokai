@@ -21,6 +21,23 @@ type Task interface {
 	Run(ctx context.Context, input []byte) TaskResult
 }
 
+type TaskWithTemplateSettings interface {
+	TemplateSettings(settings TaskTemplateSettings) TaskTemplateSettings
+}
+
+type TaskTemplateSettings struct {
+	Placeholder  string
+	DefaultValue string
+	Rows         int
+}
+
+func DefaultTaskTemplateSettings() TaskTemplateSettings {
+	return TaskTemplateSettings{
+		Placeholder: "Optional input...",
+		Rows:        1,
+	}
+}
+
 // TaskRegistry is a registry of Task implementations.
 type TaskRegistry struct {
 	tasks map[string]Task
@@ -56,6 +73,20 @@ func (r *TaskRegistry) Names() []string {
 	sort.Strings(names)
 
 	return names
+}
+
+func (r *TaskRegistry) TemplateSettings() map[string]TaskTemplateSettings {
+	settings := make(map[string]TaskTemplateSettings)
+
+	for name, t := range r.tasks {
+		s := DefaultTaskTemplateSettings()
+		if task, ok := t.(TaskWithTemplateSettings); ok {
+			s = task.TemplateSettings(s)
+		}
+		settings[name] = s
+	}
+
+	return settings
 }
 
 // Run runs a specific Task.

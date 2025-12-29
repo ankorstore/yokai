@@ -25,6 +25,7 @@ func TestTaskRegistry(t *testing.T) {
 			Tasks: []fxcore.Task{
 				tasks.NewSuccessTask(cfg),
 				tasks.NewErrorTask(),
+				tasks.NewTemplateSettingsTask(),
 			},
 		})
 	}
@@ -34,7 +35,7 @@ func TestTaskRegistry(t *testing.T) {
 
 		registry := createRegistry(t)
 
-		assert.Equal(t, []string{"error", "success"}, registry.Names())
+		assert.Equal(t, []string{"error", "success", "template-settings"}, registry.Names())
 	})
 
 	t.Run("test run with success task", func(t *testing.T) {
@@ -78,5 +79,32 @@ func TestTaskRegistry(t *testing.T) {
 		assert.False(t, res.Success)
 		assert.Equal(t, "task invalid not found", res.Message)
 		assert.Nil(t, res.Details)
+	})
+
+	t.Run("test template settings", func(t *testing.T) {
+		t.Parallel()
+
+		registry := createRegistry(t)
+		settings := registry.TemplateSettings()
+
+		assert.Len(t, settings, 3)
+
+		successSettings, ok := settings["success"]
+		assert.True(t, ok)
+		assert.Equal(t, "Optional input...", successSettings.Placeholder)
+		assert.Equal(t, "", successSettings.DefaultValue)
+		assert.Equal(t, 1, successSettings.Rows)
+
+		errorSettings, ok := settings["error"]
+		assert.True(t, ok)
+		assert.Equal(t, "Optional input...", errorSettings.Placeholder)
+		assert.Equal(t, "", errorSettings.DefaultValue)
+		assert.Equal(t, 1, errorSettings.Rows)
+
+		templateSettings, ok := settings["template-settings"]
+		assert.True(t, ok)
+		assert.Equal(t, "Custom placeholder", templateSettings.Placeholder)
+		assert.Equal(t, "Default content", templateSettings.DefaultValue)
+		assert.Equal(t, 5, templateSettings.Rows)
 	})
 }
