@@ -26,15 +26,17 @@ type TaskWithTemplateSettings interface {
 }
 
 type TaskTemplateSettings struct {
-	Placeholder  string
-	DefaultValue string
-	Rows         int
+	Placeholder   string
+	DefaultValue  string
+	Rows          int
+	EscapeContent bool
 }
 
 func DefaultTaskTemplateSettings() TaskTemplateSettings {
 	return TaskTemplateSettings{
-		Placeholder: "Optional input...",
-		Rows:        1,
+		Placeholder:   "Optional input...",
+		Rows:          1,
+		EscapeContent: true,
 	}
 }
 

@@ -30,6 +30,7 @@ func (t *TemplateSettingsTask) TemplateSettings(settings fxcore.TaskTemplateSett
 	settings.Placeholder = "Custom placeholder"
 	settings.DefaultValue = "Default content"
 	settings.Rows = 5
+	settings.EscapeContent = false
 
 	return settings
 }
