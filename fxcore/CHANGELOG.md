@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.13.0...fxcore/v1.14.0) (2026-01-22)
+
+
+### Features
+
+* **fxcore:** Add HTML content escaping toggle for task results ([#395](https://github.com/ankorstore/yokai/issues/395)) ([10fc835](https://github.com/ankorstore/yokai/commit/10fc835fa4cd884421bfe34e314710b4618ebcdd))
+
 ## [1.13.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.12.0...fxcore/v1.13.0) (2025-12-22)
 
 
