@@ -380,6 +380,11 @@ func Register() fx.Option {
 
 Note: you can also use `AsTasks()` to register several tasks at once.
 
+It'll be then available on the core dashboard for execution:
+
+![](../../assets/images/dash-tasks-light.png#only-light)
+![](../../assets/images/dash-tasks-dark.png#only-dark)
+
 #### Task grouping
 
 If you have many tasks, you can group them in the dashboard sidebar by also implementing the `GroupedTask` interface:
@@ -406,11 +411,6 @@ func (t *ExampleTask) TemplateSettings(settings fxcore.TaskTemplateSettings) fxc
 	return settings
 }
 ```
-
-It'll be then available on the core dashboard for execution:
-
-![](../../assets/images/dash-tasks-light.png#only-light)
-![](../../assets/images/dash-tasks-dark.png#only-dark)
 
 ### Modules
 
