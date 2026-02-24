@@ -110,4 +110,47 @@ func TestTaskRegistry(t *testing.T) {
 		assert.Equal(t, 5, templateSettings.Rows)
 		assert.False(t, templateSettings.EscapeContent)
 	})
+
+	t.Run("test list items without groups", func(t *testing.T) {
+		t.Parallel()
+
+		registry := createRegistry(t)
+		items := registry.ListItems()
+
+		assert.Equal(t, []fxcore.TaskListItem{
+			{Name: "error"},
+			{Name: "success"},
+			{Name: "template-settings"},
+		}, items)
+	})
+
+	t.Run("test list items with groups", func(t *testing.T) {
+		t.Parallel()
+
+		cfg, err := config.NewDefaultConfigFactory().Create(
+			config.WithFilePaths("./testdata/config"),
+		)
+		assert.NoError(t, err)
+
+		registry := fxcore.NewTaskRegistry(fxcore.TaskRegistryParams{
+			Tasks: []fxcore.Task{
+				tasks.NewSuccessTask(cfg),                    // standalone: "success"
+				tasks.NewGroupedTask("alpha", "my group"),    // group "my group"
+				tasks.NewGroupedTask("beta", "my group"),     // group "my group"
+				tasks.NewGroupedTask("gamma", "other group"), // group "other group"
+				tasks.NewErrorTask(),                         // standalone: "error"
+			},
+		})
+
+		items := registry.ListItems()
+
+		// Items sorted by name: "error", "my group", "other group", "success"
+		// Tasks within groups are in alphabetical order (from r.Names() iteration)
+		assert.Equal(t, []fxcore.TaskListItem{
+			{Name: "error"},
+			{Name: "my group", IsGroup: true, Tasks: []string{"alpha", "beta"}},
+			{Name: "other group", IsGroup: true, Tasks: []string{"gamma"}},
+			{Name: "success"},
+		}, items)
+	})
 }

@@ -124,11 +124,26 @@
                             <i class="bi bi-clipboard2-check"></i>&nbsp;&nbsp;Tasks
                         </div>
                         <div class="list-group list-group-flush">
-                            {{ range $taskName := .tasksNames }}
-                            {{ $settings := index $.tasksTemplateSettings $taskName }}
-                            <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Task {{ $taskName }}" data-title='<i class="bi bi-clipboard2"></i>&nbsp;&nbsp;Task {{ $taskName }}' data-type="task" data-task="{{ $taskName }}" data-view="task" data-placeholder="{{ $settings.Placeholder }}" data-default-value="{{ $settings.DefaultValue }}" data-rows="{{ $settings.Rows }}" data-escape-content="{{ $settings.EscapeContent }}">
-                                <span><i class="bi bi-clipboard2"></i>&nbsp;&nbsp;{{ $taskName }}</span>
+                            {{ range $i, $item := .tasksItems }}
+                            {{ if $item.IsGroup }}
+                            <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#task-group-{{ $i }}" role="button" aria-expanded="false" aria-controls="task-group-{{ $i }}">
+                                <span><i class="bi bi-folder2"></i>&nbsp;&nbsp;{{ $item.Name }}</span>
+                                <i class="bi bi-chevron-down"></i>
                             </a>
+                            <div class="collapse" id="task-group-{{ $i }}">
+                                {{ range $taskName := $item.Tasks }}
+                                {{ $settings := index $.tasksTemplateSettings $taskName }}
+                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ps-4" title="Task {{ $taskName }}" data-title='<i class="bi bi-clipboard2"></i>&nbsp;&nbsp;Task {{ $taskName }}' data-type="task" data-task="{{ $taskName }}" data-view="task" data-placeholder="{{ $settings.Placeholder }}" data-default-value="{{ $settings.DefaultValue }}" data-rows="{{ $settings.Rows }}" data-escape-content="{{ $settings.EscapeContent }}">
+                                    <span><i class="bi bi-clipboard2"></i>&nbsp;&nbsp;{{ $taskName }}</span>
+                                </a>
+                                {{ end }}
+                            </div>
+                            {{ else }}
+                            {{ $settings := index $.tasksTemplateSettings $item.Name }}
+                            <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Task {{ $item.Name }}" data-title='<i class="bi bi-clipboard2"></i>&nbsp;&nbsp;Task {{ $item.Name }}' data-type="task" data-task="{{ $item.Name }}" data-view="task" data-placeholder="{{ $settings.Placeholder }}" data-default-value="{{ $settings.DefaultValue }}" data-rows="{{ $settings.Rows }}" data-escape-content="{{ $settings.EscapeContent }}">
+                                <span><i class="bi bi-clipboard2"></i>&nbsp;&nbsp;{{ $item.Name }}</span>
+                            </a>
+                            {{ end }}
                             {{ else }}
                             <a class="list-group-item list-group-item-action disabled" aria-disabled="true">
                                 <i class="bi bi-slash-circle"></i>&nbsp;&nbsp;n/a

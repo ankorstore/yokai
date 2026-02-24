@@ -21,6 +21,10 @@ type Task interface {
 	Run(ctx context.Context, input []byte) TaskResult
 }
 
+type GroupedTask interface {
+	Group() string
+}
+
 type TaskWithTemplateSettings interface {
 	TemplateSettings(settings TaskTemplateSettings) TaskTemplateSettings
 }
@@ -75,6 +79,38 @@ func (r *TaskRegistry) Names() []string {
 	sort.Strings(names)
 
 	return names
+}
+
+// TaskListItem represents either a standalone task or a group of tasks in the dashboard sidebar.
+type TaskListItem struct {
+	Name    string
+	IsGroup bool
+	Tasks   []string
+}
+
+// ListItems returns the list of TaskListItem for the dashboard sidebar, sorted by name, collapsing
+// tasks that share the same group under a single group entry.
+func (r *TaskRegistry) ListItems() []TaskListItem {
+	groups := make(map[string][]string)
+	var items []TaskListItem
+
+	for _, name := range r.Names() {
+		if gt, ok := r.tasks[name].(GroupedTask); ok {
+			groups[gt.Group()] = append(groups[gt.Group()], name)
+		} else {
+			items = append(items, TaskListItem{Name: name})
+		}
+	}
+
+	for group, tasks := range groups {
+		items = append(items, TaskListItem{Name: group, IsGroup: true, Tasks: tasks})
+	}
+
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].Name < items[j].Name
+	})
+
+	return items
 }
 
 func (r *TaskRegistry) TemplateSettings() map[string]TaskTemplateSettings {

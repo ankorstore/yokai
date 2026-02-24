@@ -380,6 +380,33 @@ func Register() fx.Option {
 
 Note: you can also use `AsTasks()` to register several tasks at once.
 
+#### Task grouping
+
+If you have many tasks, you can group them in the dashboard sidebar by also implementing the `GroupedTask` interface:
+
+```go title="internal/tasks/example.go"
+func (t *ExampleTask) Group() string {
+	return "my group"
+}
+```
+
+Tasks sharing the same group name will be collapsed under a single expandable entry in the sidebar, sorted alphabetically by group name alongside standalone tasks.
+
+#### Input customisation
+
+By default, each task is rendered in the dashboard with a single-row textarea and a generic placeholder. You can customise this by implementing the `TaskWithTemplateSettings` interface:
+
+```go title="internal/tasks/example.go"
+func (t *ExampleTask) TemplateSettings(settings fxcore.TaskTemplateSettings) fxcore.TaskTemplateSettings {
+	settings.Placeholder   = "Enter a user ID..."  // input placeholder text (default: "Optional input...")
+	settings.DefaultValue  = "42"                  // pre-filled input value (default: "")
+	settings.Rows          = 5                     // number of textarea rows (default: 1)
+	settings.EscapeContent = false                 // set to false to render result message as HTML (default: true)
+
+	return settings
+}
+```
+
 It'll be then available on the core dashboard for execution:
 
 ![](../../assets/images/dash-tasks-light.png#only-light)
