@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.14.0...fxcore/v1.15.0) (2026-02-24)
+
+
+### Features
+
+* **fxcore:** Add task grouping support to dashboard sidebar ([#397](https://github.com/ankorstore/yokai/issues/397)) ([492f04b](https://github.com/ankorstore/yokai/commit/492f04bfdd4d8529a7db7c2a0e8826e1a3722127))
+
 ## [1.14.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.13.0...fxcore/v1.14.0) (2026-01-22)
 
 
