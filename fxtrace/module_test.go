@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/ankorstore/yokai/fxconfig"
+	"github.com/ankorstore/yokai/fxlog"
 	"github.com/ankorstore/yokai/fxtrace"
 	"github.com/ankorstore/yokai/fxtrace/testdata/factory"
 	"github.com/ankorstore/yokai/trace/tracetest"
@@ -28,6 +29,7 @@ func TestModuleWithTestEnv(t *testing.T) {
 		t,
 		fx.NopLogger,
 		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fx.Invoke(func(tracerProvider oteltrace.TracerProvider) {
 			_, span := tracerProvider.Tracer("test tracer").Start(
@@ -55,6 +57,7 @@ func TestModuleSafetyFallbackOnNoopProcessor(t *testing.T) {
 		t,
 		fx.NopLogger,
 		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fx.Invoke(func(tracerProvider oteltrace.TracerProvider) {
 			_, span := tracerProvider.Tracer("test tracer").Start(
@@ -81,6 +84,7 @@ func TestModuleWithTestProcessorAndParentBasedAlwaysOnSampler(t *testing.T) {
 		t,
 		fx.NopLogger,
 		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fx.Invoke(func(tracerProvider oteltrace.TracerProvider) {
 			_, span := tracerProvider.Tracer("test tracer").Start(
@@ -107,6 +111,7 @@ func TestModuleWithTestProcessorAndParentBasedAlwaysOffSampler(t *testing.T) {
 		t,
 		fx.NopLogger,
 		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fx.Invoke(func(tracerProvider oteltrace.TracerProvider) {
 			_, span := tracerProvider.Tracer("test tracer").Start(
@@ -133,6 +138,7 @@ func TestModuleWithTestProcessorAndParentBasedTraceIdRatioSampler(t *testing.T) 
 		t,
 		fx.NopLogger,
 		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fx.Invoke(func(tracerProvider oteltrace.TracerProvider) {
 			_, span := tracerProvider.Tracer("test tracer").Start(
@@ -159,6 +165,7 @@ func TestModuleWithTestProcessorAndAlwaysOnSampler(t *testing.T) {
 		t,
 		fx.NopLogger,
 		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fx.Invoke(func(tracerProvider oteltrace.TracerProvider) {
 			_, span := tracerProvider.Tracer("test tracer").Start(
@@ -185,6 +192,7 @@ func TestModuleWithTestProcessorAndAlwaysOffSampler(t *testing.T) {
 		t,
 		fx.NopLogger,
 		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fx.Invoke(func(tracerProvider oteltrace.TracerProvider) {
 			_, span := tracerProvider.Tracer("test tracer").Start(
@@ -211,6 +219,7 @@ func TestModuleWithTestProcessorAndTraceIdRatioSampler(t *testing.T) {
 		t,
 		fx.NopLogger,
 		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fx.Invoke(func(tracerProvider oteltrace.TracerProvider) {
 			_, span := tracerProvider.Tracer("test tracer").Start(
@@ -237,6 +246,7 @@ func TestModuleWithNoopProcessorAndAlwaysOnSampler(t *testing.T) {
 		t,
 		fx.NopLogger,
 		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fx.Invoke(func(tracerProvider oteltrace.TracerProvider) {
 			_, span := tracerProvider.Tracer("test tracer").Start(
@@ -263,6 +273,7 @@ func TestModuleWithStdoutProcessorAndAlwaysOffSampler(t *testing.T) {
 		t,
 		fx.NopLogger,
 		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fx.Invoke(func(tracerProvider oteltrace.TracerProvider) {
 			_, span := tracerProvider.Tracer("test tracer").Start(
@@ -288,6 +299,7 @@ func TestModuleDecoration(t *testing.T) {
 		t,
 		fx.NopLogger,
 		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
 		fxtrace.FxTraceModule,
 		fx.Decorate(factory.NewTestTracerProviderFactory),
 		fx.Invoke(func(tracerProvider oteltrace.TracerProvider) {
@@ -302,4 +314,53 @@ func TestModuleDecoration(t *testing.T) {
 	).RequireStart().RequireStop()
 
 	tracetest.AssertHasTraceSpan(t, exporter, "test span", attribute.String("test attribute name", "test attribute value"))
+}
+
+// TestModuleStopSwallowsFlushAndShutdownErrors verifies that a failing
+// ForceFlush/Shutdown from the underlying span processor does NOT propagate
+// out of fx.App.Stop(). OTel flush/shutdown is best-effort by convention; a
+// saturated or restarting collector must not turn a graceful pod shutdown into
+// a non-zero exit (which Kubernetes interprets as a crashed pod).
+func TestModuleStopSwallowsFlushAndShutdownErrors(t *testing.T) {
+	// Use a non-test processor type so the OnStop hook calls both ForceFlush
+	// AND Shutdown (the test-processor branch skips Shutdown).
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("PROCESSOR_TYPE", "noop")
+	t.Setenv("SAMPLER_TYPE", "always-on")
+
+	app := fxtest.New(
+		t,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fx.Decorate(factory.NewFailingTracerProviderFactory),
+		fx.Invoke(func(oteltrace.TracerProvider) {}),
+	).RequireStart()
+
+	// fx.App.Stop must return nil even though both ForceFlush and Shutdown
+	// of the underlying tracer provider return an error.
+	assert.NoError(t, app.Stop(context.Background()))
+}
+
+// TestModuleStopSwallowsFlushErrorOnTestProcessor covers the test-processor
+// branch where Shutdown is skipped but ForceFlush still runs. A failing
+// ForceFlush must not surface from Stop().
+func TestModuleStopSwallowsFlushErrorOnTestProcessor(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("PROCESSOR_TYPE", "noop")
+	t.Setenv("SAMPLER_TYPE", "always-on")
+
+	app := fxtest.New(
+		t,
+		fx.NopLogger,
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fx.Decorate(factory.NewFailingTracerProviderFactory),
+		fx.Invoke(func(oteltrace.TracerProvider) {}),
+	).RequireStart()
+
+	assert.NoError(t, app.Stop(context.Background()))
 }
