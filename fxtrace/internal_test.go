@@ -71,6 +71,7 @@ func TestBestEffortStop_SwallowsErrorAndLogs(t *testing.T) {
 	var called bool
 	bestEffortStop(context.Background(), "boom", func(context.Context) error {
 		called = true
+
 		return errors.New("simulated failure")
 	}, logger)
 
@@ -86,6 +87,7 @@ func TestBestEffortStop_RespectsBoundedTimeout(t *testing.T) {
 		d, ok := ctx.Deadline()
 		assert.True(t, ok, "bestEffortStop must pass a bounded context")
 		observedDeadline = d
+
 		return nil
 	}, logger)
 
