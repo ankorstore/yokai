@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/fxtrace/v1.2.0...fxtrace/v1.3.0) (2026-05-22)
+
+
+### Bug Fixes
+
+* **fxtrace:** Treat tracer provider `ForceFlush`/`Shutdown` as best-effort during `OnStop`. Errors (e.g. OTLP collector overloaded, `sending_queue is full`) are now logged and swallowed instead of propagated to `fx.App.Stop()`, so a saturated collector no longer turns a graceful pod shutdown into a non-zero exit. Both calls are bounded by a short internal timeout so a hanging exporter cannot consume the entire pod termination grace period.
+
+
+### Features
+
+* **fxtrace:** `FxTraceParam` now requires a `*log.Logger` so the module can log suppressed best-effort shutdown errors. Consumers wiring `FxTraceModule` outside `fxcore` must also register `fxlog.FxLogModule`.
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/fxtrace/v1.1.0...fxtrace/v1.2.0) (2024-03-14)
 
 

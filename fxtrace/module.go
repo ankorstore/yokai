@@ -3,8 +3,10 @@ package fxtrace
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/ankorstore/yokai/config"
+	"github.com/ankorstore/yokai/log"
 	"github.com/ankorstore/yokai/trace"
 	"github.com/ankorstore/yokai/trace/tracetest"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
@@ -17,6 +19,10 @@ import (
 
 // ModuleName is the module name.
 const ModuleName = "trace"
+
+// shutdownCap bounds best-effort flush/shutdown calls so a hanging or
+// saturated collector cannot consume the entire pod termination grace period.
+const shutdownCap = 5 * time.Second
 
 // FxTraceModule is the [Fx] trace module.
 //
@@ -40,6 +46,7 @@ type FxTraceParam struct {
 	Factory   trace.TracerProviderFactory
 	Exporter  tracetest.TestTraceExporter
 	Config    *config.Config
+	Logger    *log.Logger
 }
 
 // NewFxTracerProvider returns a [otelsdktrace.TracerProvider].
@@ -68,16 +75,17 @@ func NewFxTracerProvider(p FxTraceParam) (*otelsdktrace.TracerProvider, error) {
 		return nil, err
 	}
 
+	logger := log.FromZerolog(p.Logger.ToZerolog().With().Str("module", ModuleName).Logger())
+
 	p.LifeCycle.Append(fx.Hook{
 		OnStop: func(ctx context.Context) error {
-			if err = tracerProvider.ForceFlush(ctx); err != nil {
-				return err
-			}
+			// Telemetry flush/shutdown is best-effort by OTel convention: a
+			// saturated or restarting collector must not turn a graceful pod
+			// shutdown into a non-zero exit. Log and swallow.
+			bestEffortStop(ctx, "force flush", tracerProvider.ForceFlush, logger)
 
 			if fetchSpanProcessorType(p) != trace.TestSpanProcessor {
-				if err = tracerProvider.Shutdown(ctx); err != nil {
-					return err
-				}
+				bestEffortStop(ctx, "shutdown", tracerProvider.Shutdown, logger)
 			}
 
 			return nil
@@ -85,6 +93,37 @@ func NewFxTracerProvider(p FxTraceParam) (*otelsdktrace.TracerProvider, error) {
 	})
 
 	return tracerProvider, nil
+}
+
+// bestEffortStop runs a best-effort telemetry operation under a bounded context
+// and logs any error without propagating it.
+func bestEffortStop(parent context.Context, name string, fn func(context.Context) error, logger *log.Logger) {
+	ctx, cancel := boundedContext(parent, shutdownCap)
+	defer cancel()
+
+	if err := fn(ctx); err != nil {
+		logger.Warn().Err(err).Msgf("tracer provider %s failed (suppressed)", name)
+	}
+}
+
+// boundedContext derives a child context capped at the smaller of `limit` and
+// half of the parent's remaining deadline. The fraction leaves room for any
+// subsequent shutdown work so a single hanging exporter cannot consume the
+// entire grace period.
+func boundedContext(parent context.Context, limit time.Duration) (context.Context, context.CancelFunc) {
+	timeout := limit
+
+	if deadline, ok := parent.Deadline(); ok {
+		if half := time.Until(deadline) / 2; half > 0 && half < timeout {
+			timeout = half
+		}
+	}
+
+	if timeout <= 0 {
+		return context.WithCancel(parent)
+	}
+
+	return context.WithTimeout(parent, timeout)
 }
 
 func fetchSpanProcessorType(p FxTraceParam) trace.SpanProcessor {
