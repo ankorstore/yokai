@@ -29,3 +29,5 @@ jobs:
         secrets: inherit
         with:
             module: "config"
+            go_version: "1.24"
+            linter_version: "1.64.8"
