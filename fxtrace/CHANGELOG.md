@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/ankorstore/yokai/compare/fxtrace/v1.2.0...fxtrace/v1.2.1) (2026-06-18)
+
+
+### Bug Fixes
+
+* **fxtrace:** Treat tracer provider shutdown as best-effort ([#400](https://github.com/ankorstore/yokai/issues/400)) ([7e8179c](https://github.com/ankorstore/yokai/commit/7e8179cf7557abd61a154479a8ace62d37601ed2))
+* **fxtrace:** Treat tracer provider shutdown as best-effort in OnStop ([623fdb8](https://github.com/ankorstore/yokai/commit/623fdb8578c7d46b1f294e6d25d7ea3d37a36303))
+
 ## [1.3.0](https://github.com/ankorstore/yokai/compare/fxtrace/v1.2.0...fxtrace/v1.3.0) (2026-05-22)
 
 
