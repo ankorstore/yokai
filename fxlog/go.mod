@@ -1,6 +1,8 @@
 module github.com/ankorstore/yokai/fxlog
 
-go 1.20
+go 1.26.0
+
+toolchain go1.26.4
 
 require (
 	github.com/ankorstore/yokai/config v1.3.0
