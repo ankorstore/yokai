@@ -51,11 +51,11 @@ jobs:
         - "fxworker"
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ inputs.go_version }}
       - name: Install dependencies for module ${{ matrix.module }}
@@ -71,7 +71,7 @@ jobs:
         working-directory: ${{ matrix.module }}
         run: rm coverage.tmp.out
       - name: Codecov for module ${{ matrix.module }}
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v7
         with:
           fail_ci_if_error: false
           flags: ${{ matrix.module }}
