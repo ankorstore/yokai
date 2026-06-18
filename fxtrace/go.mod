@@ -1,6 +1,8 @@
 module github.com/ankorstore/yokai/fxtrace
 
-go 1.20
+go 1.26.0
+
+toolchain go1.26.4
 
 require (
 	github.com/ankorstore/yokai/config v1.3.0
@@ -8,6 +10,7 @@ require (
 	github.com/ankorstore/yokai/fxlog v1.1.0
 	github.com/ankorstore/yokai/log v1.2.0
 	github.com/ankorstore/yokai/trace v1.2.0
+	github.com/rs/zerolog v1.32.0
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/otel v1.24.0
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.24.0
@@ -31,7 +34,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/rs/zerolog v1.32.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
