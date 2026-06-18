@@ -29,5 +29,5 @@ jobs:
         secrets: inherit
         with:
             module: "fxmcpserver"
-            go_version: "1.23"
+            go_version: "1.26"
             linter_version: "1.64.8"
