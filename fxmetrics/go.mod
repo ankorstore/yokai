@@ -1,8 +1,11 @@
 module github.com/ankorstore/yokai/fxmetrics
 
-go 1.20
+go 1.26.0
+
+toolchain go1.26.4
 
 require (
+	github.com/ankorstore/yokai/config v1.3.0
 	github.com/ankorstore/yokai/fxconfig v1.1.0
 	github.com/ankorstore/yokai/fxlog v1.1.0
 	github.com/ankorstore/yokai/log v1.2.0
@@ -12,7 +15,6 @@ require (
 )
 
 require (
-	github.com/ankorstore/yokai/config v1.3.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
