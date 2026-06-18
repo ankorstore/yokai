@@ -40,9 +40,9 @@ func WithGlobalDeferredStartThreshold(threshold float64) WorkerPoolOption {
 }
 
 // WithGlobalMaxExecutionsAttempts is used to specify the global workers max execution attempts.
-func WithGlobalMaxExecutionsAttempts(max int) WorkerPoolOption {
+func WithGlobalMaxExecutionsAttempts(maxAttempts int) WorkerPoolOption {
 	return func(o *PoolOptions) {
-		o.GlobalMaxExecutionsAttempts = max
+		o.GlobalMaxExecutionsAttempts = maxAttempts
 	}
 }
 

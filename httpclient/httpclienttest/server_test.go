@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//nolint:goconst,maintidx
+//nolint:maintidx
 func TestTestHTTPServer(t *testing.T) {
 	t.Parallel()
 

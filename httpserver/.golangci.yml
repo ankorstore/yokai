@@ -53,7 +53,6 @@ linters:
     - promlinter
     - reassign
     - staticcheck
-    - tenv
     - thelper
     - tparallel
     - typecheck
