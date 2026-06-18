@@ -1,6 +1,8 @@
 module github.com/ankorstore/yokai/healthcheck
 
-go 1.24
+go 1.26.0
+
+toolchain go1.26.4
 
 require github.com/stretchr/testify v1.11.1
 

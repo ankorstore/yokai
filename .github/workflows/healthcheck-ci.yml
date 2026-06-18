@@ -29,5 +29,5 @@ jobs:
         secrets: inherit
         with:
             module: "healthcheck"
-            go_version: "1.24"
+            go_version: "1.26"
             linter_version: "1.64.8"
