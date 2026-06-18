@@ -1,8 +1,8 @@
 module github.com/ankorstore/yokai/config
 
-go 1.24.0
+go 1.26.0
 
-toolchain go1.24.6
+toolchain go1.26.4
 
 require (
 	github.com/spf13/viper v1.21.0
