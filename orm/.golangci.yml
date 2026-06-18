@@ -37,7 +37,7 @@ linters:
     - importas
     - ineffassign
     - interfacebloat
-    - logrlint
+    - loggercheck
     - maintidx
     - makezero
     - misspell
@@ -52,7 +52,6 @@ linters:
     - promlinter
     - reassign
     - staticcheck
-    - tenv
     - thelper
     - tparallel
     - typecheck

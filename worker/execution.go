@@ -101,11 +101,11 @@ func (e *WorkerExecution) MaxExecutionsAttempts() int {
 }
 
 // SetMaxExecutionsAttempts sets the [WorkerExecution] max execution attempts.
-func (e *WorkerExecution) SetMaxExecutionsAttempts(max int) *WorkerExecution {
+func (e *WorkerExecution) SetMaxExecutionsAttempts(maxAttempts int) *WorkerExecution {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()
 
-	e.maxExecutionsAttempts = max
+	e.maxExecutionsAttempts = maxAttempts
 
 	return e
 }
