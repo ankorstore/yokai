@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/fxorm/v1.2.0...fxorm/v1.3.0) (2026-06-19)
+
+
+### Features
+
+* bump Layer-4 modules to Go 1.26 ([#420](https://github.com/ankorstore/yokai/issues/420)) ([4fb94ad](https://github.com/ankorstore/yokai/commit/4fb94ad3082d3c4f4c03a6ce78c2b69f5b49cc5d))
+
 ## [1.2.0](https://github.com/ankorstore/yokai/compare/fxorm/v1.1.0...fxorm/v1.2.0) (2024-05-28)
 
 
