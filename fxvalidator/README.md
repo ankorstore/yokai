@@ -1,5 +1,7 @@
 # Fx Validator Module
 
+Requires Go 1.26+.
+
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxvalidator-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxvalidator-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxvalidator)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxvalidator)
 [![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR&flag=fxvalidator)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/fxvalidator)

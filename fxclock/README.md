@@ -1,5 +1,7 @@
 # Fx Clock Module
 
+Requires Go 1.26+.
+
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxclock-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxclock-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxclock)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxclock)
 [![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR&flag=fxclock)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/fxclock)
