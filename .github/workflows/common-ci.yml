@@ -10,11 +10,11 @@ on:
       go_version:
         required: false
         type: string
-        default: "1.20.0"
+        default: "1.26"
       linter_version:
         required: false
         type: string
-        default: "1.55.2"
+        default: "1.64.8"
 
 permissions:
   contents: read
