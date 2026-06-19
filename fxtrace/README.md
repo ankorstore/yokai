@@ -1,5 +1,7 @@
 # Fx Trace Module
 
+Requires Go 1.26+.
+
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxtrace-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxtrace-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxtrace)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxtrace)
 [![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR&flag=fxtrace)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/fxtrace)
