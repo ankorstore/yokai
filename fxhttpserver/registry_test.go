@@ -492,3 +492,47 @@ func TestResolveErrorHandlerSuccess(t *testing.T) {
 
 	assert.Equal(t, "echo.HTTPErrorHandler", fmt.Sprintf("%T", resolvedErrorHandlers[0].Handle()))
 }
+
+func TestResolveMiddlewaresFailureOnNonStringMiddlewareName(t *testing.T) {
+	t.Parallel()
+
+	middlewareDefinitionMock := new(testMiddlewareDefinitionMock)
+	middlewareDefinitionMock.On("Concrete").Return(false)
+	middlewareDefinitionMock.On("Middleware").Return(123)
+	middlewareDefinitionMock.On("Kind").Return(fxhttpserver.GlobalUse)
+
+	param := fxhttpserver.FxHttpServerRegistryParam{
+		Middlewares: []fxhttpserver.Middleware{},
+		MiddlewareDefinitions: []fxhttpserver.MiddlewareDefinition{
+			middlewareDefinitionMock,
+		},
+	}
+	registry := fxhttpserver.NewFxHttpServerRegistry(param)
+
+	_, err := registry.ResolveMiddlewares()
+	assert.Error(t, err)
+	assert.Equal(t, "middleware definition is not a registered middleware name", err.Error())
+}
+
+func TestResolveHandlersFailureOnNonStringHandlerName(t *testing.T) {
+	t.Parallel()
+
+	handlerDefinitionMock := new(testHandlerDefinitionMock)
+	handlerDefinitionMock.On("Concrete").Return(false)
+	handlerDefinitionMock.On("Method").Return("GET")
+	handlerDefinitionMock.On("Path").Return("/path")
+	handlerDefinitionMock.On("Handler").Return(123)
+	handlerDefinitionMock.On("Middlewares").Return([]fxhttpserver.MiddlewareDefinition{})
+
+	param := fxhttpserver.FxHttpServerRegistryParam{
+		Handlers: []fxhttpserver.Handler{},
+		HandlerDefinitions: []fxhttpserver.HandlerDefinition{
+			handlerDefinitionMock,
+		},
+	}
+	registry := fxhttpserver.NewFxHttpServerRegistry(param)
+
+	_, err := registry.ResolveHandlers()
+	assert.Error(t, err)
+	assert.Equal(t, "handler definition is not a registered handler name", err.Error())
+}

@@ -70,9 +70,9 @@ func TestModule(t *testing.T) {
 			// cron jobs execution tracker
 			fx.Provide(tracker.NewCronExecutionTracker),
 			// cron jobs registration
-			fxcron.AsCronJob(job.NewSuccessCron, `*/1 * * * * *`, gocron.WithLimitedRuns(uint(expectedSuccessRuns))),
-			fxcron.AsCronJob(job.NewErrorCron, `*/1 * * * * *`, gocron.WithLimitedRuns(uint(expectedErrorRuns))),
-			fxcron.AsCronJob(job.NewPanicCron, `*/1 * * * * *`, gocron.WithLimitedRuns(uint(expectedPanicRuns))),
+			fxcron.AsCronJob(job.NewSuccessCron, `*/1 * * * * *`, gocron.WithLimitedRuns(uint(expectedSuccessRuns))), //nolint:gosec
+			fxcron.AsCronJob(job.NewErrorCron, `*/1 * * * * *`, gocron.WithLimitedRuns(uint(expectedErrorRuns))),     //nolint:gosec
+			fxcron.AsCronJob(job.NewPanicCron, `*/1 * * * * *`, gocron.WithLimitedRuns(uint(expectedPanicRuns))),     //nolint:gosec
 		),
 		// deterministic generator for cron job execution id
 		fx.Decorate(uuid.NewFxTestUuidGeneratorFactory),

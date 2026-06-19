@@ -168,7 +168,12 @@ func (r *HttpServerRegistry) resolveMiddlewareDefinition(middlewareDefinition Mi
 		}
 	}
 
-	registeredMiddleware, err := r.lookupRegisteredMiddleware(middlewareDefinition.Middleware().(string))
+	middlewareName, ok := middlewareDefinition.Middleware().(string)
+	if !ok {
+		return nil, fmt.Errorf("middleware definition is not a registered middleware name")
+	}
+
+	registeredMiddleware, err := r.lookupRegisteredMiddleware(middlewareName)
 	if err != nil {
 		return nil, fmt.Errorf("cannot lookup registered middleware")
 	}
@@ -200,7 +205,12 @@ func (r *HttpServerRegistry) resolveHandlerDefinition(handlerDefinition HandlerD
 		}
 	}
 
-	registeredHandler, err := r.lookupRegisteredHandler(handlerDefinition.Handler().(string))
+	handlerName, ok := handlerDefinition.Handler().(string)
+	if !ok {
+		return nil, fmt.Errorf("handler definition is not a registered handler name")
+	}
+
+	registeredHandler, err := r.lookupRegisteredHandler(handlerName)
 	if err != nil {
 		return nil, fmt.Errorf("cannot lookup registered handler")
 	}
