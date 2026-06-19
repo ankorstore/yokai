@@ -1,5 +1,7 @@
 # Fx Log Module
 
+Requires Go 1.26+.
+
 [![ci](https://github.com/ankorstore/yokai/actions/workflows/fxlog-ci.yml/badge.svg)](https://github.com/ankorstore/yokai/actions/workflows/fxlog-ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/ankorstore/yokai/fxlog)](https://goreportcard.com/report/github.com/ankorstore/yokai/fxlog)
 [![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR&flag=fxlog)](https://app.codecov.io/gh/ankorstore/yokai/tree/main/fxlog)
