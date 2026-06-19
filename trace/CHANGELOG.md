@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/ankorstore/yokai/compare/trace/v1.4.0...trace/v1.5.0) (2026-06-19)
+
+
+### Features
+
+* trigger Layer-1 and Layer-3 module releases ([#425](https://github.com/ankorstore/yokai/issues/425)) ([440f917](https://github.com/ankorstore/yokai/commit/440f917f90ab066b1be66b25cf9990a0e6912c2f))
+
+
+### Miscellaneous Chores
+
+* **trace:** drop deprecated tenv and rename logrlint to loggercheck ([c428a96](https://github.com/ankorstore/yokai/commit/c428a96b0f20f60c8a1ac98419846582d4fc1bd4))
+
 ## [1.4.0](https://github.com/ankorstore/yokai/compare/trace/v1.3.0...trace/v1.4.0) (2025-03-05)
 
 
