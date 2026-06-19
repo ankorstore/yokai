@@ -18,7 +18,7 @@ func AsSQLHook(constructor any) fx.Option {
 
 // AsSQLHooks registers a list of [sql.Hook] into Fx.
 func AsSQLHooks(constructors ...any) fx.Option {
-	options := []fx.Option{}
+	options := make([]fx.Option, 0, len(constructors))
 
 	for _, constructor := range constructors {
 		options = append(options, AsSQLHook(constructor))
@@ -40,7 +40,7 @@ func AsSQLSeed(constructor any) fx.Option {
 
 // AsSQLSeeds registers a list of [Seed] into Fx.
 func AsSQLSeeds(constructors ...any) fx.Option {
-	options := []fx.Option{}
+	options := make([]fx.Option, 0, len(constructors))
 
 	for _, constructor := range constructors {
 		options = append(options, AsSQLSeed(constructor))

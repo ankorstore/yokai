@@ -24,6 +24,8 @@ func NewJsonErrorHandler(obfuscate bool, stack bool) *JsonErrorHandler {
 }
 
 // Handle handles errors.
+//
+//nolint:goconst // "message" is a stable JSON response field name; extracting a constant adds noise without value
 func (h *JsonErrorHandler) Handle() echo.HTTPErrorHandler {
 	return func(err error, c echo.Context) {
 		logger := log.CtxLogger(c.Request().Context())

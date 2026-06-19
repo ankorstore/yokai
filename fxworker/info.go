@@ -28,7 +28,7 @@ func (i *FxWorkerModuleInfo) Data() map[string]interface{} {
 	data := map[string]interface{}{}
 
 	for name, execution := range i.pool.Executions() {
-		var events []map[string]string
+		events := make([]map[string]string, 0, len(execution.Events()))
 		for _, event := range execution.Events() {
 			events = append(events, map[string]string{
 				"execution": event.ExecutionId(),

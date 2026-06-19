@@ -101,7 +101,7 @@ func (p *OrmTracerPlugin) after() func(*gorm.DB) {
 
 		var attrs []attribute.KeyValue
 
-		if sys := semconv.DBSystemKey.String(tx.Dialector.Name()); sys.Valid() {
+		if sys := semconv.DBSystemKey.String(tx.Name()); sys.Valid() {
 			attrs = append(attrs, sys)
 		}
 
@@ -114,7 +114,7 @@ func (p *OrmTracerPlugin) after() func(*gorm.DB) {
 			}
 		}
 
-		query := tx.Dialector.Explain(tx.Statement.SQL.String(), vars...)
+		query := tx.Explain(tx.Statement.SQL.String(), vars...)
 
 		attrs = append(attrs, semconv.DBStatementKey.String(query))
 		if tx.Statement.Table != "" {

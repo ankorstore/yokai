@@ -468,24 +468,27 @@ func withHandlers(coreServer *echo.Echo, p FxCoreParam) (*echo.Echo, error) {
 	if dashboardEnabled || appDebug {
 		// theme
 		coreServer.POST("/theme", func(c echo.Context) error {
-			themeCookie := new(http.Cookie)
-			themeCookie.Name = "theme"
+			value := ThemeLight
 
 			var theme FxCoreDashboardTheme
-			if err = c.Bind(&theme); err != nil {
-				themeCookie.Value = ThemeLight
-			} else {
+			if err = c.Bind(&theme); err == nil {
 				switch theme.Theme {
 				case ThemeDark:
-					themeCookie.Value = ThemeDark
+					value = ThemeDark
 				case ThemeLight:
-					themeCookie.Value = ThemeLight
-				default:
-					themeCookie.Value = ThemeLight
+					value = ThemeLight
 				}
 			}
 
-			c.SetCookie(themeCookie)
+			// theme is a non-sensitive UI preference; Secure intentionally false so the
+			// dashboard works on http://localhost in dev mode.
+			c.SetCookie(&http.Cookie{ //nolint:gosec
+				Name:     "theme",
+				Value:    value,
+				Path:     "/",
+				HttpOnly: true,
+				SameSite: http.SameSiteLaxMode,
+			})
 
 			return c.Redirect(http.StatusMovedPermanently, "/")
 		})

@@ -18,7 +18,7 @@ func AsMetricsCollector(collector prometheus.Collector) fx.Option {
 
 // AsMetricsCollectors registers a list of [prometheus.Collector] into Fx.
 func AsMetricsCollectors(collectors ...prometheus.Collector) fx.Option {
-	registrations := []fx.Option{}
+	registrations := make([]fx.Option, 0, len(collectors))
 
 	for _, collector := range collectors {
 		registrations = append(

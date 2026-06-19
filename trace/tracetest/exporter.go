@@ -47,12 +47,12 @@ func (e *DefaultTestTraceExporter) Reset() TestTraceExporter {
 
 // Spans get the [tracetest.SpanStubs] from the in memory internal exporter.
 func (e *DefaultTestTraceExporter) Spans() tracetest.SpanStubs {
-	return e.InMemoryExporter.GetSpans()
+	return e.GetSpans()
 }
 
 // Span get a specific [tracetest.SpanStub] from the in memory internal exporter by name.
 func (e *DefaultTestTraceExporter) Span(name string) (tracetest.SpanStub, error) {
-	for _, span := range e.InMemoryExporter.GetSpans() {
+	for _, span := range e.GetSpans() {
 		if span.Name == name {
 			return span, nil
 		}
@@ -63,7 +63,7 @@ func (e *DefaultTestTraceExporter) Span(name string) (tracetest.SpanStub, error)
 
 // HasSpan return true if a trace span from the in memory internal buffer is exactly matching provided name and attributes.
 func (e *DefaultTestTraceExporter) HasSpan(expectedName string, expectedAttributes ...attribute.KeyValue) bool {
-	for _, span := range e.InMemoryExporter.GetSpans() {
+	for _, span := range e.GetSpans() {
 		if span.Name == expectedName {
 			if len(expectedAttributes) == 0 {
 				return true
@@ -99,7 +99,7 @@ func (e *DefaultTestTraceExporter) HasSpan(expectedName string, expectedAttribut
 //
 //nolint:cyclop,gocognit,exhaustive
 func (e *DefaultTestTraceExporter) ContainSpan(expectedName string, expectedAttributes ...attribute.KeyValue) bool {
-	for _, span := range e.InMemoryExporter.GetSpans() {
+	for _, span := range e.GetSpans() {
 		if span.Name == expectedName {
 			if len(expectedAttributes) == 0 {
 				return true
