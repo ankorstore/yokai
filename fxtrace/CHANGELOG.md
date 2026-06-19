@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/ankorstore/yokai/compare/fxtrace/v1.2.1...fxtrace/v1.3.0) (2026-06-19)
+
+
+### Features
+
+* trigger Layer-1 and Layer-3 module releases ([#425](https://github.com/ankorstore/yokai/issues/425)) ([440f917](https://github.com/ankorstore/yokai/commit/440f917f90ab066b1be66b25cf9990a0e6912c2f))
+
+
+### Documentation
+
+* **fxtrace:** document Go 1.26 minimum requirement ([35a7c28](https://github.com/ankorstore/yokai/commit/35a7c28bf932158e24e1c1ad8f28a2ca5e80f83c))
+
 ## [1.2.1](https://github.com/ankorstore/yokai/compare/fxtrace/v1.2.0...fxtrace/v1.2.1) (2026-06-18)
 
 
