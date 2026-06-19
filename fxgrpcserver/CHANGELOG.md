@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/ankorstore/yokai/compare/fxgrpcserver/v1.3.1...fxgrpcserver/v1.4.0) (2026-06-19)
+
+
+### Features
+
+* bump Layer-5 modules to Go 1.26 ([#424](https://github.com/ankorstore/yokai/issues/424)) ([afd2846](https://github.com/ankorstore/yokai/commit/afd28463443b826fac17a256d434712735cbae01))
+
 ## [1.3.1](https://github.com/ankorstore/yokai/compare/fxgrpcserver/v1.3.0...fxgrpcserver/v1.3.1) (2025-09-02)
 
 
