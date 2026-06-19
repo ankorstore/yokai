@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/ankorstore/yokai/compare/httpserver/v1.6.0...httpserver/v1.7.0) (2026-06-19)
+
+
+### Features
+
+* bump Layer-2 modules to Go 1.26 ([#408](https://github.com/ankorstore/yokai/issues/408)) ([e8237a0](https://github.com/ankorstore/yokai/commit/e8237a06c1f1ab631dfaf49bd36918f4ce3d98b0))
+
 ## [1.6.0](https://github.com/ankorstore/yokai/compare/httpserver/v1.5.0...httpserver/v1.6.0) (2025-02-12)
 
 
