@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/ankorstore/yokai/compare/fxsql/v1.4.0...fxsql/v1.5.0) (2026-06-19)
+
+
+### Features
+
+* bump Layer-4 modules to Go 1.26 ([#420](https://github.com/ankorstore/yokai/issues/420)) ([4fb94ad](https://github.com/ankorstore/yokai/commit/4fb94ad3082d3c4f4c03a6ce78c2b69f5b49cc5d))
+
 ## [1.4.0](https://github.com/ankorstore/yokai/compare/fxsql/v1.3.0...fxsql/v1.4.0) (2025-12-15)
 
 
