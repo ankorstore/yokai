@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ankorstore/yokai/compare/orm/v1.1.0...orm/v1.2.0) (2026-06-19)
+
+
+### Features
+
+* bump Layer-2 modules to Go 1.26 ([#408](https://github.com/ankorstore/yokai/issues/408)) ([e8237a0](https://github.com/ankorstore/yokai/commit/e8237a06c1f1ab631dfaf49bd36918f4ce3d98b0))
+
 ## [1.1.0](https://github.com/ankorstore/yokai/compare/orm/v1.0.0...orm/v1.1.0) (2024-03-14)
 
 
