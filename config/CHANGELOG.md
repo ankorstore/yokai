@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0](https://github.com/ankorstore/yokai/compare/config/v1.5.0...config/v1.6.0) (2026-06-19)
+
+
+### Features
+
+* trigger Layer-1 and Layer-3 module releases ([#425](https://github.com/ankorstore/yokai/issues/425)) ([440f917](https://github.com/ankorstore/yokai/commit/440f917f90ab066b1be66b25cf9990a0e6912c2f))
+
+
+### Miscellaneous Chores
+
+* **config:** drop deprecated tenv linter ([470ccb1](https://github.com/ankorstore/yokai/commit/470ccb1d62490630e566f10fce5605b9b65aac3c))
+
 ## [1.5.0](https://github.com/ankorstore/yokai/compare/config/v1.4.0...config/v1.5.0) (2024-09-25)
 
 
