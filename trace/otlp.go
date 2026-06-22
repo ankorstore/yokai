@@ -16,10 +16,8 @@ func NewOtlpGrpcClientConnection(ctx context.Context, host string, dialOptions .
 	dialCtx, cancel := context.WithTimeout(ctx, DefaultOtlpGrpcTimeout*time.Second)
 	defer cancel()
 
-	dialContextOptions := []grpc.DialOption{
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	}
-
+	dialContextOptions := make([]grpc.DialOption, 0, 1+len(dialOptions))
+	dialContextOptions = append(dialContextOptions, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	dialContextOptions = append(dialContextOptions, dialOptions...)
 
 	return grpc.DialContext(dialCtx, host, dialContextOptions...)

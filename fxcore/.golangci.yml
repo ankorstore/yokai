@@ -1,7 +1,7 @@
+version: "2"
 run:
   timeout: 5m
   concurrency: 8
-
 linters:
   enable:
     - asasalint
@@ -14,7 +14,6 @@ linters:
     - decorder
     - dogsled
     - durationcheck
-    - errcheck
     - errchkjson
     - errname
     - errorlint
@@ -26,17 +25,13 @@ linters:
     - gocyclo
     - godot
     - godox
-    - gofmt
     - goheader
     - gomoddirectives
-    - gomodguard
+    - gomodguard_v2
     - goprintffuncname
     - gosec
-    - gosimple
-    - govet
     - grouper
     - importas
-    - ineffassign
     - interfacebloat
     - loggercheck
     - maintidx
@@ -50,12 +45,35 @@ linters:
     - predeclared
     - promlinter
     - reassign
-    - staticcheck
     - thelper
     - tparallel
-    - typecheck
     - unconvert
     - unparam
-    - unused
     - usestdlibvars
     - whitespace
+  exclusions:
+    generated: lax
+    rules:
+      - path: _test\.go$
+        linters:
+          - goconst
+          - gosec
+          - dupl
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

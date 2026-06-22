@@ -20,7 +20,7 @@ func AsMCPServerTool(constructor any) fx.Option {
 
 // AsMCPServerTools registers several MCP tools.
 func AsMCPServerTools(constructors ...any) fx.Option {
-	options := []fx.Option{}
+	options := make([]fx.Option, 0, len(constructors))
 
 	for _, constructor := range constructors {
 		options = append(options, AsMCPServerTool(constructor))
@@ -42,7 +42,7 @@ func AsMCPServerPrompt(constructor any) fx.Option {
 
 // AsMCPServerPrompts registers several MCP prompts.
 func AsMCPServerPrompts(constructors ...any) fx.Option {
-	options := []fx.Option{}
+	options := make([]fx.Option, 0, len(constructors))
 
 	for _, constructor := range constructors {
 		options = append(options, AsMCPServerPrompt(constructor))
@@ -64,7 +64,7 @@ func AsMCPServerResource(constructor any) fx.Option {
 
 // AsMCPServerResources registers several MCP resources.
 func AsMCPServerResources(constructors ...any) fx.Option {
-	options := []fx.Option{}
+	options := make([]fx.Option, 0, len(constructors))
 
 	for _, constructor := range constructors {
 		options = append(options, AsMCPServerResource(constructor))
@@ -86,7 +86,7 @@ func AsMCPServerResourceTemplate(constructor any) fx.Option {
 
 // AsMCPServerResourceTemplates registers several MCP resource templates.
 func AsMCPServerResourceTemplates(constructors ...any) fx.Option {
-	options := []fx.Option{}
+	options := make([]fx.Option, 0, len(constructors))
 
 	for _, constructor := range constructors {
 		options = append(options, AsMCPServerResourceTemplate(constructor))
@@ -108,7 +108,7 @@ func AsMCPSSEServerContextHook(constructor any) fx.Option {
 
 // AsMCPSSEServerContextHooks registers several MCP SSE server context hooks.
 func AsMCPSSEServerContextHooks(constructors ...any) fx.Option {
-	options := []fx.Option{}
+	options := make([]fx.Option, 0, len(constructors))
 
 	for _, constructor := range constructors {
 		options = append(options, AsMCPSSEServerContextHook(constructor))
@@ -130,7 +130,7 @@ func AsMCPStreamableHTTPServerContextHook(constructor any) fx.Option {
 
 // AsMCPStreamableHTTPServerContextHooks registers several MCP StreamableHTTP server context hooks.
 func AsMCPStreamableHTTPServerContextHooks(constructors ...any) fx.Option {
-	options := []fx.Option{}
+	options := make([]fx.Option, 0, len(constructors))
 
 	for _, constructor := range constructors {
 		options = append(options, AsMCPStreamableHTTPServerContextHook(constructor))

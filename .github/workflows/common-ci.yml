@@ -14,7 +14,7 @@ on:
       linter_version:
         required: false
         type: string
-        default: "1.64.8"
+        default: "2.12.2"
 
 permissions:
   contents: read
@@ -67,7 +67,7 @@ jobs:
           go-version: ${{ inputs.go_version }}
       - name: Install lint
         working-directory: ${{ inputs.module }}
-        run:  go install github.com/golangci/golangci-lint/cmd/golangci-lint@v${{ inputs.linter_version }}
+        run:  go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v${{ inputs.linter_version }}
       - name: Run lint
         working-directory: ${{ inputs.module }}
         run: golangci-lint run

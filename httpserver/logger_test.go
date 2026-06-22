@@ -273,7 +273,6 @@ func TestFatalLogging(t *testing.T) {
 		echoLogger.Fatal("message")
 	}
 
-	//nolint:gosec
 	cmd := exec.Command(os.Args[0], "-test.run=TestFatalLogging")
 	cmd.Env = append(os.Environ(), "SHOULD_FATAL=1")
 
@@ -302,7 +301,6 @@ func TestFatalFLogging(t *testing.T) {
 		echoLogger.Fatalf("test placeholder message: %s", "placeholder")
 	}
 
-	//nolint:gosec
 	cmd := exec.Command(os.Args[0], "-test.run=TestFatalFLogging")
 	cmd.Env = append(os.Environ(), "SHOULD_FATAL_F=1")
 
@@ -331,7 +329,6 @@ func TestFatalJLogging(t *testing.T) {
 		echoLogger.Fatalj(echologger.JSON{"message": "message"})
 	}
 
-	//nolint:gosec
 	cmd := exec.Command(os.Args[0], "-test.run=TestFatalJLogging")
 	cmd.Env = append(os.Environ(), "SHOULD_FATAL_J=1")
 
