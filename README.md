@@ -1,5 +1,7 @@
 # Yokai
 
+[![MCP Toplist](https://mcptoplist.com/badge/mcp.so%2Fyokai%2Fankorstore.svg)](https://mcptoplist.com/server/mcp.so%2Fyokai%2Fankorstore)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Go version](https://img.shields.io/badge/Go-≥1.20-blue)](https://go.dev/)
 [![codecov](https://codecov.io/gh/ankorstore/yokai/graph/badge.svg?token=ghUBlFsjhR)](https://codecov.io/gh/ankorstore/yokai)
