@@ -133,14 +133,14 @@
                             <div class="collapse" id="task-group-{{ $i }}">
                                 {{ range $taskName := $item.Tasks }}
                                 {{ $settings := index $.tasksTemplateSettings $taskName }}
-                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ps-4" title="Task {{ $taskName }}" data-title='<i class="bi bi-clipboard2"></i>&nbsp;&nbsp;Task {{ $taskName }}' data-type="task" data-task="{{ $taskName }}" data-view="task" data-placeholder="{{ $settings.Placeholder }}" data-default-value="{{ $settings.DefaultValue }}" data-rows="{{ $settings.Rows }}" data-escape-content="{{ $settings.EscapeContent }}">
+                                <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ps-4" title="Task {{ $taskName }}" data-title='<i class="bi bi-clipboard2"></i>&nbsp;&nbsp;Task {{ $taskName }}' data-type="task" data-task="{{ $taskName }}" data-view="task" data-placeholder="{{ $settings.Placeholder }}" data-default-value="{{ $settings.DefaultValue }}" data-rows="{{ $settings.Rows }}" data-escape-content="{{ $settings.EscapeContent }}" data-input-syntax="{{ $settings.InputSyntax }}">
                                     <span><i class="bi bi-clipboard2"></i>&nbsp;&nbsp;{{ $taskName }}</span>
                                 </a>
                                 {{ end }}
                             </div>
                             {{ else }}
                             {{ $settings := index $.tasksTemplateSettings $item.Name }}
-                            <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Task {{ $item.Name }}" data-title='<i class="bi bi-clipboard2"></i>&nbsp;&nbsp;Task {{ $item.Name }}' data-type="task" data-task="{{ $item.Name }}" data-view="task" data-placeholder="{{ $settings.Placeholder }}" data-default-value="{{ $settings.DefaultValue }}" data-rows="{{ $settings.Rows }}" data-escape-content="{{ $settings.EscapeContent }}">
+                            <a @click="loadContent" href="#" role="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" title="Task {{ $item.Name }}" data-title='<i class="bi bi-clipboard2"></i>&nbsp;&nbsp;Task {{ $item.Name }}' data-type="task" data-task="{{ $item.Name }}" data-view="task" data-placeholder="{{ $settings.Placeholder }}" data-default-value="{{ $settings.DefaultValue }}" data-rows="{{ $settings.Rows }}" data-escape-content="{{ $settings.EscapeContent }}" data-input-syntax="{{ $settings.InputSyntax }}">
                                 <span><i class="bi bi-clipboard2"></i>&nbsp;&nbsp;{{ $item.Name }}</span>
                             </a>
                             {{ end }}
@@ -298,12 +298,13 @@
                             <form>
                                 <div class="mb-3">
                                     <textarea class="form-control" id="taskInput" :rows="taskRows" v-model="taskInput" :placeholder="taskPlaceholder"></textarea>
+                                    <div id="taskInputIssue" class="small font-monospace mt-1" :class="taskInputIssue.severity === 'error' ? 'text-danger' : 'text-warning'" style="white-space: pre-wrap;" v-if="taskInputIssue">{% taskInputIssue.message %}</div>
                                 </div>
                                 <div class="mb-3 btn-toolbar justify-content-between" role="toolbar" aria-label="Task actions">
                                     <button @click="resetTask" type="button" class="btn btn-sm btn-secondary" :disabled="taskRunning">
                                         <i class="bi bi-x-square"></i>&nbsp;&nbsp;Reset
                                     </button>
-                                    <button @click="runTask" type="button" class="btn btn-sm btn-primary" :disabled="taskRunning">
+                                    <button @click="runTask" type="button" class="btn btn-sm btn-primary" :disabled="taskRunning || computedTaskInputBlocked">
                                         <span v-if="!taskRunning"><i class="bi bi-caret-right-square"></i>&nbsp;&nbsp;Run</span>
                                         <span class="spinner-border spinner-border-sm" aria-hidden="true" v-if="taskRunning"></span>
                                         <span role="status" v-if="taskRunning">&nbsp;&nbsp;Run</span>
@@ -311,7 +312,13 @@
                                 </div>
                             </form>
                             <div class="card mb-3 border-success" v-show="taskResultMessage !== '' && taskResultSuccess && !taskRunning">
-                                <div class="card-header"><i class="bi bi-check2-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution success</div>
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-check2-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution success</span>
+                                    <button @click="copyTaskResult" type="button" class="btn btn-sm btn-outline-secondary" title="Copy the task output to the clipboard">
+                                        <span v-if="!taskCopied"><i class="bi bi-clipboard"></i>&nbsp;&nbsp;Copy</span>
+                                        <span v-if="taskCopied"><i class="bi bi-clipboard-check"></i>&nbsp;&nbsp;Copied</span>
+                                    </button>
+                                </div>
                                 <div class="card-body bg-{{ .theme }}">
                                     <p class="card-text" v-if="!taskEscapeContent" v-html="taskResultMessage"></p>
                                     <p class="card-text" v-if="taskEscapeContent">{% taskResultMessage %}</p>
@@ -319,7 +326,13 @@
                                 </div>
                             </div>
                             <div class="card mb-3 border-danger" v-show="taskResultMessage !== '' && !taskResultSuccess && !taskRunning">
-                                <div class="card-header"><i class="bi bi-x-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution error</div>
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-x-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution error</span>
+                                    <button @click="copyTaskResult" type="button" class="btn btn-sm btn-outline-secondary" title="Copy the task output to the clipboard">
+                                        <span v-if="!taskCopied"><i class="bi bi-clipboard"></i>&nbsp;&nbsp;Copy</span>
+                                        <span v-if="taskCopied"><i class="bi bi-clipboard-check"></i>&nbsp;&nbsp;Copied</span>
+                                    </button>
+                                </div>
                                 <div class="card-body bg-{{ .theme }}">
                                     <p class="card-text">{% taskResultMessage %}</p>
                                     <p v-html="computedTaskResultDetails"></p>
@@ -333,6 +346,124 @@
     </body>
     <script>
         const { createApp, ref } = Vue
+
+        // task input editor (CodeMirror 5), loaded on demand the first time a task with an input syntax is opened
+        const taskEditorCdn = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/';
+        const taskEditorTheme = {{ .theme }} === 'dark' ? 'material-darker' : 'default';
+        const taskEditorModes = {
+            json: 'application/json',
+            sql: 'text/x-mysql',
+        };
+        const taskEditorAssets = {
+            css: [
+                taskEditorCdn + 'codemirror.min.css',
+                taskEditorCdn + 'addon/lint/lint.min.css',
+            ].concat(taskEditorTheme === 'default' ? [] : [taskEditorCdn + 'theme/' + taskEditorTheme + '.min.css']),
+            js: [
+                taskEditorCdn + 'codemirror.min.js',
+                taskEditorCdn + 'addon/display/placeholder.min.js',
+                taskEditorCdn + 'addon/lint/lint.min.js',
+            ],
+            json: [
+                taskEditorCdn + 'mode/javascript/javascript.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/jsonlint/1.6.0/jsonlint.min.js',
+                taskEditorCdn + 'addon/lint/json-lint.min.js',
+            ],
+            sql: [
+                taskEditorCdn + 'mode/sql/sql.min.js',
+                'https://cdn.jsdelivr.net/npm/node-sql-parser@5.3.13/umd/mysql.umd.js',
+            ],
+        };
+        const loadedAssets = {};
+        let taskEditor = null;
+
+        function loadAsset(url) {
+            if (!loadedAssets[url]) {
+                loadedAssets[url] = new Promise((resolve, reject) => {
+                    const isCss = url.endsWith('.css');
+                    const element = document.createElement(isCss ? 'link' : 'script');
+                    if (isCss) {
+                        element.rel = 'stylesheet';
+                        element.href = url;
+                    } else {
+                        element.src = url;
+                    }
+                    element.onload = resolve;
+                    element.onerror = () => {
+                        delete loadedAssets[url];
+                        reject(new Error('cannot load ' + url));
+                    };
+                    document.head.appendChild(element);
+                });
+            }
+
+            return loadedAssets[url];
+        }
+
+        // scripts are loaded one after the other, since modes and addons need CodeMirror to be loaded first
+        function loadTaskEditorAssets(syntax) {
+            return Promise.all(taskEditorAssets.css.map(loadAsset))
+                .then(() => taskEditorAssets.js.concat(taskEditorAssets[syntax]).reduce(
+                    (previous, url) => previous.then(() => loadAsset(url)),
+                    Promise.resolve()
+                ));
+        }
+
+        function lintTaskInput(syntax) {
+            return (text) => {
+                // task inputs are optional: an empty input is never flagged
+                if (text.trim() === '') {
+                    return [];
+                }
+
+                return syntax === 'json' ? CodeMirror.helpers.lint.json(text) : lintSqlTaskInput(text);
+            };
+        }
+
+        // the parser does not match MySQL exactly, so its findings are warnings that never block the run
+        function lintSqlTaskInput(text) {
+            try {
+                new window.Parser().astify(text, { database: 'MySQL' });
+
+                return [];
+            } catch (e) {
+                const location = e.location ? e.location.start : { line: 1, column: 1 };
+                const found = /but (.+) found\.$/.exec(e.message || '');
+
+                return [{
+                    from: CodeMirror.Pos(location.line - 1, location.column - 1),
+                    to: CodeMirror.Pos(location.line - 1, location.column),
+                    message: 'Possible SQL syntax error at line ' + location.line + ', column ' + location.column + (found ? ': unexpected ' + found[1] : ''),
+                    severity: 'warning',
+                }];
+            }
+        }
+
+        // navigator.clipboard only exists in secure contexts (https or localhost), so fall back to execCommand elsewhere
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                return navigator.clipboard.writeText(text);
+            }
+
+            return new Promise((resolve, reject) => {
+                const element = document.createElement('textarea');
+                element.value = text;
+                element.setAttribute('readonly', '');
+                element.style.position = 'fixed';
+                element.style.opacity = '0';
+                document.body.appendChild(element);
+                element.select();
+
+                const copied = document.execCommand('copy');
+                document.body.removeChild(element);
+
+                copied ? resolve() : reject(new Error('copy command rejected'));
+            });
+        }
+
+        function escapeHtml(value) {
+            return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
 
         createApp({
             delimiters: ['{%', '%}'],
@@ -368,6 +499,15 @@
                 taskEscapeContent: {
                     type: Boolean,
                 },
+                taskInputSyntax: {
+                    type: String,
+                },
+                taskInputIssue: {
+                    type: Object,
+                },
+                taskCopied: {
+                    type: Boolean,
+                },
                 taskRunning: {
                     type: Boolean,
                 },
@@ -393,16 +533,20 @@
                 const taskInput = ref('');
                 const taskRows = ref(1);
                 const taskEscapeContent = ref(true);
+                const taskInputSyntax = ref('');
+                const taskInputIssue = ref(null);
+                const taskCopied = ref(false);
                 const taskRunning = ref(false);
                 const taskResultSuccess = ref(true);
                 const taskResultMessage = ref('');
                 const taskResultDetails = ref(undefined);
 
-                return { error, loading, title, view, content, taskName, taskPlaceholder, taskInput, taskRows, taskEscapeContent, taskRunning, taskResultSuccess,  taskResultMessage, taskResultDetails}
+                return { error, loading, title, view, content, taskName, taskPlaceholder, taskInput, taskRows, taskEscapeContent, taskInputSyntax, taskInputIssue, taskCopied, taskRunning, taskResultSuccess,  taskResultMessage, taskResultDetails}
             },
             methods: {
                 loadContent(event) {
                     this.error = '';
+                    this.destroyTaskEditor();
 
                     let dataView = event.currentTarget.getAttribute('data-view');
                     let dataTitle = event.currentTarget.getAttribute('data-title');
@@ -431,6 +575,9 @@
                         }
 
                         this.taskEscapeContent = event.currentTarget.getAttribute('data-escape-content') === 'true';
+                        this.taskInputSyntax = event.currentTarget.getAttribute('data-input-syntax') || '';
+
+                        this.$nextTick(() => this.mountTaskEditor());
                     } else {
                         this.loading = true
 
@@ -455,15 +602,70 @@
                             });
                     }
                 },
+                mountTaskEditor() {
+                    const syntax = this.taskInputSyntax;
+                    const name = this.taskName;
+
+                    if (!taskEditorModes[syntax]) {
+                        return;
+                    }
+
+                    loadTaskEditorAssets(syntax)
+                        .then(() => {
+                            const textarea = document.getElementById('taskInput');
+
+                            // another view or task may have been opened while the assets were loading
+                            if (taskEditor || !textarea || this.view !== 'task' || this.taskName !== name) {
+                                return;
+                            }
+
+                            taskEditor = CodeMirror.fromTextArea(textarea, {
+                                mode: taskEditorModes[syntax],
+                                theme: taskEditorTheme,
+                                placeholder: this.taskPlaceholder,
+                                lineNumbers: true,
+                                gutters: ['CodeMirror-linenumbers', 'CodeMirror-lint-markers'],
+                                lint: {
+                                    getAnnotations: lintTaskInput(syntax),
+                                    delay: 250,
+                                    onUpdateLinting: (annotations, annotationsByLine, cm) => {
+                                        const issue = annotations[0];
+                                        this.taskInputIssue = issue ? { severity: issue.severity || 'error', message: issue.message } : null;
+                                        cm.getWrapperElement().classList.toggle('border-danger', !!issue && this.taskInputIssue.severity === 'error');
+                                        cm.getWrapperElement().classList.toggle('border-warning', !!issue && this.taskInputIssue.severity === 'warning');
+                                    },
+                                },
+                            });
+                            taskEditor.getWrapperElement().classList.add('form-control', 'p-0');
+                            taskEditor.setSize(null, (this.taskRows * taskEditor.defaultTextHeight() + 10) + 'px');
+                            taskEditor.on('change', (cm) => {
+                                this.taskInput = cm.getValue();
+                            });
+                        })
+                        .catch((err) => console.warn('task input editor unavailable, falling back to a plain textarea:', err));
+                },
+                destroyTaskEditor() {
+                    if (taskEditor) {
+                        taskEditor.toTextArea();
+                        taskEditor = null;
+                    }
+
+                    this.taskInputIssue = null;
+                },
                 resetTask() {
                     this.taskRunning = false
                     this.taskInput = ''
+                    this.taskCopied = false;
+                    if (taskEditor) {
+                        taskEditor.setValue('');
+                    }
                     this.taskResultSuccess = true;
                     this.taskResultMessage = '';
                     this.taskResultDetails = undefined;
                 },
                 runTask() {
                     this.taskRunning = true
+                    this.taskCopied = false;
 
                     axios
                         .post(
@@ -484,6 +686,27 @@
                             this.taskRunning = false;
                             hljs.highlightAll();
                         });
+                },
+                copyTaskResult() {
+                    let text = this.taskResultMessage || '';
+
+                    // the success card renders the message as HTML when escaping is disabled: copy what is displayed, not the markup
+                    if (this.taskResultSuccess && !this.taskEscapeContent) {
+                        text = new DOMParser().parseFromString(text, 'text/html').body.textContent;
+                    }
+
+                    if (this.taskResultDetails !== undefined && this.taskResultDetails !== null) {
+                        text += '\n\n' + JSON.stringify(this.taskResultDetails, null, 2);
+                    }
+
+                    copyToClipboard(text)
+                        .then(() => {
+                            this.taskCopied = true;
+                            setTimeout(() => {
+                                this.taskCopied = false;
+                            }, 2000);
+                        })
+                        .catch((err) => console.warn('cannot copy task output:', err));
                 },
                 switchTheme(event) {
                     let dataTheme = event.currentTarget.getAttribute('data-theme');
@@ -516,7 +739,10 @@
                         return '';
                     }
 
-                    return '<pre><code class="rounded language-json">' + JSON.stringify(this.taskResultDetails, null, 2) + '</code></pre>';
+                    return '<pre><code class="rounded language-json">' + escapeHtml(JSON.stringify(this.taskResultDetails, null, 2)) + '</code></pre>';
+                },
+                computedTaskInputBlocked() {
+                    return this.taskInputIssue !== null && this.taskInputIssue.severity === 'error';
                 }
             },
         }).mount('#app')

@@ -95,6 +95,7 @@ func TestTaskRegistry(t *testing.T) {
 		assert.Equal(t, "", successSettings.DefaultValue)
 		assert.Equal(t, 1, successSettings.Rows)
 		assert.True(t, successSettings.EscapeContent)
+		assert.Equal(t, fxcore.TaskInputSyntaxNone, successSettings.InputSyntax)
 
 		errorSettings, ok := settings["error"]
 		assert.True(t, ok)
@@ -102,6 +103,7 @@ func TestTaskRegistry(t *testing.T) {
 		assert.Equal(t, "", errorSettings.DefaultValue)
 		assert.Equal(t, 1, errorSettings.Rows)
 		assert.True(t, errorSettings.EscapeContent)
+		assert.Equal(t, fxcore.TaskInputSyntaxNone, errorSettings.InputSyntax)
 
 		templateSettings, ok := settings["template-settings"]
 		assert.True(t, ok)
@@ -109,6 +111,7 @@ func TestTaskRegistry(t *testing.T) {
 		assert.Equal(t, "Default content", templateSettings.DefaultValue)
 		assert.Equal(t, 5, templateSettings.Rows)
 		assert.False(t, templateSettings.EscapeContent)
+		assert.Equal(t, fxcore.TaskInputSyntaxJSON, templateSettings.InputSyntax)
 	})
 
 	t.Run("test list items without groups", func(t *testing.T) {

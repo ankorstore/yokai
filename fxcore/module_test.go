@@ -1133,3 +1133,28 @@ func TestModuleDashboardTasks(t *testing.T) {
 	assert.Equal(t, "task invalid not found", res.Message)
 	assert.Nil(t, res.Details)
 }
+
+func TestModuleDashboardTasksTemplateSettings(t *testing.T) {
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("TASKS_ENABLED", "true")
+
+	var core *fxcore.Core
+
+	fxcore.NewBootstrapper().RunTestApp(
+		t,
+		fxcore.AsTasks(
+			tasks.NewErrorTask,
+			tasks.NewTemplateSettingsTask,
+		),
+		fx.Populate(&core),
+	)
+
+	// [GET] /
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec := httptest.NewRecorder()
+	core.HttpServer().ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Contains(t, rec.Body.String(), `data-task="error" data-view="task" data-placeholder="Optional input..." data-default-value="" data-rows="1" data-escape-content="true" data-input-syntax="">`)
+	assert.Contains(t, rec.Body.String(), `data-task="template-settings" data-view="task" data-placeholder="Custom placeholder" data-default-value="Default content" data-rows="5" data-escape-content="false" data-input-syntax="json">`)
+}

@@ -29,11 +29,24 @@ type TaskWithTemplateSettings interface {
 	TemplateSettings(settings TaskTemplateSettings) TaskTemplateSettings
 }
 
+// TaskInputSyntax is the syntax of a Task input, used by the dashboard to highlight and validate it.
+type TaskInputSyntax string
+
+const (
+	// TaskInputSyntaxNone renders the Task input as a plain textarea, without highlighting nor validation.
+	TaskInputSyntaxNone TaskInputSyntax = ""
+	// TaskInputSyntaxJSON highlights the Task input as JSON, and blocks the run while it is not valid JSON.
+	TaskInputSyntaxJSON TaskInputSyntax = "json"
+	// TaskInputSyntaxSQL highlights the Task input as MySQL, and warns (without blocking the run) on syntax errors.
+	TaskInputSyntaxSQL TaskInputSyntax = "sql"
+)
+
 type TaskTemplateSettings struct {
 	Placeholder   string
 	DefaultValue  string
 	Rows          int
 	EscapeContent bool
+	InputSyntax   TaskInputSyntax
 }
 
 func DefaultTaskTemplateSettings() TaskTemplateSettings {

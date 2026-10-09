@@ -31,6 +31,7 @@ func (t *TemplateSettingsTask) TemplateSettings(settings fxcore.TaskTemplateSett
 	settings.DefaultValue = "Default content"
 	settings.Rows = 5
 	settings.EscapeContent = false
+	settings.InputSyntax = fxcore.TaskInputSyntaxJSON
 
 	return settings
 }
