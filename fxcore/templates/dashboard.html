@@ -320,7 +320,7 @@
                                     </button>
                                 </div>
                                 <div class="card-body bg-{{ .theme }}">
-                                    <p class="card-text" v-if="!taskEscapeContent" v-html="taskResultMessage"></p>
+                                    <p class="card-text" ref="taskResultHtml" v-if="!taskEscapeContent" v-html="taskResultMessage"></p>
                                     <p class="card-text" v-if="taskEscapeContent">{% taskResultMessage %}</p>
                                     <p v-html="computedTaskResultDetails"></p>
                                 </div>
@@ -376,6 +376,7 @@
         };
         const loadedAssets = {};
         let taskEditor = null;
+        let taskCopiedTimer = null;
 
         function loadAsset(url) {
             if (!loadedAssets[url]) {
@@ -427,7 +428,14 @@
 
                 return [];
             } catch (e) {
-                const location = e.location ? e.location.start : { line: 1, column: 1 };
+                // only parser syntax errors carry a location: anything else is not a finding about the input
+                if (!e.location) {
+                    console.warn('cannot validate SQL task input:', e);
+
+                    return [];
+                }
+
+                const location = e.location.start;
                 const found = /but (.+) found\.$/.exec(e.message || '');
 
                 return [{
@@ -629,6 +637,11 @@
                                     getAnnotations: lintTaskInput(syntax),
                                     delay: 250,
                                     onUpdateLinting: (annotations, annotationsByLine, cm) => {
+                                        // a lint scheduled before the editor was destroyed must not flag the next task
+                                        if (cm !== taskEditor) {
+                                            return;
+                                        }
+
                                         const issue = annotations[0];
                                         this.taskInputIssue = issue ? { severity: issue.severity || 'error', message: issue.message } : null;
                                         cm.getWrapperElement().classList.toggle('border-danger', !!issue && this.taskInputIssue.severity === 'error');
@@ -640,12 +653,18 @@
                             taskEditor.setSize(null, (this.taskRows * taskEditor.defaultTextHeight() + 10) + 'px');
                             taskEditor.on('change', (cm) => {
                                 this.taskInput = cm.getValue();
+
+                                // lint is debounced: re-lint right away while blocked, so a fix unblocks the run immediately
+                                if (this.computedTaskInputBlocked) {
+                                    cm.performLint();
+                                }
                             });
                         })
                         .catch((err) => console.warn('task input editor unavailable, falling back to a plain textarea:', err));
                 },
                 destroyTaskEditor() {
                     if (taskEditor) {
+                        taskEditor.setOption('lint', false);
                         taskEditor.toTextArea();
                         taskEditor = null;
                     }
@@ -655,6 +674,7 @@
                 resetTask() {
                     this.taskRunning = false
                     this.taskInput = ''
+                    clearTimeout(taskCopiedTimer);
                     this.taskCopied = false;
                     if (taskEditor) {
                         taskEditor.setValue('');
@@ -664,7 +684,16 @@
                     this.taskResultDetails = undefined;
                 },
                 runTask() {
+                    // lint is debounced: validate the current input, not the one of the last lint
+                    if (taskEditor) {
+                        taskEditor.performLint();
+                        if (this.computedTaskInputBlocked) {
+                            return;
+                        }
+                    }
+
                     this.taskRunning = true
+                    clearTimeout(taskCopiedTimer);
                     this.taskCopied = false;
 
                     axios
@@ -678,9 +707,16 @@
                             this.taskResultDetails = response.data.details;
                         })
                         .catch(error => {
-                            this.taskResultSuccess = error.response.data.success;
-                            this.taskResultMessage = error.response.data.message;
-                            this.taskResultDetails = error.response.data.details;
+                            // network errors and timeouts have no response
+                            if (error.response && error.response.data) {
+                                this.taskResultSuccess = error.response.data.success;
+                                this.taskResultMessage = error.response.data.message;
+                                this.taskResultDetails = error.response.data.details;
+                            } else {
+                                this.taskResultSuccess = false;
+                                this.taskResultMessage = error.message;
+                                this.taskResultDetails = undefined;
+                            }
                         })
                         .finally(() => {
                             this.taskRunning = false;
@@ -690,9 +726,10 @@
                 copyTaskResult() {
                     let text = this.taskResultMessage || '';
 
-                    // the success card renders the message as HTML when escaping is disabled: copy what is displayed, not the markup
+                    // the success card renders the message as HTML when escaping is disabled: copy what is displayed (line breaks included), not the markup
                     if (this.taskResultSuccess && !this.taskEscapeContent) {
-                        text = new DOMParser().parseFromString(text, 'text/html').body.textContent;
+                        const rendered = this.$refs.taskResultHtml;
+                        text = rendered ? rendered.innerText : new DOMParser().parseFromString(text, 'text/html').body.textContent;
                     }
 
                     if (this.taskResultDetails !== undefined && this.taskResultDetails !== null) {
@@ -702,7 +739,8 @@
                     copyToClipboard(text)
                         .then(() => {
                             this.taskCopied = true;
-                            setTimeout(() => {
+                            clearTimeout(taskCopiedTimer);
+                            taskCopiedTimer = setTimeout(() => {
                                 this.taskCopied = false;
                             }, 2000);
                         })
