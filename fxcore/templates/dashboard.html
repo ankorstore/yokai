@@ -314,7 +314,7 @@
                             <div class="card mb-3 border-success" v-show="taskResultMessage !== '' && taskResultSuccess && !taskRunning">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <span><i class="bi bi-check2-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution success</span>
-                                    <button @click="copyTaskResult" type="button" class="btn btn-sm btn-outline-secondary" title="Copy the task output to the clipboard">
+                                    <button @click="copyTaskResult" type="button" class="btn btn-sm btn-secondary" title="Copy the task output to the clipboard">
                                         <span v-if="!taskCopied"><i class="bi bi-clipboard"></i>&nbsp;&nbsp;Copy</span>
                                         <span v-if="taskCopied"><i class="bi bi-clipboard-check"></i>&nbsp;&nbsp;Copied</span>
                                     </button>
@@ -328,7 +328,7 @@
                             <div class="card mb-3 border-danger" v-show="taskResultMessage !== '' && !taskResultSuccess && !taskRunning">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <span><i class="bi bi-x-circle"></i>&nbsp;&nbsp;Task {% taskName %} execution error</span>
-                                    <button @click="copyTaskResult" type="button" class="btn btn-sm btn-outline-secondary" title="Copy the task output to the clipboard">
+                                    <button @click="copyTaskResult" type="button" class="btn btn-sm btn-secondary" title="Copy the task output to the clipboard">
                                         <span v-if="!taskCopied"><i class="bi bi-clipboard"></i>&nbsp;&nbsp;Copy</span>
                                         <span v-if="taskCopied"><i class="bi bi-clipboard-check"></i>&nbsp;&nbsp;Copied</span>
                                     </button>
