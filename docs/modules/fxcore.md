@@ -395,7 +395,7 @@ func (t *ExampleTask) Group() string {
 }
 ```
 
-Tasks sharing the same group name will be collapsed under a single expandable entry in the sidebar, sorted alphabetically by group name alongside standalone tasks.
+Tasks sharing the same group name will be collapsed under a single expandable entry in the sidebar, listed after the standalone tasks. Standalone tasks and groups are each sorted alphabetically by name.
 
 #### Input customisation
 

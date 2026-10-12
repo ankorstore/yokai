@@ -88,8 +88,8 @@ type TaskListItem struct {
 	Tasks   []string
 }
 
-// ListItems returns the list of TaskListItem for the dashboard sidebar, sorted by name, collapsing
-// tasks that share the same group under a single group entry.
+// ListItems returns the list of TaskListItem for the dashboard sidebar, collapsing tasks that share
+// the same group under a single group entry, and listing standalone tasks before groups, each sorted by name.
 func (r *TaskRegistry) ListItems() []TaskListItem {
 	groups := make(map[string][]string)
 	var items []TaskListItem
@@ -106,7 +106,12 @@ func (r *TaskRegistry) ListItems() []TaskListItem {
 		items = append(items, TaskListItem{Name: group, IsGroup: true, Tasks: tasks})
 	}
 
+	// standalone tasks are listed before groups, each sorted by name
 	sort.Slice(items, func(i, j int) bool {
+		if items[i].IsGroup != items[j].IsGroup {
+			return !items[i].IsGroup
+		}
+
 		return items[i].Name < items[j].Name
 	})
 

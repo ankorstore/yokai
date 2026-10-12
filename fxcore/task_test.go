@@ -144,13 +144,13 @@ func TestTaskRegistry(t *testing.T) {
 
 		items := registry.ListItems()
 
-		// Items sorted by name: "error", "my group", "other group", "success"
+		// Standalone tasks first, then groups, each sorted by name: "error", "success", "my group", "other group"
 		// Tasks within groups are in alphabetical order (from r.Names() iteration)
 		assert.Equal(t, []fxcore.TaskListItem{
 			{Name: "error"},
+			{Name: "success"},
 			{Name: "my group", IsGroup: true, Tasks: []string{"alpha", "beta"}},
 			{Name: "other group", IsGroup: true, Tasks: []string{"gamma"}},
-			{Name: "success"},
 		}, items)
 	})
 }
