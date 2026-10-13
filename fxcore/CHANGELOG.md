@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.17.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.16.0...fxcore/v1.17.0) (2026-10-13)
+
+
+### Features
+
+* **fxcore:** add task input syntax highlighting, validation and output copy ([28cde40](https://github.com/ankorstore/yokai/commit/28cde40e676b24baf39fe0b355350f6964b4f072))
+* **fxcore:** add task input syntax highlighting, validation and output copy ([#453](https://github.com/ankorstore/yokai/issues/453)) ([ba01d91](https://github.com/ankorstore/yokai/commit/ba01d9189a86126c1ef717609c41489061338a20))
+* **fxcore:** list standalone tasks before groups in the dashboard ([f049b86](https://github.com/ankorstore/yokai/commit/f049b869b2418eb5c178041932e2c7ba20a42e1a))
+
+
+### Bug Fixes
+
+* **fxcore:** harden task input validation and output copy ([c220e90](https://github.com/ankorstore/yokai/commit/c220e906a139f087d6c8038855e2afd50767fa2d))
+* **fxcore:** make task output copy button look active ([f76bc04](https://github.com/ankorstore/yokai/commit/f76bc04777ebf61dec6080acd31a45b6a29c0a32))
+
 ## [1.16.0](https://github.com/ankorstore/yokai/compare/fxcore/v1.15.0...fxcore/v1.16.0) (2026-06-19)
 
 
