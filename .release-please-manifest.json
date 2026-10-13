@@ -16,7 +16,7 @@
   "fxorm": "1.3.0",
   "fxhttpclient": "1.6.0",
   "fxhttpserver": "1.8.0",
-  "fxcore": "1.16.0",
+  "fxcore": "1.17.0",
   "worker": "1.4.0",
   "fxworker": "1.3.0",
   "fxcron": "1.2.0",
