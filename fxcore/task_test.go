@@ -95,6 +95,7 @@ func TestTaskRegistry(t *testing.T) {
 		assert.Equal(t, "", successSettings.DefaultValue)
 		assert.Equal(t, 1, successSettings.Rows)
 		assert.True(t, successSettings.EscapeContent)
+		assert.Equal(t, fxcore.TaskInputSyntaxNone, successSettings.InputSyntax)
 
 		errorSettings, ok := settings["error"]
 		assert.True(t, ok)
@@ -102,6 +103,7 @@ func TestTaskRegistry(t *testing.T) {
 		assert.Equal(t, "", errorSettings.DefaultValue)
 		assert.Equal(t, 1, errorSettings.Rows)
 		assert.True(t, errorSettings.EscapeContent)
+		assert.Equal(t, fxcore.TaskInputSyntaxNone, errorSettings.InputSyntax)
 
 		templateSettings, ok := settings["template-settings"]
 		assert.True(t, ok)
@@ -109,6 +111,7 @@ func TestTaskRegistry(t *testing.T) {
 		assert.Equal(t, "Default content", templateSettings.DefaultValue)
 		assert.Equal(t, 5, templateSettings.Rows)
 		assert.False(t, templateSettings.EscapeContent)
+		assert.Equal(t, fxcore.TaskInputSyntaxJSON, templateSettings.InputSyntax)
 	})
 
 	t.Run("test list items without groups", func(t *testing.T) {
@@ -144,13 +147,13 @@ func TestTaskRegistry(t *testing.T) {
 
 		items := registry.ListItems()
 
-		// Items sorted by name: "error", "my group", "other group", "success"
+		// Standalone tasks first, then groups, each sorted by name: "error", "success", "my group", "other group"
 		// Tasks within groups are in alphabetical order (from r.Names() iteration)
 		assert.Equal(t, []fxcore.TaskListItem{
 			{Name: "error"},
+			{Name: "success"},
 			{Name: "my group", IsGroup: true, Tasks: []string{"alpha", "beta"}},
 			{Name: "other group", IsGroup: true, Tasks: []string{"gamma"}},
-			{Name: "success"},
 		}, items)
 	})
 }

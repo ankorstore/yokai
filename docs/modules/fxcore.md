@@ -395,7 +395,7 @@ func (t *ExampleTask) Group() string {
 }
 ```
 
-Tasks sharing the same group name will be collapsed under a single expandable entry in the sidebar, sorted alphabetically by group name alongside standalone tasks.
+Tasks sharing the same group name will be collapsed under a single expandable entry in the sidebar, listed after the standalone tasks. Standalone tasks and groups are each sorted alphabetically by name.
 
 #### Input customisation
 
@@ -407,10 +407,28 @@ func (t *ExampleTask) TemplateSettings(settings fxcore.TaskTemplateSettings) fxc
 	settings.DefaultValue  = "42"                  // pre-filled input value (default: "")
 	settings.Rows          = 5                     // number of textarea rows (default: 1)
 	settings.EscapeContent = false                 // set to false to render result message as HTML (default: true)
+	settings.InputSyntax   = fxcore.TaskInputSyntaxJSON // input syntax highlighting and validation (default: none)
 
 	return settings
 }
 ```
+
+When `InputSyntax` is set, the dashboard replaces the textarea with a code editor that highlights and validates the input as you type:
+
+| Syntax                       | Highlighting | Validation                                                                                 |
+|------------------------------|--------------|--------------------------------------------------------------------------------------------|
+| `fxcore.TaskInputSyntaxJSON` | JSON         | errors block the run until the input is valid JSON                                         |
+| `fxcore.TaskInputSyntaxSQL`  | MySQL        | possible syntax errors are shown as warnings, and never block the run                      |
+
+An empty input is never flagged, since task inputs are optional. SQL validation is advisory: the browser-side parser does not match MySQL exactly, so it may flag valid statements or miss invalid ones.
+
+Validation only happens in the dashboard: the task endpoint can be called without it, so your task must still validate its input in `Run()`.
+
+The editor assets are loaded from CDNs the first time such a task is opened. If they cannot be loaded, the dashboard falls back to the plain textarea.
+
+#### Output copy
+
+Each task result has a `Copy` button that puts the result message (as displayed, without HTML markup) and its details (as indented JSON) into the clipboard.
 
 ### Modules
 
