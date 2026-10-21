@@ -102,7 +102,10 @@ func NewFxSQLDatabasePool(p FxSQLDatabasePoolParam) (*DatabasePool, error) {
 			return nil, err
 		}
 
-		auxiliaryDB, err := sql.Open(auxiliaryDriverName, fmt.Sprintf("modules.sql.auxiliaries.%s.dsn", auxiliaryDatabaseName))
+		auxiliaryDB, err := sql.Open(
+			auxiliaryDriverName,
+			p.Config.GetString(fmt.Sprintf("modules.sql.auxiliaries.%s.dsn", auxiliaryDatabaseName)),
+		)
 		if err != nil {
 			return nil, err
 		}

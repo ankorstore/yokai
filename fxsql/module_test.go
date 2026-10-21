@@ -514,3 +514,47 @@ func TestModuleDatabasePoolAuxiliaryNotFound(t *testing.T) {
 	err = pool.Primary().DB().Close()
 	assert.NoError(t, err)
 }
+
+func TestModuleDatabasePoolAuxiliaryWithDsnValidatingDriver(t *testing.T) {
+	t.Setenv("APP_ENV", "test")
+	t.Setenv("APP_CONFIG_PATH", "testdata/config")
+	t.Setenv("SQL_PRIMARY_DRIVER", "sqlite")
+	t.Setenv("SQL_PRIMARY_DSN", ":memory:")
+	t.Setenv("SQL_AUXILIARY1_DRIVER", "mysql")
+	t.Setenv("SQL_AUXILIARY1_DSN", "user:password@tcp(127.0.0.1:1)/db")
+	t.Setenv("SQL_AUXILIARY2_DRIVER", "sqlite")
+	t.Setenv("SQL_AUXILIARY2_DSN", ":memory:")
+
+	var pool *fxsql.DatabasePool
+
+	fxtest.New(
+		t,
+		fx.NopLogger,
+		// provide context
+		fx.Provide(func() context.Context {
+			return context.Background()
+		}),
+		// load module and dependencies
+		fxconfig.FxConfigModule,
+		fxlog.FxLogModule,
+		fxtrace.FxTraceModule,
+		fxsql.FxSQLModule,
+		// populate test components
+		fx.Populate(&pool),
+	).RequireStart().RequireStop()
+
+	aux1, err := pool.Auxiliary("auxiliary1")
+	assert.NoError(t, err)
+
+	// the configured DSN reaches the driver: connecting fails on the unreachable
+	// address, not on DSN parsing
+	err = aux1.DB().Ping()
+	assert.Error(t, err)
+	assert.NotContains(t, err.Error(), "invalid DSN")
+
+	// cleanup
+	err = pool.Primary().DB().Close()
+	assert.NoError(t, err)
+	err = aux1.DB().Close()
+	assert.NoError(t, err)
+}
