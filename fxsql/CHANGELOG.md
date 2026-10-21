@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1](https://github.com/ankorstore/yokai/compare/fxsql/v1.5.0...fxsql/v1.5.1) (2026-10-21)
+
+
+### Bug Fixes
+
+* **fxsql:** open auxiliary databases with the configured DSN ([a279315](https://github.com/ankorstore/yokai/commit/a27931525ea8daad1c5e770a89ee6f6dbfd18f7d))
+* **fxsql:** open auxiliary databases with the configured DSN ([#455](https://github.com/ankorstore/yokai/issues/455)) ([a2e6ca4](https://github.com/ankorstore/yokai/commit/a2e6ca4552700c5852e530a18b0fd06265b110cd))
+
 ## [1.5.0](https://github.com/ankorstore/yokai/compare/fxsql/v1.4.0...fxsql/v1.5.0) (2026-06-19)
 
 
