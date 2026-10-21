@@ -23,7 +23,7 @@
   "grpcserver": "1.3.0",
   "fxgrpcserver": "1.4.0",
   "sql": "1.3.0",
-  "fxsql": "1.5.0",
+  "fxsql": "1.5.1",
   "fxvalidator": "1.1.0",
   "fxclock": "1.1.0",
   "fxmcpserver": "1.8.0"
